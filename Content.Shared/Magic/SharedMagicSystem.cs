@@ -283,8 +283,9 @@ public abstract class SharedMagicSystem : EntitySystem
             : new(_mapManager.GetMapEntityId(fromMap.MapId), fromMap.Position);
 
         var ent = Spawn(ev.Prototype, spawnCoords);
-        var direction = toCoords.ToMapPos(EntityManager, _transform) -
-                        spawnCoords.ToMapPos(EntityManager, _transform);
+
+        var direction = _transform.ToMapCoordinates(toCoords).Position -
+                        _transform.ToMapCoordinates(spawnCoords).Position;
         _gunSystem.ShootProjectile(ent, direction, userVelocity, ev.Performer, ev.Performer);
     }
     // End Projectile Spells
