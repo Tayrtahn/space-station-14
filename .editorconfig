@@ -359,3 +359,8 @@ indent_size = 2
 
 [{*.yaml,*.yml}]
 ij_yaml_indent_sequence_value = false
+
+# Disable [Access] restrictions for integration tests
+[Content.IntegrationTests/**.cs]
+dotnet_diagnostic.RA0002.severity = silent
+
