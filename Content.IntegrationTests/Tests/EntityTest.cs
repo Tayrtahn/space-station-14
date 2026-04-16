@@ -42,7 +42,7 @@ namespace Content.IntegrationTests.Tests
         /// overhead from pair recycling.
         /// A higher value will need fewer test runs, but will increase RAM/CPU usage of each run.
         /// </remarks>
-        private const int BatchSize = 20;
+        private const int BatchSize = 100;
 
         private static string[][] GetEntityBatches()
         {
@@ -181,8 +181,11 @@ namespace Content.IntegrationTests.Tests
         ///     all components on every entity.
         /// </summary>
         [Test]
-        public async Task SpawnAndDirtyAllEntities()
+        [TestCaseSource(nameof(GetEntityBatches))]
+        public async Task SpawnAndDirtyAllEntities(string[] protoIds)
         {
+            TestContext.Out.WriteLine($"Batch: [{string.Join(", ", protoIds)}]");
+
             var pair = Pair;
             var server = pair.Server;
             var client = pair.Client;
@@ -194,14 +197,6 @@ namespace Content.IntegrationTests.Tests
             var mapSys = server.System<SharedMapSystem>();
 
             Assert.That(cfg.GetCVar(CVars.NetPVS), Is.False);
-
-            var protoIds = prototypeMan
-                .EnumeratePrototypes<EntityPrototype>()
-                .Where(p => !p.Abstract)
-                .Where(p => !pair.IsTestPrototype(p))
-                .Where(p => !p.Components.ContainsKey("MapGrid")) // This will smash stuff otherwise.
-                .Select(p => p.ID)
-                .ToList();
 
             await server.WaitPost(() =>
             {
@@ -220,8 +215,8 @@ namespace Content.IntegrationTests.Tests
             await pair.RunUntilSynced();
 
             // Make sure the client actually received the entities
-            // 500 is completely arbitrary. Note that the client & sever entity counts aren't expected to match.
-            Assert.That(client.ResolveDependency<IEntityManager>().EntityCount, Is.GreaterThan(500));
+            // Note that the client & server entity counts aren't expected to match.
+            Assert.That(client.EntMan.EntityCount, Is.AtLeast(BatchSize));
 
             await server.WaitPost(() =>
             {
