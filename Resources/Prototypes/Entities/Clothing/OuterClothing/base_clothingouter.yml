@@ -190,7 +190,7 @@
   parent: ClothingOuterBase
   id: ClothingOuterBaseToggleable
   name: hoodie with hood
-  abstract: True
+  abstract: true
   components:
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHatHoodWinterDefault
