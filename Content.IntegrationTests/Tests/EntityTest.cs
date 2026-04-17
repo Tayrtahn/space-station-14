@@ -42,7 +42,7 @@ namespace Content.IntegrationTests.Tests
         /// overhead from pair recycling.
         /// A higher value will need fewer test runs, but will increase RAM/CPU usage of each run.
         /// </remarks>
-        private const int BatchSize = 100;
+        private const int BatchSize = 999999;
 
         private static string[][] GetEntityBatches()
         {
