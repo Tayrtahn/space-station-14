@@ -9,15 +9,14 @@ namespace Content.Server.Objectives.Systems;
 /// <summary>
 ///     Handles the Hijack Trade Station objective.
 /// </summary>
-public sealed class HijackTradeStationConditionSystem : EntitySystem
+public sealed partial class HijackTradeStationConditionSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HijackTradeStationConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<HijackTradeStationConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         var enumerator = EntityQueryEnumerator<TradeStationComponent>();

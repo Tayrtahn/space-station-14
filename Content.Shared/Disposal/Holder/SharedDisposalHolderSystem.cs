@@ -40,20 +40,16 @@ public abstract partial class SharedDisposalHolderSystem : EntitySystem
         base.Initialize();
 
         _xformQuery = GetEntityQuery<TransformComponent>();
-
-        SubscribeLocalEvent<DisposalHolderComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<DisposalHolderComponent, BeforeExplodeEvent>(OnExploded);
-
-        SubscribeLocalEvent<ActorComponent, DisposalSystemTransitionEvent>(OnActorTransition);
-        SubscribeLocalEvent<BeingDisposedComponent, GetVisMaskEvent>(OnGetVisibility);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<DisposalHolderComponent> ent, ref ComponentStartup args)
     {
         // Ensure the holder will have its container
         ent.Comp.Container = _container.EnsureContainer<Container>(ent, nameof(DisposalHolderComponent));
     }
 
+    [SubscribeLocalEvent]
     private void OnExploded(Entity<DisposalHolderComponent> ent, ref BeforeExplodeEvent args)
     {
         if (ent.Comp.Container == null)
@@ -62,12 +58,14 @@ public abstract partial class SharedDisposalHolderSystem : EntitySystem
         args.Contents.AddRange(ent.Comp.Container.ContainedEntities);
     }
 
+    [SubscribeLocalEvent]
     private void OnActorTransition(Entity<ActorComponent> ent, ref DisposalSystemTransitionEvent args)
     {
         // Refreshes visibility mask of a player, leading to OnGetVisibility being called
         _eye.RefreshVisibilityMask(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVisibility(Entity<BeingDisposedComponent> entity, ref GetVisMaskEvent ev)
     {
         // Prevents mispredictions by allowing players in the disposal system

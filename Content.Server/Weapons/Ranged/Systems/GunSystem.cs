@@ -30,9 +30,9 @@ public sealed partial class GunSystem : SharedGunSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<BallisticAmmoProviderComponent, PriceCalculationEvent>(OnBallisticPrice);
     }
 
+    [SubscribeLocalEvent]
     private void OnBallisticPrice(Entity<BallisticAmmoProviderComponent> ent, ref PriceCalculationEvent args)
     {
         if (string.IsNullOrEmpty(ent.Comp.Proto) || ent.Comp.UnspawnedCount == 0)

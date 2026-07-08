@@ -20,10 +20,9 @@ public sealed partial class TurnstileSystem : SharedTurnstileSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TurnstileComponent, AnimationCompletedEvent>(OnAnimationCompleted);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(Entity<TurnstileComponent> ent, ref AnimationCompletedEvent args)
     {
         if (args.Key != AnimationKey)

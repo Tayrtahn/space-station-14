@@ -9,16 +9,15 @@ public sealed partial class StationRecordKeyStorageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StationRecordKeyStorageComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<StationRecordKeyStorageComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, StationRecordKeyStorageComponent component, ref ComponentGetState args)
     {
         args.State = new StationRecordKeyStorageComponentState(_records.Convert(component.Key));
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, StationRecordKeyStorageComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not StationRecordKeyStorageComponentState state)

@@ -20,13 +20,9 @@ public sealed partial class TileAnomalySystem : SharedTileAnomalySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<TileSpawnAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<TileSpawnAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
-        SubscribeLocalEvent<TileSpawnAnomalyComponent, AnomalyStabilityChangedEvent>(OnStabilityChanged);
-        SubscribeLocalEvent<TileSpawnAnomalyComponent, AnomalySeverityChangedEvent>(OnSeverityChanged);
-        SubscribeLocalEvent<TileSpawnAnomalyComponent, AnomalyShutdownEvent>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<TileSpawnAnomalyComponent> component, ref AnomalyPulseEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -38,6 +34,7 @@ public sealed partial class TileAnomalySystem : SharedTileAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(Entity<TileSpawnAnomalyComponent> component, ref AnomalySupercriticalEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -49,6 +46,7 @@ public sealed partial class TileAnomalySystem : SharedTileAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<TileSpawnAnomalyComponent> component, ref AnomalyShutdownEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -60,6 +58,7 @@ public sealed partial class TileAnomalySystem : SharedTileAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStabilityChanged(Entity<TileSpawnAnomalyComponent> component, ref AnomalyStabilityChangedEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -71,6 +70,7 @@ public sealed partial class TileAnomalySystem : SharedTileAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSeverityChanged(Entity<TileSpawnAnomalyComponent> component, ref AnomalySeverityChangedEvent args)
     {
         foreach (var entry in component.Comp.Entries)

@@ -26,10 +26,9 @@ public sealed partial class IdCardSystem : SharedIdCardSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<IdCardComponent, BeingMicrowavedEvent>(OnMicrowaved);
     }
 
+    [SubscribeLocalEvent]
     private void OnMicrowaved(EntityUid uid, IdCardComponent component, BeingMicrowavedEvent args)
     {
         if (!component.CanMicrowave || !TryComp<MicrowaveComponent>(args.Microwave, out var micro) || micro.Broken)

@@ -22,12 +22,10 @@ public sealed partial class StoreDiscountSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StoreInitializedEvent>(OnStoreInitialized);
-        SubscribeLocalEvent<StoreBuyFinishedEvent>(OnBuyFinished);
     }
 
     /// <summary> Decrements discounted item count, removes discount modifier and category, if counter reaches zero. </summary>
+    [SubscribeLocalEvent]
     private void OnBuyFinished(ref StoreBuyFinishedEvent ev)
     {
         var (storeId, purchasedItem) = ev;
@@ -54,6 +52,7 @@ public sealed partial class StoreDiscountSystem : EntitySystem
     }
 
     /// <summary> Initialized discounts if required. </summary>
+    [SubscribeLocalEvent]
     private void OnStoreInitialized(ref StoreInitializedEvent ev)
     {
         if (!ev.UseDiscounts)

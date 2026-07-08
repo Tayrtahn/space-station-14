@@ -21,8 +21,6 @@ namespace Content.Server.StationEvents.Events
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<PowerGridCheckNotifyComponent, ComponentStartup>(OnApcStartup);
-            SubscribeLocalEvent<PowerGridCheckNotifyComponent, ApcToggleMainBreakerAttemptEvent>(OnApcToggleMainBreaker);
         }
 
         protected override void Started(EntityUid uid, PowerGridCheckRuleComponent component, GameRuleComponent gameRule, GameRuleStartedEvent args)
@@ -51,6 +49,7 @@ namespace Content.Server.StationEvents.Events
         /// Check if the entity should be affected by an existing
         /// PowerGridCheckRuleComponent and if so, turns off the APC.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnApcStartup(EntityUid apcUid, PowerGridCheckNotifyComponent comp, ComponentStartup args)
         {
             if (!TryComp<ApcComponent>(apcUid, out var apcComp))
@@ -66,6 +65,7 @@ namespace Content.Server.StationEvents.Events
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnApcToggleMainBreaker(EntityUid uid, PowerGridCheckNotifyComponent component, ref ApcToggleMainBreakerAttemptEvent args)
         {
             args.Cancelled |= GetRuleAffectingEntity(uid) != null;

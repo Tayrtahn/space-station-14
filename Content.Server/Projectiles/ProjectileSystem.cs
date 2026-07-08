@@ -26,9 +26,9 @@ public sealed partial class ProjectileSystem : SharedProjectileSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ProjectileComponent, StartCollideEvent>(OnStartCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(EntityUid uid, ProjectileComponent component, ref StartCollideEvent args)
     {
         // This is so entities that shouldn't get a collision are ignored.

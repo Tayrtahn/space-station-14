@@ -20,14 +20,12 @@ public sealed partial class BlockAnchorOnSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BlockAnchorOnComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<BlockAnchorOnComponent, AnchorAttemptEvent>(OnAnchorAttempt);
     }
 
     /// <summary>
     /// Handles the <see cref="AnchorStateChangedEvent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(Entity<BlockAnchorOnComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)
@@ -43,6 +41,7 @@ public sealed partial class BlockAnchorOnSystem : EntitySystem
     /// <summary>
     /// Handles the <see cref="AnchorAttemptEvent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnchorAttempt(Entity<BlockAnchorOnComponent> ent, ref AnchorAttemptEvent args)
     {
         if (args.Cancelled)

@@ -20,10 +20,9 @@ public abstract partial class SharedFlyBySoundSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FlyBySoundComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<FlyBySoundComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<FlyBySoundComponent> ent, ref ComponentStartup args)
     {
         if (!TryComp<PhysicsComponent>(ent, out var body))
@@ -34,6 +33,7 @@ public abstract partial class SharedFlyBySoundSystem : EntitySystem
         _fixtures.TryCreateFixture(ent, shape, FlyByFixture, collisionLayer: (int)CollisionGroup.MobMask, hard: false, body: body);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<FlyBySoundComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<PhysicsComponent>(ent, out var body) ||

@@ -12,9 +12,9 @@ public sealed partial class ChemicalAmmoSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ChemicalAmmoComponent, AmmoShotEvent>(OnFire);
     }
 
+    [SubscribeLocalEvent]
     private void OnFire(Entity<ChemicalAmmoComponent> entity, ref AmmoShotEvent args)
     {
         if (!_solutionContainerSystem.TryGetSolution(entity.Owner, entity.Comp.SolutionName, out var ammoSoln, out var ammoSolution))

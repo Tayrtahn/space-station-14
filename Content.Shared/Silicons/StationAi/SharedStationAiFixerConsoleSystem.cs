@@ -30,17 +30,9 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, EntRemovedFromContainerMessage>(OnRemoved);
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, LockToggledEvent>(OnLockToggle);
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, StationAiFixerConsoleMessage>(OnMessage);
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, ExaminedEvent>(OnExamined);
-
-        SubscribeLocalEvent<StationAiCustomizationComponent, StationAiCustomizationStateChanged>(OnStationAiCustomizationStateChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(Entity<StationAiFixerConsoleComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.StationAiHolderSlot)
@@ -55,6 +47,7 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(Entity<StationAiFixerConsoleComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.StationAiHolderSlot)
@@ -65,12 +58,14 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
         StopAction(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggle(Entity<StationAiFixerConsoleComponent> ent, ref LockToggledEvent args)
     {
         if (_userInterface.TryGetOpenUi(ent.Owner, StationAiFixerConsoleUiKey.Key, out var bui))
             bui.Update<StationAiFixerConsoleBoundUserInterfaceState>();
     }
 
+    [SubscribeLocalEvent]
     private void OnMessage(Entity<StationAiFixerConsoleComponent> ent, ref StationAiFixerConsoleMessage args)
     {
         if (TryComp<LockComponent>(ent, out var lockable) && lockable.Locked)
@@ -93,6 +88,7 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<StationAiFixerConsoleComponent> ent, ref PowerChangedEvent args)
     {
         if (args.Powered)
@@ -101,6 +97,7 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
         StopAction(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<StationAiFixerConsoleComponent> ent, ref ExaminedEvent args)
     {
         var message = TryGetStationAiHolder(ent, out var holder) ?
@@ -110,6 +107,7 @@ public abstract partial class SharedStationAiFixerConsoleSystem : EntitySystem
         args.PushMarkup(message);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationAiCustomizationStateChanged(Entity<StationAiCustomizationComponent> ent, ref StationAiCustomizationStateChanged args)
     {
         if (_container.TryGetOuterContainer(ent, Transform(ent), out var outerContainer) &&

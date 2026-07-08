@@ -16,8 +16,6 @@ public sealed partial class PirateAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PirateAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
     // converts left word when typed into the right word. For example typing you becomes ye.
@@ -43,6 +41,7 @@ public sealed partial class PirateAccentSystem : EntitySystem
         return msg;
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(EntityUid uid, PirateAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message, component);

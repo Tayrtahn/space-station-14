@@ -48,31 +48,19 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GrapplingProjectileComponent, JointRemovedEvent>(OnGrappleJointRemoved);
-        SubscribeLocalEvent<GrapplingProjectileComponent, ComponentShutdown>(OnGrappleProjectileShutdown);
-        SubscribeLocalEvent<GrapplingProjectileComponent, ProjectileEmbedEvent>(OnGrappleCollide);
-
-        SubscribeLocalEvent<GrapplingGunComponent, GunShotEvent>(OnGrapplingShot);
-        SubscribeLocalEvent<GrapplingGunComponent, ActivateInWorldEvent>(OnGunActivate);
-        SubscribeLocalEvent<GrapplingGunComponent, HandDeselectedEvent>(OnGrapplingDeselected);
-
-        SubscribeAllEvent<RequestGrapplingReelMessage>(OnGrapplingReel);
-        SubscribeLocalEvent<CanWeightlessMoveEvent>(OnWeightlessMove);
-
-        // TODO: After step trigger refactor, dropping a grappling gun should manually try and activate step triggers it's suppressing.
-
-        SubscribeLocalEvent<GrapplingProjectileEmbedComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
 
         UpdatesBefore.Add(typeof(SharedJointSystem)); // We want to run before joints are solved
         base.Initialize();
     }
 
+    [SubscribeLocalEvent]
     private void OnGrappleJointRemoved(EntityUid uid, GrapplingProjectileComponent component, JointRemovedEvent args)
     {
         if (_netManager.IsServer)
             QueueDel(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnGrappleProjectileShutdown(Entity<GrapplingProjectileComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<EmbeddableProjectileComponent>(ent, out var embedComp) || embedComp.EmbeddedIntoUid == null)
@@ -84,6 +72,7 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         grapplingEmbedComp.GrapplingProjectiles.Remove(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGrappleCollide(EntityUid uid, GrapplingProjectileComponent component, ref ProjectileEmbedEvent args)
     {
         if (!Timing.IsFirstTimePredicted || !args.Weapon.HasValue || !TryComp<GrapplingGunComponent>(args.Weapon, out var grapple))
@@ -114,6 +103,7 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         _joints.RefreshRelay(args.Weapon.Value, jointCompGrapple);
     }
 
+    [SubscribeLocalEvent]
     private void OnGrapplingShot(EntityUid uid, GrapplingGunComponent component, ref GunShotEvent args)
     {
         foreach (var (shotUid, _) in args.Ammo)
@@ -135,6 +125,7 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         _appearance.SetData(uid, SharedTetherGunSystem.TetherVisualsStatus.Key, false, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnGunActivate(EntityUid uid, GrapplingGunComponent component, ActivateInWorldEvent args)
     {
         if (!Timing.IsFirstTimePredicted || args.Handled || !args.Complex)
@@ -146,11 +137,13 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGrapplingDeselected(EntityUid uid, GrapplingGunComponent component, HandDeselectedEvent args)
     {
         SetReeling(uid, component, false, args.User);
     }
 
+    [SubscribeAllEvent]
     private void OnGrapplingReel(RequestGrapplingReelMessage msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not { } player)
@@ -172,6 +165,7 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         SetReeling(activeItem.Value, grappling, msg.Reeling, player);
     }
 
+    [SubscribeLocalEvent]
     private void OnWeightlessMove(ref CanWeightlessMoveEvent ev)
     {
         if (ev.CanMove || !TryComp<JointRelayTargetComponent>(ev.Uid, out var relayComp))
@@ -187,6 +181,7 @@ public abstract partial class SharedGrapplingGunSystem : VirtualController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(Entity<GrapplingProjectileEmbedComponent> entity, ref AnchorStateChangedEvent args)
     {
         foreach (var hook in entity.Comp.GrapplingProjectiles)

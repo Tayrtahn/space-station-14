@@ -63,11 +63,6 @@ namespace Content.Server.Decals
             };
 
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
-            SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
-
-            SubscribeNetworkEvent<RequestDecalPlacementEvent>(OnDecalPlacementRequest);
-            SubscribeNetworkEvent<RequestDecalRemovalEvent>(OnDecalRemovalRequest);
-            SubscribeLocalEvent<PostGridSplitEvent>(OnGridSplit);
 
             Subs.CVar(_conf, CVars.NetPVS, OnPvsToggle, true);
         }
@@ -95,6 +90,7 @@ namespace Content.Server.Decals
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGridSplit(ref PostGridSplitEvent ev)
         {
             if (!TryComp(ev.OldGrid, out DecalGridComponent? oldComp))
@@ -155,6 +151,7 @@ namespace Content.Server.Decals
             _playerManager.PlayerStatusChanged -= OnPlayerStatusChanged;
         }
 
+        [SubscribeLocalEvent]
         private void OnTileChanged(ref TileChangedEvent args)
         {
             if (!TryComp(args.Entity, out DecalGridComponent? grid))
@@ -211,6 +208,7 @@ namespace Content.Server.Decals
             }
         }
 
+        [SubscribeNetworkEvent]
         private void OnDecalPlacementRequest(RequestDecalPlacementEvent ev, EntitySessionEventArgs eventArgs)
         {
             if (eventArgs.SenderSession is not { } session)
@@ -240,6 +238,7 @@ namespace Content.Server.Decals
             }
         }
 
+        [SubscribeNetworkEvent]
         private void OnDecalRemovalRequest(RequestDecalRemovalEvent ev, EntitySessionEventArgs eventArgs)
         {
             if (eventArgs.SenderSession is not { } session)

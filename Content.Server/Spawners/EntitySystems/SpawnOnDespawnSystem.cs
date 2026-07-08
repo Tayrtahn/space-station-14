@@ -4,15 +4,14 @@ using Robust.Shared.Spawners;
 
 namespace Content.Server.Spawners.EntitySystems;
 
-public sealed class SpawnOnDespawnSystem : EntitySystem
+public sealed partial class SpawnOnDespawnSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpawnOnDespawnComponent, TimedDespawnEvent>(OnDespawn);
     }
 
+    [SubscribeLocalEvent]
     private void OnDespawn(EntityUid uid, SpawnOnDespawnComponent comp, ref TimedDespawnEvent args)
     {
         if (!TryComp(uid, out TransformComponent? xform))

@@ -37,9 +37,6 @@ public sealed partial class BotanySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SeedComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<ProduceComponent, ExaminedEvent>(OnProduceExamined);
     }
 
     public bool TryGetSeed(SeedComponent comp, [NotNullWhen(true)] out SeedData? seed)
@@ -80,6 +77,7 @@ public sealed partial class BotanySystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, SeedComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

@@ -22,10 +22,10 @@ public sealed partial class InjectionAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<InjectionAnomalyComponent, AnomalyPulseEvent>(OnPulse);
         SubscribeLocalEvent<InjectionAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical, before: new[] { typeof(SharedSolutionContainerSystem) });
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<InjectionAnomalyComponent> entity, ref AnomalyPulseEvent args)
     {
         PulseScalableEffect(entity, entity.Comp.InjectRadius * args.PowerModifier, entity.Comp.MaxSolutionInjection * args.Severity * args.PowerModifier);

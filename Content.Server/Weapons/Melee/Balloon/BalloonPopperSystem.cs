@@ -23,10 +23,9 @@ public sealed partial class BalloonPopperSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<BalloonPopperComponent, MeleeHitEvent>(OnMeleeHit);
-        SubscribeLocalEvent<BalloonPopperComponent, ThrowDoHitEvent>(OnThrowHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeHit(EntityUid uid, BalloonPopperComponent component, MeleeHitEvent args)
     {
         foreach (var entity in args.HitEntities)
@@ -42,6 +41,7 @@ public sealed partial class BalloonPopperSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowHit(EntityUid uid, BalloonPopperComponent component, ThrowDoHitEvent args)
     {
         foreach (var held in _hands.EnumerateHeld(args.Target))

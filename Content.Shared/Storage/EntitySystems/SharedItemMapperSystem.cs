@@ -22,11 +22,9 @@ public abstract partial class SharedItemMapperSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemMapperComponent, ComponentInit>(InitLayers);
-        SubscribeLocalEvent<ItemMapperComponent, EntInsertedIntoContainerMessage>(MapperEntityInserted);
-        SubscribeLocalEvent<ItemMapperComponent, EntRemovedFromContainerMessage>(MapperEntityRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void InitLayers(EntityUid uid, ItemMapperComponent component, ComponentInit args)
     {
         foreach (var (layerName, val) in component.MapLayers)
@@ -44,6 +42,7 @@ public abstract partial class SharedItemMapperSystem : EntitySystem
         UpdateAppearance(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void MapperEntityRemoved(EntityUid uid, ItemMapperComponent itemMapper, EntRemovedFromContainerMessage args)
     {
         if (itemMapper.ContainerWhitelist != null && !itemMapper.ContainerWhitelist.Contains(args.Container.ID))
@@ -52,6 +51,7 @@ public abstract partial class SharedItemMapperSystem : EntitySystem
         UpdateAppearance(uid, itemMapper);
     }
 
+    [SubscribeLocalEvent]
     private void MapperEntityInserted(EntityUid uid,
         ItemMapperComponent itemMapper,
         EntInsertedIntoContainerMessage args)

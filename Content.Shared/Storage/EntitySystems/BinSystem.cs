@@ -27,26 +27,22 @@ public sealed partial class BinSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<BinComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<BinComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BinComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-        SubscribeLocalEvent<BinComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
         SubscribeLocalEvent<BinComponent, InteractHandEvent>(OnInteractHand, before: new[] { typeof(SharedItemSystem) });
-        SubscribeLocalEvent<BinComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-        SubscribeLocalEvent<BinComponent, GetVerbsEvent<AlternativeVerb>>(OnAltInteractHand);
-        SubscribeLocalEvent<BinComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, BinComponent component, ExaminedEvent args)
     {
         args.PushText(Loc.GetString("bin-component-on-examine-text", ("count", component.Items.Count)));
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, BinComponent component, ComponentStartup args)
     {
         component.ItemContainer = _container.EnsureContainer<Container>(uid, component.ContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, BinComponent component, MapInitEvent args)
     {
         // don't spawn on the client.
@@ -65,6 +61,7 @@ public sealed partial class BinSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(Entity<BinComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.ContainerId)
@@ -73,6 +70,7 @@ public sealed partial class BinSystem : EntitySystem
         ent.Comp.Items.Add(args.Entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<BinComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.ContainerId)
@@ -101,6 +99,7 @@ public sealed partial class BinSystem : EntitySystem
     /// has priority. E.g. a water cup on a water cooler fills itself on a normal click,
     /// but you can use alternative interactions to restock the cup bin
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAltInteractHand(EntityUid uid, BinComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (args.Using != null)
@@ -110,6 +109,7 @@ public sealed partial class BinSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteractUsing(EntityUid uid, BinComponent component, AfterInteractUsingEvent args)
     {
         InsertIntoBin(args.User, uid, args.Used, component, args.Handled, args.CanReach);

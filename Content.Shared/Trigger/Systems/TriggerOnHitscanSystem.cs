@@ -3,16 +3,14 @@ using Content.Shared.Weapons.Hitscan.Events;
 
 namespace Content.Shared.Trigger.Systems;
 
-public sealed class TriggerOnHitscanSystem : TriggerOnXSystem
+public sealed partial class TriggerOnHitscanSystem : TriggerOnXSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnHitscanHitComponent, HitscanRaycastFiredEvent>(OnHit);
-        SubscribeLocalEvent<TriggerOnHitscanFiredComponent, HitscanRaycastFiredEvent>(OnFired);
     }
 
+    [SubscribeLocalEvent]
     private void OnHit(Entity<TriggerOnHitscanHitComponent> ent, ref HitscanRaycastFiredEvent args)
     {
         if (args.Data.HitEntity == null)
@@ -21,6 +19,7 @@ public sealed class TriggerOnHitscanSystem : TriggerOnXSystem
         Trigger.Trigger(ent.Owner, args.Data.HitEntity, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnFired(Entity<TriggerOnHitscanFiredComponent> ent, ref HitscanRaycastFiredEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Data.Shooter, ent.Comp.KeyOut);

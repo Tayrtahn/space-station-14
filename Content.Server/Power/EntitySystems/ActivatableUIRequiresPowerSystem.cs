@@ -13,8 +13,6 @@ public sealed partial class ActivatableUIRequiresPowerSystem : SharedActivatable
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActivatableUIRequiresPowerComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
     protected override void OnActivate(Entity<ActivatableUIRequiresPowerComponent> ent, ref ActivatableUIOpenAttemptEvent args)
@@ -27,6 +25,7 @@ public sealed partial class ActivatableUIRequiresPowerSystem : SharedActivatable
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, ActivatableUIRequiresPowerComponent component, ref PowerChangedEvent args)
     {
         if (!args.Powered)

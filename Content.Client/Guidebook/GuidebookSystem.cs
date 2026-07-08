@@ -42,13 +42,6 @@ public sealed partial class GuidebookSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GuideHelpComponent, GetVerbsEvent<ExamineVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<GuideHelpComponent, ActivateInWorldEvent>(OnInteract);
-
-        SubscribeLocalEvent<GuidebookControlsTestComponent, InteractHandEvent>(OnGuidebookControlsTestInteractHand);
-        SubscribeLocalEvent<GuidebookControlsTestComponent, ActivateInWorldEvent>(OnGuidebookControlsTestActivateInWorld);
-        SubscribeLocalEvent<GuidebookControlsTestComponent, GetVerbsEvent<AlternativeVerb>>(
-            OnGuidebookControlsTestGetAlternateVerbs);
     }
 
     /// <summary>
@@ -68,6 +61,7 @@ public sealed partial class GuidebookSystem : EntitySystem
         return _defaultUser;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(EntityUid uid, GuideHelpComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (component.Guides.Count == 0 || _tags.HasTag(uid, GuideEmbedTag))
@@ -88,6 +82,7 @@ public sealed partial class GuidebookSystem : EntitySystem
         OnGuidebookOpen?.Invoke(guides, null, null, true, guides[0]);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(EntityUid uid, GuideHelpComponent component, ActivateInWorldEvent args)
     {
         if (!_timing.IsFirstTimePredicted)
@@ -100,6 +95,7 @@ public sealed partial class GuidebookSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGuidebookControlsTestGetAlternateVerbs(EntityUid uid, GuidebookControlsTestComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         args.Verbs.Add(new AlternativeVerb()
@@ -136,11 +132,13 @@ public sealed partial class GuidebookSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnGuidebookControlsTestActivateInWorld(EntityUid uid, GuidebookControlsTestComponent component, ActivateInWorldEvent args)
     {
         Transform(uid).LocalRotation += Angle.FromDegrees(90);
     }
 
+    [SubscribeLocalEvent]
     private void OnGuidebookControlsTestInteractHand(EntityUid uid, GuidebookControlsTestComponent component, InteractHandEvent args)
     {
         if (!TryComp<SpeechComponent>(uid, out var speech) || speech.SpeechSounds is null)

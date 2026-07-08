@@ -16,10 +16,6 @@ public sealed partial class BlockGameArcadeSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BlockGameArcadeComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<BlockGameArcadeComponent, AfterActivatableUIOpenEvent>(OnAfterUIOpen);
-        SubscribeLocalEvent<BlockGameArcadeComponent, PowerChangedEvent>(OnBlockPowerChanged);
-
         Subs.BuiEvents<BlockGameArcadeComponent>(BlockGameUiKey.Key, subs =>
         {
             subs.Event<BoundUIClosedEvent>(OnAfterUiClose);
@@ -44,11 +40,13 @@ public sealed partial class BlockGameArcadeSystem : EntitySystem
         _uiSystem.ServerSendUiMessage(uid, BlockGameUiKey.Key, new BlockGameMessages.BlockGameUserStatusMessage(blockGame.Player == actor), actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, BlockGameArcadeComponent component, ComponentInit args)
     {
         component.Game = new(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterUIOpen(EntityUid uid, BlockGameArcadeComponent component, AfterActivatableUIOpenEvent args)
     {
         if (component.Player == null)
@@ -80,6 +78,7 @@ public sealed partial class BlockGameArcadeSystem : EntitySystem
         UpdatePlayerStatus(uid, temp.Value, blockGame: component);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockPowerChanged(EntityUid uid, BlockGameArcadeComponent component, ref PowerChangedEvent args)
     {
         if (args.Powered)

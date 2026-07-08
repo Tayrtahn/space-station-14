@@ -15,8 +15,6 @@ public sealed partial class DoorSystem : SharedDoorSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DoorBoltComponent, PowerChangedEvent>(OnBoltPowerChanged);
     }
 
     protected override void SetCollidable(
@@ -38,6 +36,7 @@ public sealed partial class DoorSystem : SharedDoorSystem
         base.SetCollidable(uid, collidable, door, physics, occluder);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoltPowerChanged(Entity<DoorBoltComponent> ent, ref PowerChangedEvent args)
     {
         if (args.Powered)

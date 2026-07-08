@@ -40,11 +40,6 @@ namespace Content.Client.Inventory
             UpdatesOutsidePrediction = true;
             base.Initialize();
 
-            SubscribeLocalEvent<InventorySlotsComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-            SubscribeLocalEvent<InventorySlotsComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
-
-            SubscribeLocalEvent<InventoryComponent, ComponentShutdown>(OnShutdown);
-
             SubscribeLocalEvent<InventorySlotsComponent, DidEquipEvent>((_, comp, args) =>
                 _equipEventsQueue.Enqueue((comp, args)));
             SubscribeLocalEvent<InventorySlotsComponent, DidUnequipEvent>((_, comp, args) =>
@@ -92,6 +87,7 @@ namespace Content.Client.Inventory
             OnSpriteUpdate?.Invoke(update);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, InventoryComponent component, ComponentShutdown args)
         {
             if (TryComp(uid, out InventorySlotsComponent? inventorySlots))
@@ -106,11 +102,13 @@ namespace Content.Client.Inventory
                 OnUnlinkInventory?.Invoke();
         }
 
+        [SubscribeLocalEvent]
         private void OnPlayerDetached(EntityUid uid, InventorySlotsComponent component, LocalPlayerDetachedEvent args)
         {
             OnUnlinkInventory?.Invoke();
         }
 
+        [SubscribeLocalEvent]
         private void OnPlayerAttached(EntityUid uid, InventorySlotsComponent component, LocalPlayerAttachedEvent args)
         {
             OnLinkInventorySlots?.Invoke(uid, component);

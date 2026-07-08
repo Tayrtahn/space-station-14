@@ -11,10 +11,9 @@ public sealed partial class CarpRiftsConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CarpRiftsConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, CarpRiftsConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress(comp, _number.GetTarget(uid));

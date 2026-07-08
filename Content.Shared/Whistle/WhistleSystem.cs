@@ -16,8 +16,6 @@ public sealed partial class WhistleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WhistleComponent, UseInHandEvent>(OnUseInHand);
     }
 
     private void ExclamateTarget(EntityUid target, WhistleComponent component)
@@ -25,6 +23,7 @@ public sealed partial class WhistleSystem : EntitySystem
         SpawnAttachedTo(component.Effect, target.ToCoordinates());
     }
 
+    [SubscribeLocalEvent]
     public void OnUseInHand(EntityUid uid, WhistleComponent component, UseInHandEvent args)
     {
         if (args.Handled || !_timing.IsFirstTimePredicted)

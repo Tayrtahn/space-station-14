@@ -19,10 +19,9 @@ public sealed partial class SSDIndicatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SSDIndicatorComponent, GetStatusIconsEvent>(OnGetStatusIcon);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIcon(EntityUid uid, SSDIndicatorComponent component, ref GetStatusIconsEvent args)
     {
         if (component.IsSSD &&

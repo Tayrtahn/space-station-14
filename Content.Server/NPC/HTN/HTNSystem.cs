@@ -35,12 +35,10 @@ public sealed partial class HTNSystem : EntitySystem
         SubscribeLocalEvent<HTNComponent, ComponentStartup>(_npc.OnNPCStartup);
         SubscribeLocalEvent<HTNComponent, PlayerAttachedEvent>(_npc.OnPlayerNPCAttach);
         SubscribeLocalEvent<HTNComponent, PlayerDetachedEvent>(_npc.OnPlayerNPCDetach);
-        SubscribeLocalEvent<HTNComponent, ComponentShutdown>(OnHTNShutdown);
-        SubscribeNetworkEvent<RequestHTNMessage>(OnHTNMessage);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypeLoad);
         OnLoad();
     }
 
+    [SubscribeNetworkEvent]
     private void OnHTNMessage(RequestHTNMessage msg, EntitySessionEventArgs args)
     {
         if (!_admin.HasAdminFlag(args.SenderSession, AdminFlags.Debug))
@@ -83,6 +81,7 @@ public sealed partial class HTNSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypeLoad(PrototypesReloadedEventArgs obj)
     {
         OnLoad();
@@ -126,6 +125,7 @@ public sealed partial class HTNSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHTNShutdown(EntityUid uid, HTNComponent component, ComponentShutdown args)
     {
         _npc.OnNPCShutdown(uid, component, args);

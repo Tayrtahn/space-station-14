@@ -23,17 +23,15 @@ public sealed partial class ThiefUndeterminedBackpackSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThiefUndeterminedBackpackComponent, BoundUIOpenedEvent>(OnUIOpened);
-        SubscribeLocalEvent<ThiefUndeterminedBackpackComponent, ThiefBackpackApproveMessage>(OnApprove);
-        SubscribeLocalEvent<ThiefUndeterminedBackpackComponent, ThiefBackpackChangeSetMessage>(OnChangeSet);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpened(Entity<ThiefUndeterminedBackpackComponent> backpack, ref BoundUIOpenedEvent args)
     {
         UpdateUI(backpack.Owner, backpack.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnApprove(Entity<ThiefUndeterminedBackpackComponent> backpack, ref ThiefBackpackApproveMessage args)
     {
         if (backpack.Comp.SelectedSets.Count != backpack.Comp.MaxSelectedSets)
@@ -66,6 +64,8 @@ public sealed partial class ThiefUndeterminedBackpackSystem : EntitySystem
         _audio.PlayPvs(backpack.Comp.ApproveSound, Transform(backpack.Owner).Coordinates);
         QueueDel(backpack);
     }
+
+    [SubscribeLocalEvent]
     private void OnChangeSet(Entity<ThiefUndeterminedBackpackComponent> backpack, ref ThiefBackpackChangeSetMessage args)
     {
         //Swith selecting set

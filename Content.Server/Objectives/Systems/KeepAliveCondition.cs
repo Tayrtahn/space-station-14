@@ -15,10 +15,9 @@ public sealed partial class KeepAliveConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<KeepAliveConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, KeepAliveConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         if (!_target.GetTarget(uid, out var target))

@@ -16,8 +16,6 @@ public sealed partial class InactivityTimeRestartRuleSystem : GameRuleSystem<Ina
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(RunLevelChanged);
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
     }
 
@@ -64,6 +62,7 @@ public sealed partial class InactivityTimeRestartRuleSystem : GameRuleSystem<Ina
         Timer.Spawn(component.RoundEndDelay, () => GameTicker.RestartRound());
     }
 
+    [SubscribeLocalEvent]
     private void RunLevelChanged(GameRunLevelChangedEvent args)
     {
         var query = EntityQueryEnumerator<InactivityRuleComponent, GameRuleComponent>();

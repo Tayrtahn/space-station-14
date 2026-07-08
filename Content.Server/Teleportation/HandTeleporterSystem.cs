@@ -24,11 +24,9 @@ public sealed partial class HandTeleporterSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<HandTeleporterComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<HandTeleporterComponent, TeleporterDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         var teleporterQuery = EntityQueryEnumerator<HandTeleporterComponent>();
@@ -38,6 +36,7 @@ public sealed partial class HandTeleporterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, HandTeleporterComponent component, DoAfterEvent args)
     {
         if (args.Cancelled || args.Handled)
@@ -48,6 +47,7 @@ public sealed partial class HandTeleporterSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, HandTeleporterComponent component, UseInHandEvent args)
     {
         if (args.Handled)

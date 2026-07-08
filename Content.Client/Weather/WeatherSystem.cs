@@ -27,10 +27,9 @@ public sealed partial class WeatherSystem : SharedWeatherSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WeatherStatusEffectComponent, ComponentShutdown>(OnComponentShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<WeatherStatusEffectComponent> ent, ref ComponentShutdown args)
     {
         ent.Comp.Stream = _audio.Stop(ent.Comp.Stream);

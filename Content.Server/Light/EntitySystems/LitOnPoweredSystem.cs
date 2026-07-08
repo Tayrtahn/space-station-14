@@ -12,10 +12,9 @@ namespace Content.Server.Light.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<LitOnPoweredComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<LitOnPoweredComponent, PowerNetBatterySupplyEvent>(OnPowerSupply);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, LitOnPoweredComponent component, ref PowerChangedEvent args)
         {
             if (_lights.TryGetLight(uid, out var light))
@@ -24,6 +23,7 @@ namespace Content.Server.Light.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerSupply(EntityUid uid, LitOnPoweredComponent component, ref PowerNetBatterySupplyEvent args)
         {
             if (_lights.TryGetLight(uid, out var light))

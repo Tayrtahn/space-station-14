@@ -23,13 +23,10 @@ public sealed partial class BypassLockSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BypassLockComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<LockComponent, ForceOpenLockDoAfterEvent>(OnBypassAccessDoAfterEvent);
-        SubscribeLocalEvent<BypassLockComponent, GetVerbsEvent<InteractionVerb>>(OnGetVerb);
-
         InitializeMobStateLockSystem();
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<BypassLockComponent> target, ref InteractUsingEvent args)
     {
         if (target.Owner == args.User)
@@ -66,6 +63,7 @@ public sealed partial class BypassLockSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBypassAccessDoAfterEvent(Entity<LockComponent> target, ref ForceOpenLockDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -79,6 +77,7 @@ public sealed partial class BypassLockSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<BypassLockComponent> target, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Using == null)

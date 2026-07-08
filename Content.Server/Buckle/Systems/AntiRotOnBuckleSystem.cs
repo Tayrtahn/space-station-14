@@ -5,15 +5,14 @@ using Content.Shared.Power;
 
 namespace Content.Server.Buckle.Systems;
 
-public sealed class AntiRotOnBuckleSystem : EntitySystem
+public sealed partial class AntiRotOnBuckleSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<BuckleComponent, IsRottingEvent>(OnIsRotting);
-        SubscribeLocalEvent<AntiRotOnBuckleComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnIsRotting(EntityUid uid, BuckleComponent buckle, ref IsRottingEvent args)
     {
         if (args.Handled)
@@ -23,6 +22,7 @@ public sealed class AntiRotOnBuckleSystem : EntitySystem
                        antiRot.Enabled;
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, AntiRotOnBuckleComponent component, ref PowerChangedEvent args)
     {
         component.Enabled = !component.RequiresPower || args.Powered;

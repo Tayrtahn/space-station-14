@@ -15,9 +15,6 @@ public sealed partial class MemoryCellSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MemoryCellComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<MemoryCellComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
     public override void Update(float deltaTime)
@@ -36,6 +33,7 @@ public sealed partial class MemoryCellSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<MemoryCellComponent> ent, ref ComponentInit args)
     {
         var (uid, comp) = ent;
@@ -43,6 +41,7 @@ public sealed partial class MemoryCellSystem : EntitySystem
         _deviceLink.EnsureSourcePorts(uid, comp.OutputPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<MemoryCellComponent> ent, ref SignalReceivedEvent args)
     {
         var state = SignalState.Momentary;

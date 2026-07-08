@@ -29,13 +29,9 @@ public sealed partial class HungerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HungerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<HungerComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<HungerComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
-        SubscribeLocalEvent<HungerComponent, RejuvenateEvent>(OnRejuvenate);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, HungerComponent component, MapInitEvent args)
     {
         var amount = _random.Next(
@@ -44,11 +40,13 @@ public sealed partial class HungerSystem : EntitySystem
         SetHunger(uid, amount, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, HungerComponent component, ComponentShutdown args)
     {
         _alerts.ClearAlertCategory(uid, component.HungerAlertCategory);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovespeed(EntityUid uid, HungerComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         if (component.CurrentThreshold > HungerThreshold.Starving)
@@ -60,6 +58,7 @@ public sealed partial class HungerSystem : EntitySystem
         args.ModifySpeed(component.StarvingSlowdownModifier, component.StarvingSlowdownModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(EntityUid uid, HungerComponent component, RejuvenateEvent args)
     {
         SetHunger(uid, component.Thresholds[HungerThreshold.Okay], component);

@@ -13,9 +13,9 @@ public sealed partial class StationNameSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<StationNameSetupComponent, ComponentInit>(OnStationNameSetupInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationNameSetupInit(EntityUid uid, StationNameSetupComponent component, ComponentInit args)
     {
         if (!HasComp<StationDataComponent>(uid))

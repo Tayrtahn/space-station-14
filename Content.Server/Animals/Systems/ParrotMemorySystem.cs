@@ -37,22 +37,15 @@ public sealed partial class ParrotMemorySystem : SharedParrotMemorySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EraseEvent>(OnErase);
-
-        SubscribeLocalEvent<ParrotListenerComponent, MapInitEvent>(ListenerOnMapInit);
-
-        SubscribeLocalEvent<ParrotListenerComponent, ListenEvent>(OnListen);
-        SubscribeLocalEvent<ParrotListenerComponent, HeadsetRadioReceiveRelayEvent>(OnHeadsetReceive);
-
-        SubscribeLocalEvent<ParrotMemoryComponent, TryVocalizeEvent>(OnTryVocalize);
     }
 
+    [SubscribeLocalEvent]
     private void OnErase(ref EraseEvent args)
     {
         DeletePlayerMessages(args.PlayerNetUserId);
     }
 
+    [SubscribeLocalEvent]
     private void ListenerOnMapInit(Entity<ParrotListenerComponent> entity, ref MapInitEvent args)
     {
         // If an entity has a ParrotListenerComponent it really ought to have an ActiveListenerComponent
@@ -60,12 +53,14 @@ public sealed partial class ParrotMemorySystem : SharedParrotMemorySystem
             Log.Warning($"Entity {ToPrettyString(entity)} has a ParrotListenerComponent but was not given an ActiveListenerComponent");
     }
 
+    [SubscribeLocalEvent]
     private void OnListen(Entity<ParrotListenerComponent> entity, ref ListenEvent args)
     {
 
         TryLearn(entity.Owner, args.Message, args.Source);
     }
 
+    [SubscribeLocalEvent]
     private void OnHeadsetReceive(Entity<ParrotListenerComponent> entity, ref HeadsetRadioReceiveRelayEvent args)
     {
         var message = args.RelayedEvent.Message;
@@ -78,6 +73,7 @@ public sealed partial class ParrotMemorySystem : SharedParrotMemorySystem
     /// Called when an entity with a ParrotMemoryComponent tries to vocalize.
     /// This function picks a message from memory and sets the event to handled
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTryVocalize(Entity<ParrotMemoryComponent> entity, ref TryVocalizeEvent args)
     {
         // return if this was already handled

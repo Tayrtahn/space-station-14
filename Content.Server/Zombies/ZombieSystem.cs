@@ -61,25 +61,9 @@ namespace Content.Server.Zombies
 
             SubscribeLocalEvent<ZombieComponent, EmoteEvent>(OnEmote, before:
                 new[] { typeof(VocalSystem), typeof(BodyEmotesSystem) });
-
-            SubscribeLocalEvent<ZombieComponent, MeleeHitEvent>(OnMeleeHit);
-            SubscribeLocalEvent<ZombieComponent, MobStateChangedEvent>(OnMobState);
-            SubscribeLocalEvent<ZombieComponent, CloningEvent>(OnZombieCloning);
-            SubscribeLocalEvent<ZombieComponent, TryingToSleepEvent>(OnSleepAttempt);
-            SubscribeLocalEvent<ZombieComponent, GetCharactedDeadIcEvent>(OnGetCharacterDeadIC);
-            SubscribeLocalEvent<ZombieComponent, GetCharacterUnrevivableIcEvent>(OnGetCharacterUnrevivableIC);
-            SubscribeLocalEvent<ZombieComponent, MindAddedMessage>(OnMindAdded);
-            SubscribeLocalEvent<ZombieComponent, MindRemovedMessage>(OnMindRemoved);
-            SubscribeLocalEvent<ZombieComponent, AttemptConvertRevolutionaryEvent>(OnAttemptConvert);
-
-            SubscribeLocalEvent<PendingZombieComponent, MapInitEvent>(OnPendingMapInit);
-            SubscribeLocalEvent<PendingZombieComponent, BeforeRemoveAnomalyOnDeathEvent>(OnBeforeRemoveAnomalyOnDeath);
-
-            SubscribeLocalEvent<IncurableZombieComponent, MapInitEvent>(OnPendingMapInit);
-
-            SubscribeLocalEvent<ZombifyOnDeathComponent, MobStateChangedEvent>(OnDamageChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnBeforeRemoveAnomalyOnDeath(Entity<PendingZombieComponent> ent, ref BeforeRemoveAnomalyOnDeathEvent args)
         {
             // Pending zombies (e.g. infected non-zombies) do not remove their hosted anomaly on death.
@@ -87,6 +71,7 @@ namespace Content.Server.Zombies
             args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnPendingMapInit(EntityUid uid, IncurableZombieComponent component, MapInitEvent args)
         {
             _actions.AddAction(uid, ref component.Action, component.ZombifySelfActionPrototype);
@@ -100,6 +85,7 @@ namespace Content.Server.Zombies
             pendingComp.GracePeriod = _random.Next(pendingComp.MinInitialInfectedGrace, pendingComp.MaxInitialInfectedGrace);
         }
 
+        [SubscribeLocalEvent]
         private void OnPendingMapInit(EntityUid uid, PendingZombieComponent component, MapInitEvent args)
         {
             if (_mobState.IsDead(uid))
@@ -162,16 +148,19 @@ namespace Content.Server.Zombies
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnSleepAttempt(EntityUid uid, ZombieComponent component, ref TryingToSleepEvent args)
         {
             args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGetCharacterDeadIC(EntityUid uid, ZombieComponent component, ref GetCharactedDeadIcEvent args)
         {
             args.Dead = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGetCharacterUnrevivableIC(EntityUid uid, ZombieComponent component, ref GetCharacterUnrevivableIcEvent args)
         {
             args.Unrevivable = true;
@@ -188,6 +177,7 @@ namespace Content.Server.Zombies
             args.Handled = _chat.TryPlayEmoteSound(uid, sounds, args.Emote);
         }
 
+        [SubscribeLocalEvent]
         private void OnMobState(EntityUid uid, ZombieComponent component, MobStateChangedEvent args)
         {
             if (args.NewMobState == MobState.Alive)
@@ -235,6 +225,7 @@ namespace Content.Server.Zombies
             return MathF.Max(chance, zombieComponent.MinZombieInfectionChance);
         }
 
+        [SubscribeLocalEvent]
         private void OnMeleeHit(Entity<ZombieComponent> entity, ref MeleeHitEvent args)
         {
             if (!args.IsHit)
@@ -303,12 +294,14 @@ namespace Content.Server.Zombies
             return true;
         }
 
+        [SubscribeLocalEvent]
         private void OnZombieCloning(Entity<ZombieComponent> ent, ref CloningEvent args)
         {
             UnZombify(ent.Owner, args.CloneUid, ent.Comp);
         }
 
         // Make sure players that enter a zombie (for example via a ghost role or the mind swap spell) count as an antagonist.
+        [SubscribeLocalEvent]
         private void OnMindAdded(Entity<ZombieComponent> ent, ref MindAddedMessage args)
         {
             if (!_role.MindHasRole<ZombieRoleComponent>(args.Mind))
@@ -316,11 +309,13 @@ namespace Content.Server.Zombies
         }
 
         // Remove the role when getting cloned, getting gibbed and borged, or leaving the body via any other method.
+        [SubscribeLocalEvent]
         private void OnMindRemoved(Entity<ZombieComponent> ent, ref MindRemovedMessage args)
         {
             _role.MindRemoveRole<ZombieRoleComponent>((args.Mind.Owner,  args.Mind.Comp));
         }
 
+        [SubscribeLocalEvent]
         private void OnAttemptConvert(Entity<ZombieComponent> ent, ref AttemptConvertRevolutionaryEvent args)
         {
             args.Cancelled = true;

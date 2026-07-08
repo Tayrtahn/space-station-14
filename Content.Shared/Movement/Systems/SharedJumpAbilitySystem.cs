@@ -25,19 +25,9 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<JumpAbilityComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<JumpAbilityComponent, ComponentShutdown>(OnShutdown);
-
-        SubscribeLocalEvent<JumpAbilityComponent, GravityJumpEvent>(OnGravityJump);
-
-        SubscribeLocalEvent<ActiveLeaperComponent, StartCollideEvent>(OnLeaperCollide);
-        SubscribeLocalEvent<ActiveLeaperComponent, LandEvent>(OnLeaperLand);
-        SubscribeLocalEvent<ActiveLeaperComponent, StopThrowEvent>(OnLeaperStopThrow);
-
-        SubscribeLocalEvent<JumpAbilityComponent, CloningEvent>(OnClone);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<JumpAbilityComponent> entity, ref MapInitEvent args)
     {
         if (!TryComp(entity, out ActionsComponent? comp))
@@ -46,27 +36,32 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
         _actions.AddAction(entity, ref entity.Comp.ActionEntity, entity.Comp.Action, component: comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<JumpAbilityComponent> entity, ref ComponentShutdown args)
     {
         _actions.RemoveAction(entity.Owner, entity.Comp.ActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnLeaperCollide(Entity<ActiveLeaperComponent> entity, ref StartCollideEvent args)
     {
         _stun.TryKnockdown(entity.Owner, entity.Comp.KnockdownDuration, force: true);
         RemCompDeferred<ActiveLeaperComponent>(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnLeaperLand(Entity<ActiveLeaperComponent> entity, ref LandEvent args)
     {
         RemCompDeferred<ActiveLeaperComponent>(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnLeaperStopThrow(Entity<ActiveLeaperComponent> entity, ref StopThrowEvent args)
     {
         RemCompDeferred<ActiveLeaperComponent>(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnGravityJump(Entity<JumpAbilityComponent> entity, ref GravityJumpEvent args)
     {
         if (_gravity.IsWeightless(args.Performer) || _standing.IsDown(args.Performer))
@@ -94,6 +89,7 @@ public sealed partial class SharedJumpAbilitySystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnClone(Entity<JumpAbilityComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))

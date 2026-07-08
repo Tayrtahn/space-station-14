@@ -48,22 +48,9 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasVentPumpComponent, AtmosDeviceUpdateEvent>(OnGasVentPumpUpdated);
-            SubscribeLocalEvent<GasVentPumpComponent, AtmosDeviceDisabledEvent>(OnGasVentPumpLeaveAtmosphere);
-            SubscribeLocalEvent<GasVentPumpComponent, AtmosDeviceEnabledEvent>(OnGasVentPumpEnterAtmosphere);
-            SubscribeLocalEvent<GasVentPumpComponent, AtmosAlarmEvent>(OnAtmosAlarm);
-            SubscribeLocalEvent<GasVentPumpComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<GasVentPumpComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
-            SubscribeLocalEvent<GasVentPumpComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<GasVentPumpComponent, ExaminedEvent>(OnExamine);
-            SubscribeLocalEvent<GasVentPumpComponent, SignalReceivedEvent>(OnSignalReceived);
-            SubscribeLocalEvent<GasVentPumpComponent, GasAnalyzerScanEvent>(OnAnalyzed);
-            SubscribeLocalEvent<GasVentPumpComponent, WeldableChangedEvent>(OnWeldChanged);
-            SubscribeLocalEvent<GasVentPumpComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
-            SubscribeLocalEvent<GasVentPumpComponent, VentScrewedDoAfterEvent>(OnVentScrewed);
         }
 
+        [SubscribeLocalEvent]
         private void OnGasVentPumpUpdated(EntityUid uid, GasVentPumpComponent vent, ref AtmosDeviceUpdateEvent args)
         {
             //Bingo waz here
@@ -187,16 +174,19 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGasVentPumpLeaveAtmosphere(EntityUid uid, GasVentPumpComponent component, ref AtmosDeviceDisabledEvent args)
         {
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGasVentPumpEnterAtmosphere(EntityUid uid, GasVentPumpComponent component, ref AtmosDeviceEnabledEvent args)
         {
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnAtmosAlarm(EntityUid uid, GasVentPumpComponent component, AtmosAlarmEvent args)
         {
             if (args.AlarmType == AtmosAlarmType.Danger)
@@ -211,11 +201,13 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, GasVentPumpComponent component, ref PowerChangedEvent args)
         {
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPacketRecv(EntityUid uid, GasVentPumpComponent component, DeviceNetworkPacketEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? netConn)
@@ -282,12 +274,14 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, GasVentPumpComponent component, ComponentInit args)
         {
             if (component.CanLink)
                 _signalSystem.EnsureSinkPorts(uid, component.PressurizePort, component.DepressurizePort);
         }
 
+        [SubscribeLocalEvent]
         private void OnSignalReceived(EntityUid uid, GasVentPumpComponent component, ref SignalReceivedEvent args)
         {
             if (!component.CanLink)
@@ -338,6 +332,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnExamine(EntityUid uid, GasVentPumpComponent component, ExaminedEvent args)
         {
             if (!TryComp<GasVentPumpComponent>(uid, out var pumpComponent))
@@ -354,6 +349,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         /// <summary>
         /// Returns the gas mixture for the gas analyzer
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnAnalyzed(EntityUid uid, GasVentPumpComponent component, GasAnalyzerScanEvent args)
         {
             args.GasMixtures ??= new List<(string, GasMixture?)>();
@@ -375,11 +371,13 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnWeldChanged(EntityUid uid, GasVentPumpComponent component, ref WeldableChangedEvent args)
         {
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetVerbs(Entity<GasVentPumpComponent> ent, ref GetVerbsEvent<Verb> args)
         {
             if (ent.Comp.UnderPressureLockout == false || !Transform(ent).Anchored)
@@ -411,6 +409,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             args.Verbs.Add(v);
         }
 
+        [SubscribeLocalEvent]
         private void OnVentScrewed(EntityUid uid, GasVentPumpComponent component, VentScrewedDoAfterEvent args)
         {
             if (args.Cancelled || args.Handled)

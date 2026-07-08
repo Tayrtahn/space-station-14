@@ -16,9 +16,9 @@ public sealed partial class DrowsinessSystem : SharedDrowsinessSystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<DrowsinessStatusEffectComponent, StatusEffectAppliedEvent>(OnEffectApplied);
     }
 
+    [SubscribeLocalEvent]
     private void OnEffectApplied(Entity<DrowsinessStatusEffectComponent> ent, ref StatusEffectAppliedEvent args)
     {
         ent.Comp.NextIncidentTime = _timing.CurTime + TimeSpan.FromSeconds(_random.NextFloat(ent.Comp.TimeBetweenIncidents.X, ent.Comp.TimeBetweenIncidents.Y));

@@ -18,10 +18,9 @@ namespace Content.Server.Damage.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<DamageOnToolInteractComponent, InteractUsingEvent>(OnInteracted);
         }
 
+        [SubscribeLocalEvent]
         private void OnInteracted(EntityUid uid, DamageOnToolInteractComponent component, InteractUsingEvent args)
         {
             if (args.Handled)

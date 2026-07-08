@@ -16,48 +16,47 @@ public abstract partial class SharedGodmodeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GodmodeComponent, BeforeDamageChangedEvent>(OnBeforeDamageChanged);
-        SubscribeLocalEvent<GodmodeComponent, BeforeStatusEffectAddedEvent>(OnBeforeStatusEffect);
-        SubscribeLocalEvent<GodmodeComponent, BeforeOldStatusEffectAddedEvent>(OnBeforeOldStatusEffect);
-        SubscribeLocalEvent<GodmodeComponent, BeforeStaminaDamageEvent>(OnBeforeStaminaDamage);
-        SubscribeLocalEvent<GodmodeComponent, IngestibleEvent>(BeforeEdible);
-        SubscribeLocalEvent<GodmodeComponent, SlipAttemptEvent>(OnSlipAttempt);
-        SubscribeLocalEvent<GodmodeComponent, DestructionAttemptEvent>(OnDestruction);
     }
 
+    [SubscribeLocalEvent]
     private void OnSlipAttempt(EntityUid uid, GodmodeComponent component, SlipAttemptEvent args)
     {
         args.NoSlip = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeDamageChanged(EntityUid uid, GodmodeComponent component, ref BeforeDamageChangedEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeStatusEffect(EntityUid uid, GodmodeComponent component, ref BeforeStatusEffectAddedEvent args)
     {
         if (ProtoMan.Index(args.Effect).HasComp<RejuvenateRemovedStatusEffectComponent>(Factory))
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeOldStatusEffect(Entity<GodmodeComponent> ent, ref BeforeOldStatusEffectAddedEvent args)
     {
         // Old status effect system doesn't distinguish between good and bad status effects
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeStaminaDamage(EntityUid uid, GodmodeComponent component, ref BeforeStaminaDamageEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(Entity<GodmodeComponent> ent, ref DestructionAttemptEvent args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void BeforeEdible(Entity<GodmodeComponent> ent, ref IngestibleEvent args)
     {
         args.Cancelled = true;

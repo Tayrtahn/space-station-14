@@ -22,7 +22,6 @@ namespace Content.Server.Speech.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<ReplacementAccentComponent, AccentGetEvent>(OnAccent);
 
             ProtoMan.PrototypesReloaded += OnPrototypesReloaded;
         }
@@ -34,6 +33,7 @@ namespace Content.Server.Speech.EntitySystems
             ProtoMan.PrototypesReloaded -= OnPrototypesReloaded;
         }
 
+        [SubscribeLocalEvent]
         private void OnAccent(EntityUid uid, ReplacementAccentComponent component, AccentGetEvent args)
         {
             args.Message = ApplyReplacements(args.Message, component.Accent);

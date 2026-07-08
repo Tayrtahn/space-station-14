@@ -7,12 +7,11 @@ using Content.Shared.NodeContainer;
 
 namespace Content.Client.Atmos.Piping.Unary.Systems;
 
-public sealed class GasCanisterSystem : SharedGasCanisterSystem
+public sealed partial class GasCanisterSystem : SharedGasCanisterSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasCanisterComponent, AfterAutoHandleStateEvent>(OnGasState);
     }
 
     protected override void DeviceUpdated(Entity<GasCanisterComponent> entity, ref AtmosDeviceUpdateEvent args)
@@ -21,6 +20,7 @@ public sealed class GasCanisterSystem : SharedGasCanisterSystem
         throw new NotImplementedException();
     }
 
+    [SubscribeLocalEvent]
     private void OnGasState(Entity<GasCanisterComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (UI.TryGetOpenUi<GasCanisterBoundUserInterface>(ent.Owner, GasCanisterUiKey.Key, out var bui))

@@ -15,12 +15,12 @@ public sealed partial class WeaponRandomSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WeaponRandomComponent, MeleeHitEvent>(OnMeleeHit);
     }
+
     /// <summary>
     /// On Melee hit there is a possible chance of additional bonus damage occuring.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMeleeHit(EntityUid uid, WeaponRandomComponent component, MeleeHitEvent args)
     {
         if (_random.Prob(component.RandomDamageChance))

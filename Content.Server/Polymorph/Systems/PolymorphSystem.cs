@@ -48,15 +48,6 @@ public sealed partial class PolymorphSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PolymorphableComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<PolymorphedEntityComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<PolymorphableComponent, PolymorphActionEvent>(OnPolymorphActionEvent);
-        SubscribeLocalEvent<PolymorphedEntityComponent, RevertPolymorphActionEvent>(OnRevertPolymorphActionEvent);
-
-        SubscribeLocalEvent<PolymorphedEntityComponent, BeforeToolRefinedEvent>(OnBeforeToolRefined);
-        SubscribeLocalEvent<PolymorphedEntityComponent, DestructionEventArgs>(OnDestruction);
-        SubscribeLocalEvent<PolymorphedEntityComponent, EntityTerminatingEvent>(OnPolymorphedTerminating);
 
         InitializeMap();
     }
@@ -87,6 +78,7 @@ public sealed partial class PolymorphSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<PolymorphableComponent> ent, ref ComponentStartup args)
     {
         if (ent.Comp.InnatePolymorphs != null)
@@ -98,6 +90,7 @@ public sealed partial class PolymorphSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<PolymorphedEntityComponent> ent, ref MapInitEvent args)
     {
         var (uid, component) = ent;
@@ -117,6 +110,7 @@ public sealed partial class PolymorphSystem : EntitySystem
         _actions.SetUseDelay(component.Action.Value, TimeSpan.FromSeconds(component.Configuration.Delay));
     }
 
+    [SubscribeLocalEvent]
     private void OnPolymorphActionEvent(Entity<PolymorphableComponent> ent, ref PolymorphActionEvent args)
     {
         if (!ProtoMan.Resolve(args.ProtoId, out var prototype) || args.Handled)
@@ -127,12 +121,14 @@ public sealed partial class PolymorphSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRevertPolymorphActionEvent(Entity<PolymorphedEntityComponent> ent,
         ref RevertPolymorphActionEvent args)
     {
         Revert((ent, ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeToolRefined(Entity<PolymorphedEntityComponent> ent, ref BeforeToolRefinedEvent args)
     {
         if (ent.Comp.Reverted || !ent.Comp.Configuration.RevertOnEat)
@@ -146,6 +142,7 @@ public sealed partial class PolymorphSystem : EntitySystem
     /// It is possible to be polymorphed into an entity that can't "die", but is instead
     /// destroyed. This handler ensures that destruction is treated like death.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDestruction(Entity<PolymorphedEntityComponent> ent, ref DestructionEventArgs args)
     {
         if (ent.Comp.Reverted || !ent.Comp.Configuration.RevertOnDeath)
@@ -154,6 +151,7 @@ public sealed partial class PolymorphSystem : EntitySystem
         Revert((ent, ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnPolymorphedTerminating(Entity<PolymorphedEntityComponent> ent, ref EntityTerminatingEvent args)
     {
         if (ent.Comp.Reverted)

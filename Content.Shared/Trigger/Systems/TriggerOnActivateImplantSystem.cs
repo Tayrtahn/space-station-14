@@ -8,10 +8,9 @@ public sealed partial class TriggerOnActivateImplantSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnActivateImplantComponent, ActivateImplantEvent>(OnActivateImplant);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateImplant(Entity<TriggerOnActivateImplantComponent> ent, ref ActivateImplantEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Performer, ent.Comp.KeyOut);

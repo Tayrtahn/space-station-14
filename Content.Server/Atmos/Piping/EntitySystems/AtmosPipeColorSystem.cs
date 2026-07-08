@@ -11,11 +11,9 @@ namespace Content.Server.Atmos.Piping.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<AtmosPipeColorComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<AtmosPipeColorComponent, ComponentShutdown>(OnShutdown);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, AtmosPipeColorComponent component, ComponentStartup args)
         {
             if (!TryComp(uid, out AppearanceComponent? appearance))
@@ -24,6 +22,7 @@ namespace Content.Server.Atmos.Piping.EntitySystems
             _appearance.SetData(uid, PipeColorVisuals.Color, component.Color, appearance);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, AtmosPipeColorComponent component, ComponentShutdown args)
         {
             if (!TryComp(uid, out AppearanceComponent? appearance))

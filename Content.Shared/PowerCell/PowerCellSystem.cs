@@ -23,20 +23,9 @@ public sealed partial class PowerCellSystem : EntitySystem
         base.Initialize();
         InitializeRelay();
 
-        SubscribeLocalEvent<PowerCellSlotComponent, ContainerIsInsertingAttemptEvent>(OnCellSlotInsertAttempt);
-        SubscribeLocalEvent<PowerCellSlotComponent, EntInsertedIntoContainerMessage>(OnCellSlotInserted);
-        SubscribeLocalEvent<PowerCellSlotComponent, EntRemovedFromContainerMessage>(OnCellSlotRemoved);
-        SubscribeLocalEvent<PowerCellSlotComponent, ExaminedEvent>(OnCellSlotExamined);
-        SubscribeLocalEvent<PowerCellSlotComponent, BatteryStateChangedEvent>(OnCellSlotStateChanged);
-
-        SubscribeLocalEvent<PowerCellComponent, ExaminedEvent>(OnCellExamined);
-
-        SubscribeLocalEvent<PowerCellDrawComponent, RefreshChargeRateEvent>(OnDrawRefreshChargeRate);
-        SubscribeLocalEvent<PowerCellDrawComponent, ComponentStartup>(OnDrawStartup);
-        SubscribeLocalEvent<PowerCellDrawComponent, ComponentRemove>(OnDrawRemove);
-
     }
 
+    [SubscribeLocalEvent]
     private void OnCellSlotInsertAttempt(Entity<PowerCellSlotComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         if (!ent.Comp.Initialized)
@@ -50,6 +39,7 @@ public sealed partial class PowerCellSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnCellSlotInserted(Entity<PowerCellSlotComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.CellSlotId)
@@ -77,6 +67,7 @@ public sealed partial class PowerCellSystem : EntitySystem
             _appearance.SetData(ent.Owner, BatteryVisuals.Charging, charging);
     }
 
+    [SubscribeLocalEvent]
     private void OnCellSlotRemoved(Entity<PowerCellSlotComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.CellSlotId)
@@ -102,7 +93,7 @@ public sealed partial class PowerCellSystem : EntitySystem
         _appearance.SetData(ent.Owner, BatteryVisuals.Charging, BatteryChargingState.Constant);
     }
 
-
+    [SubscribeLocalEvent]
     private void OnCellSlotStateChanged(Entity<PowerCellSlotComponent> ent, ref BatteryStateChangedEvent args)
     {
         if (args.NewState != BatteryState.Empty)
@@ -113,6 +104,7 @@ public sealed partial class PowerCellSystem : EntitySystem
         RaiseLocalEvent(ent, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnCellSlotExamined(Entity<PowerCellSlotComponent> ent, ref ExaminedEvent args)
     {
         if (TryGetBatteryFromSlot(ent.AsNullable(), out var battery))
@@ -121,6 +113,7 @@ public sealed partial class PowerCellSystem : EntitySystem
             args.PushMarkup(Loc.GetString("power-cell-component-examine-details-no-battery"));
     }
 
+    [SubscribeLocalEvent]
     private void OnCellExamined(Entity<PowerCellComponent> ent, ref ExaminedEvent args)
     {
         if (TryComp<BatteryComponent>(ent, out var battery))
@@ -133,18 +126,21 @@ public sealed partial class PowerCellSystem : EntitySystem
         args.PushMarkup(Loc.GetString("power-cell-component-examine-details", ("currentCharge", $"{chargePercent:F0}")));
     }
 
+    [SubscribeLocalEvent]
     private void OnDrawRefreshChargeRate(Entity<PowerCellDrawComponent> ent, ref RefreshChargeRateEvent args)
     {
         if (ent.Comp.Enabled)
             args.NewChargeRate -= ent.Comp.DrawRate;
     }
 
+    [SubscribeLocalEvent]
     private void OnDrawStartup(Entity<PowerCellDrawComponent> ent, ref ComponentStartup args)
     {
         if (ent.Comp.Enabled)
             _battery.RefreshChargeRate(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnDrawRemove(Entity<PowerCellDrawComponent> ent, ref ComponentRemove args)
     {
         // We use ComponentRemove to make sure this component no longer subscribes to the refresh event.

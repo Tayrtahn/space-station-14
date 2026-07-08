@@ -16,8 +16,6 @@ public sealed partial class ChemistryGuideDataSystem : SharedChemistryGuideDataS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(PrototypeManagerReload);
         _player.PlayerStatusChanged += OnPlayerStatusChanged;
 
         InitializeServerRegistry();
@@ -46,6 +44,7 @@ public sealed partial class ChemistryGuideDataSystem : SharedChemistryGuideDataS
         RaiseNetworkEvent(sendEv, e.Session);
     }
 
+    [SubscribeLocalEvent]
     private void PrototypeManagerReload(PrototypesReloadedEventArgs obj)
     {
         if (!obj.ByType.TryGetValue(typeof(ReagentPrototype), out var reagents))

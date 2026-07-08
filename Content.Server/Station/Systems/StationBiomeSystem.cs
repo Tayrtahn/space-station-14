@@ -13,9 +13,9 @@ public sealed partial class StationBiomeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StationBiomeComponent, StationPostInitEvent>(OnStationPostInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationPostInit(Entity<StationBiomeComponent> map, ref StationPostInitEvent args)
     {
         var station = _station.GetLargestGrid(map.Owner);

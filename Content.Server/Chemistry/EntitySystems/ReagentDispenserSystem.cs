@@ -35,21 +35,14 @@ namespace Content.Server.Chemistry.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ReagentDispenserComponent, ComponentStartup>(SubscribeUpdateUiState);
-            SubscribeLocalEvent<ReagentDispenserComponent, SolutionChangedEvent>(SubscribeUpdateUiState);
             SubscribeLocalEvent<ReagentDispenserComponent, EntInsertedIntoContainerMessage>(SubscribeUpdateUiState, after: [typeof(SharedStorageSystem)]);
             SubscribeLocalEvent<ReagentDispenserComponent, EntRemovedFromContainerMessage>(SubscribeUpdateUiState, after: [typeof(SharedStorageSystem)]);
             SubscribeLocalEvent<ReagentDispenserComponent, BoundUIOpenedEvent>(SubscribeUpdateUiState);
 
-            SubscribeLocalEvent<ReagentDispenserComponent, ReagentDispenserSetDispenseAmountMessage>(OnSetDispenseAmountMessage);
-            SubscribeLocalEvent<ReagentDispenserComponent, ReagentDispenserDispenseReagentMessage>(OnDispenseReagentMessage);
-            SubscribeLocalEvent<ReagentDispenserComponent, ReagentDispenserEjectContainerMessage>(OnEjectReagentMessage);
-            SubscribeLocalEvent<ReagentDispenserComponent, ReagentDispenserClearContainerSolutionMessage>(OnClearContainerSolutionMessage);
-
             SubscribeLocalEvent<ReagentDispenserComponent, MapInitEvent>(OnMapInit, before: new[] { typeof(ItemSlotsSystem) });
         }
 
+        [SubscribeLocalEvent]
         private void SubscribeUpdateUiState<T>(Entity<ReagentDispenserComponent> ent, ref T ev)
         {
             UpdateUiState(ent);
@@ -114,6 +107,7 @@ namespace Content.Server.Chemistry.EntitySystems
             return inventory;
         }
 
+        [SubscribeLocalEvent]
         private void OnSetDispenseAmountMessage(Entity<ReagentDispenserComponent> reagentDispenser, ref ReagentDispenserSetDispenseAmountMessage message)
         {
             reagentDispenser.Comp.DispenseAmount = message.ReagentDispenserDispenseAmount;
@@ -121,6 +115,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(reagentDispenser);
         }
 
+        [SubscribeLocalEvent]
         private void OnDispenseReagentMessage(Entity<ReagentDispenserComponent> reagentDispenser, ref ReagentDispenserDispenseReagentMessage message)
         {
             if (!TryComp<StorageComponent>(reagentDispenser.Owner, out var storage))
@@ -153,6 +148,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(reagentDispenser);
         }
 
+        [SubscribeLocalEvent]
         private void OnEjectReagentMessage(Entity<ReagentDispenserComponent> reagentDispenser, ref ReagentDispenserEjectContainerMessage message)
         {
             if (!TryComp<StorageComponent>(reagentDispenser.Owner, out var storage))
@@ -168,6 +164,7 @@ namespace Content.Server.Chemistry.EntitySystems
             _handsSystem.TryPickupAnyHand(message.Actor, storedContainer);
         }
 
+        [SubscribeLocalEvent]
         private void OnClearContainerSolutionMessage(Entity<ReagentDispenserComponent> reagentDispenser, ref ReagentDispenserClearContainerSolutionMessage message)
         {
             var outputContainer = _itemSlotsSystem.GetItemOrNull(reagentDispenser, SharedReagentDispenser.OutputSlotName);

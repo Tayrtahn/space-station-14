@@ -40,11 +40,9 @@ namespace Content.Client.IconSmoothing
             base.Initialize();
 
             InitializeEdge();
-            SubscribeLocalEvent<IconSmoothComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-            SubscribeLocalEvent<IconSmoothComponent, ComponentShutdown>(OnShutdown);
-            SubscribeLocalEvent<IconSmoothComponent, ComponentStartup>(OnStartup);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, IconSmoothComponent component, ComponentStartup args)
         {
             var xform = Transform(uid);
@@ -98,6 +96,7 @@ namespace Content.Client.IconSmoothing
             _sprite.LayerSetDirOffset(sprite, CornerLayers.SW, DirectionOffset.Clockwise);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, IconSmoothComponent component, ComponentShutdown args)
         {
             _dirtyEntities.Enqueue(uid);
@@ -196,6 +195,7 @@ namespace Content.Client.IconSmoothing
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, IconSmoothComponent component, ref AnchorStateChangedEvent args)
         {
             if (!args.Detaching)

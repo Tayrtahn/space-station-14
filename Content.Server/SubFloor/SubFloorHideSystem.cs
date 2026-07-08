@@ -16,8 +16,6 @@ public sealed partial class SubFloorHideSystem : SharedSubFloorHideSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<ShowSubfloorRequestEvent>(OnShowSubfloor);
-        SubscribeLocalEvent<GetVisMaskEvent>(OnGetVisibility);
 
         _player.PlayerStatusChanged += OnPlayerStatus;
     }
@@ -33,6 +31,7 @@ public sealed partial class SubFloorHideSystem : SharedSubFloorHideSystem
             _eye.RefreshVisibilityMask(e.Session.AttachedEntity.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVisibility(ref GetVisMaskEvent ev)
     {
         if (!TryComp(ev.Entity, out ActorComponent? actor))
@@ -44,6 +43,7 @@ public sealed partial class SubFloorHideSystem : SharedSubFloorHideSystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void OnShowSubfloor(ShowSubfloorRequestEvent ev, EntitySessionEventArgs args)
     {
         // TODO: Commands are a bit of an eh? for client-only but checking shared perms

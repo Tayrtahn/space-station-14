@@ -6,15 +6,14 @@ using Robust.Shared.GameStates;
 namespace Content.Server.Cuffs
 {
     [UsedImplicitly]
-    public sealed class CuffableSystem : SharedCuffableSystem
+    public sealed partial class CuffableSystem : SharedCuffableSystem
     {
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<CuffableComponent, ComponentGetState>(OnCuffableGetState);
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffableGetState(Entity<CuffableComponent> entity, ref ComponentGetState args)
         {
             // there are 2 approaches i can think of to handle the handcuff overlay on players

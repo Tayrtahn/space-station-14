@@ -20,12 +20,9 @@ public sealed partial class MeleeThrowOnHitSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MeleeThrowOnHitComponent, MeleeHitEvent>(OnMeleeHit);
-        SubscribeLocalEvent<MeleeThrowOnHitComponent, ThrowDoHitEvent>(OnThrowHit);
-        SubscribeLocalEvent<MeleeThrowOnHitComponent, ThrownEvent>(OnThrow);
-        SubscribeLocalEvent<MeleeThrowOnHitComponent, LandEvent>(OnLand);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrow(Entity<MeleeThrowOnHitComponent> ent, ref ThrownEvent args)
     {
         if (_delay.IsDelayed(ent.Owner))
@@ -38,6 +35,7 @@ public sealed partial class MeleeThrowOnHitSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(MeleeThrowOnHitComponent.ThrowOnCooldown));
     }
 
+    [SubscribeLocalEvent]
     private void OnLand(Entity<MeleeThrowOnHitComponent> ent, ref LandEvent args)
     {
         if (ent.Comp.HitWhileThrown && !_delay.IsDelayed(ent.Owner))
@@ -47,6 +45,7 @@ public sealed partial class MeleeThrowOnHitSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(MeleeThrowOnHitComponent.ThrowOnCooldown));
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeHit(Entity<MeleeThrowOnHitComponent> weapon, ref MeleeHitEvent args)
     {
         // TODO: MeleeHitEvent is weird. Why is this even raised if we don't hit something?
@@ -68,6 +67,7 @@ public sealed partial class MeleeThrowOnHitSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowHit(Entity<MeleeThrowOnHitComponent> weapon, ref ThrowDoHitEvent args)
     {
         if (!weapon.Comp.ActivateOnThrown)

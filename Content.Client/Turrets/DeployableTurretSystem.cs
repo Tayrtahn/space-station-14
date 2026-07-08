@@ -14,12 +14,9 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeployableTurretComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<DeployableTurretComponent, AnimationCompletedEvent>(OnAnimationCompleted);
-        SubscribeLocalEvent<DeployableTurretComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<DeployableTurretComponent> ent, ref ComponentInit args)
     {
         ent.Comp.DeploymentAnimation = new Animation
@@ -45,6 +42,7 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(Entity<DeployableTurretComponent> ent, ref AnimationCompletedEvent args)
     {
         if (args.Key != DeployableTurretComponent.AnimationKey)
@@ -62,6 +60,7 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
         UpdateVisuals(ent, targetState, sprite, args.AnimationPlayer);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<DeployableTurretComponent> ent, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

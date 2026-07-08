@@ -17,10 +17,9 @@ public sealed partial class SpawnTableOnUseSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpawnTableOnUseComponent, UseInHandEvent>(OnUseInHand);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<SpawnTableOnUseComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)

@@ -28,12 +28,6 @@ public sealed partial class HijackBeaconSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HijackBeaconComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerbs);
-        SubscribeLocalEvent<HijackBeaconComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-        SubscribeLocalEvent<HijackBeaconComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-        SubscribeLocalEvent<HijackBeaconComponent, HijackBeaconDeactivateDoAfterEvent>(OnDeactivateDoAfter);
-        SubscribeLocalEvent<HijackBeaconComponent, ExaminedEvent>(OnExaminedEvent);
     }
 
     public override void Update(float frameTime)
@@ -69,6 +63,7 @@ public sealed partial class HijackBeaconSystem : EntitySystem
     /// <summary>
     ///     Deactivate beacon if it gets unanchored(via a bomb or something)
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(Entity<HijackBeaconComponent> ent, ref AnchorStateChangedEvent args)
     {
         // Unanchoring the beacon deactivates it. This is to prevent people from bombing the tile the beacon is on and running away with it for a free activation.
@@ -76,6 +71,7 @@ public sealed partial class HijackBeaconSystem : EntitySystem
             DeactivateBeacon(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(Entity<HijackBeaconComponent> entity, ref UnanchorAttemptEvent args)
     {
         if (entity.Comp.Status == HijackBeaconStatus.Armed)
@@ -85,6 +81,7 @@ public sealed partial class HijackBeaconSystem : EntitySystem
     /// <summary>
     ///     Get the activation and deactivation verbs.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGetAltVerbs(Entity<HijackBeaconComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands is null)
@@ -127,6 +124,7 @@ public sealed partial class HijackBeaconSystem : EntitySystem
     /// <summary>
     ///     When it's examined.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExaminedEvent(Entity<HijackBeaconComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -154,6 +152,7 @@ public sealed partial class HijackBeaconSystem : EntitySystem
     /// <summary>
     ///     What happens when you deactivate the beacon.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDeactivateDoAfter(Entity<HijackBeaconComponent> ent, ref HijackBeaconDeactivateDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)

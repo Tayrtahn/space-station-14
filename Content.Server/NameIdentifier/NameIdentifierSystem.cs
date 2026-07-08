@@ -22,14 +22,10 @@ public sealed partial class NameIdentifierSystem : SharedNameIdentifierSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<NameIdentifierComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<NameIdentifierComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(CleanupIds);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnReloadPrototypes);
-
         InitialSetupPrototypes();
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<NameIdentifierComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.Group is null)
@@ -82,6 +78,7 @@ public sealed partial class NameIdentifierSystem : SharedNameIdentifierSystem
             : $"{randomVal}";
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NameIdentifierComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.Group is null)
@@ -154,6 +151,7 @@ public sealed partial class NameIdentifierSystem : SharedNameIdentifierSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnReloadPrototypes(PrototypesReloadedEventArgs ev)
     {
         if (!ev.ByType.TryGetValue(typeof(NameIdentifierGroupPrototype), out var set))
@@ -187,7 +185,7 @@ public sealed partial class NameIdentifierSystem : SharedNameIdentifierSystem
         }
     }
 
-
+    [SubscribeLocalEvent]
     private void CleanupIds(RoundRestartCleanupEvent ev)
     {
         EnsureIds();

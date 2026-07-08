@@ -19,10 +19,6 @@ public sealed partial class SolutionHeaterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionHeaterComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<SolutionHeaterComponent, ItemPlacedEvent>(OnItemPlaced);
-        SubscribeLocalEvent<SolutionHeaterComponent, ItemRemovedEvent>(OnItemRemoved);
     }
 
     private void TurnOn(EntityUid uid)
@@ -49,6 +45,7 @@ public sealed partial class SolutionHeaterSystem : EntitySystem
         RemComp<ActiveSolutionHeaterComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<SolutionHeaterComponent> entity, ref PowerChangedEvent args)
     {
         var placer = Comp<ItemPlacerComponent>(entity);
@@ -62,11 +59,13 @@ public sealed partial class SolutionHeaterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnItemPlaced(Entity<SolutionHeaterComponent> entity, ref ItemPlacedEvent args)
     {
         TryTurnOn(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemRemoved(Entity<SolutionHeaterComponent> entity, ref ItemRemovedEvent args)
     {
         var placer = Comp<ItemPlacerComponent>(entity);

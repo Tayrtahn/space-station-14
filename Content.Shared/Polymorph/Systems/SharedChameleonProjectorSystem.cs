@@ -42,21 +42,6 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<ChameleonDisguiseComponent, InteractHandEvent>(OnDisguiseInteractHand, before: [typeof(SharedItemSystem)]);
-        SubscribeLocalEvent<ChameleonDisguiseComponent, DamageChangedEvent>(OnDisguiseDamaged);
-        SubscribeLocalEvent<ChameleonDisguiseComponent, InsertIntoEntityStorageAttemptEvent>(OnDisguiseInsertAttempt);
-        SubscribeLocalEvent<ChameleonDisguiseComponent, ComponentShutdown>(OnDisguiseShutdown);
-        SubscribeLocalEvent<ChameleonDisguiseComponent, BeforeGettingEquippedHandEvent>(OnDisguiseBeforeEquippedHand);
-
-        SubscribeLocalEvent<ChameleonDisguisedComponent, EntGotInsertedIntoContainerMessage>(OnDisguisedInserted);
-
-        SubscribeLocalEvent<ChameleonProjectorComponent, AfterInteractEvent>(OnInteract);
-        SubscribeLocalEvent<ChameleonProjectorComponent, GetVerbsEvent<UtilityVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<ChameleonProjectorComponent, DisguiseToggleNoRotEvent>(OnToggleNoRot);
-        SubscribeLocalEvent<ChameleonProjectorComponent, DisguiseToggleAnchoredEvent>(OnToggleAnchored);
-        SubscribeLocalEvent<ChameleonProjectorComponent, HandDeselectedEvent>(OnDeselected);
-        SubscribeLocalEvent<ChameleonProjectorComponent, GotUnequippedHandEvent>(OnUnequipped);
-        SubscribeLocalEvent<ChameleonProjectorComponent, ComponentShutdown>(OnProjectorShutdown);
-        SubscribeLocalEvent<ChameleonProjectorComponent, ItemToggledEvent>(OnProjectorToggled);
     }
 
     #region Disguise entity
@@ -67,6 +52,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDisguiseDamaged(Entity<ChameleonDisguiseComponent> ent, ref DamageChangedEvent args)
     {
         // this mirrors damage 1:1
@@ -74,6 +60,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
             _damageable.TryChangeDamage(ent.Comp.User, damage);
     }
 
+    [SubscribeLocalEvent]
     private void OnDisguiseInsertAttempt(Entity<ChameleonDisguiseComponent> ent, ref InsertIntoEntityStorageAttemptEvent args)
     {
         // stay parented to the user, not the storage
@@ -81,11 +68,13 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         TryReveal(ent.Comp.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnDisguiseShutdown(Entity<ChameleonDisguiseComponent> ent, ref ComponentShutdown args)
     {
         _actions.RemoveProvidedActions(ent.Comp.User, ent.Comp.Projector);
     }
 
+    [SubscribeLocalEvent]
     private void OnDisguiseBeforeEquippedHand(Entity<ChameleonDisguiseComponent> ent, ref BeforeGettingEquippedHandEvent args)
     {
         args.Cancelled = true;
@@ -96,6 +85,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
 
     #region Disguised player
 
+    [SubscribeLocalEvent]
     private void OnDisguisedInserted(Entity<ChameleonDisguisedComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         // prevent player going into locker/mech/etc while disguised
@@ -106,6 +96,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
 
     #region Projector
 
+    [SubscribeLocalEvent]
     private void OnInteract(Entity<ChameleonProjectorComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not {} target)
@@ -115,6 +106,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         TryDisguise(ent, args.User, target);
     }
 
+    [SubscribeLocalEvent]
     private void OnProjectorToggled(Entity<ChameleonProjectorComponent> ent, ref ItemToggledEvent args)
     {
         if (args.Activated)
@@ -127,6 +119,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         TryReveal(ent.Comp.Disguised.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<ChameleonProjectorComponent> ent, ref GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess)
@@ -167,6 +160,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleNoRot(Entity<ChameleonProjectorComponent> ent, ref DisguiseToggleNoRotEvent args)
     {
         if (ent.Comp.Disguised is not {} uid)
@@ -178,6 +172,7 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAnchored(Entity<ChameleonProjectorComponent> ent, ref DisguiseToggleAnchoredEvent args)
     {
         if (ent.Comp.Disguised is not {} uid)
@@ -192,16 +187,19 @@ public abstract partial class SharedChameleonProjectorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDeselected(Entity<ChameleonProjectorComponent> ent, ref HandDeselectedEvent args)
     {
         RevealProjector(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<ChameleonProjectorComponent> ent, ref GotUnequippedHandEvent args)
     {
         RevealProjector(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnProjectorShutdown(Entity<ChameleonProjectorComponent> ent, ref ComponentShutdown args)
     {
         RevealProjector(ent);

@@ -16,13 +16,12 @@ public abstract partial class SharedReleaseGasOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ReleaseGasOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
     /// <summary>
     /// Shrimply sets the component to active when triggered, allowing it to release over time.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<ReleaseGasOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

@@ -14,16 +14,15 @@ public sealed partial class ArtifactAnalyzerSystem : SharedArtifactAnalyzerSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnalysisConsoleComponent, AfterAutoHandleStateEvent>(OnAnalysisConsoleAfterAutoHandleState);
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, AfterAutoHandleStateEvent>(OnAnalyzerAfterAutoHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnalysisConsoleAfterAutoHandleState(Entity<AnalysisConsoleComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateBuiIfCanGetAnalysisConsoleUi(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnalyzerAfterAutoHandleState(Entity<ArtifactAnalyzerComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (!TryGetAnalysisConsole(ent, out var analysisConsole))

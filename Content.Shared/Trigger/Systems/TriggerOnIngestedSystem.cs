@@ -8,10 +8,9 @@ public sealed partial class TriggerOnIngestedSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnIngestedComponent, IngestedEvent>(OnIngested);
     }
 
+    [SubscribeLocalEvent]
     private void OnIngested(Entity<TriggerOnIngestedComponent> ent, ref IngestedEvent args)
     {
         // args.Target is the entity being fed, while args.User is the entity doing the feeding.

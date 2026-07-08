@@ -22,11 +22,6 @@ public sealed partial class SpaceVillainArcadeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpaceVillainArcadeComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<SpaceVillainArcadeComponent, AfterActivatableUIOpenEvent>(OnAfterUIOpenSV);
-        SubscribeLocalEvent<SpaceVillainArcadeComponent, SharedSpaceVillainArcadeComponent.SpaceVillainArcadePlayerActionMessage>(OnSVPlayerAction);
-        SubscribeLocalEvent<SpaceVillainArcadeComponent, PowerChangedEvent>(OnSVillainPower);
     }
 
     /// <summary>
@@ -68,12 +63,14 @@ public sealed partial class SpaceVillainArcadeSystem : EntitySystem
         return $"{_random.Pick(possibleFirstEnemyNames)} {_random.Pick(possibleLastEnemyNames)}";
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, SpaceVillainArcadeComponent component, ComponentInit args)
     {
         // Random amount of prizes
         component.RewardAmount = new Random().Next(component.RewardMinAmount, component.RewardMaxAmount + 1);
     }
 
+    [SubscribeLocalEvent]
     private void OnSVPlayerAction(EntityUid uid, SpaceVillainArcadeComponent component, SharedSpaceVillainArcadeComponent.SpaceVillainArcadePlayerActionMessage msg)
     {
         if (component.Game == null)
@@ -103,11 +100,13 @@ public sealed partial class SpaceVillainArcadeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterUIOpenSV(EntityUid uid, SpaceVillainArcadeComponent component, AfterActivatableUIOpenEvent args)
     {
         component.Game ??= new(uid, component, this);
     }
 
+    [SubscribeLocalEvent]
     private void OnSVillainPower(EntityUid uid, SpaceVillainArcadeComponent component, ref PowerChangedEvent args)
     {
         if (TryComp<ApcPowerReceiverComponent>(uid, out var power) && power.Powered)

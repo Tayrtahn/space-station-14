@@ -24,15 +24,13 @@ public sealed partial class BatteryDrainerSystem : SharedBatteryDrainerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BatteryDrainerComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
-        SubscribeLocalEvent<BatteryDrainerComponent, NinjaBatteryChangedEvent>(OnBatteryChanged);
     }
 
     /// <summary>
     /// Start do after for draining a power source.
     /// Can't predict PNBC existing so only done on server.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(Entity<BatteryDrainerComponent> ent, ref BeforeInteractHandEvent args)
     {
         var (uid, comp) = ent;
@@ -60,6 +58,7 @@ public sealed partial class BatteryDrainerSystem : SharedBatteryDrainerSystem
         _doAfter.TryStartDoAfter(doAfterArgs);
     }
 
+    [SubscribeLocalEvent]
     private void OnBatteryChanged(Entity<BatteryDrainerComponent> ent, ref NinjaBatteryChangedEvent args)
     {
         SetBattery((ent, ent.Comp), args.Battery);

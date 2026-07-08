@@ -48,16 +48,13 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AnomalyComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AnomalyComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<AnomalyComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<AnomalyStabilityChangedEvent>(OnVesselAnomalyStabilityChanged);
 
         InitializeGenerator();
         InitializeVessel();
         InitializeCommands();
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<AnomalyComponent> anomaly, ref MapInitEvent args)
     {
         anomaly.Comp.NextPulseTime = Timing.CurTime + GetPulseLength(anomaly.Comp) * 3; // longer the first time
@@ -81,6 +78,7 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
         Dirty(anomaly);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<AnomalyComponent> anomaly, ref ComponentShutdown args)
     {
         if (anomaly.Comp.CurrentBehavior is not null)
@@ -89,6 +87,7 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
         EndAnomaly(anomaly, spawnCore: false);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(Entity<AnomalyComponent> anomaly, ref StartCollideEvent args)
     {
         if (!TryComp<AnomalousParticleComponent>(args.OtherEntity, out var particle))

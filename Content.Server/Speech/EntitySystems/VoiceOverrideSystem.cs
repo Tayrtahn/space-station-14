@@ -8,9 +8,9 @@ public sealed partial class VoiceOverrideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<VoiceOverrideComponent, TransformSpeakerNameEvent>(OnTransformSpeakerName);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransformSpeakerName(Entity<VoiceOverrideComponent> entity, ref TransformSpeakerNameEvent args)
     {
         if (!entity.Comp.Enabled)

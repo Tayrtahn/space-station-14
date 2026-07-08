@@ -21,9 +21,9 @@ public sealed partial class TraitorCodePaperSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TraitorCodePaperComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, TraitorCodePaperComponent component, MapInitEvent args)
     {
         SetupPaper(uid, component);

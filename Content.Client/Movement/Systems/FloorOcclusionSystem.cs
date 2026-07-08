@@ -15,22 +15,21 @@ public sealed partial class FloorOcclusionSystem : SharedFloorOcclusionSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FloorOcclusionComponent, ComponentStartup>(OnOcclusionStartup);
-        SubscribeLocalEvent<FloorOcclusionComponent, ComponentShutdown>(OnOcclusionShutdown);
-        SubscribeLocalEvent<FloorOcclusionComponent, AfterAutoHandleStateEvent>(OnOcclusionAuto);
     }
 
+    [SubscribeLocalEvent]
     private void OnOcclusionAuto(Entity<FloorOcclusionComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         SetShader(ent.Owner, ent.Comp.Enabled);
     }
 
+    [SubscribeLocalEvent]
     private void OnOcclusionStartup(Entity<FloorOcclusionComponent> ent, ref ComponentStartup args)
     {
         SetShader(ent.Owner, ent.Comp.Enabled);
     }
 
+    [SubscribeLocalEvent]
     private void OnOcclusionShutdown(Entity<FloorOcclusionComponent> ent, ref ComponentShutdown args)
     {
         SetShader(ent.Owner, false);

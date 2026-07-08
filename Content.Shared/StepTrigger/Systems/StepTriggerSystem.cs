@@ -20,13 +20,11 @@ public sealed partial class StepTriggerSystem : EntitySystem
     public override void Initialize()
     {
         UpdatesOutsidePrediction = true;
-        SubscribeLocalEvent<StepTriggerComponent, AfterAutoHandleStateEvent>(TriggerHandleState);
 
-        SubscribeLocalEvent<StepTriggerComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<StepTriggerComponent, EndCollideEvent>(OnEndCollide);
 #if DEBUG
-        SubscribeLocalEvent<StepTriggerComponent, ComponentStartup>(OnStartup);
     }
+
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, StepTriggerComponent component, ComponentStartup args)
     {
         if (!component.Active)
@@ -150,6 +148,7 @@ public sealed partial class StepTriggerSystem : EntitySystem
         return msg.Continue && !msg.Cancelled;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(EntityUid uid, StepTriggerComponent component, ref StartCollideEvent args)
     {
         var otherUid = args.OtherEntity;
@@ -168,6 +167,7 @@ public sealed partial class StepTriggerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(EntityUid uid, StepTriggerComponent component, ref EndCollideEvent args)
     {
         var otherUid = args.OtherEntity;
@@ -190,6 +190,7 @@ public sealed partial class StepTriggerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void TriggerHandleState(EntityUid uid, StepTriggerComponent component, ref AfterAutoHandleStateEvent args)
     {
         if (component.Colliding.Count > 0)

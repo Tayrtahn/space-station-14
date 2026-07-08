@@ -23,12 +23,9 @@ public abstract partial class SharedDeployableTurretControllerSystem : EntitySys
     public override void Initialize()
     {
         base.Initialize();
-
-        // Handling of client messages
-        SubscribeLocalEvent<DeployableTurretControllerComponent, DeployableTurretArmamentSettingChangedMessage>(OnArmamentSettingChanged);
-        SubscribeLocalEvent<DeployableTurretControllerComponent, DeployableTurretExemptAccessLevelChangedMessage>(OnExemptAccessLevelsChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnArmamentSettingChanged(Entity<DeployableTurretControllerComponent> ent, ref DeployableTurretArmamentSettingChangedMessage args)
     {
         if (IsUserAllowedAccess(ent, args.Actor))
@@ -38,6 +35,7 @@ public abstract partial class SharedDeployableTurretControllerSystem : EntitySys
             bui.Update<DeployableTurretControllerBoundInterfaceState>();
     }
 
+    [SubscribeLocalEvent]
     private void OnExemptAccessLevelsChanged(Entity<DeployableTurretControllerComponent> ent, ref DeployableTurretExemptAccessLevelChangedMessage args)
     {
         if (IsUserAllowedAccess(ent, args.Actor))

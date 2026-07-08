@@ -12,10 +12,9 @@ public sealed partial class SharedComponentTableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ComponentTableComponent, MapInitEvent>(OnTableInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnTableInit(Entity<ComponentTableComponent> ent, ref MapInitEvent args)
     {
         var spawns = _entTable.GetSpawns(ent.Comp.Table);

@@ -28,10 +28,6 @@ public sealed partial class NinjaSuitSystem : SharedNinjaSuitSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NinjaSuitComponent, ContainerIsInsertingAttemptEvent>(OnSuitInsertAttempt);
-        SubscribeLocalEvent<NinjaSuitComponent, RecallKatanaEvent>(OnRecallKatana);
-        SubscribeLocalEvent<NinjaSuitComponent, NinjaEmpEvent>(OnEmp);
     }
 
     protected override void NinjaEquipped(Entity<NinjaSuitComponent> ent, Entity<SpaceNinjaComponent> user)
@@ -51,6 +47,7 @@ public sealed partial class NinjaSuitSystem : SharedNinjaSuitSystem
         RaiseLocalEvent(user, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnSuitInsertAttempt(EntityUid uid, NinjaSuitComponent comp, ContainerIsInsertingAttemptEvent args)
     {
         // this is for handling battery upgrading, not stopping actions from being added
@@ -105,6 +102,7 @@ public sealed partial class NinjaSuitSystem : SharedNinjaSuitSystem
         _ninja.SetSuitPowerAlert(user);
     }
 
+    [SubscribeLocalEvent]
     private void OnRecallKatana(Entity<NinjaSuitComponent> ent, ref RecallKatanaEvent args)
     {
         var (uid, comp) = ent;
@@ -134,6 +132,7 @@ public sealed partial class NinjaSuitSystem : SharedNinjaSuitSystem
         Popup.PopupEntity(Loc.GetString(message), user, user);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmp(Entity<NinjaSuitComponent> ent, ref NinjaEmpEvent args)
     {
         var (uid, comp) = ent;

@@ -17,9 +17,9 @@ public sealed partial class LimitedItemGiverSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<LimitedItemGiverComponent, InteractHandEvent>(OnInteractHand);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(EntityUid uid, LimitedItemGiverComponent component, InteractHandEvent args)
     {
         if (!TryComp<ActorComponent>(args.User, out var actor))

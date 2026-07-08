@@ -31,11 +31,6 @@ public sealed partial class GatewaySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GatewayComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<GatewayComponent, ActivatableUIOpenAttemptEvent>(OnGatewayOpenAttempt);
-        SubscribeLocalEvent<GatewayComponent, BoundUIOpenedEvent>(UpdateUserInterface);
-        SubscribeLocalEvent<GatewayComponent, GatewayOpenPortalMessage>(OnOpenPortal);
     }
 
     public void SetEnabled(EntityUid uid, bool value, GatewayComponent? component = null)
@@ -47,18 +42,21 @@ public sealed partial class GatewaySystem : EntitySystem
         UpdateAllGateways();
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, GatewayComponent comp, ComponentStartup args)
     {
         // no need to update ui since its just been created, just do portal
         UpdateAppearance(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnGatewayOpenAttempt(EntityUid uid, GatewayComponent component, ref ActivatableUIOpenAttemptEvent args)
     {
         if (!component.Enabled || !component.Interactable)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void UpdateUserInterface<T>(EntityUid uid, GatewayComponent comp, T args)
     {
         UpdateUserInterface(uid, comp);
@@ -137,6 +135,7 @@ public sealed partial class GatewaySystem : EntitySystem
         _appearance.SetData(uid, GatewayVisuals.Active, HasComp<PortalComponent>(uid));
     }
 
+    [SubscribeLocalEvent]
     private void OnOpenPortal(EntityUid uid, GatewayComponent comp, GatewayOpenPortalMessage args)
     {
         if (GetNetEntity(uid) == args.Destination ||

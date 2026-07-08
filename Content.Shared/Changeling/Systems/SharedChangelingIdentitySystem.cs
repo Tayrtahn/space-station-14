@@ -28,18 +28,9 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingIdentityComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ChangelingIdentityComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ChangelingIdentityComponent, PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<ChangelingIdentityComponent, PlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<ChangelingIdentityComponent, ChangelingDevouredEvent>(OnDevouredEntity);
-        SubscribeLocalEvent<ChangelingStoredIdentityComponent, ComponentRemove>(OnStoredRemove);
-
-        SubscribeLocalEvent<ChangelingDevouredComponent, ComponentShutdown>(OnDevouredShutdown);
-        SubscribeLocalEvent<RecentlyDevouredComponent, MobStateChangedEvent>(OnRecentlyDevouredMobState);
     }
 
+    [SubscribeLocalEvent]
     private void OnDevouredEntity(Entity<ChangelingIdentityComponent> ent, ref ChangelingDevouredEvent args)
     {
         if (args.ObtainedIdentity)
@@ -53,16 +44,19 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(Entity<ChangelingIdentityComponent> ent, ref PlayerAttachedEvent args)
     {
         HandOverPvsOverride(ent, args.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(Entity<ChangelingIdentityComponent> ent, ref PlayerDetachedEvent args)
     {
         CleanupPvsOverride(ent, args.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ChangelingIdentityComponent> ent, ref MapInitEvent args)
     {
         // Make a backup of our current identity so we can transform back.
@@ -77,6 +71,7 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
         ent.Comp.CurrentIdentity = data.Identity;
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ChangelingIdentityComponent> ent, ref ComponentShutdown args)
     {
         if (TryComp<ActorComponent>(ent, out var actor))
@@ -87,6 +82,7 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
     }
 
     // Set all references to this entity to null to prevent PVS errors when networking.
+    [SubscribeLocalEvent]
     private void OnDevouredShutdown(Entity<ChangelingDevouredComponent> ent, ref ComponentShutdown args)
     {
         foreach (var ling in ent.Comp.DevouredBy)
@@ -98,6 +94,7 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRecentlyDevouredMobState(Entity<RecentlyDevouredComponent> ent, ref MobStateChangedEvent args)
     {
         // Once we are revived the body is no longer recently devoured.
@@ -107,6 +104,7 @@ public abstract partial class SharedChangelingIdentitySystem : EntitySystem
         RemCompDeferred<RecentlyDevouredComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnStoredRemove(Entity<ChangelingStoredIdentityComponent> ent, ref ComponentRemove args)
     {
         // The last stored identity is being deleted, we can clean up the map.

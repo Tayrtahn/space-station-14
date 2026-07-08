@@ -24,15 +24,12 @@ public sealed partial class SpiderChargeSystem : SharedSpiderChargeSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpiderChargeComponent, AttemptEntityStickEvent>(OnAttemptStick);
-        SubscribeLocalEvent<SpiderChargeComponent, EntityStuckEvent>(OnStuck);
-        SubscribeLocalEvent<SpiderChargeComponent, TriggerEvent>(OnExplode);
     }
 
     /// <summary>
     /// Require that the planter is a ninja and the charge is near the target warp point.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAttemptStick(EntityUid uid, SpiderChargeComponent comp, ref AttemptEntityStickEvent args)
     {
         if (args.Cancelled)
@@ -69,6 +66,7 @@ public sealed partial class SpiderChargeSystem : SharedSpiderChargeSystem
     /// <summary>
     /// Allows greentext to occur after exploding.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnStuck(EntityUid uid, SpiderChargeComponent comp, ref EntityStuckEvent args)
     {
         comp.Planter = args.User;
@@ -78,6 +76,7 @@ public sealed partial class SpiderChargeSystem : SharedSpiderChargeSystem
     /// Handles greentext after exploding.
     /// Assumes it didn't move and the target was destroyed so be nice.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExplode(EntityUid uid, SpiderChargeComponent comp, TriggerEvent args)
     {
         if (args.Key != comp.TriggerKey)

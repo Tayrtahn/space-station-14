@@ -401,10 +401,9 @@ namespace Content.IntegrationTests.Tests.Networking
             public override void Initialize()
             {
                 base.Initialize();
-
-                SubscribeAllEvent<SetFooMessage>(HandleMessage);
             }
 
+            [SubscribeAllEvent]
             private void HandleMessage(SetFooMessage message, EntitySessionEventArgs args)
             {
                 var uid = GetEntity(message.Uid);

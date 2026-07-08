@@ -15,11 +15,9 @@ public sealed partial class RevenantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RevenantComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<RevenantComponent, GetGenericAlertCounterAmountEvent>(OnGetCounterAmount);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, RevenantComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)
@@ -42,6 +40,7 @@ public sealed partial class RevenantSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetCounterAmount(Entity<RevenantComponent> ent, ref GetGenericAlertCounterAmountEvent args)
     {
         if (args.Handled)

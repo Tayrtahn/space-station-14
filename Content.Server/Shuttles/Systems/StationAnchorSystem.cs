@@ -14,15 +14,9 @@ public sealed partial class StationAnchorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StationAnchorComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-        SubscribeLocalEvent<StationAnchorComponent, AnchorStateChangedEvent>(OnAnchorStationChange);
-
-        SubscribeLocalEvent<StationAnchorComponent, ChargedMachineActivatedEvent>(OnActivated);
-        SubscribeLocalEvent<StationAnchorComponent, ChargedMachineDeactivatedEvent>(OnDeactivated);
-
-        SubscribeLocalEvent<StationAnchorComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<StationAnchorComponent> ent, ref MapInitEvent args)
     {
         if (!ent.Comp.SwitchedOn)
@@ -31,11 +25,13 @@ public sealed partial class StationAnchorSystem : EntitySystem
         SetStatus(ent, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivated(Entity<StationAnchorComponent> ent, ref ChargedMachineActivatedEvent args)
     {
         SetStatus(ent, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeactivated(Entity<StationAnchorComponent> ent, ref ChargedMachineDeactivatedEvent args)
     {
         SetStatus(ent, false);
@@ -44,6 +40,7 @@ public sealed partial class StationAnchorSystem : EntitySystem
     /// <summary>
     /// Prevent unanchoring when anchor is active
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(Entity<StationAnchorComponent> ent, ref UnanchorAttemptEvent args)
     {
         if (!ent.Comp.SwitchedOn)
@@ -58,6 +55,7 @@ public sealed partial class StationAnchorSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStationChange(Entity<StationAnchorComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)

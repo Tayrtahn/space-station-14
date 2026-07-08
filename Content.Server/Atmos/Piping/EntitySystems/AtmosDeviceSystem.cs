@@ -24,12 +24,6 @@ namespace Content.Server.Atmos.Piping.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<AtmosDeviceComponent, ComponentInit>(OnDeviceInitialize);
-            SubscribeLocalEvent<AtmosDeviceComponent, ComponentShutdown>(OnDeviceShutdown);
-            // Re-anchoring should be handled by the parent change.
-            SubscribeLocalEvent<AtmosDeviceComponent, EntParentChangedMessage>(OnDeviceParentChanged);
-            SubscribeLocalEvent<AtmosDeviceComponent, AnchorStateChangedEvent>(OnDeviceAnchorChanged);
         }
 
         public void JoinAtmosphere(Entity<AtmosDeviceComponent> ent)
@@ -88,16 +82,19 @@ namespace Content.Server.Atmos.Piping.EntitySystems
             JoinAtmosphere(component);
         }
 
+        [SubscribeLocalEvent]
         private void OnDeviceInitialize(Entity<AtmosDeviceComponent> ent, ref ComponentInit args)
         {
             JoinAtmosphere(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnDeviceShutdown(Entity<AtmosDeviceComponent> ent, ref ComponentShutdown args)
         {
             LeaveAtmosphere(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnDeviceAnchorChanged(Entity<AtmosDeviceComponent> ent, ref AnchorStateChangedEvent args)
         {
             // Do nothing if the component doesn't require being anchored to function.
@@ -110,6 +107,7 @@ namespace Content.Server.Atmos.Piping.EntitySystems
                 LeaveAtmosphere(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnDeviceParentChanged(Entity<AtmosDeviceComponent> ent, ref EntParentChangedMessage args)
         {
             // Event is raised when a map is loaded in. Since this event mutates comp.Enabled,

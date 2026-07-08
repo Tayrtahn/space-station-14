@@ -18,14 +18,9 @@ public abstract partial class SharedChargesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LimitedChargesComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<LimitedChargesComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<LimitedChargesComponent, ActionAttemptEvent>(OnChargesAttempt);
-        SubscribeLocalEvent<LimitedChargesComponent, MapInitEvent>(OnChargesMapInit);
-        SubscribeLocalEvent<LimitedChargesComponent, ActionPerformedEvent>(OnChargesPerformed);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, LimitedChargesComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -49,11 +44,13 @@ public abstract partial class SharedChargesSystem : EntitySystem
         args.PushMarkup(Loc.GetString("limited-charges-recharging", ("seconds", timeRemaining.TotalSeconds.ToString("F1"))));
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<LimitedChargesComponent> ent, ref RejuvenateEvent args)
     {
         ResetCharges(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnChargesAttempt(Entity<LimitedChargesComponent> ent, ref ActionAttemptEvent args)
     {
         if (args.Cancelled)
@@ -67,11 +64,13 @@ public abstract partial class SharedChargesSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnChargesPerformed(Entity<LimitedChargesComponent> ent, ref ActionPerformedEvent args)
     {
         AddCharges((ent.Owner, ent.Comp), -1);
     }
 
+    [SubscribeLocalEvent]
     private void OnChargesMapInit(Entity<LimitedChargesComponent> ent, ref MapInitEvent args)
     {
         // If nothing specified use max.

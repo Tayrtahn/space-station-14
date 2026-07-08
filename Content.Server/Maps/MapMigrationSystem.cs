@@ -24,7 +24,6 @@ public sealed partial class MapMigrationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<BeforeEntityReadEvent>(OnBeforeReadEvent);
 
 #if DEBUG
         if (!TryReadFile(out var mappings))
@@ -57,6 +56,7 @@ public sealed partial class MapMigrationSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeReadEvent(BeforeEntityReadEvent ev)
     {
         if (!TryReadFile(out var mappings))

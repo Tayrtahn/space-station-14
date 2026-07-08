@@ -20,9 +20,9 @@ namespace Content.Shared.Jittering
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<JitteringComponent, RejuvenateEvent>(OnRejuvenate);
         }
 
+        [SubscribeLocalEvent]
         private void OnRejuvenate(EntityUid uid, JitteringComponent component, RejuvenateEvent args)
         {
             RemCompDeferred<JitteringComponent>(uid);

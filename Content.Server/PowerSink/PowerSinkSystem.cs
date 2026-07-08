@@ -37,10 +37,9 @@ namespace Content.Server.PowerSink
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<PowerSinkComponent, ExaminedEvent>(OnExamine);
         }
 
+        [SubscribeLocalEvent]
         private void OnExamine(EntityUid uid, PowerSinkComponent component, ExaminedEvent args)
         {
             if (!args.IsInDetailsRange || !TryComp<PowerConsumerComponent>(uid, out var consumer))

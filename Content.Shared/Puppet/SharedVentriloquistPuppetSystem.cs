@@ -15,26 +15,25 @@ public abstract partial class SharedVentriloquistPuppetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<VentriloquistPuppetComponent, UseAttemptEvent>(Cancel);
-        SubscribeLocalEvent<VentriloquistPuppetComponent, InteractionAttemptEvent>(CancelInteract);
-        SubscribeLocalEvent<VentriloquistPuppetComponent, DropAttemptEvent>(Cancel);
         SubscribeLocalEvent<VentriloquistPuppetComponent, PickupAttemptEvent>(Cancel);
         SubscribeLocalEvent<VentriloquistPuppetComponent, UpdateCanMoveEvent>(Cancel);
         SubscribeLocalEvent<VentriloquistPuppetComponent, EmoteAttemptEvent>(Cancel);
         SubscribeLocalEvent<VentriloquistPuppetComponent, ChangeDirectionAttemptEvent>(Cancel);
-        SubscribeLocalEvent<VentriloquistPuppetComponent, ComponentStartup>(OnStartup);
     }
 
+    [SubscribeLocalEvent]
     private void CancelInteract(Entity<VentriloquistPuppetComponent> ent, ref InteractionAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, VentriloquistPuppetComponent component, ComponentStartup args)
     {
         _blocker.UpdateCanMove(uid);
     }
 
+    [SubscribeLocalEvent]
     private void Cancel<T>(EntityUid uid, VentriloquistPuppetComponent component, T args) where T : CancellableEntityEventArgs
     {
         args.Cancel();

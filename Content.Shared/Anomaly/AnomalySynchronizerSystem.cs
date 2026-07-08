@@ -29,15 +29,6 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalySynchronizerComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<AnomalySynchronizerComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<AnomalySynchronizerComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<AnomalySynchronizerComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
-
-        SubscribeLocalEvent<AnomalyPulseEvent>(OnAnomalyPulse);
-        SubscribeLocalEvent<AnomalySeverityChangedEvent>(OnAnomalySeverityChanged);
-        SubscribeLocalEvent<AnomalyStabilityChangedEvent>(OnAnomalyStabilityChanged);
     }
 
     public override void Update(float frameTime)
@@ -106,6 +97,7 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<AnomalySynchronizerComponent> ent, ref PowerChangedEvent args)
     {
         if (args.Powered)
@@ -117,11 +109,13 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         DisconnectFromAnomaly(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<AnomalySynchronizerComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString(ent.Comp.ConnectedAnomaly.HasValue ? "anomaly-sync-examine-connected" : "anomaly-sync-examine-not-connected"));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetInteractionVerbs(Entity<AnomalySynchronizerComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null)
@@ -149,6 +143,7 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<AnomalySynchronizerComponent> ent, ref InteractHandEvent args)
     {
         TryAttachNearbyAnomaly(ent, args.User);
@@ -191,6 +186,7 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyPulse(ref AnomalyPulseEvent args)
     {
         var query = EntityQueryEnumerator<AnomalySynchronizerComponent>();
@@ -206,6 +202,7 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalySeverityChanged(ref AnomalySeverityChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalySynchronizerComponent>();
@@ -226,6 +223,7 @@ public sealed partial class AnomalySynchronizerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyStabilityChanged(ref AnomalyStabilityChangedEvent args)
     {
         var anomaly = Comp<AnomalyComponent>(args.Anomaly);

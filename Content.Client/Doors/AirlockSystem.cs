@@ -15,10 +15,9 @@ public sealed partial class AirlockSystem : SharedAirlockSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AirlockComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<AirlockComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(EntityUid uid, AirlockComponent comp, ComponentStartup args)
     {
         // Has to be on component startup because we don't know what order components initialize in and running this before DoorComponent inits _will_ crash.
@@ -79,6 +78,7 @@ public sealed partial class AirlockSystem : SharedAirlockSystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, AirlockComponent comp, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

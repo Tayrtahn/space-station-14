@@ -47,12 +47,6 @@ namespace Content.Server.Hands.Systems
 
             SubscribeLocalEvent<HandsComponent, DisarmedEvent>(OnDisarmed, before: new[] {typeof(StunSystem), typeof(SharedStaminaSystem)});
 
-            SubscribeLocalEvent<HandsComponent, ComponentGetState>(GetComponentState);
-
-            SubscribeLocalEvent<HandsComponent, BeforeExplodeEvent>(OnExploded);
-
-            SubscribeLocalEvent<HandsComponent, DropHandItemsEvent>(OnDropHandItems);
-
             CommandBinds.Builder
                 .Bind(ContentKeyFunctions.ThrowItemInHand, new PointerInputCmdHandler(HandleThrowItem))
                 .Register<HandsSystem>();
@@ -65,12 +59,13 @@ namespace Content.Server.Hands.Systems
             CommandBinds.Unregister<HandsSystem>();
         }
 
+        [SubscribeLocalEvent]
         private void GetComponentState(EntityUid uid, HandsComponent hands, ref ComponentGetState args)
         {
             args.State = new HandsComponentState(hands);
         }
 
-
+        [SubscribeLocalEvent]
         private void OnExploded(Entity<HandsComponent> ent, ref BeforeExplodeEvent args)
         {
             if (ent.Comp.DisableExplosionRecursion)
@@ -162,6 +157,7 @@ namespace Content.Server.Hands.Systems
             return true;
         }
 
+        [SubscribeLocalEvent]
         private void OnDropHandItems(Entity<HandsComponent> entity, ref DropHandItemsEvent args)
         {
             // If the holder doesn't have a physics component, they ain't moving

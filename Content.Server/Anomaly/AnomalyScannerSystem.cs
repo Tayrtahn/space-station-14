@@ -16,11 +16,6 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<AnomalySeverityChangedEvent>(OnScannerAnomalySeverityChanged);
-        SubscribeLocalEvent<AnomalyStabilityChangedEvent>(OnScannerAnomalyStabilityChanged);
-        SubscribeLocalEvent<AnomalyHealthChangedEvent>(OnScannerAnomalyHealthChanged);
-        SubscribeLocalEvent<AnomalyBehaviorChangedEvent>(OnScannerAnomalyBehaviorChanged);
-
         Subs.BuiEvents<AnomalyScannerComponent>(
             AnomalyScannerUiKey.Key,
             subs => subs.Event<BoundUIOpenedEvent>(OnScannerUiOpened)
@@ -90,6 +85,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         UpdateScannerWithNewAnomaly(uid, args.Args.Target.Value, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAnomalyHealthChanged(ref AnomalyHealthChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyScannerComponent>();
@@ -107,6 +103,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         UpdateScannerUi(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAnomalySeverityChanged(ref AnomalySeverityChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyScannerComponent>();
@@ -122,6 +119,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAnomalyStabilityChanged(ref AnomalyStabilityChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyScannerComponent>();
@@ -139,6 +137,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAnomalyBehaviorChanged(ref AnomalyBehaviorChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyScannerComponent>();

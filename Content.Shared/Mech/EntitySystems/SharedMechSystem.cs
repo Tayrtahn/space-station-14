@@ -44,23 +44,11 @@ public abstract partial class SharedMechSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MechComponent, MechToggleEquipmentEvent>(OnToggleEquipmentAction);
-        SubscribeLocalEvent<MechComponent, MechEjectPilotEvent>(OnEjectPilotEvent);
-        SubscribeLocalEvent<MechComponent, UserActivateInWorldEvent>(RelayInteractionEvent);
-        SubscribeLocalEvent<MechComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<MechComponent, DestructionEventArgs>(OnDestruction);
-        SubscribeLocalEvent<MechComponent, EntityStorageIntoContainerAttemptEvent>(OnEntityStorageDump);
-        SubscribeLocalEvent<MechComponent, GetAdditionalAccessEvent>(OnGetAdditionalAccess);
-        SubscribeLocalEvent<MechComponent, DragDropTargetEvent>(OnDragDrop);
-        SubscribeLocalEvent<MechComponent, CanDropTargetEvent>(OnCanDragDrop);
-
-        SubscribeLocalEvent<MechPilotComponent, GetMeleeWeaponEvent>(OnGetMeleeWeapon);
-        SubscribeLocalEvent<MechPilotComponent, CanAttackFromContainerEvent>(OnCanAttackFromContainer);
-        SubscribeLocalEvent<MechPilotComponent, AttackAttemptEvent>(OnAttackAttempt);
 
         InitializeRelay();
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleEquipmentAction(EntityUid uid, MechComponent component, MechToggleEquipmentEvent args)
     {
         if (args.Handled)
@@ -69,6 +57,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         CycleEquipment(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEjectPilotEvent(EntityUid uid, MechComponent component, MechEjectPilotEvent args)
     {
         if (args.Handled)
@@ -77,6 +66,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         TryEject(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void RelayInteractionEvent(EntityUid uid, MechComponent component, UserActivateInWorldEvent args)
     {
         var pilot = component.PilotSlot.ContainedEntity;
@@ -93,6 +83,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, MechComponent component, ComponentStartup args)
     {
         component.PilotSlot = _container.EnsureContainer<ContainerSlot>(uid, component.PilotSlotId);
@@ -101,17 +92,20 @@ public abstract partial class SharedMechSystem : EntitySystem
         UpdateAppearance(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(EntityUid uid, MechComponent component, DestructionEventArgs args)
     {
         BreakMech(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityStorageDump(Entity<MechComponent> entity, ref EntityStorageIntoContainerAttemptEvent args)
     {
         // There's no reason we should dump into /any/ of the mech's containers.
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAdditionalAccess(EntityUid uid, MechComponent component, ref GetAdditionalAccessEvent args)
     {
         var pilot = component.PilotSlot.ContainedEntity;
@@ -411,6 +405,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetMeleeWeapon(EntityUid uid, MechPilotComponent component, GetMeleeWeaponEvent args)
     {
         if (args.Handled)
@@ -424,11 +419,13 @@ public abstract partial class SharedMechSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCanAttackFromContainer(EntityUid uid, MechPilotComponent component, CanAttackFromContainerEvent args)
     {
         args.CanAttack = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAttackAttempt(EntityUid uid, MechPilotComponent component, AttackAttemptEvent args)
     {
         if (args.Target == component.Mech)
@@ -445,6 +442,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         _appearance.SetData(uid, MechVisuals.Broken, component.Broken, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnDragDrop(EntityUid uid, MechComponent component, ref DragDropTargetEvent args)
     {
         if (args.Handled)
@@ -460,6 +458,7 @@ public abstract partial class SharedMechSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfterEventArgs);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDragDrop(EntityUid uid, MechComponent component, ref CanDropTargetEvent args)
     {
         args.Handled = true;

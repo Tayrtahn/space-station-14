@@ -6,23 +6,22 @@ namespace Content.Shared.Trigger.Systems;
 /// <summary>
 /// This handles <see cref="TriggerOnEmbedComponent"/> subscriptions.
 /// </summary>
-public sealed class TriggerOnEmbedSystem : TriggerOnXSystem
+public sealed partial class TriggerOnEmbedSystem : TriggerOnXSystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnEmbedComponent, EmbedEvent>(OnEmbed);
-        SubscribeLocalEvent<TriggerOnUnembedComponent, EmbedDetachEvent>(OnStopEmbed);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbed(Entity<TriggerOnEmbedComponent> ent, ref EmbedEvent args)
     {
         var user = ent.Comp.UserIsEmbeddedInto ? args.Embedded : args.Shooter;
         Trigger.Trigger(ent, user, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnStopEmbed(Entity<TriggerOnUnembedComponent> ent, ref EmbedDetachEvent args)
     {
         var user = ent.Comp.UserIsEmbeddedInto ? args.Embedded : args.Detacher;

@@ -26,21 +26,16 @@ public sealed partial class UnpoweredFlashlightSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, GetVerbsEvent<ActivationVerb>>(AddToggleLightVerbs);
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, ToggleActionEvent>(OnToggleAction);
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, GotEmaggedEvent>(OnGotEmagged);
-        SubscribeLocalEvent<UnpoweredFlashlightComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, UnpoweredFlashlightComponent component, MapInitEvent args)
     {
         _actionContainer.EnsureAction(uid, ref component.ToggleActionEntity, component.ToggleAction);
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAction(EntityUid uid, UnpoweredFlashlightComponent component, ToggleActionEvent args)
     {
         if (args.Handled)
@@ -50,11 +45,13 @@ public sealed partial class UnpoweredFlashlightSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, UnpoweredFlashlightComponent component, GetItemActionsEvent args)
     {
         args.AddAction(component.ToggleActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleLightVerbs(EntityUid uid, UnpoweredFlashlightComponent component, GetVerbsEvent<ActivationVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -71,11 +68,13 @@ public sealed partial class UnpoweredFlashlightSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, UnpoweredFlashlightComponent component, MindAddedMessage args)
     {
         _actionsSystem.AddAction(uid, ref component.ToggleActionEntity, component.ToggleAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEmagged(EntityUid uid, UnpoweredFlashlightComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))

@@ -26,21 +26,10 @@ public sealed partial class ActivatableUISystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ActivatableUIComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ActivatableUIComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ActivatableUIComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<ActivatableUIComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<ActivatableUIComponent, HandDeselectedEvent>(OnHandDeselected);
-        SubscribeLocalEvent<ActivatableUIComponent, GotUnequippedHandEvent>(OnHandUnequipped);
-        SubscribeLocalEvent<ActivatableUIComponent, BoundUIClosedEvent>(OnUIClose);
-        SubscribeLocalEvent<ActivatableUIComponent, GetVerbsEvent<ActivationVerb>>(GetActivationVerb);
-        SubscribeLocalEvent<ActivatableUIComponent, GetVerbsEvent<Verb>>(GetVerb);
-
-        SubscribeLocalEvent<UserInterfaceComponent, OpenUiActionEvent>(OnActionPerform);
-
         InitializePower();
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<ActivatableUIComponent> ent, ref ComponentStartup args)
     {
         if (ent.Comp.Key == null)
@@ -56,6 +45,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         //     data.InteractionRange = 0;
     }
 
+    [SubscribeLocalEvent]
     private void OnActionPerform(EntityUid uid, UserInterfaceComponent component, OpenUiActionEvent args)
     {
         if (args.Handled || args.Key == null)
@@ -64,7 +54,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         args.Handled = _uiSystem.TryToggleUi(uid, args.Key, args.Performer);
     }
 
-
+    [SubscribeLocalEvent]
     private void GetActivationVerb(EntityUid uid, ActivatableUIComponent component, GetVerbsEvent<ActivationVerb> args)
     {
         if (component.VerbOnly || !ShouldAddVerb(uid, component, args))
@@ -79,6 +69,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void GetVerb(EntityUid uid, ActivatableUIComponent component, GetVerbsEvent<Verb> args)
     {
         if (!component.VerbOnly || !ShouldAddVerb(uid, component, args))
@@ -122,6 +113,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
             && RaiseCanOpenEventChecks(args.User, uid, silent: true); // silent to prevent popups or sounds when only looking at the verb
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, ActivatableUIComponent component, UseInHandEvent args)
     {
         if (args.Handled)
@@ -136,6 +128,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         args.Handled = InteractUI(args.User, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, ActivatableUIComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -150,6 +143,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         args.Handled = InteractUI(args.User, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, ActivatableUIComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -167,6 +161,7 @@ public sealed partial class ActivatableUISystem : EntitySystem
         args.Handled = InteractUI(args.User, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIClose(EntityUid uid, ActivatableUIComponent component, BoundUIClosedEvent args)
     {
         var user = args.Actor;
@@ -274,12 +269,14 @@ public sealed partial class ActivatableUISystem : EntitySystem
         _uiSystem.CloseUi(uid, aui.Key);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandDeselected(Entity<ActivatableUIComponent> ent, ref HandDeselectedEvent args)
     {
         if (ent.Comp.InHandsOnly && ent.Comp.RequireActiveHand)
             CloseAll(ent, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandUnequipped(Entity<ActivatableUIComponent> ent, ref GotUnequippedHandEvent args)
     {
         if (ent.Comp.InHandsOnly)

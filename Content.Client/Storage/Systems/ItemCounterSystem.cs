@@ -15,9 +15,9 @@ public sealed partial class ItemCounterSystem : SharedItemCounterSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemCounterComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, ItemCounterComponent comp, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null || comp.LayerStates.Count < 1)

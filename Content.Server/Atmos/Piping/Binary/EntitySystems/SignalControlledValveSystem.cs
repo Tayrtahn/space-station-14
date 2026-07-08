@@ -13,16 +13,15 @@ public sealed partial class SignalControlledValveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SignalControlledValveComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SignalControlledValveComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SignalControlledValveComponent comp, ComponentInit args)
     {
         _signal.EnsureSinkPorts(uid, comp.OpenPort, comp.ClosePort, comp.TogglePort);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, SignalControlledValveComponent comp, ref SignalReceivedEvent args)
     {
         if (!TryComp<GasValveComponent>(uid, out var valve))

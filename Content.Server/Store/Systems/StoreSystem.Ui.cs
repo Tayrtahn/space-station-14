@@ -64,6 +64,7 @@ public sealed partial class StoreSystem
         UpdateUserInterface(args.Actor, GetEntity(args.Entity), component);
     }
 
+    [SubscribeLocalEvent]
     private void BeforeActivatableUiOpen(EntityUid uid, StoreComponent component, BeforeActivatableUIOpenEvent args)
     {
         UpdateUserInterface(args.User, uid, component);

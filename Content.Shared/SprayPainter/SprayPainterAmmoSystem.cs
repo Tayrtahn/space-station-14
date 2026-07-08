@@ -18,11 +18,9 @@ public sealed partial class SprayPainterAmmoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SprayPainterAmmoComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<SprayPainterAmmoComponent, AfterInteractEvent>(OnAfterInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<SprayPainterAmmoComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach)
@@ -51,6 +49,7 @@ public sealed partial class SprayPainterAmmoSystem : EntitySystem
             PredictedQueueDel(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<SprayPainterAmmoComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

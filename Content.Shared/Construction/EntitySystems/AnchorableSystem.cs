@@ -45,20 +45,15 @@ public sealed partial class AnchorableSystem : EntitySystem
 
         SubscribeLocalEvent<AnchorableComponent, InteractUsingEvent>(OnInteractUsing,
             before: new[] { typeof(ItemSlotsSystem) }, after: new[] { typeof(SharedConstructionSystem) });
-        SubscribeLocalEvent<AnchorableComponent, TryAnchorCompletedEvent>(OnAnchorComplete);
-        SubscribeLocalEvent<AnchorableComponent, TryUnanchorCompletedEvent>(OnUnanchorComplete);
-        SubscribeLocalEvent<AnchorableComponent, ExaminedEvent>(OnAnchoredExamine);
-        SubscribeLocalEvent<AnchorableComponent, ComponentStartup>(OnAnchorStartup);
-        SubscribeLocalEvent<AnchorableComponent, AnchorStateChangedEvent>(OnAnchorStateChange);
-
-        SubscribeLocalEvent<AnchorOnlyOnStationComponent, AnchorAttemptEvent>(OnAnchorOnStation);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStartup(EntityUid uid, AnchorableComponent comp, ComponentStartup args)
     {
         _appearance.SetData(uid, AnchorVisuals.Anchored, Transform(uid).Anchored);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorOnStation(Entity<AnchorOnlyOnStationComponent> ent, ref AnchorAttemptEvent args)
     {
         if (_stationSystem.IsOnStation(ent, ent.Comp.OnlyCountLargestGrid))
@@ -68,6 +63,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStateChange(EntityUid uid, AnchorableComponent comp, AnchorStateChangedEvent args)
     {
         _appearance.SetData(uid, AnchorVisuals.Anchored, args.Anchored);
@@ -114,6 +110,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         TryToggleAnchor(uid, args.User, args.Used, anchorable, usingTool: usedTool);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchoredExamine(EntityUid uid, AnchorableComponent component, ExaminedEvent args)
     {
         var isAnchored = Comp<TransformComponent>(uid).Anchored;
@@ -128,6 +125,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         args.PushMarkup(Loc.GetString(messageId, ("target", uid)));
     }
 
+    [SubscribeLocalEvent]
     private void OnUnanchorComplete(EntityUid uid, AnchorableComponent component, TryUnanchorCompletedEvent args)
     {
         if (args.Cancelled || args.Used is not { } used)
@@ -148,6 +146,7 @@ public sealed partial class AnchorableSystem : EntitySystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorComplete(EntityUid uid, AnchorableComponent component, TryAnchorCompletedEvent args)
     {
         if (args.Cancelled || args.Used is not { } used)

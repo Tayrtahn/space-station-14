@@ -44,17 +44,11 @@ namespace Content.Client.Hands.Systems
         {
             base.Initialize();
 
-            SubscribeLocalEvent<HandsComponent, LocalPlayerAttachedEvent>(HandlePlayerAttached);
-            SubscribeLocalEvent<HandsComponent, LocalPlayerDetachedEvent>(HandlePlayerDetached);
-            SubscribeLocalEvent<HandsComponent, ComponentStartup>(OnHandsStartup);
-            SubscribeLocalEvent<HandsComponent, ComponentShutdown>(OnHandsShutdown);
-            SubscribeLocalEvent<HandsComponent, ComponentHandleState>(HandleComponentState);
-            SubscribeLocalEvent<HandsComponent, VisualsChangedEvent>(OnVisualsChanged);
-
             OnHandSetActive += OnHandActivated;
         }
 
         #region StateHandling
+        [SubscribeLocalEvent]
         private void HandleComponentState(Entity<HandsComponent> ent, ref ComponentHandleState args)
         {
             if (args.Current is not HandsComponentState state)
@@ -335,6 +329,7 @@ namespace Content.Client.Hands.Systems
             RaiseLocalEvent(held, new HeldVisualsUpdatedEvent(ent, revealedLayers), true);
         }
 
+        [SubscribeLocalEvent]
         private void OnVisualsChanged(EntityUid uid, HandsComponent component, VisualsChangedEvent args)
         {
             // update hands visuals if this item is in a hand (rather then inventory or other container).
@@ -346,22 +341,26 @@ namespace Content.Client.Hands.Systems
 
         #region Gui
 
+        [SubscribeLocalEvent]
         private void HandlePlayerAttached(EntityUid uid, HandsComponent component, LocalPlayerAttachedEvent args)
         {
             OnPlayerHandsAdded?.Invoke((uid, component));
         }
 
+        [SubscribeLocalEvent]
         private void HandlePlayerDetached(EntityUid uid, HandsComponent component, LocalPlayerDetachedEvent args)
         {
             OnPlayerHandsRemoved?.Invoke();
         }
 
+        [SubscribeLocalEvent]
         private void OnHandsStartup(EntityUid uid, HandsComponent component, ComponentStartup args)
         {
             if (_playerManager.LocalEntity == uid)
                 OnPlayerHandsAdded?.Invoke((uid, component));
         }
 
+        [SubscribeLocalEvent]
         private void OnHandsShutdown(EntityUid uid, HandsComponent component, ComponentShutdown args)
         {
             if (_playerManager.LocalEntity == uid)

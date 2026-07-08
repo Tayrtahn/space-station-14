@@ -23,40 +23,35 @@ public sealed partial class FoldableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FoldableComponent, GetVerbsEvent<AlternativeVerb>>(AddFoldVerb);
-        SubscribeLocalEvent<FoldableComponent, AfterAutoHandleStateEvent>(OnHandleState);
-
-        SubscribeLocalEvent<FoldableComponent, ComponentInit>(OnFoldableInit);
-        SubscribeLocalEvent<FoldableComponent, ContainerGettingInsertedAttemptEvent>(OnInsertEvent);
-        SubscribeLocalEvent<FoldableComponent, StorageOpenAttemptEvent>(OnFoldableOpenAttempt);
-        SubscribeLocalEvent<FoldableComponent, EntityStorageInsertedIntoAttemptEvent>(OnEntityStorageAttemptInsert);
-
-        SubscribeLocalEvent<FoldableComponent, StrapAttemptEvent>(OnStrapAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, FoldableComponent component, ref AfterAutoHandleStateEvent args)
     {
         SetFolded(uid, component, component.IsFolded);
     }
 
+    [SubscribeLocalEvent]
     private void OnFoldableInit(EntityUid uid, FoldableComponent component, ComponentInit args)
     {
         SetFolded(uid, component, component.IsFolded);
     }
 
+    [SubscribeLocalEvent]
     private void OnFoldableOpenAttempt(EntityUid uid, FoldableComponent component, ref StorageOpenAttemptEvent args)
     {
         if (component.IsFolded)
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     public void OnStrapAttempt(EntityUid uid, FoldableComponent comp, ref StrapAttemptEvent args)
     {
         if (comp.IsFolded)
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityStorageAttemptInsert(Entity<FoldableComponent> entity,
         ref EntityStorageInsertedIntoAttemptEvent args)
     {
@@ -89,6 +84,7 @@ public sealed partial class FoldableSystem : EntitySystem
         RaiseLocalEvent(uid, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertEvent(EntityUid uid, FoldableComponent component, ContainerGettingInsertedAttemptEvent args)
     {
         if (!component.IsFolded && !component.CanFoldInsideContainer)
@@ -143,6 +139,7 @@ public sealed partial class FoldableSystem : EntitySystem
 
     #region Verb
 
+    [SubscribeLocalEvent]
     private void AddFoldVerb(EntityUid uid, FoldableComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null)

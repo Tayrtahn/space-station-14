@@ -15,8 +15,6 @@ public sealed partial class MumbleAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MumbleAccentComponent, AccentGetEvent>(OnAccentGet);
         SubscribeLocalEvent<MumbleAccentComponent, EmoteEvent>(OnEmote, before: [typeof(VocalSystem)]);
     }
 
@@ -41,6 +39,7 @@ public sealed partial class MumbleAccentSystem : EntitySystem
         return _replacement.ApplyReplacements(message, "mumble");
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(Entity<MumbleAccentComponent> ent, ref AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message, ent.Comp);

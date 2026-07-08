@@ -10,10 +10,9 @@ public sealed partial class AccessToggleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AccessToggleComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<AccessToggleComponent> ent, ref ItemToggledEvent args)
     {
         _access.SetAccessEnabled(ent, args.Activated);

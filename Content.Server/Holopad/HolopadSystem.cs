@@ -47,49 +47,17 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // Holopad UI and bound user interface messages
-        SubscribeLocalEvent<HolopadComponent, BeforeActivatableUIOpenEvent>(OnUIOpen);
-        SubscribeLocalEvent<HolopadComponent, HolopadStartNewCallMessage>(OnHolopadStartNewCall);
-        SubscribeLocalEvent<HolopadComponent, HolopadAnswerCallMessage>(OnHolopadAnswerCall);
-        SubscribeLocalEvent<HolopadComponent, HolopadEndCallMessage>(OnHolopadEndCall);
-        SubscribeLocalEvent<HolopadComponent, HolopadActivateProjectorMessage>(OnHolopadActivateProjector);
-        SubscribeLocalEvent<HolopadComponent, HolopadStartBroadcastMessage>(OnHolopadStartBroadcast);
-        SubscribeLocalEvent<HolopadComponent, HolopadStationAiRequestMessage>(OnHolopadStationAiRequest);
-
-        // Holopad telephone events
-        SubscribeLocalEvent<HolopadComponent, TelephoneStateChangeEvent>(OnTelephoneStateChange);
-        SubscribeLocalEvent<HolopadComponent, TelephoneCallCommencedEvent>(OnHoloCallCommenced);
-        SubscribeLocalEvent<HolopadComponent, TelephoneCallEndedEvent>(OnHoloCallEnded);
-        SubscribeLocalEvent<HolopadComponent, TelephoneMessageSentEvent>(OnTelephoneMessageSent);
-
-        // Networked events
-        SubscribeNetworkEvent<HolopadUserTypingChangedEvent>(OnTypingChanged);
-
-        // Component start/shutdown events
-        SubscribeLocalEvent<HolopadComponent, ComponentInit>(OnHolopadInit);
-        SubscribeLocalEvent<HolopadComponent, ComponentShutdown>(OnHolopadShutdown);
-        SubscribeLocalEvent<HolopadUserComponent, ComponentInit>(OnHolopadUserInit);
-        SubscribeLocalEvent<HolopadUserComponent, ComponentShutdown>(OnHolopadUserShutdown);
-
-        // Misc events
-        SubscribeLocalEvent<HolopadUserComponent, EmoteEvent>(OnEmote);
-        SubscribeLocalEvent<HolopadUserComponent, JumpToCoreEvent>(OnJumpToCore);
-        SubscribeLocalEvent<HolopadComponent, GetVerbsEvent<AlternativeVerb>>(AddToggleProjectorVerb);
-        SubscribeLocalEvent<HolopadComponent, EntRemovedFromContainerMessage>(OnAiRemove);
-        SubscribeLocalEvent<HolopadComponent, MapUidChangedEvent>(OnMapUidChanged);
-        SubscribeLocalEvent<HolopadComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<HolopadComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-        SubscribeLocalEvent<HolopadUserComponent, MobStateChangedEvent>(OnMobStateChanged);
     }
 
     #region: Holopad UI bound user interface messages
 
+    [SubscribeLocalEvent]
     private void OnUIOpen(Entity<HolopadComponent> entity, ref BeforeActivatableUIOpenEvent args)
     {
         UpdateUIState(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadStartNewCall(Entity<HolopadComponent> source, ref HolopadStartNewCallMessage args)
     {
         if (IsHolopadControlLocked(source, args.Actor))
@@ -107,6 +75,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         _telephoneSystem.CallTelephone((source, sourceTelephone), (receiver, receiverTelephone), args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadAnswerCall(Entity<HolopadComponent> receiver, ref HolopadAnswerCallMessage args)
     {
         if (IsHolopadControlLocked(receiver, args.Actor))
@@ -144,6 +113,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         _telephoneSystem.AnswerTelephone((receiver, receiverTelephone), args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadEndCall(Entity<HolopadComponent> entity, ref HolopadEndCallMessage args)
     {
         if (!TryComp<TelephoneComponent>(entity, out var entityTelephone))
@@ -164,11 +134,13 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
             _telephoneSystem.EndTelephoneCalls((stationAiCore, telephone));
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadActivateProjector(Entity<HolopadComponent> entity, ref HolopadActivateProjectorMessage args)
     {
         ActivateProjector(entity, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadStartBroadcast(Entity<HolopadComponent> source, ref HolopadStartBroadcastMessage args)
     {
         if (IsHolopadControlLocked(source, args.Actor) || IsHolopadBroadcastOnCoolDown(source))
@@ -202,6 +174,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         ExecuteBroadcast(source, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadStationAiRequest(Entity<HolopadComponent> entity, ref HolopadStationAiRequestMessage args)
     {
         if (IsHolopadControlLocked(entity, args.Actor))
@@ -243,6 +216,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
 
     #region: Holopad telephone events
 
+    [SubscribeLocalEvent]
     private void OnTelephoneStateChange(Entity<HolopadComponent> holopad, ref TelephoneStateChangeEvent args)
     {
         // Update holopad visual and ambient states
@@ -265,6 +239,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         UpdateUIState(holopad);
     }
 
+    [SubscribeLocalEvent]
     private void OnHoloCallCommenced(Entity<HolopadComponent> source, ref TelephoneCallCommencedEvent args)
     {
         if (source.Comp.Hologram == null)
@@ -277,6 +252,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         LinkHolopadToUser(source, source.Comp.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnHoloCallEnded(Entity<HolopadComponent> entity, ref TelephoneCallEndedEvent args)
     {
         if (!TryComp<StationAiCoreComponent>(entity, out var stationAiCore))
@@ -287,6 +263,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
             _userInterfaceSystem.CloseUi(entity.Owner, HolopadUiKey.AiRequestWindow, insertedAi);
     }
 
+    [SubscribeLocalEvent]
     private void OnTelephoneMessageSent(Entity<HolopadComponent> holopad, ref TelephoneMessageSentEvent args)
     {
         LinkHolopadToUser(holopad, args.MessageSource);
@@ -296,6 +273,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
 
     #region: Networked events
 
+    [SubscribeNetworkEvent]
     private void OnTypingChanged(HolopadUserTypingChangedEvent ev, EntitySessionEventArgs args)
     {
         var uid = args.SenderSession.AttachedEntity;
@@ -324,6 +302,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
 
     #region: Component start/shutdown events
 
+    [SubscribeLocalEvent]
     private void OnHolopadInit(Entity<HolopadComponent> entity, ref ComponentInit args)
     {
         if (entity.Comp.User != null)
@@ -332,12 +311,14 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         _meta.AddFlag(entity, MetaDataFlags.ExtraTransformEvents);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadUserInit(Entity<HolopadUserComponent> entity, ref ComponentInit args)
     {
         foreach (var linkedHolopad in entity.Comp.LinkedHolopads)
             LinkHolopadToUser(linkedHolopad, entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadShutdown(Entity<HolopadComponent> entity, ref ComponentShutdown args)
     {
         if (TryComp<TelephoneComponent>(entity, out var telphone) && _telephoneSystem.IsTelephoneEngaged((entity.Owner, telphone)))
@@ -348,6 +329,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         UpdateAllUIStates();
     }
 
+    [SubscribeLocalEvent]
     private void OnHolopadUserShutdown(Entity<HolopadUserComponent> entity, ref ComponentShutdown args)
     {
         foreach (var linkedHolopad in entity.Comp.LinkedHolopads)
@@ -358,6 +340,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
 
     #region: Misc events
 
+    [SubscribeLocalEvent]
     private void OnEmote(Entity<HolopadUserComponent> entity, ref EmoteEvent args)
     {
         foreach (var linkedHolopad in entity.Comp.LinkedHolopads)
@@ -388,6 +371,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJumpToCore(Entity<HolopadUserComponent> entity, ref JumpToCoreEvent args)
     {
         if (!TryComp<StationAiHeldComponent>(entity, out var entityStationAiHeld))
@@ -402,6 +386,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         _telephoneSystem.EndTelephoneCalls((stationAiCore, stationAiCoreTelephone));
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleProjectorVerb(Entity<HolopadComponent> entity, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -436,6 +421,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnAiRemove(Entity<HolopadComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         if (!HasComp<StationAiCoreComponent>(entity))
@@ -447,12 +433,14 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         _telephoneSystem.EndTelephoneCalls((entity, entityTelephone));
     }
 
+    [SubscribeLocalEvent]
     private void OnMapUidChanged(Entity<HolopadComponent> entity, ref MapUidChangedEvent args)
     {
         UpdateHolopadControlLockoutStartTime(entity);
         UpdateAllUIStates();
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<HolopadComponent> entity, ref PowerChangedEvent args)
     {
         if (args.Powered)
@@ -463,11 +451,13 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         UpdateAllUIStates();
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(Entity<HolopadComponent> entity, ref AnchorStateChangedEvent args)
     {
         UpdateAllUIStates();
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<HolopadUserComponent> ent, ref MobStateChangedEvent args)
     {
         if (!HasComp<StationAiHeldComponent>(ent))

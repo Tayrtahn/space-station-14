@@ -29,11 +29,9 @@ public sealed partial class MaterialStorageSystem : SharedMaterialStorageSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MaterialStorageComponent, MachineDeconstructedEvent>(OnDeconstructed);
-
-        SubscribeAllEvent<EjectMaterialMessage>(OnEjectMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeconstructed(EntityUid uid, MaterialStorageComponent component, MachineDeconstructedEvent args)
     {
         if (!component.DropOnDeconstruct)
@@ -45,6 +43,7 @@ public sealed partial class MaterialStorageSystem : SharedMaterialStorageSystem
         }
     }
 
+    [SubscribeAllEvent]
     private void OnEjectMessage(EjectMaterialMessage msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not { } player)

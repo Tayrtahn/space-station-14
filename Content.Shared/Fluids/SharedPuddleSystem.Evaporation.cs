@@ -11,6 +11,7 @@ public abstract partial class SharedPuddleSystem
 {
     private static readonly TimeSpan EvaporationCooldown = TimeSpan.FromSeconds(1);
 
+    [SubscribeLocalEvent]
     private void OnEvaporationMapInit(Entity<EvaporationComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextTick = _timing.CurTime + EvaporationCooldown;

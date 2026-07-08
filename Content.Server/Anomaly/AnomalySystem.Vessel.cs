@@ -96,6 +96,7 @@ public sealed partial class AnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnVesselAnomalyStabilityChanged(ref AnomalyStabilityChangedEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyVesselComponent>();

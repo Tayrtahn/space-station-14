@@ -43,12 +43,9 @@ public abstract partial class SharedPortalSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PortalComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerbs);
-
-        SubscribeLocalEvent<PortalComponent, StartCollideEvent>(OnCollide);
-        SubscribeLocalEvent<PortalComponent, EndCollideEvent>(OnEndCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<PortalComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         // Traversal altverb for ghosts to use that bypasses normal functionality
@@ -85,6 +82,7 @@ public abstract partial class SharedPortalSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(Entity<PortalComponent> ent, ref StartCollideEvent args)
     {
         if (!ShouldCollide(args.OurFixtureId, args.OtherFixtureId, args.OurFixture, args.OtherFixture))
@@ -149,6 +147,7 @@ public abstract partial class SharedPortalSystem : EntitySystem
             TeleportRandomly(ent, subject);
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(Entity<PortalComponent> ent, ref EndCollideEvent args)
     {
         if (!ShouldCollide(args.OurFixtureId, args.OtherFixtureId, args.OurFixture, args.OtherFixture))

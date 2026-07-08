@@ -16,10 +16,9 @@ public sealed partial class MechSystem : SharedMechSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MechComponent, AppearanceChangeEvent>(OnAppearanceChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChanged(EntityUid uid, MechComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

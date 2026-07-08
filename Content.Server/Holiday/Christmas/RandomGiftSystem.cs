@@ -31,13 +31,10 @@ public sealed partial class RandomGiftSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-        SubscribeLocalEvent<RandomGiftComponent, MapInitEvent>(OnGiftMapInit);
-        SubscribeLocalEvent<RandomGiftComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<RandomGiftComponent, ExaminedEvent>(OnExamined);
         BuildIndex();
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, RandomGiftComponent component, ExaminedEvent args)
     {
         if (_whitelistSystem.IsWhitelistFail(component.ContentsViewers, args.Examiner) || component.SelectedEntity is null)
@@ -47,6 +44,7 @@ public sealed partial class RandomGiftSystem : EntitySystem
         args.PushText(Loc.GetString("gift-packin-contains", ("name", name)));
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, RandomGiftComponent component, UseInHandEvent args)
     {
         if (args.Handled)
@@ -73,6 +71,7 @@ public sealed partial class RandomGiftSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGiftMapInit(EntityUid uid, RandomGiftComponent component, MapInitEvent args)
     {
         if (component.InsaneMode)
@@ -81,6 +80,7 @@ public sealed partial class RandomGiftSystem : EntitySystem
             component.SelectedEntity = _random.Pick(_possibleGiftsSafe);
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<EntityPrototype>())

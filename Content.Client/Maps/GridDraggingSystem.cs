@@ -29,9 +29,9 @@ public sealed partial class GridDraggingSystem : SharedGridDraggingSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<GridDragToggleMessage>(OnToggleMessage);
     }
 
+    [SubscribeNetworkEvent]
     private void OnToggleMessage(GridDragToggleMessage ev)
     {
         if (Enabled == ev.Enabled)

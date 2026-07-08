@@ -24,8 +24,6 @@ namespace Content.Server.Storage.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<SpawnItemsOnUseComponent, UseInHandEvent>(OnUseInHand);
             SubscribeLocalEvent<SpawnItemsOnUseComponent, PriceCalculationEvent>(CalculatePrice, before: new[] { typeof(PricingSystem) });
         }
 
@@ -61,6 +59,7 @@ namespace Content.Server.Storage.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnUseInHand(EntityUid uid, SpawnItemsOnUseComponent component, UseInHandEvent args)
         {
             if (args.Handled)

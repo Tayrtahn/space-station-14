@@ -17,10 +17,9 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasPassiveVentComponent, AtmosDeviceUpdateEvent>(OnPassiveVentUpdated);
         }
 
+        [SubscribeLocalEvent]
         private void OnPassiveVentUpdated(EntityUid uid, GasPassiveVentComponent vent, ref AtmosDeviceUpdateEvent args)
         {
             var environment = _atmosphereSystem.GetContainingMixture(uid, args.Grid, args.Map, true, true);

@@ -9,10 +9,9 @@ public sealed partial class AnnounceOnSpawnSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnnounceOnSpawnComponent, MapInitEvent>(OnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, AnnounceOnSpawnComponent comp, MapInitEvent args)
     {
         var message = Loc.GetString(comp.Message);

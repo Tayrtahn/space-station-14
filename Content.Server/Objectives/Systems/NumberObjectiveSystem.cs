@@ -16,16 +16,15 @@ public sealed partial class NumberObjectiveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NumberObjectiveComponent, ObjectiveAssignedEvent>(OnAssigned);
-        SubscribeLocalEvent<NumberObjectiveComponent, ObjectiveAfterAssignEvent>(OnAfterAssign);
     }
 
+    [SubscribeLocalEvent]
     private void OnAssigned(EntityUid uid, NumberObjectiveComponent comp, ref ObjectiveAssignedEvent args)
     {
         comp.Target = _random.Next(comp.Min, comp.Max + 1);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAssign(EntityUid uid, NumberObjectiveComponent comp, ref ObjectiveAfterAssignEvent args)
     {
         if (comp.Title != null)

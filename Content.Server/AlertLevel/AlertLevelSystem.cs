@@ -20,8 +20,6 @@ public sealed partial class AlertLevelSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<StationInitializedEvent>(OnStationInitialize);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypeReload);
     }
 
     public override void Update(float time)
@@ -44,6 +42,7 @@ public sealed partial class AlertLevelSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStationInitialize(StationInitializedEvent args)
     {
         if (!TryComp<AlertLevelComponent>(args.Station, out var alertLevelComponent))
@@ -65,6 +64,7 @@ public sealed partial class AlertLevelSystem : EntitySystem
         SetLevel(args.Station, defaultLevel, false, false, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypeReload(PrototypesReloadedEventArgs args)
     {
         if (!args.ByType.TryGetValue(typeof(AlertLevelPrototype), out var alertPrototypes)

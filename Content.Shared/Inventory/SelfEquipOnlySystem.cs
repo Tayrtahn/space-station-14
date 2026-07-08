@@ -11,10 +11,9 @@ public sealed partial class SelfEquipOnlySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<SelfEquipOnlyComponent, BeingEquippedAttemptEvent>(OnBeingEquipped);
-        SubscribeLocalEvent<SelfEquipOnlyComponent, BeingUnequippedAttemptEvent>(OnBeingUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingEquipped(Entity<SelfEquipOnlyComponent> ent, ref BeingEquippedAttemptEvent args)
     {
         if (args.Cancelled)
@@ -27,6 +26,7 @@ public sealed partial class SelfEquipOnlySystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingUnequipped(Entity<SelfEquipOnlyComponent> ent, ref BeingUnequippedAttemptEvent args)
     {
         if (args.Cancelled)

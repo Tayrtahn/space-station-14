@@ -24,10 +24,9 @@ public sealed partial class ResistLockerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ResistLockerComponent, ContainerRelayMovementEntityEvent>(OnRelayMovement);
-        SubscribeLocalEvent<ResistLockerComponent, ResistLockerDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayMovement(EntityUid uid, ResistLockerComponent component, ref ContainerRelayMovementEntityEvent args)
     {
         if (component.IsResisting)
@@ -66,6 +65,7 @@ public sealed partial class ResistLockerSystem : EntitySystem
     }
 
     // TODO: Convert to DoAfterAttemptEvent
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, ResistLockerComponent component, DoAfterEvent args)
     {
         if (args.Handled)

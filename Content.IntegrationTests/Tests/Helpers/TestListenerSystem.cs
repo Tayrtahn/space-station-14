@@ -9,16 +9,13 @@ namespace Content.IntegrationTests.Tests.Helpers;
 /// <summary>
 /// Generic system that listens for and records any received events of a given type.
 /// </summary>
-public abstract class TestListenerSystem<TEvent> : EntitySystem where TEvent : notnull
+public abstract partial class TestListenerSystem<TEvent> : EntitySystem where TEvent : notnull
 {
     public override void Initialize()
     {
-        // TODO
-        // supporting broadcast events requires cleanup on test finish, which will probably require  changes to the
-        // test pair/pool manager and would conflict with #36797
-        SubscribeLocalEvent<TestListenerComponent, TEvent>(OnDirectedEvent);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnDirectedEvent(Entity<TestListenerComponent> ent, ref TEvent args)
     {
         ent.Comp.Events.GetOrNew(args.GetType()).Add(args);

@@ -46,11 +46,6 @@ public abstract partial class SharedSingularitySystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<SingularityComponent, ComponentStartup>(OnSingularityStartup);
-        SubscribeLocalEvent<SingularityDistortionComponent, SingularityLevelChangedEvent>(UpdateDistortion);
-        SubscribeLocalEvent<SingularityDistortionComponent, EntGotInsertedIntoContainerMessage>(UpdateDistortion);
-        SubscribeLocalEvent<SingularityDistortionComponent, EntGotRemovedFromContainerMessage>(UpdateDistortion);
-
         var vvHandle = Vvm.GetTypeHandler<SingularityComponent>();
         vvHandle.AddPath(nameof(SingularityComponent.Level), (_, comp) => comp.Level, SetLevel);
         vvHandle.AddPath(nameof(SingularityComponent.RadsPerLevel), (_, comp) => comp.RadsPerLevel, SetRadsPerLevel);
@@ -278,15 +273,16 @@ public abstract partial class SharedSingularitySystem : EntitySystem
             Level = singulo.Level;
         }
     }
-#endregion Serialization
+    #endregion Serialization
 
-#region EventHandlers
+    #region EventHandlers
     /// <summary>
     /// Syncs other components with the state of the singularity via event on startup.
     /// </summary>
     /// <param name="uid">The entity that is becoming a singularity.</param>
     /// <param name="comp">The singularity component that is being added to the entity.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     protected virtual void OnSingularityStartup(EntityUid uid, SingularityComponent comp, ComponentStartup args)
     {
         UpdateSingularityLevel(uid, comp);
@@ -298,6 +294,7 @@ public abstract partial class SharedSingularitySystem : EntitySystem
     /// <param name="uid">The uid of the distortion shader.</param>
     /// <param name="comp">The state of the distortion shader.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void UpdateDistortion(EntityUid uid, SingularityDistortionComponent comp, SingularityLevelChangedEvent args)
     {
         var newFalloffPower = GetFalloff(args.NewValue);
@@ -323,6 +320,7 @@ public abstract partial class SharedSingularitySystem : EntitySystem
     /// <param name="uid">The uid of the distortion shader.</param>
     /// <param name="comp">The state of the distortion shader.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void UpdateDistortion(EntityUid uid, SingularityDistortionComponent comp, EntGotInsertedIntoContainerMessage args)
     {
         var absFalloffPower = MathF.Abs(comp.FalloffPower);
@@ -339,6 +337,7 @@ public abstract partial class SharedSingularitySystem : EntitySystem
     /// <param name="uid">The uid of the distortion shader.</param>
     /// <param name="comp">The state of the distortion shader.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void UpdateDistortion(EntityUid uid, SingularityDistortionComponent comp, EntGotRemovedFromContainerMessage args)
     {
         var absFalloffPower = MathF.Abs(comp.FalloffPower);

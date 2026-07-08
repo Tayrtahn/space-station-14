@@ -33,10 +33,6 @@ public abstract partial class SharedNavMapSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // Data handling events
-        SubscribeLocalEvent<NavMapComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<ConfigurableNavMapBeaconComponent, ExaminedEvent>(OnConfigurableExamined);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,6 +132,7 @@ public abstract partial class SharedNavMapSystem : EntitySystem
 
     #region: Event handling
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, NavMapComponent component, ref ComponentGetState args)
     {
         Dictionary<Vector2i, int[]> chunks;
@@ -166,6 +163,7 @@ public abstract partial class SharedNavMapSystem : EntitySystem
         args.State = new NavMapDeltaState(chunks, component.Beacons, component.RegionProperties, new(component.Chunks.Keys));
     }
 
+    [SubscribeLocalEvent]
     private void OnConfigurableExamined(Entity<ConfigurableNavMapBeaconComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || !TryComp<NavMapBeaconComponent>(ent, out var navMap))

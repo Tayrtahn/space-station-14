@@ -24,16 +24,9 @@ public abstract partial class SharedTypingIndicatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<TypingIndicatorComponent, PlayerDetachedEvent>(OnPlayerDetached);
-
-        SubscribeLocalEvent<TypingIndicatorClothingComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<TypingIndicatorClothingComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<TypingIndicatorClothingComponent, InventoryRelayedEvent<BeforeShowTypingIndicatorEvent>>(BeforeShow);
-
-        SubscribeAllEvent<TypingChangedEvent>(OnTypingChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(PlayerAttachedEvent ev)
     {
         // when player poses entity we want to make sure that there is typing indicator
@@ -42,27 +35,32 @@ public abstract partial class SharedTypingIndicatorSystem : EntitySystem
         EnsureComp<AppearanceComponent>(ev.Entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(EntityUid uid, TypingIndicatorComponent component, PlayerDetachedEvent args)
     {
         // player left entity body - hide typing indicator
         SetTypingIndicatorState(uid, TypingIndicatorState.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<TypingIndicatorClothingComponent> entity, ref ClothingGotEquippedEvent args)
     {
         entity.Comp.GotEquippedTime = _timing.CurTime;
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<TypingIndicatorClothingComponent> entity, ref ClothingGotUnequippedEvent args)
     {
         entity.Comp.GotEquippedTime = null;
     }
 
+    [SubscribeLocalEvent]
     private void BeforeShow(Entity<TypingIndicatorClothingComponent> entity, ref InventoryRelayedEvent<BeforeShowTypingIndicatorEvent> args)
     {
         args.Args.TryUpdateTimeAndIndicator(entity.Comp.TypingIndicatorPrototype, entity.Comp.GotEquippedTime);
     }
 
+    [SubscribeAllEvent]
     private void OnTypingChanged(TypingChangedEvent ev, EntitySessionEventArgs args)
     {
         var uid = args.SenderSession.AttachedEntity;

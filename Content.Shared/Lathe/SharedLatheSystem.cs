@@ -27,10 +27,6 @@ public abstract partial class SharedLatheSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<EmagLatheRecipesComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<LatheComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-
         BuildInverseRecipeDictionary();
     }
 
@@ -65,6 +61,7 @@ public abstract partial class SharedLatheSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<LatheComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -99,6 +96,7 @@ public abstract partial class SharedLatheSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, EmagLatheRecipesComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -115,6 +113,7 @@ public abstract partial class SharedLatheSystem : EntitySystem
 
     protected abstract bool HasRecipe(EntityUid uid, LatheRecipePrototype recipe, LatheComponent component);
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs obj)
     {
         if (!obj.WasModified<LatheRecipePrototype>())

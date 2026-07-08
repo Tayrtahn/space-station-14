@@ -13,10 +13,9 @@ public sealed partial class InfantSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<InfantComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<InfantComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, InfantComponent component, ComponentStartup args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))
@@ -26,6 +25,7 @@ public sealed partial class InfantSystem : EntitySystem
         _sprite.SetScale((uid, sprite), component.VisualScale);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, InfantComponent component, ComponentShutdown args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

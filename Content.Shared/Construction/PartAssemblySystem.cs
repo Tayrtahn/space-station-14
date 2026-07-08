@@ -16,16 +16,15 @@ public sealed partial class PartAssemblySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PartAssemblyComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<PartAssemblyComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<PartAssemblyComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, PartAssemblyComponent component, ComponentInit args)
     {
         component.PartsContainer = _container.EnsureContainer<Container>(uid, component.ContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, PartAssemblyComponent component, InteractUsingEvent args)
     {
         if (!TryInsertPart(args.Used, uid, component))
@@ -33,6 +32,7 @@ public sealed partial class PartAssemblySystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(EntityUid uid, PartAssemblyComponent component, EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != component.ContainerId)

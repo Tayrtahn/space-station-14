@@ -16,11 +16,9 @@ public sealed partial class ContainerHeldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ContainerHeldComponent, EntInsertedIntoContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<ContainerHeldComponent, EntRemovedFromContainerMessage>(OnContainerModified);
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerModified(EntityUid uid, ContainerHeldComponent comp, ContainerModifiedMessage args)
     {
         if (!(HasComp<StorageComponent>(uid)

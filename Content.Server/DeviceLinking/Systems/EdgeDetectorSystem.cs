@@ -12,17 +12,16 @@ public sealed partial class EdgeDetectorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EdgeDetectorComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<EdgeDetectorComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, EdgeDetectorComponent comp, ComponentInit args)
     {
         _deviceLink.EnsureSinkPorts(uid, comp.InputPort);
         _deviceLink.EnsureSourcePorts(uid, comp.OutputHighPort, comp.OutputLowPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, EdgeDetectorComponent comp, ref SignalReceivedEvent args)
     {
         // only handle signals with edges

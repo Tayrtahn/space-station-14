@@ -77,14 +77,9 @@ public sealed partial class TegSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TegGeneratorComponent, AtmosDeviceUpdateEvent>(GeneratorUpdate);
-        SubscribeLocalEvent<TegGeneratorComponent, PowerChangedEvent>(GeneratorPowerChange);
-        SubscribeLocalEvent<TegGeneratorComponent, DeviceNetworkPacketEvent>(DeviceNetworkPacketReceived);
-
-        SubscribeLocalEvent<TegGeneratorComponent, ExaminedEvent>(GeneratorExamined);
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorExamined(EntityUid uid, TegGeneratorComponent component, ExaminedEvent args)
     {
         if (GetNodeGroup(uid) is not { IsFullyBuilt: true })
@@ -103,6 +98,7 @@ public sealed partial class TegSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorUpdate(EntityUid uid, TegGeneratorComponent component, ref AtmosDeviceUpdateEvent args)
     {
         var supplier = Comp<PowerSupplierComponent>(uid);
@@ -299,6 +295,7 @@ public sealed partial class TegSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorPowerChange(EntityUid uid, TegGeneratorComponent component, ref PowerChangedEvent args)
     {
         // TODO: I wish power events didn't go out on shutdown.
@@ -361,6 +358,7 @@ public sealed partial class TegSystem : EntitySystem
         return (inlet, outlet);
     }
 
+    [SubscribeLocalEvent]
     private void DeviceNetworkPacketReceived(
         EntityUid uid,
         TegGeneratorComponent component,

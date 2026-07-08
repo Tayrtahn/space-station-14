@@ -19,10 +19,9 @@ public sealed partial class NarcolepsySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NarcolepsyComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NarcolepsyComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextIncidentTime = _timing.CurTime + _random.Next(ent.Comp.MinTimeBetweenIncidents, ent.Comp.MaxTimeBetweenIncidents);

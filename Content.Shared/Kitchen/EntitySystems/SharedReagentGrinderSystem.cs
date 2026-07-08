@@ -44,22 +44,10 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InsideReagentGrinderComponent, SolutionChangedEvent>(OnBeakerSolutionContainerChanged);
-
-        SubscribeLocalEvent<ReagentGrinderComponent, ComponentStartup>(OnGrinderStartup);
-        SubscribeLocalEvent<ReagentGrinderComponent, ContainerIsRemovingAttemptEvent>(OnEntRemovingAttempt);
-        SubscribeLocalEvent<ReagentGrinderComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-        SubscribeLocalEvent<ReagentGrinderComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
         SubscribeLocalEvent((EntityUid uid, ReagentGrinderComponent _, ref PowerChangedEvent _) => UpdateUi(uid));
-        SubscribeLocalEvent<ReagentGrinderComponent, InteractUsingEvent>(OnInteractUsing);
-
-        SubscribeLocalEvent<ReagentGrinderComponent, ReagentGrinderStartMessage>(OnStartMessage);
-        SubscribeLocalEvent<ReagentGrinderComponent, ReagentGrinderToggleAutoModeMessage>(OnToggleAutoModeMessage);
-        SubscribeLocalEvent<ReagentGrinderComponent, ReagentGrinderEjectChamberAllMessage>(OnEjectChamberAllMessage);
-        SubscribeLocalEvent<ReagentGrinderComponent, ReagentGrinderEjectChamberContentMessage>(OnEjectChamberContentMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeakerSolutionContainerChanged(Entity<InsideReagentGrinderComponent> ent, ref SolutionChangedEvent args)
     {
         // Update the UI if the reagents inside the beaker are changed.
@@ -68,11 +56,13 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         UpdateUi(Transform(ent).ParentUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnGrinderStartup(Entity<ReagentGrinderComponent> ent, ref ComponentStartup args)
     {
         ent.Comp.InputContainer = _containerSystem.EnsureContainer<Container>(ent.Owner, ReagentGrinderComponent.InputContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemovingAttempt(Entity<ReagentGrinderComponent> ent, ref ContainerIsRemovingAttemptEvent args)
     {
         // Allow server states to be applied without cancelling container changes.
@@ -103,6 +93,7 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(EntityUid uid, ReagentGrinderComponent comp, EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ReagentGrinderComponent.BeakerSlotId
@@ -123,6 +114,7 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(EntityUid uid, ReagentGrinderComponent comp, EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ReagentGrinderComponent.BeakerSlotId
@@ -150,6 +142,7 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<ReagentGrinderComponent> ent, ref InteractUsingEvent args)
     {
         var heldEnt = args.Used;
@@ -187,11 +180,13 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
     /// </summary>
     public virtual void UpdateUi(EntityUid uid) { }
 
+    [SubscribeLocalEvent]
     private void OnStartMessage(Entity<ReagentGrinderComponent> ent, ref ReagentGrinderStartMessage message)
     {
         StartGrinder(ent, message.Program);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAutoModeMessage(Entity<ReagentGrinderComponent> ent, ref ReagentGrinderToggleAutoModeMessage message)
     {
         // Cycle through the enum values.
@@ -201,6 +196,7 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         UpdateUi(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEjectChamberAllMessage(Entity<ReagentGrinderComponent> ent, ref ReagentGrinderEjectChamberAllMessage message)
     {
         if (IsActive(ent.AsNullable()) || ent.Comp.InputContainer.ContainedEntities.Count <= 0)
@@ -211,6 +207,7 @@ public abstract partial class SharedReagentGrinderSystem : EntitySystem
         // UpdateUi is called in the resulting ContainerModifiedMessage.
     }
 
+    [SubscribeLocalEvent]
     private void OnEjectChamberContentMessage(Entity<ReagentGrinderComponent> ent, ref ReagentGrinderEjectChamberContentMessage message)
     {
         if (IsActive(ent.AsNullable()))

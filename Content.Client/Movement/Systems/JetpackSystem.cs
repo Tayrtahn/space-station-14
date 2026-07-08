@@ -20,7 +20,6 @@ public sealed partial class JetpackSystem : SharedJetpackSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<JetpackComponent, AppearanceChangeEvent>(OnJetpackAppearance);
     }
 
     protected override bool CanEnable(EntityUid uid, JetpackComponent component)
@@ -29,6 +28,7 @@ public sealed partial class JetpackSystem : SharedJetpackSystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackAppearance(EntityUid uid, JetpackComponent component, ref AppearanceChangeEvent args)
     {
         Appearance.TryGetData<bool>(uid, JetpackVisuals.Enabled, out var enabled, args.Component);

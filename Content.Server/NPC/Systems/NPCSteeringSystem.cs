@@ -108,9 +108,6 @@ public sealed partial class NPCSteeringSystem : SharedNPCSteeringSystem
         UpdatesBefore.Add(typeof(SharedPhysicsSystem));
         Subs.CVar(_configManager, CCVars.NPCEnabled, SetNPCEnabled, true);
         Subs.CVar(_configManager, CCVars.NPCPathfinding, SetNPCPathfinding, true);
-
-        SubscribeLocalEvent<NPCSteeringComponent, ComponentShutdown>(OnSteeringShutdown);
-        SubscribeNetworkEvent<RequestNPCSteeringDebugEvent>(OnDebugRequest);
     }
 
     private void SetNPCEnabled(bool obj)
@@ -142,6 +139,7 @@ public sealed partial class NPCSteeringSystem : SharedNPCSteeringSystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void OnDebugRequest(RequestNPCSteeringDebugEvent msg, EntitySessionEventArgs args)
     {
         if (!_admin.IsAdmin(args.SenderSession))
@@ -153,6 +151,7 @@ public sealed partial class NPCSteeringSystem : SharedNPCSteeringSystem
             _subscribedSessions.Remove(args.SenderSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnSteeringShutdown(EntityUid uid, NPCSteeringComponent component, ComponentShutdown args)
     {
         // Cancel any active pathfinding jobs as they're irrelevant.

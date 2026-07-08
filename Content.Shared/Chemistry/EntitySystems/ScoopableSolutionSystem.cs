@@ -18,10 +18,9 @@ public sealed partial class ScoopableSolutionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScoopableSolutionComponent, InteractUsingEvent>(OnInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<ScoopableSolutionComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)

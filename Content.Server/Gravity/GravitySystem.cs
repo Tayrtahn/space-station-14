@@ -5,12 +5,11 @@ using Robust.Shared.Map.Components;
 namespace Content.Server.Gravity
 {
     [UsedImplicitly]
-    public sealed class GravitySystem : SharedGravitySystem
+    public sealed partial class GravitySystem : SharedGravitySystem
     {
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<GravityComponent, ComponentInit>(OnGravityInit);
         }
 
         /// <summary>
@@ -49,6 +48,7 @@ namespace Content.Server.Gravity
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGravityInit(EntityUid uid, GravityComponent component, ComponentInit args)
         {
             RefreshGravity(uid);

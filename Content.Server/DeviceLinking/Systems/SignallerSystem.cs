@@ -14,16 +14,15 @@ public sealed partial class SignallerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SignallerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SignallerComponent, UseInHandEvent>(OnUseInHand);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SignallerComponent component, ComponentInit args)
     {
         _link.EnsureSourcePorts(uid, component.Port);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, SignallerComponent component, UseInHandEvent args)
     {
         if (args.Handled)

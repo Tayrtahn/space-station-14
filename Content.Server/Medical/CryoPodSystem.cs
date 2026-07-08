@@ -24,9 +24,6 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CryoPodComponent, AtmosDeviceUpdateEvent>(OnCryoPodUpdateAtmosphere);
-        SubscribeLocalEvent<CryoPodComponent, GasAnalyzerScanEvent>(OnGasAnalyzed);
     }
 
     public override void Update(float frameTime)
@@ -67,6 +64,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnCryoPodUpdateAtmosphere(Entity<CryoPodComponent> entity, ref AtmosDeviceUpdateEvent args)
     {
         if (!_nodeContainer.TryGetNode(entity.Owner, entity.Comp.PortName, out PortablePipeNode? portNode))
@@ -83,6 +81,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGasAnalyzed(Entity<CryoPodComponent> entity, ref GasAnalyzerScanEvent args)
     {
         if (!TryComp(entity, out CryoPodAirComponent? cryoPodAir))

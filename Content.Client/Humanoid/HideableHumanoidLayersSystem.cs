@@ -11,16 +11,15 @@ public sealed partial class HideableHumanoidLayersSystem : SharedHideableHumanoi
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HideableHumanoidLayersComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<HideableHumanoidLayersComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<HideableHumanoidLayersComponent> ent, ref ComponentInit args)
     {
         UpdateSprite(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<HideableHumanoidLayersComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateSprite(ent);

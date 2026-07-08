@@ -27,17 +27,9 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CardboardBoxComponent, StorageAfterOpenEvent>(AfterStorageOpen);
-        SubscribeLocalEvent<CardboardBoxComponent, StorageBeforeOpenEvent>(BeforeStorageOpen);
-        SubscribeLocalEvent<CardboardBoxComponent, StorageAfterCloseEvent>(AfterStorageClosed);
-        SubscribeLocalEvent<CardboardBoxComponent, GetAdditionalAccessEvent>(OnGetAdditionalAccess);
-        SubscribeLocalEvent<CardboardBoxComponent, ActivateInWorldEvent>(OnInteracted);
-        SubscribeLocalEvent<CardboardBoxComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-        SubscribeLocalEvent<CardboardBoxComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-
-        SubscribeLocalEvent<CardboardBoxComponent, DamageChangedEvent>(OnDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteracted(EntityUid uid, CardboardBoxComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled)
@@ -62,6 +54,7 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAdditionalAccess(EntityUid uid, CardboardBoxComponent component, ref GetAdditionalAccessEvent args)
     {
         if (component.Mover == null)
@@ -69,6 +62,7 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
         args.Entities.Add(component.Mover.Value);
     }
 
+    [SubscribeLocalEvent]
     private void BeforeStorageOpen(EntityUid uid, CardboardBoxComponent component, ref StorageBeforeOpenEvent args)
     {
         if (component.Quiet)
@@ -86,12 +80,14 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AfterStorageOpen(EntityUid uid, CardboardBoxComponent component, ref StorageAfterOpenEvent args)
     {
         // If this box has a stealth/chameleon effect, disable the stealth effect while the box is open.
         _stealth.SetEnabled(uid, false);
     }
 
+    [SubscribeLocalEvent]
     private void AfterStorageClosed(EntityUid uid, CardboardBoxComponent component, ref StorageAfterCloseEvent args)
     {
         // If this box has a stealth/chameleon effect, enable the stealth effect.
@@ -103,6 +99,7 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
     }
 
     //Relay damage to the mover
+    [SubscribeLocalEvent]
     private void OnDamage(EntityUid uid, CardboardBoxComponent component, DamageChangedEvent args)
     {
         if (args.DamageDelta == null || !args.DamageIncreased || component.Mover is not { } mover)
@@ -111,6 +108,7 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
         _damageable.ChangeDamage(mover, args.DamageDelta, origin: args.Origin);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(EntityUid uid, CardboardBoxComponent component, EntInsertedIntoContainerMessage args)
     {
         if (!TryComp(args.Entity, out MobMoverComponent? mover))
@@ -127,6 +125,7 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
     /// Through e.g. teleporting, it's possible for the mover to exit the box without opening it.
     /// Handle those situations but don't play the sound.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEntRemoved(EntityUid uid, CardboardBoxComponent component, EntRemovedFromContainerMessage args)
     {
         if (args.Entity != component.Mover)

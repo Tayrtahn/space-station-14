@@ -15,9 +15,9 @@ public sealed partial class ListeningSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<EntitySpokeEvent>(OnSpeak);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeak(EntitySpokeEvent ev)
     {
         PingListeners(ev.Source, ev.Message, ev.ObfuscatedMessage);

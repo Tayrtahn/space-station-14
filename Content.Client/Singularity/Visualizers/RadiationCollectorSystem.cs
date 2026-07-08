@@ -4,15 +4,14 @@ using Robust.Client.GameObjects;
 
 namespace Content.Client.Singularity.Visualizers;
 
-public sealed class RadiationCollectorSystem : VisualizerSystem<RadiationCollectorComponent>
+public sealed partial class RadiationCollectorSystem : VisualizerSystem<RadiationCollectorComponent>
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadiationCollectorComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<RadiationCollectorComponent, AnimationCompletedEvent>(OnAnimationCompleted);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, RadiationCollectorComponent comp, ComponentInit args)
     {
         comp.ActivateAnimation = new Animation
@@ -72,6 +71,7 @@ public sealed class RadiationCollectorSystem : VisualizerSystem<RadiationCollect
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(EntityUid uid, RadiationCollectorComponent comp, AnimationCompletedEvent args)
     {
         if (args.Key != RadiationCollectorComponent.AnimationKey)

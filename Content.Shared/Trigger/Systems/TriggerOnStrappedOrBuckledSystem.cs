@@ -13,32 +13,31 @@ public sealed partial class TriggerOnStrappedOrBuckledSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnStrappedComponent, StrappedEvent>(OnStrapped);
-        SubscribeLocalEvent<TriggerOnUnstrappedComponent, UnstrappedEvent>(OnUnstrapped);
-        SubscribeLocalEvent<TriggerOnBuckledComponent, BuckledEvent>(OnBuckled);
-        SubscribeLocalEvent<TriggerOnUnbuckledComponent, UnbuckledEvent>(OnUnbuckled);
     }
 
 
     #region Class Methods
     // Called by objects entities can be buckled to. (Chairs, surgical tables/)
+    [SubscribeLocalEvent]
     private void OnStrapped(Entity<TriggerOnStrappedComponent> ent, ref StrappedEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Strap, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnstrapped(Entity<TriggerOnUnstrappedComponent> ent, ref UnstrappedEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Strap, ent.Comp.KeyOut);
     }
 
     // Called by entities that are buckled to an object. (Mobs, players.)
+    [SubscribeLocalEvent]
     private void OnBuckled(Entity<TriggerOnBuckledComponent> ent, ref BuckledEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Buckle, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnbuckled(Entity<TriggerOnUnbuckledComponent> ent, ref UnbuckledEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Buckle, ent.Comp.KeyOut);

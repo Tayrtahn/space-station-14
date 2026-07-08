@@ -35,15 +35,9 @@ public sealed partial class PortableGeneratorSystem : SharedPortableGeneratorSys
         // Update UI after main system runs.
         UpdatesAfter.Add(typeof(GeneratorSystem));
         UpdatesAfter.Add(typeof(PowerNetSystem));
-
-        SubscribeLocalEvent<PortableGeneratorComponent, GetVerbsEvent<AlternativeVerb>>(GetAlternativeVerb);
-        SubscribeLocalEvent<PortableGeneratorComponent, GeneratorStartedEvent>(OnGeneratorStarted);
-        SubscribeLocalEvent<PortableGeneratorComponent, AutoGeneratorStartedEvent>(OnAutoGeneratorStarted);
-        SubscribeLocalEvent<PortableGeneratorComponent, PortableGeneratorStartMessage>(GeneratorStartMessage);
-        SubscribeLocalEvent<PortableGeneratorComponent, PortableGeneratorStopMessage>(GeneratorStopMessage);
-        SubscribeLocalEvent<PortableGeneratorComponent, PortableGeneratorSwitchOutputMessage>(GeneratorSwitchOutputMessage);
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorSwitchOutputMessage(EntityUid uid, PortableGeneratorComponent component, PortableGeneratorSwitchOutputMessage args)
     {
         var fuelGenerator = Comp<FuelGeneratorComponent>(uid);
@@ -53,11 +47,13 @@ public sealed partial class PortableGeneratorSystem : SharedPortableGeneratorSys
         _switchable.Cycle(uid, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorStopMessage(EntityUid uid, PortableGeneratorComponent component, PortableGeneratorStopMessage args)
     {
         StopGenerator(uid, component, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void GeneratorStartMessage(EntityUid uid, PortableGeneratorComponent component, PortableGeneratorStartMessage args)
     {
         StartGenerator(uid, component, args.Actor);
@@ -83,6 +79,7 @@ public sealed partial class PortableGeneratorSystem : SharedPortableGeneratorSys
         _generator.SetFuelGeneratorOn(uid, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneratorStarted(EntityUid uid, PortableGeneratorComponent component, GeneratorStartedEvent args)
     {
         if (args.Cancelled)
@@ -91,6 +88,7 @@ public sealed partial class PortableGeneratorSystem : SharedPortableGeneratorSys
         GeneratorTugged(uid, component, args.User, out args.Repeat);
     }
 
+    [SubscribeLocalEvent]
     private void OnAutoGeneratorStarted(EntityUid uid, PortableGeneratorComponent component, ref AutoGeneratorStartedEvent args)
     {
         GeneratorTugged(uid, component, null, out var repeat);
@@ -139,6 +137,7 @@ public sealed partial class PortableGeneratorSystem : SharedPortableGeneratorSys
         }
     }
 
+    [SubscribeLocalEvent]
     private void GetAlternativeVerb(EntityUid uid, PortableGeneratorComponent component,
         GetVerbsEvent<AlternativeVerb> args)
     {

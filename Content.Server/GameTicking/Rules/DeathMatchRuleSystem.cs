@@ -31,13 +31,9 @@ public sealed partial class DeathMatchRuleSystem : GameRuleSystem<DeathMatchRule
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PlayerBeforeSpawnEvent>(OnBeforeSpawn);
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnSpawnComplete);
-        SubscribeLocalEvent<KillReportedEvent>(OnKillReported);
-        SubscribeLocalEvent<DeathMatchRuleComponent, PlayerPointChangedEvent>(OnPointChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeSpawn(PlayerBeforeSpawnEvent ev)
     {
         var query = EntityQueryEnumerator<DeathMatchRuleComponent, RespawnTrackerComponent, PointManagerComponent, GameRuleComponent>();
@@ -65,6 +61,7 @@ public sealed partial class DeathMatchRuleSystem : GameRuleSystem<DeathMatchRule
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnComplete(PlayerSpawnCompleteEvent ev)
     {
         EnsureComp<KillTrackerComponent>(ev.Mob);
@@ -77,6 +74,7 @@ public sealed partial class DeathMatchRuleSystem : GameRuleSystem<DeathMatchRule
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnKillReported(ref KillReportedEvent ev)
     {
         var query = EntityQueryEnumerator<DeathMatchRuleComponent, PointManagerComponent, GameRuleComponent>();
@@ -105,6 +103,7 @@ public sealed partial class DeathMatchRuleSystem : GameRuleSystem<DeathMatchRule
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPointChanged(EntityUid uid, DeathMatchRuleComponent component, ref PlayerPointChangedEvent args)
     {
         if (component.Victor != null)

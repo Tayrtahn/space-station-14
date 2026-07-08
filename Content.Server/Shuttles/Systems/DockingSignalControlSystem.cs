@@ -11,16 +11,15 @@ public sealed partial class DockingSignalControlSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DockingSignalControlComponent, DockEvent>(OnDocked);
-        SubscribeLocalEvent<DockingSignalControlComponent, UndockEvent>(OnUndocked);
     }
 
+    [SubscribeLocalEvent]
     private void OnDocked(Entity<DockingSignalControlComponent> ent, ref DockEvent args)
     {
         _deviceLinkSystem.SendSignal(ent, ent.Comp.DockStatusSignalPort, signal: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnUndocked(Entity<DockingSignalControlComponent> ent, ref UndockEvent args)
     {
         _deviceLinkSystem.SendSignal(ent, ent.Comp.DockStatusSignalPort, signal: false);

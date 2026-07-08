@@ -32,16 +32,9 @@ namespace Content.Server.Access.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<AgentIDCardComponent, AfterInteractEvent>(OnAfterInteract);
-            // BUI
-            SubscribeLocalEvent<AgentIDCardComponent, AfterActivatableUIOpenEvent>(AfterUIOpen);
-            SubscribeLocalEvent<AgentIDCardComponent, AgentIDCardNameChangedMessage>(OnNameChanged);
-            SubscribeLocalEvent<AgentIDCardComponent, AgentIDCardJobChangedMessage>(OnJobChanged);
-            SubscribeLocalEvent<AgentIDCardComponent, AgentIDCardJobIconChangedMessage>(OnJobIconChanged);
-            SubscribeLocalEvent<AgentIDCardComponent, InventoryRelayedEvent<ChameleonControllerOutfitSelectedEvent>>(OnChameleonControllerOutfitChangedItem);
-            SubscribeLocalEvent<AgentIDCardComponent, InventoryRelayedEvent<VoiceMaskNameUpdatedEvent>>(OnVoiceMaskNameChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnChameleonControllerOutfitChangedItem(Entity<AgentIDCardComponent> ent, ref InventoryRelayedEvent<ChameleonControllerOutfitSelectedEvent> args)
         {
             if (!TryComp<IdCardComponent>(ent, out var idCardComp))
@@ -82,6 +75,7 @@ namespace Content.Server.Access.Systems
                 _chameleon.SetSelectedPrototype(ent, comp.IdCard, component: chameleonComp);
         }
 
+        [SubscribeLocalEvent]
         private void OnVoiceMaskNameChanged(Entity<AgentIDCardComponent> ent, ref InventoryRelayedEvent<VoiceMaskNameUpdatedEvent> args)
         {
             if (!TryComp<IdCardComponent>(ent, out var idCard))
@@ -93,6 +87,7 @@ namespace Content.Server.Access.Systems
             _cardSystem.TryChangeFullName(ent, args.Args.NewName, idCard);
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteract(EntityUid uid, AgentIDCardComponent component, AfterInteractEvent args)
         {
             if (args.Target == null || !args.CanReach || _lock.IsLocked(uid) ||
@@ -111,6 +106,7 @@ namespace Content.Server.Access.Systems
                 Dirty(uid, access);
         }
 
+        [SubscribeLocalEvent]
         private void AfterUIOpen(EntityUid uid, AgentIDCardComponent component, AfterActivatableUIOpenEvent args)
         {
             if (!_uiSystem.HasUi(uid, AgentIDCardUiKey.Key))
@@ -123,6 +119,7 @@ namespace Content.Server.Access.Systems
             _uiSystem.SetUiState(uid, AgentIDCardUiKey.Key, state);
         }
 
+        [SubscribeLocalEvent]
         private void OnJobChanged(EntityUid uid, AgentIDCardComponent comp, AgentIDCardJobChangedMessage args)
         {
             if (!TryComp<IdCardComponent>(uid, out var idCard))
@@ -131,6 +128,7 @@ namespace Content.Server.Access.Systems
             _cardSystem.TryChangeJobTitle(uid, args.Job, idCard);
         }
 
+        [SubscribeLocalEvent]
         private void OnNameChanged(EntityUid uid, AgentIDCardComponent comp, AgentIDCardNameChangedMessage args)
         {
             if (!TryComp<IdCardComponent>(uid, out var idCard))
@@ -139,6 +137,7 @@ namespace Content.Server.Access.Systems
             _cardSystem.TryChangeFullName(uid, args.Name, idCard);
         }
 
+        [SubscribeLocalEvent]
         private void OnJobIconChanged(EntityUid uid, AgentIDCardComponent comp, AgentIDCardJobIconChangedMessage args)
         {
             if (!TryComp<IdCardComponent>(uid, out var idCard))

@@ -23,19 +23,18 @@ public sealed partial class NpcFactionSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<NpcFactionMemberComponent, ComponentStartup>(OnFactionStartup);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnProtoReload);
-
         InitializeException();
         RefreshFactions();
     }
 
+    [SubscribeLocalEvent]
     private void OnProtoReload(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<NpcFactionPrototype>())
             RefreshFactions();
     }
 
+    [SubscribeLocalEvent]
     private void OnFactionStartup(Entity<NpcFactionMemberComponent> ent, ref ComponentStartup args)
     {
         RefreshFactions(ent);

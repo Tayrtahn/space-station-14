@@ -18,12 +18,9 @@ namespace Content.Client.Jittering
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<JitteringComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<JitteringComponent, ComponentShutdown>(OnShutdown);
-            SubscribeLocalEvent<JitteringComponent, AnimationCompletedEvent>(OnAnimationCompleted);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, JitteringComponent jittering, ComponentStartup args)
         {
             if (!TryComp(uid, out SpriteComponent? sprite))
@@ -35,6 +32,7 @@ namespace Content.Client.Jittering
             _animationPlayer.Play((uid, animationPlayer), GetAnimation(jittering, sprite), _jitterAnimationKey);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, JitteringComponent jittering, ComponentShutdown args)
         {
             if (TryComp(uid, out AnimationPlayerComponent? animationPlayer))
@@ -44,6 +42,7 @@ namespace Content.Client.Jittering
                 _sprite.SetOffset((uid, sprite), jittering.StartOffset);
         }
 
+        [SubscribeLocalEvent]
         private void OnAnimationCompleted(EntityUid uid, JitteringComponent jittering, AnimationCompletedEvent args)
         {
             if (args.Key != _jitterAnimationKey)

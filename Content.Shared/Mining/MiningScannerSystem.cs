@@ -19,21 +19,21 @@ public sealed partial class MiningScannerSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MiningScannerComponent, EntGotInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<MiningScannerComponent, EntGotRemovedFromContainerMessage>(OnRemoved);
-        SubscribeLocalEvent<MiningScannerComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(Entity<MiningScannerComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         UpdateViewerComponent(args.Container.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(Entity<MiningScannerComponent> ent, ref EntGotRemovedFromContainerMessage args)
     {
         UpdateViewerComponent(args.Container.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<MiningScannerComponent> ent, ref ItemToggledEvent args)
     {
         if (_container.TryGetContainingContainer((ent.Owner, null, null), out var container))

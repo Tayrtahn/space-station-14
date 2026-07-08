@@ -14,8 +14,6 @@ public sealed partial class CharacterInfoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<CharacterInfoEvent>(OnCharacterInfoEvent);
     }
 
     public void RequestCharacterInfo()
@@ -29,6 +27,7 @@ public sealed partial class CharacterInfoSystem : EntitySystem
         RaiseNetworkEvent(new RequestCharacterInfoEvent(GetNetEntity(entity.Value)));
     }
 
+    [SubscribeNetworkEvent]
     private void OnCharacterInfoEvent(CharacterInfoEvent msg, EntitySessionEventArgs args)
     {
         var entity = GetEntity(msg.NetEntity);

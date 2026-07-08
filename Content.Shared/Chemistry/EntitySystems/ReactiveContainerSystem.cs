@@ -15,11 +15,9 @@ public sealed partial class ReactiveContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ReactiveContainerComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<ReactiveContainerComponent, SolutionChangedEvent>(OnSolutionChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(EntityUid uid, ReactiveContainerComponent comp, EntInsertedIntoContainerMessage args)
     {
         // Only reactive entities can react with the solution
@@ -34,6 +32,7 @@ public sealed partial class ReactiveContainerSystem : EntitySystem
         _reactiveSystem.DoEntityReaction(args.Entity, solution, ReactionMethod.Touch);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionChange(EntityUid uid, ReactiveContainerComponent comp, SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.

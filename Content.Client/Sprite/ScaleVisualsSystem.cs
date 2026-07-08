@@ -11,10 +11,9 @@ public sealed partial class ScaleVisualsSystem : SharedScaleVisualsSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScaleVisualsComponent, AppearanceChangeEvent>(OnChangeData);
     }
 
+    [SubscribeLocalEvent]
     private void OnChangeData(Entity<ScaleVisualsComponent> ent, ref AppearanceChangeEvent args)
     {
         if (!args.AppearanceData.TryGetValue(ScaleVisuals.Scale, out var scale) ||

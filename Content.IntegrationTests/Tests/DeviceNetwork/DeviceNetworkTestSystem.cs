@@ -7,15 +7,13 @@ using Content.Shared.DeviceNetwork.Components;
 namespace Content.IntegrationTests.Tests.DeviceNetwork;
 
 [Reflect(false)]
-public sealed class DeviceNetworkTestSystem : EntitySystem
+public sealed partial class DeviceNetworkTestSystem : EntitySystem
 {
     public NetworkPayload LastPayload = default;
 
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeviceNetworkComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
     }
 
     public void SendBaselineTestEvent(EntityUid uid)
@@ -23,6 +21,7 @@ public sealed class DeviceNetworkTestSystem : EntitySystem
         RaiseLocalEvent(uid, new DeviceNetworkPacketEvent(0, "", 0, "", uid, new NetworkPayload()));
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, DeviceNetworkComponent component, DeviceNetworkPacketEvent args)
     {
         LastPayload = args.Data;

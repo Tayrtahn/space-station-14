@@ -40,8 +40,6 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<MeleeLungeEvent>(OnMeleeLunge);
         UpdatesOutsidePrediction = true;
     }
 
@@ -225,6 +223,7 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
         RaisePredictiveEvent(new LightAttackEvent(GetNetEntity(target), GetNetEntity(weaponUid), GetNetCoordinates(coordinates)));
     }
 
+    [SubscribeNetworkEvent]
     private void OnMeleeLunge(MeleeLungeEvent ev)
     {
         var ent = GetEntity(ev.Entity);

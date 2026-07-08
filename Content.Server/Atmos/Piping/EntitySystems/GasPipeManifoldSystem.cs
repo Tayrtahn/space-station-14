@@ -15,11 +15,9 @@ public sealed partial class GasPipeManifoldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasPipeManifoldComponent, ComponentInit>(OnCompInit);
-        SubscribeLocalEvent<GasPipeManifoldComponent, GasAnalyzerScanEvent>(OnAnalyzed);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompInit(Entity<GasPipeManifoldComponent> ent, ref ComponentInit args)
     {
         if (!TryComp<NodeContainerComponent>(ent, out var nodeContainer))
@@ -41,6 +39,7 @@ public sealed partial class GasPipeManifoldSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnalyzed(Entity<GasPipeManifoldComponent> ent, ref GasAnalyzerScanEvent args)
     {
         // All inlets and outlets have the same gas mixture

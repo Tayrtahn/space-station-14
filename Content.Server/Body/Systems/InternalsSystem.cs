@@ -17,10 +17,9 @@ public sealed partial class InternalsSystem : SharedInternalsSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<InternalsComponent, InhaleLocationEvent>(OnInhaleLocation);
-        SubscribeLocalEvent<InternalsComponent, StartingGearEquippedEvent>(OnStartingGear);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartingGear(EntityUid uid, InternalsComponent component, ref StartingGearEquippedEvent args)
     {
         if (component.BreathTools.Count == 0)
@@ -44,6 +43,7 @@ public sealed partial class InternalsSystem : SharedInternalsSystem
         ToggleInternals(uid, uid, force: false, component, ToggleMode.On);
     }
 
+    [SubscribeLocalEvent]
     private void OnInhaleLocation(Entity<InternalsComponent> ent, ref InhaleLocationEvent args)
     {
         if (AreInternalsWorking(ent))

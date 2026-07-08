@@ -14,10 +14,9 @@ public sealed partial class SolutionRegenerationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionRegenerationComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SolutionRegenerationComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextRegenTime = _timing.CurTime + ent.Comp.Duration;

@@ -15,19 +15,16 @@ public sealed partial class ToolOpenableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ToolOpenableComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ToolOpenableComponent, ToolOpenableDoAfterEventToggleOpen>(OnOpenableStateToggled);
-        SubscribeLocalEvent<ToolOpenableComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<ToolOpenableComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<ToolOpenableComponent, GetVerbsEvent<InteractionVerb>>(OnGetVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<ToolOpenableComponent> entity, ref ComponentInit args)
     {
         UpdateAppearance(entity);
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<ToolOpenableComponent> entity, ref InteractUsingEvent args)
     {
         if (args.Handled || entity.Comp.VerbOnly)
@@ -54,6 +51,7 @@ public sealed partial class ToolOpenableSystem : EntitySystem
         return _tool.UseTool(toolToToggle.Value, user, entity, time, neededToolQuantity, evt);
     }
 
+    [SubscribeLocalEvent]
     private void OnOpenableStateToggled(Entity<ToolOpenableComponent> entity, ref ToolOpenableDoAfterEventToggleOpen args)
     {
         if (args.Cancelled)
@@ -98,6 +96,7 @@ public sealed partial class ToolOpenableSystem : EntitySystem
 
     #region User interface functions
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ToolOpenableComponent> entity, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -113,6 +112,7 @@ public sealed partial class ToolOpenableSystem : EntitySystem
         args.PushMarkup(msg);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<ToolOpenableComponent> entity, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || !entity.Comp.HasVerbs)

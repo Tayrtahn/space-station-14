@@ -13,9 +13,9 @@ public sealed partial class ReplaceFloorOnSpawnSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ReplaceFloorOnSpawnComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ReplaceFloorOnSpawnComponent> ent, ref MapInitEvent args)
     {
         var xform = Transform(ent);

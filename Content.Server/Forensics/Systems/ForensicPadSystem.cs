@@ -23,11 +23,9 @@ namespace Content.Server.Forensics
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ForensicPadComponent, ExaminedEvent>(OnExamined);
-            SubscribeLocalEvent<ForensicPadComponent, AfterInteractEvent>(OnAfterInteract);
-            SubscribeLocalEvent<ForensicPadComponent, ForensicPadDoAfterEvent>(OnDoAfter);
         }
 
+        [SubscribeLocalEvent]
         private void OnExamined(EntityUid uid, ForensicPadComponent component, ExaminedEvent args)
         {
             if (!args.IsInDetailsRange)
@@ -42,6 +40,7 @@ namespace Content.Server.Forensics
             args.PushMarkup(Loc.GetString("forensic-pad-sample", ("sample", component.Sample)));
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteract(EntityUid uid, ForensicPadComponent component, AfterInteractEvent args)
         {
             if (!args.CanReach || args.Target == null)
@@ -97,6 +96,7 @@ namespace Content.Server.Forensics
             _doAfterSystem.TryStartDoAfter(doAfterEventArgs);
         }
 
+        [SubscribeLocalEvent]
         private void OnDoAfter(EntityUid uid, ForensicPadComponent padComponent, ForensicPadDoAfterEvent args)
         {
             if (args.Handled || args.Cancelled)

@@ -25,10 +25,9 @@ public sealed partial class HijackShuttleConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HijackShuttleConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, HijackShuttleConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress(args.MindId, args.Mind);

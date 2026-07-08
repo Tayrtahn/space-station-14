@@ -43,15 +43,9 @@ public sealed partial class DrainSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DrainComponent, MapInitEvent>(OnDrainMapInit);
-        SubscribeLocalEvent<DrainComponent, GetVerbsEvent<Verb>>(AddEmptyVerb);
-        SubscribeLocalEvent<DrainComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<DrainComponent, AfterInteractUsingEvent>(OnInteract);
-        SubscribeLocalEvent<DrainComponent, DrainDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<DrainComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnDrainMapInit(Entity<DrainComponent> ent, ref MapInitEvent args)
     {
         // Randomise puddle drains so roundstart ones don't all dump at the same time.
@@ -59,6 +53,7 @@ public sealed partial class DrainSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void AddEmptyVerb(Entity<DrainComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Using == null)
@@ -198,6 +193,7 @@ public sealed partial class DrainSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<DrainComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange
@@ -210,6 +206,7 @@ public sealed partial class DrainSystem : EntitySystem
         args.PushMarkup(text);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(Entity<DrainComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (!args.CanReach || args.Target == null ||
@@ -237,6 +234,7 @@ public sealed partial class DrainSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfterArgs);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<DrainComponent> ent, ref DrainDoAfterEvent args)
     {
         if (args.Target == null)
@@ -258,6 +256,7 @@ public sealed partial class DrainSystem : EntitySystem
 
     // Prevent a debug assert.
     // See https://github.com/space-wizards/space-station-14/pull/35314
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<DrainComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity was our contained solution

@@ -61,36 +61,14 @@ public sealed partial class PullingSystem : EntitySystem
         UpdatesAfter.Add(typeof(SharedPhysicsSystem));
         UpdatesOutsidePrediction = true;
 
-        SubscribeLocalEvent<PullableComponent, MoveInputEvent>(OnPullableMoveInput);
-        SubscribeLocalEvent<PullableComponent, CollisionChangeEvent>(OnPullableCollisionChange);
-        SubscribeLocalEvent<PullableComponent, JointRemovedEvent>(OnJointRemoved);
-        SubscribeLocalEvent<PullableComponent, GetVerbsEvent<Verb>>(AddPullVerbs);
-        SubscribeLocalEvent<PullableComponent, EntGotInsertedIntoContainerMessage>(OnPullableContainerInsert);
-        SubscribeLocalEvent<PullableComponent, ModifyUncuffDurationEvent>(OnModifyUncuffDuration);
-        SubscribeLocalEvent<PullableComponent, StopBeingPulledAlertEvent>(OnStopBeingPulledAlert);
-        SubscribeLocalEvent<PullableComponent, GetInteractingEntitiesEvent>(OnGetInteractingEntities);
-
         SubscribeLocalEvent<PullerComponent, MobStateChangedEvent>(OnStateChanged, after: [typeof(MobThresholdSystem)]);
-        SubscribeLocalEvent<PullerComponent, AfterAutoHandleStateEvent>(OnAfterState);
-        SubscribeLocalEvent<PullerComponent, EntGotInsertedIntoContainerMessage>(OnPullerContainerInsert);
-        SubscribeLocalEvent<PullerComponent, EntityUnpausedEvent>(OnPullerUnpaused);
-        SubscribeLocalEvent<PullerComponent, VirtualItemDeletedEvent>(OnVirtualItemDeleted);
-        SubscribeLocalEvent<PullerComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
-        SubscribeLocalEvent<PullerComponent, DropHandItemsEvent>(OnDropHandItems);
-        SubscribeLocalEvent<PullerComponent, StopPullingAlertEvent>(OnStopPullingAlert);
-
-        SubscribeLocalEvent<HandsComponent, PullStartedMessage>(HandlePullStarted);
-        SubscribeLocalEvent<HandsComponent, PullStoppedMessage>(HandlePullStopped);
-
-        SubscribeLocalEvent<PullableComponent, StrappedEvent>(OnBuckled);
-        SubscribeLocalEvent<PullableComponent, BuckledEvent>(OnGotBuckled);
-        SubscribeLocalEvent<ActivePullerComponent, TargetHandcuffedEvent>(OnTargetHandcuffed);
 
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.ReleasePulledObject, InputCmdHandler.FromDelegate(OnReleasePulledObject, handle: false))
             .Register<PullingSystem>();
     }
 
+    [SubscribeLocalEvent]
     private void OnTargetHandcuffed(Entity<ActivePullerComponent> ent, ref TargetHandcuffedEvent args)
     {
         if (!TryComp<PullerComponent>(ent, out var comp))
@@ -108,6 +86,7 @@ public sealed partial class PullingSystem : EntitySystem
         TryStopPull(comp.Pulling.Value, pullableComp);
     }
 
+    [SubscribeLocalEvent]
     private void HandlePullStarted(EntityUid uid, HandsComponent component, PullStartedMessage args)
     {
         if (args.PullerUid != uid)
@@ -122,6 +101,7 @@ public sealed partial class PullingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandlePullStopped(EntityUid uid, HandsComponent component, PullStoppedMessage args)
     {
         if (args.PullerUid != uid)
@@ -150,6 +130,7 @@ public sealed partial class PullingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBuckled(Entity<PullableComponent> ent, ref StrappedEvent args)
     {
         // Prevent people from pulling the entity they are buckled to
@@ -157,17 +138,20 @@ public sealed partial class PullingSystem : EntitySystem
             StopPulling(ent, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotBuckled(Entity<PullableComponent> ent, ref BuckledEvent args)
     {
         StopPulling(ent, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetInteractingEntities(Entity<PullableComponent> ent, ref GetInteractingEntitiesEvent args)
     {
         if (ent.Comp.Puller != null)
             args.InteractingEntities.Add(ent.Comp.Puller.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterState(Entity<PullerComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (ent.Comp.Pulling == null)
@@ -176,6 +160,7 @@ public sealed partial class PullingSystem : EntitySystem
             EnsureComp<ActivePullerComponent>(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnDropHandItems(EntityUid uid, PullerComponent pullerComp, DropHandItemsEvent args)
     {
         if (pullerComp.Pulling == null || pullerComp.NeedsHands)
@@ -187,6 +172,7 @@ public sealed partial class PullingSystem : EntitySystem
         TryStopPull(pullerComp.Pulling.Value, pullableComp, uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnStopPullingAlert(Entity<PullerComponent> ent, ref StopPullingAlertEvent args)
     {
         if (args.Handled)
@@ -196,6 +182,7 @@ public sealed partial class PullingSystem : EntitySystem
         args.Handled = TryStopPull(ent.Comp.Pulling.Value, pullable, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPullerContainerInsert(Entity<PullerComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         if (ent.Comp.Pulling == null)
@@ -207,11 +194,13 @@ public sealed partial class PullingSystem : EntitySystem
         TryStopPull(ent.Comp.Pulling.Value, pulling, ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnPullableContainerInsert(Entity<PullableComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         TryStopPull(ent.Owner, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnModifyUncuffDuration(Entity<PullableComponent> ent, ref ModifyUncuffDurationEvent args)
     {
         if (!ent.Comp.BeingPulled)
@@ -224,6 +213,7 @@ public sealed partial class PullingSystem : EntitySystem
         args.Duration *= 2;
     }
 
+    [SubscribeLocalEvent]
     private void OnStopBeingPulledAlert(Entity<PullableComponent> ent, ref StopBeingPulledAlertEvent args)
     {
         if (args.Handled)
@@ -238,11 +228,13 @@ public sealed partial class PullingSystem : EntitySystem
         CommandBinds.Unregister<PullingSystem>();
     }
 
+    [SubscribeLocalEvent]
     private void OnPullerUnpaused(EntityUid uid, PullerComponent component, ref EntityUnpausedEvent args)
     {
         component.NextThrow += args.PausedTime;
     }
 
+    [SubscribeLocalEvent]
     private void OnVirtualItemDeleted(EntityUid uid, PullerComponent component, VirtualItemDeletedEvent args)
     {
         // If client deletes the virtual hand then stop the pull.
@@ -258,6 +250,7 @@ public sealed partial class PullingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AddPullVerbs(EntityUid uid, PullableComponent component, GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -290,6 +283,7 @@ public sealed partial class PullingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovespeed(EntityUid uid, PullerComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         if (TryComp<HeldSpeedModifierComponent>(component.Pulling, out var heldMoveSpeed) && component.Pulling.HasValue)
@@ -303,6 +297,7 @@ public sealed partial class PullingSystem : EntitySystem
         args.ModifySpeed(component.WalkSpeedModifier, component.SprintSpeedModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnPullableMoveInput(EntityUid uid, PullableComponent component, ref MoveInputEvent args)
     {
         // If someone moves then break their pulling.
@@ -317,6 +312,7 @@ public sealed partial class PullingSystem : EntitySystem
         TryStopPull(uid, component, user: uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnPullableCollisionChange(EntityUid uid, PullableComponent component, ref CollisionChangeEvent args)
     {
         // IDK what this is supposed to be.
@@ -326,6 +322,7 @@ public sealed partial class PullingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJointRemoved(EntityUid uid, PullableComponent component, JointRemovedEvent args)
     {
         // Just handles the joint getting nuked without going through pulling system (valid behavior).

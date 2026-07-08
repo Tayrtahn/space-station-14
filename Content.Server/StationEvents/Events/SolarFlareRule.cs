@@ -22,7 +22,6 @@ public sealed partial class SolarFlareRule : StationEventSystem<SolarFlareRuleCo
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadioReceiveAttemptEvent>(OnRadioReceiveAttempt);
     }
 
     protected override void Started(EntityUid uid, SolarFlareRuleComponent comp, GameRuleComponent gameRule, GameRuleStartedEvent args)
@@ -59,6 +58,7 @@ public sealed partial class SolarFlareRule : StationEventSystem<SolarFlareRuleCo
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRadioReceiveAttempt(ref RadioReceiveAttemptEvent args)
     {
         var query = EntityQueryEnumerator<SolarFlareRuleComponent, GameRuleComponent>();

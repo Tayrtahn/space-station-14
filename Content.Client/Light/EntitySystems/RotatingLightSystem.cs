@@ -40,18 +40,16 @@ public sealed partial class RotatingLightSystem : SharedRotatingLightSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RotatingLightComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<RotatingLightComponent, AfterAutoHandleStateEvent>(OnAfterAutoHandleState);
-        SubscribeLocalEvent<RotatingLightComponent, AnimationCompletedEvent>(OnAnimationComplete);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, RotatingLightComponent comp, ComponentStartup args)
     {
         var player = EnsureComp<AnimationPlayerComponent>(uid);
         PlayAnimation(uid, comp, player);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAutoHandleState(EntityUid uid, RotatingLightComponent comp, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<AnimationPlayerComponent>(uid, out var player))
@@ -67,6 +65,7 @@ public sealed partial class RotatingLightSystem : SharedRotatingLightSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationComplete(EntityUid uid, RotatingLightComponent comp, AnimationCompletedEvent args)
     {
         if (!args.Finished)

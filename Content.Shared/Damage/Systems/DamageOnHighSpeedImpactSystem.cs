@@ -22,9 +22,9 @@ public sealed partial class DamageOnHighSpeedImpactSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageOnHighSpeedImpactComponent, StartCollideEvent>(HandleCollide);
     }
 
+    [SubscribeLocalEvent]
     private void HandleCollide(EntityUid uid, DamageOnHighSpeedImpactComponent component, ref StartCollideEvent args)
     {
         if (!args.OurFixture.Hard || !args.OtherFixture.Hard)

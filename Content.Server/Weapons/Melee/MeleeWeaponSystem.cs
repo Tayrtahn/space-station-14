@@ -21,8 +21,6 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MeleeSpeechComponent, MeleeHitEvent>(OnSpeechHit);
     }
 
     protected override bool ArcRaySuccessful(EntityUid targetUid,
@@ -90,6 +88,7 @@ public sealed partial class MeleeWeaponSystem : SharedMeleeWeaponSystem
         RaiseNetworkEvent(new MeleeLungeEvent(GetNetEntity(user), GetNetEntity(weapon), angle, localPos, animation), filter);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeechHit(EntityUid owner, MeleeSpeechComponent comp, MeleeHitEvent args)
     {
         if (!args.IsHit ||

@@ -23,10 +23,6 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AlertsComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<AlertsComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<AlertsComponent, ComponentHandleState>(OnHandleState);
     }
 
     protected override void HandledAlert()
@@ -54,6 +50,7 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<AlertsComponent> alerts, ref ComponentHandleState args)
     {
         if (args.Current is not AlertComponentState cast)
@@ -96,6 +93,7 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
             SyncAlerts?.Invoke(this, entity.Comp.Alerts);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(EntityUid uid, AlertsComponent component, LocalPlayerAttachedEvent args)
     {
         if (_playerManager.LocalEntity != uid)
@@ -114,6 +112,7 @@ public sealed partial class ClientAlertsSystem : AlertsSystem
         ClearAlerts?.Invoke(this, EventArgs.Empty);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(EntityUid uid, AlertsComponent component, LocalPlayerDetachedEvent args)
     {
         ClearAlerts?.Invoke(this, EventArgs.Empty);

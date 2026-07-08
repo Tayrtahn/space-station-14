@@ -32,8 +32,6 @@ public sealed partial class TipsSystem : SharedTipsSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(OnGameRunLevelChanged);
         Subs.CVar(_cfg, CCVars.TipsEnabled, SetEnabled, true);
         Subs.CVar(_cfg, CCVars.TipFrequencyOutOfRound, value => _tipTimeOutOfRound = value, true);
         Subs.CVar(_cfg, CCVars.TipFrequencyInRound, value => _tipTimeInRound = value, true);
@@ -43,6 +41,7 @@ public sealed partial class TipsSystem : SharedTipsSystem
         RecalculateNextTipTime();
     }
 
+    [SubscribeLocalEvent]
     private void OnGameRunLevelChanged(GameRunLevelChangedEvent ev)
     {
         // reset for lobby -> inround

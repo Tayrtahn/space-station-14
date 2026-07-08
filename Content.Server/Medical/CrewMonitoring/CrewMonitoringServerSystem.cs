@@ -21,9 +21,6 @@ public sealed partial class CrewMonitoringServerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CrewMonitoringServerComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<CrewMonitoringServerComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<CrewMonitoringServerComponent, DeviceNetServerDisconnectedEvent>(OnDisconnected);
     }
 
     public override void Update(float frameTime)
@@ -51,6 +48,7 @@ public sealed partial class CrewMonitoringServerSystem : EntitySystem
     /// <summary>
     /// Adds or updates a sensor status entry if the received package is a sensor status update
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, CrewMonitoringServerComponent component, DeviceNetworkPacketEvent args)
     {
         var sensorStatus = _sensors.PacketToSuitSensor(args.Data);
@@ -64,6 +62,7 @@ public sealed partial class CrewMonitoringServerSystem : EntitySystem
     /// <summary>
     /// Clears the servers sensor status list
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, CrewMonitoringServerComponent component, ComponentRemove args)
     {
         component.SensorStatus.Clear();
@@ -105,6 +104,7 @@ public sealed partial class CrewMonitoringServerSystem : EntitySystem
     /// <summary>
     /// Clears sensor data on disconnect
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDisconnected(EntityUid uid, CrewMonitoringServerComponent component, ref DeviceNetServerDisconnectedEvent _)
     {
         component.SensorStatus.Clear();

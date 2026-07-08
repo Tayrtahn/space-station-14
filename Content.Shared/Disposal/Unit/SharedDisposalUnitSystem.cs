@@ -59,51 +59,30 @@ public abstract partial class SharedDisposalUnitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DisposalUnitComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<DisposalUnitComponent, BeforeExplodeEvent>(OnExploded);
-        SubscribeLocalEvent<DisposalUnitComponent, PowerChangedEvent>(OnPowerChange);
-        SubscribeLocalEvent<DisposalUnitComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-        SubscribeLocalEvent<DisposalUnitComponent, PreventCollideEvent>(OnPreventCollide);
-        SubscribeLocalEvent<DisposalUnitComponent, GotEmaggedEvent>(OnEmagged);
-
-        // See SharedDisposalUnitSystem.Interactions
-        SubscribeLocalEvent<DisposalUnitComponent, GetVerbsEvent<InteractionVerb>>(AddInteractionVerb);
-        SubscribeLocalEvent<DisposalUnitComponent, GetVerbsEvent<AlternativeVerb>>(AddAltVerbs);
-        SubscribeLocalEvent<DisposalUnitComponent, GetVerbsEvent<Verb>>(AddEnterOrExitVerb);
-        SubscribeLocalEvent<DisposalUnitComponent, DisposalDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<DisposalUnitComponent, BeforeThrowInsertEvent>(OnThrowInsert);
-        SubscribeLocalEvent<DisposalUnitComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<DisposalUnitComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<DisposalUnitComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-        SubscribeLocalEvent<DisposalUnitComponent, ContainerRelayMovementEntityEvent>(OnMovement);
-        SubscribeLocalEvent<DisposalUnitComponent, CanDropTargetEvent>(OnCanDragDropOn);
-        SubscribeLocalEvent<DisposalUnitComponent, DragDropTargetEvent>(OnDragDropOn);
-        SubscribeLocalEvent<DisposalUnitComponent, GetDumpableVerbEvent>(OnGetDumpableVerb);
-        SubscribeLocalEvent<DisposalUnitComponent, DumpEvent>(OnDump);
-
-        // See SharedDisposalUnitSystem.Visuals
-        SubscribeLocalEvent<DisposalUnitComponent, DisposalUnitUiButtonPressedMessage>(OnUiButtonPressed);
     }
 
     #region: Event handling
 
+    [SubscribeLocalEvent]
     protected virtual void OnComponentInit(Entity<DisposalUnitComponent> ent, ref ComponentInit args)
     {
         ent.Comp.Container = _container.EnsureContainer<Container>(ent, nameof(DisposalUnitComponent));
     }
 
+    [SubscribeLocalEvent]
     private void OnExploded(Entity<DisposalUnitComponent> ent, ref BeforeExplodeEvent args)
     {
         args.Contents.AddRange(GetContainedEntities(ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChange(Entity<DisposalUnitComponent> ent, ref PowerChangedEvent args)
     {
         RecalculateFlushTime(ent, true);
         UpdateVisualState(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(Entity<DisposalUnitComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (args.Anchored)
@@ -112,6 +91,7 @@ public abstract partial class SharedDisposalUnitSystem : EntitySystem
         EjectContents(ent);
     }
 
+    [SubscribeLocalEvent]
     protected void OnPreventCollide(Entity<DisposalUnitComponent> ent, ref PreventCollideEvent args)
     {
         var otherBody = args.OtherEntity;
@@ -123,17 +103,20 @@ public abstract partial class SharedDisposalUnitSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     protected void OnEmagged(Entity<DisposalUnitComponent> ent, ref GotEmaggedEvent args)
     {
         ent.Comp.DisablePressure = true;
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDumpableVerb(Entity<DisposalUnitComponent> ent, ref GetDumpableVerbEvent args)
     {
         args.Verb = Loc.GetString("dump-disposal-verb-name", ("unit", ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnDump(Entity<DisposalUnitComponent> ent, ref DumpEvent args)
     {
         if (args.Handled)

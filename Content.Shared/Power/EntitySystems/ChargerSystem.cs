@@ -24,25 +24,15 @@ public sealed partial class ChargerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChargerComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ChargerComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<ChargerComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<ChargerComponent, EntRemovedFromContainerMessage>(OnRemoved);
-        SubscribeLocalEvent<ChargerComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<ChargerComponent, InsertIntoEntityStorageAttemptEvent>(OnEntityStorageInsertAttempt);
-        SubscribeLocalEvent<ChargerComponent, ExaminedEvent>(OnChargerExamine);
-        SubscribeLocalEvent<ChargerComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<ChargerComponent, EmpDisabledRemovedEvent>(OnEmpRemoved);
-        SubscribeLocalEvent<InsideChargerComponent, RefreshChargeRateEvent>(OnRefreshChargeRate);
-        SubscribeLocalEvent<InsideChargerComponent, BatteryStateChangedEvent>(OnStatusChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<ChargerComponent> ent, ref ComponentStartup args)
     {
         UpdateStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnChargerExamine(EntityUid uid, ChargerComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(ChargerComponent)))
@@ -78,12 +68,14 @@ public sealed partial class ChargerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<ChargerComponent> ent, ref PowerChangedEvent args)
     {
         RefreshAllBatteries(ent);
         UpdateStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(Entity<ChargerComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -98,6 +90,7 @@ public sealed partial class ChargerSystem : EntitySystem
         UpdateStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(Entity<ChargerComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -115,6 +108,7 @@ public sealed partial class ChargerSystem : EntitySystem
     /// <summary>
     /// Verify that the entity being inserted is actually rechargeable.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(EntityUid uid, ChargerComponent component, ContainerIsInsertingAttemptEvent args)
     {
         if (!component.Initialized)
@@ -130,6 +124,7 @@ public sealed partial class ChargerSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityStorageInsertAttempt(EntityUid uid, ChargerComponent component, ref InsertIntoEntityStorageAttemptEvent args)
     {
         if (!component.Initialized || args.Cancelled)
@@ -144,6 +139,8 @@ public sealed partial class ChargerSystem : EntitySystem
         if (!cellSlot.FitsInCharger)
             args.Cancelled = true;
     }
+
+    [SubscribeLocalEvent]
     private void OnEmpPulse(Entity<ChargerComponent> ent, ref EmpPulseEvent args)
     {
         args.Affected = true;
@@ -152,12 +149,14 @@ public sealed partial class ChargerSystem : EntitySystem
         UpdateStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpRemoved(Entity<ChargerComponent> ent, ref EmpDisabledRemovedEvent args)
     {
         RefreshAllBatteries(ent);
         UpdateStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshChargeRate(Entity<InsideChargerComponent> ent, ref RefreshChargeRateEvent args)
     {
         var chargerUid = Transform(ent).ParentUid;
@@ -176,6 +175,8 @@ public sealed partial class ChargerSystem : EntitySystem
 
         args.NewChargeRate += chargerComp.ChargeRate;
     }
+
+    [SubscribeLocalEvent]
     private void OnStatusChanged(Entity<InsideChargerComponent> ent, ref BatteryStateChangedEvent args)
     {
         // If the battery is full update the visuals and power draw of the charger.

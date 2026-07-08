@@ -30,10 +30,9 @@ namespace Content.Server.Chemistry.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<VaporComponent, StartCollideEvent>(HandleCollide);
         }
 
+        [SubscribeLocalEvent]
         private void HandleCollide(Entity<VaporComponent> entity, ref StartCollideEvent args)
         {
             var solution = Comp<SolutionComponent>(entity).Solution;

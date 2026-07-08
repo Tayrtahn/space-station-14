@@ -20,20 +20,9 @@ public sealed partial class AdminFrozenSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AdminFrozenComponent, UseAttemptEvent>(OnAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, PickupAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<AdminFrozenComponent, ThrowAttemptEvent>(OnAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, InteractionAttemptEvent>(OnInteractAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<AdminFrozenComponent, ComponentShutdown>(UpdateCanMove);
-        SubscribeLocalEvent<AdminFrozenComponent, UpdateCanMoveEvent>(OnUpdateCanMove);
-        SubscribeLocalEvent<AdminFrozenComponent, PullAttemptEvent>(OnPullAttempt);
         SubscribeLocalEvent<AdminFrozenComponent, AttackAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<AdminFrozenComponent, ChangeDirectionAttemptEvent>(OnAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, EmoteAttemptEvent>(OnEmoteAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, SpeakAttemptEvent>(OnSpeakAttempt);
-        SubscribeLocalEvent<AdminFrozenComponent, InGameOocMessageAttemptEvent>(OnInGameOocMessageAttempt);
-        SubscribeLocalEvent<InGameOocMessageAttemptEvent>(OnInGameOocMessageAttemptBroadcast);
     }
 
     /// <summary>
@@ -46,11 +35,13 @@ public sealed partial class AdminFrozenSystem : EntitySystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractAttempt(Entity<AdminFrozenComponent> ent, ref InteractionAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeakAttempt(EntityUid uid, AdminFrozenComponent component, SpeakAttemptEvent args)
     {
         if (!component.Muted)
@@ -59,6 +50,7 @@ public sealed partial class AdminFrozenSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnInGameOocMessageAttempt(Entity<AdminFrozenComponent> ent, ref InGameOocMessageAttemptEvent args)
     {
         if (!ent.Comp.Muted)
@@ -68,21 +60,25 @@ public sealed partial class AdminFrozenSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInGameOocMessageAttemptBroadcast(ref InGameOocMessageAttemptEvent args)
     {
         //TODO Player LOOC mute/ban. Session is in the  args, but where to store/check the muted state?
     }
 
+    [SubscribeLocalEvent]
     private void OnAttempt(EntityUid uid, AdminFrozenComponent component, CancellableEntityEventArgs args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnPullAttempt(EntityUid uid, AdminFrozenComponent component, PullAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, AdminFrozenComponent component, ComponentStartup args)
     {
         if (TryComp<PullableComponent>(uid, out var pullable))
@@ -93,6 +89,7 @@ public sealed partial class AdminFrozenSystem : EntitySystem
         UpdateCanMove(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateCanMove(EntityUid uid, AdminFrozenComponent component, UpdateCanMoveEvent args)
     {
         if (component.LifeStage > ComponentLifeStage.Running)
@@ -101,11 +98,13 @@ public sealed partial class AdminFrozenSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void UpdateCanMove(EntityUid uid, AdminFrozenComponent component, EntityEventArgs args)
     {
         _blocker.UpdateCanMove(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmoteAttempt(EntityUid uid, AdminFrozenComponent component, EmoteAttemptEvent args)
     {
         if (component.Muted)

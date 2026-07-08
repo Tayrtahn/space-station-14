@@ -13,14 +13,9 @@ public sealed partial class TriggerOnMobstateChangeSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnMobstateChangeComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<TriggerOnMobstateChangeComponent, SuicideEvent>(OnSuicide);
-
-        SubscribeLocalEvent<TriggerOnMobstateChangeComponent, ImplantRelayEvent<MobStateChangedEvent>>(OnMobStateRelay);
-        SubscribeLocalEvent<TriggerOnMobstateChangeComponent, ImplantRelayEvent<SuicideEvent>>(OnSuicideRelay);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, TriggerOnMobstateChangeComponent component, MobStateChangedEvent args)
     {
         if (!component.MobState.Contains(args.NewMobState))
@@ -29,6 +24,7 @@ public sealed partial class TriggerOnMobstateChangeSystem : TriggerOnXSystem
         Trigger.Trigger(uid, component.TargetMobstateEntity ? uid : args.Origin, component.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateRelay(EntityUid uid, TriggerOnMobstateChangeComponent component, ImplantRelayEvent<MobStateChangedEvent> args)
     {
         if (!component.MobState.Contains(args.Args.NewMobState))
@@ -42,6 +38,7 @@ public sealed partial class TriggerOnMobstateChangeSystem : TriggerOnXSystem
     /// Prevents suicide by handling the event without killing the user
     /// TODO: This doesn't seem to work at the moment as the event is never checked for being handled.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSuicide(EntityUid uid, TriggerOnMobstateChangeComponent component, SuicideEvent args)
     {
         if (args.Handled)
@@ -54,6 +51,7 @@ public sealed partial class TriggerOnMobstateChangeSystem : TriggerOnXSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSuicideRelay(EntityUid uid, TriggerOnMobstateChangeComponent component, ImplantRelayEvent<SuicideEvent> args)
     {
         if (args.Args.Handled)

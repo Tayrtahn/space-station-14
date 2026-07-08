@@ -14,16 +14,15 @@ public abstract partial class TriggerOnXSystem : EntitySystem
 /// <summary>
 /// This is a base Trigger system which handles all the boilerplate for triggers automagically!
 /// </summary>
-public abstract class XOnTriggerSystem<T> : EntitySystem where T : BaseXOnTriggerComponent
+public abstract partial class XOnTriggerSystem<T> : EntitySystem where T : BaseXOnTriggerComponent
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<T, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<T> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

@@ -49,22 +49,10 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EntityStorageComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<EntityStorageComponent, ComponentStartup>(OnComponentStartup);
         SubscribeLocalEvent<EntityStorageComponent, ActivateInWorldEvent>(OnInteract, after: new[] { typeof(LockSystem) });
-        SubscribeLocalEvent<EntityStorageComponent, LockToggleAttemptEvent>(OnLockToggleAttempt);
-        SubscribeLocalEvent<EntityStorageComponent, DestructionEventArgs>(OnDestruction);
-        SubscribeLocalEvent<EntityStorageComponent, GetVerbsEvent<InteractionVerb>>(AddToggleOpenVerb);
-        SubscribeLocalEvent<EntityStorageComponent, ContainerRelayMovementEntityEvent>(OnRelayMovement);
-        SubscribeLocalEvent<EntityStorageComponent, FoldAttemptEvent>(OnFoldAttempt);
-
-        SubscribeLocalEvent<EntityStorageComponent, WeldableAttemptEvent>(OnWeldableAttempt);
-        SubscribeLocalEvent<EntityStorageComponent, BeforeExplodeEvent>(OnExploded);
-
-        SubscribeLocalEvent<InsideEntityStorageComponent, EntGotRemovedFromContainerMessage>(OnRemoved);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnComponentInit(EntityUid uid, EntityStorageComponent component, ComponentInit args)
     {
         component.Contents = _container.EnsureContainer<Container>(uid, ContainerName);
@@ -72,6 +60,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         component.Contents.OccludesLight = component.OccludesLight;
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(EntityUid uid, EntityStorageComponent component, ComponentStartup args)
     {
         _appearance.SetData(uid, StorageVisuals.Open, component.Open);
@@ -86,6 +75,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         ToggleOpen(args.User, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggleAttempt(EntityUid uid, EntityStorageComponent target, ref LockToggleAttemptEvent args)
     {
         // Cannot (un)lock open lockers.
@@ -97,6 +87,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(EntityUid uid, EntityStorageComponent component, DestructionEventArgs args)
     {
         component.Open = true;
@@ -113,6 +104,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayMovement(EntityUid uid, EntityStorageComponent component, ref ContainerRelayMovementEntityEvent args)
     {
         if (!component.Contents.Contains(args.Entity) &&
@@ -132,6 +124,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
             TryOpenStorage(args.Entity, uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnFoldAttempt(EntityUid uid, EntityStorageComponent component, ref FoldAttemptEvent args)
     {
         if (args.Cancelled)
@@ -140,6 +133,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         args.Cancelled = component.Open || component.Contents.ContainedEntities.Count != 0;
     }
 
+    [SubscribeLocalEvent]
     private void OnWeldableAttempt(EntityUid uid, EntityStorageComponent component, WeldableAttemptEvent args)
     {
         if (component.Open)
@@ -156,11 +150,13 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExploded(Entity<EntityStorageComponent> ent, ref BeforeExplodeEvent args)
     {
         args.Contents.AddRange(ent.Comp.Contents.ContainedEntities);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(EntityUid uid, InsideEntityStorageComponent component, EntGotRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -172,6 +168,7 @@ public abstract partial class SharedEntityStorageSystem : EntitySystem
         RemComp(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleOpenVerb(EntityUid uid, EntityStorageComponent component, GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)

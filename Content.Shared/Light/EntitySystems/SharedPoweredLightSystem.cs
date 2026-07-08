@@ -43,28 +43,16 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PoweredLightComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<PoweredLightComponent, EntRemovedFromContainerMessage>(OnRemoved);
-        SubscribeLocalEvent<PoweredLightComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<PoweredLightComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<PoweredLightComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<PoweredLightComponent, SignalReceivedEvent>(OnSignalReceived);
-        SubscribeLocalEvent<PoweredLightComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<PoweredLightComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<PoweredLightComponent, PoweredLightDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<PoweredLightComponent, DamageChangedEvent>(HandleLightDamaged);
-        SubscribeLocalEvent<PoweredLightComponent, EmpPulseEvent>(OnEmpPulse);
-
-        SubscribeLocalEvent<BlinkingPoweredLightComponent, MapInitEvent>(OnBlinkingMapInit);
-        SubscribeLocalEvent<BlinkingPoweredLightComponent, ComponentShutdown>(OnBlinkingShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, PoweredLightComponent light, ComponentInit args)
     {
         light.LightBulbContainer = ContainerSystem.EnsureContainer<ContainerSlot>(uid, LightBulbContainer);
         _deviceLink.EnsureSinkPorts(uid, light.OnPort, light.OffPort, light.TogglePort);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(Entity<PoweredLightComponent> light, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != LightBulbContainer)
@@ -73,6 +61,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         UpdateLight(light, light);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(Entity<PoweredLightComponent> light, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != LightBulbContainer)
@@ -81,6 +70,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         UpdateLight(light, light);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, PoweredLightComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -89,6 +79,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         args.Handled = InsertBulb(uid, args.Used, component, user: args.User, playAnimation: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(EntityUid uid, PoweredLightComponent light, InteractHandEvent args)
     {
         if (args.Handled)
@@ -117,6 +108,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<PoweredLightComponent> ent, ref SignalReceivedEvent args)
     {
         if (args.Port == ent.Comp.OffPort)
@@ -131,6 +123,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
     /// Turns the light on or of when receiving a <see cref="DeviceNetworkConstants.CmdSetState"/> command.
     /// The light is turned on or of according to the <see cref="DeviceNetworkConstants.StateEnabled"/> value
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, PoweredLightComponent component, DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? command) || command != DeviceNetworkConstants.CmdSetState) return;
@@ -327,6 +320,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
     /// <remarks>
     ///     TODO: This should be an IThresholdBehaviour once DestructibleSystem is predicted.
     /// </remarks>
+    [SubscribeLocalEvent]
     public void HandleLightDamaged(EntityUid uid, PoweredLightComponent component, DamageChangedEvent args)
     {
         if (GameTiming.ApplyingState) // The destruction is already networked on its own.
@@ -339,6 +333,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, PoweredLightComponent component, ref PowerChangedEvent args)
     {
         // TODO: Power moment
@@ -350,6 +345,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         UpdateLight(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(EntityUid uid, PoweredLightComponent component, ref EmpPulseEvent args)
     {
         if (TryDestroyBulb(uid, component))
@@ -407,6 +403,7 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         UpdateLight(uid, light);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, PoweredLightComponent component, DoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Args.Target == null)
@@ -417,11 +414,13 @@ public abstract partial class SharedPoweredLightSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBlinkingMapInit(Entity<BlinkingPoweredLightComponent> ent, ref MapInitEvent args)
     {
         _appearance.SetData(ent, PoweredLightVisuals.Blinking, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlinkingShutdown(Entity<BlinkingPoweredLightComponent> ent, ref ComponentShutdown args)
     {
         _appearance.SetData(ent, PoweredLightVisuals.Blinking, false);

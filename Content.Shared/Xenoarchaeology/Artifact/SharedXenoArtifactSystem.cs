@@ -23,8 +23,6 @@ public abstract partial class SharedXenoArtifactSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<XenoArtifactComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<XenoArtifactComponent, ArtifactSelfActivateEvent>(OnSelfActivate);
 
         InitializeNode();
         InitializeUnlock();
@@ -41,12 +39,14 @@ public abstract partial class SharedXenoArtifactSystem : EntitySystem
     }
 
     /// <summary> As all artifacts have to contain nodes - we ensure that they are containers. </summary>
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<XenoArtifactComponent> ent, ref ComponentStartup args)
     {
         _actions.AddAction(ent, ent.Comp.SelfActivateAction);
         ent.Comp.NodeContainer = _container.EnsureContainer<Container>(ent, XenoArtifactComponent.NodeContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelfActivate(Entity<XenoArtifactComponent> ent, ref ArtifactSelfActivateEvent args)
     {
         args.Handled = TryActivateXenoArtifact(ent, ent, null, Transform(ent).Coordinates, false);

@@ -17,10 +17,9 @@ public sealed partial class ContainerFillSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ContainerFillComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<EntityTableContainerFillComponent, MapInitEvent>(OnTableMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ContainerFillComponent component, MapInitEvent args)
     {
         if (!TryComp(uid, out ContainerManagerComponent? containerComp))
@@ -51,6 +50,7 @@ public sealed partial class ContainerFillSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTableMapInit(Entity<EntityTableContainerFillComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp(ent, out ContainerManagerComponent? containerComp))

@@ -18,10 +18,9 @@ namespace Content.Server.Power.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<CableVisComponent, NodeGroupsRebuilt>(UpdateAppearance);
         }
 
+        [SubscribeLocalEvent]
         private void UpdateAppearance(EntityUid uid, CableVisComponent cableVis, ref NodeGroupsRebuilt args)
         {
             if (!_nodeContainer.TryGetNode(uid, cableVis.Node, out CableNode? node))

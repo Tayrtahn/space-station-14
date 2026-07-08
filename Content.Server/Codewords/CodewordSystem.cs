@@ -19,10 +19,9 @@ public sealed partial class CodewordSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStart);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStart(RoundStartingEvent ev)
     {
         var manager = Spawn();

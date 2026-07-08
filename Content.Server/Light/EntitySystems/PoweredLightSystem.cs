@@ -7,16 +7,14 @@ namespace Content.Server.Light.EntitySystems;
 /// <summary>
 ///     System for the PoweredLightComponents
 /// </summary>
-public sealed class PoweredLightSystem : SharedPoweredLightSystem
+public sealed partial class PoweredLightSystem : SharedPoweredLightSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PoweredLightComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<PoweredLightComponent, GhostBooEvent>(OnGhostBoo);
     }
 
+    [SubscribeLocalEvent]
     private void OnGhostBoo(EntityUid uid, PoweredLightComponent light, GhostBooEvent args)
     {
         if (light.IgnoreGhostsBoo || HasComp<BlinkingPoweredLightComponent>(uid))
@@ -36,6 +34,7 @@ public sealed class PoweredLightSystem : SharedPoweredLightSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, PoweredLightComponent light, MapInitEvent args)
     {
         // TODO: Use ContainerFill dog

@@ -10,9 +10,9 @@ public sealed partial class MailingUnitSystem : SharedMailingUnitSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MailingUnitComponent, AfterAutoHandleStateEvent>(OnMailingState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMailingState(Entity<MailingUnitComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (_userInterface.TryGetOpenUi<MailingUnitBoundUserInterface>(ent.Owner, MailingUnitUiKey.Key, out var bui))

@@ -20,11 +20,9 @@ public abstract partial class SharedTeleportLocationsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TeleportLocationsComponent, ActivatableUIOpenAttemptEvent>(OnUiOpenAttempt);
-        SubscribeLocalEvent<TeleportLocationsComponent, TeleportLocationDestinationMessage>(OnTeleportToLocationRequest);
     }
 
+    [SubscribeLocalEvent]
     private void OnUiOpenAttempt(Entity<TeleportLocationsComponent> ent, ref ActivatableUIOpenAttemptEvent args)
     {
         if (!Delay.IsDelayed(ent.Owner, TeleportDelay))
@@ -33,6 +31,7 @@ public abstract partial class SharedTeleportLocationsSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnTeleportToLocationRequest(Entity<TeleportLocationsComponent> ent, ref TeleportLocationDestinationMessage args)
     {
         if (!TryGetEntity(args.NetEnt, out var telePointEnt) || TerminatingOrDeleted(telePointEnt) || !HasComp<WarpPointComponent>(telePointEnt) || Delay.IsDelayed(ent.Owner, TeleportDelay))

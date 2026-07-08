@@ -28,9 +28,6 @@ public sealed partial class PneumaticCannonSystem : SharedPneumaticCannonSystem
         base.Initialize();
 
         SubscribeLocalEvent<PneumaticCannonComponent, InteractUsingEvent>(OnInteractUsing, before: new []{ typeof(StorageSystem) });
-        SubscribeLocalEvent<PneumaticCannonComponent, GunShotEvent>(OnShoot);
-        SubscribeLocalEvent<PneumaticCannonComponent, ContainerIsInsertingAttemptEvent>(OnContainerInserting);
-        SubscribeLocalEvent<PneumaticCannonComponent, GunRefreshModifiersEvent>(OnGunRefreshModifiers);
     }
 
     private void OnInteractUsing(EntityUid uid, PneumaticCannonComponent component, InteractUsingEvent args)
@@ -55,6 +52,7 @@ public sealed partial class PneumaticCannonSystem : SharedPneumaticCannonSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerInserting(EntityUid uid, PneumaticCannonComponent component, ContainerIsInsertingAttemptEvent args)
     {
         if (args.Container.ID != PneumaticCannonComponent.TankSlotId)
@@ -70,6 +68,7 @@ public sealed partial class PneumaticCannonSystem : SharedPneumaticCannonSystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnShoot(Entity<PneumaticCannonComponent> cannon, ref GunShotEvent args)
     {
         var (uid, component) = cannon;
@@ -104,6 +103,7 @@ public sealed partial class PneumaticCannonSystem : SharedPneumaticCannonSystem
         _slots.TryEject(uid, PneumaticCannonComponent.TankSlotId, args.User, out _);
     }
 
+    [SubscribeLocalEvent]
     private void OnGunRefreshModifiers(Entity<PneumaticCannonComponent> ent, ref GunRefreshModifiersEvent args)
     {
         if (ent.Comp.ProjectileSpeed is { } speed)

@@ -22,10 +22,9 @@ public sealed partial class RehydratableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RehydratableComponent, SolutionChangedEvent>(OnSolutionChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionChange(Entity<RehydratableComponent> ent, ref SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.

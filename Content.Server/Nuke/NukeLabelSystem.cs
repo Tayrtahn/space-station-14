@@ -11,9 +11,9 @@ public sealed partial class NukeLabelSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<NukeLabelComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, NukeLabelComponent nuke, MapInitEvent args)
     {
         var label = Loc.GetString(nuke.Prefix, ("serial", _nuke.GenerateRandomNumberString(nuke.SerialLength)));

@@ -12,10 +12,9 @@ public sealed partial class PassiveDamageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PassiveDamageComponent, MapInitEvent>(OnPendingMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnPendingMapInit(EntityUid uid, PassiveDamageComponent component, MapInitEvent args)
     {
         component.NextDamage = _timing.CurTime + TimeSpan.FromSeconds(1f);

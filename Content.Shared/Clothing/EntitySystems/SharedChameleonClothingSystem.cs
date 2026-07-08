@@ -49,20 +49,16 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ChameleonClothingComponent, GotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<ChameleonClothingComponent, GotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<ChameleonClothingComponent, GetVerbsEvent<InteractionVerb>>(OnVerb);
-        SubscribeLocalEvent<ChameleonClothingComponent, EmpPulseEvent>(OnEmpPulse);
-
-        SubscribeLocalEvent<ChameleonClothingComponent, PrototypesReloadedEventArgs>(OnPrototypeReload);
         PrepareAllVariants();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypeReload(EntityUid uid, ChameleonClothingComponent component, PrototypesReloadedEventArgs args)
     {
         PrepareAllVariants();
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(EntityUid uid, ChameleonClothingComponent component, GotEquippedEvent args)
     {
         if (Timing.ApplyingState)
@@ -72,6 +68,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(EntityUid uid, ChameleonClothingComponent component, GotUnequippedEvent args)
     {
         if (Timing.ApplyingState)
@@ -136,6 +133,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnVerb(Entity<ChameleonClothingComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || _lock.IsLocked(ent.Owner))
@@ -155,6 +153,7 @@ public abstract partial class SharedChameleonClothingSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(EntityUid uid, ChameleonClothingComponent component, ref EmpPulseEvent args)
     {
         if (!component.AffectedByEmp)

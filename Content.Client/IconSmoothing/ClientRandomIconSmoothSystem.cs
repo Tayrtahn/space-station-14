@@ -11,10 +11,9 @@ public sealed partial class ClientRandomIconSmoothSystem : SharedRandomIconSmoot
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomIconSmoothComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<RandomIconSmoothComponent> ent, ref AppearanceChangeEvent args)
     {
         if (!TryComp<IconSmoothComponent>(ent, out var smooth))

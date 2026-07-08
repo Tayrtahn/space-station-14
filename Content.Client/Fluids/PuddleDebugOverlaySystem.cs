@@ -13,11 +13,9 @@ public sealed partial class PuddleDebugOverlaySystem : SharedPuddleDebugOverlayS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<PuddleOverlayDisableMessage>(DisableOverlay);
-        SubscribeNetworkEvent<PuddleOverlayDebugMessage>(RenderDebugData);
     }
 
+    [SubscribeNetworkEvent]
     private void RenderDebugData(PuddleOverlayDebugMessage message)
     {
         TileData[GetEntity(message.GridUid)] = message;
@@ -28,6 +26,7 @@ public sealed partial class PuddleDebugOverlaySystem : SharedPuddleDebugOverlayS
         _overlayManager.AddOverlay(_overlay);
     }
 
+    [SubscribeNetworkEvent]
     private void DisableOverlay(PuddleOverlayDisableMessage message)
     {
         TileData.Clear();

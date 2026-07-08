@@ -20,13 +20,9 @@ public sealed partial class TechAnomalySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TechAnomalyComponent, MapInitEvent>(OnTechMapInit);
-        SubscribeLocalEvent<TechAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<TechAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
-        SubscribeLocalEvent<TechAnomalyComponent, AnomalyStabilityChangedEvent>(OnStabilityChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnTechMapInit(Entity<TechAnomalyComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextTimer = _timing.CurTime;
@@ -48,6 +44,7 @@ public sealed partial class TechAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStabilityChanged(Entity<TechAnomalyComponent> tech, ref AnomalyStabilityChangedEvent args)
     {
         var links = MathHelper.Lerp(tech.Comp.LinkCountPerPulse.Min, tech.Comp.LinkCountPerPulse.Max, args.Severity);
@@ -86,6 +83,7 @@ public sealed partial class TechAnomalySystem : EntitySystem
         _beam.TryCreateBeam(source, target, tech.Comp.LinkBeamProto);
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(Entity<TechAnomalyComponent> tech, ref AnomalySupercriticalEvent args)
     {
         // We remove the component so that the anomaly does not bind itself to other devices before self destroy.
@@ -126,6 +124,7 @@ public sealed partial class TechAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<TechAnomalyComponent> tech, ref AnomalyPulseEvent args)
     {
         _signal.InvokePort(tech, tech.Comp.PulsePort);

@@ -44,20 +44,14 @@ public sealed partial class IdCardConsoleSystem : SharedIdCardConsoleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<IdCardConsoleComponent, WriteToTargetIdMessage>(OnWriteToTargetIdMessage);
-
-        // one day, maybe bound user interfaces can be shared too.
-        SubscribeLocalEvent<IdCardConsoleComponent, ComponentStartup>(UpdateUserInterface);
-        SubscribeLocalEvent<IdCardConsoleComponent, EntInsertedIntoContainerMessage>(UpdateUserInterface);
         SubscribeLocalEvent<IdCardConsoleComponent, EntRemovedFromContainerMessage>(UpdateUserInterface);
-        SubscribeLocalEvent<IdCardConsoleComponent, DamageChangedEvent>(OnDamageChanged);
 
         // Intercept the event before anyone can do anything with it!
         SubscribeLocalEvent<IdCardConsoleComponent, MachineDeconstructedEvent>(OnMachineDeconstructed,
             before: [typeof(EmptyOnMachineDeconstructSystem), typeof(ItemSlotsSystem)]);
     }
 
+    [SubscribeLocalEvent]
     private void OnWriteToTargetIdMessage(EntityUid uid, IdCardConsoleComponent component, WriteToTargetIdMessage args)
     {
         if (args.Actor is not { Valid: true } player)
@@ -68,6 +62,7 @@ public sealed partial class IdCardConsoleSystem : SharedIdCardConsoleSystem
         UpdateUserInterface(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void UpdateUserInterface(EntityUid uid, IdCardConsoleComponent component, EntityEventArgs args)
     {
         if (!component.Initialized)
@@ -256,6 +251,7 @@ public sealed partial class IdCardConsoleSystem : SharedIdCardConsoleSystem
         TryDropAndThrowIds(entity.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<IdCardConsoleComponent> entity, ref DamageChangedEvent args)
     {
         if (TryDropAndThrowIds(entity.AsNullable()))

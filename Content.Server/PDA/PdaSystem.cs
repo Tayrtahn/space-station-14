@@ -45,27 +45,10 @@ namespace Content.Server.PDA
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<PdaComponent, LightToggleEvent>(OnLightToggle);
-
-            // UI Events:
-            SubscribeLocalEvent<PdaComponent, BoundUIOpenedEvent>(OnPdaOpen);
-            SubscribeLocalEvent<PdaComponent, PdaRequestUpdateInterfaceMessage>(OnUiMessage);
-            SubscribeLocalEvent<PdaComponent, PdaToggleFlashlightMessage>(OnUiMessage);
-            SubscribeLocalEvent<PdaComponent, PdaShowRingtoneMessage>(OnUiMessage);
-            SubscribeLocalEvent<PdaComponent, PdaShowMusicMessage>(OnUiMessage);
-            SubscribeLocalEvent<PdaComponent, PdaShowUplinkMessage>(OnUiMessage);
-            SubscribeLocalEvent<PdaComponent, PdaLockUplinkMessage>(OnUiMessage);
-
-            SubscribeLocalEvent<PdaComponent, CartridgeLoaderNotificationSentEvent>(OnNotification);
-
-            SubscribeLocalEvent<StationRenamedEvent>(OnStationRenamed);
             SubscribeLocalEvent<EntityRenamedEvent>(OnEntityRenamed, after: new[] { typeof(IdCardSystem) });
-            SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertLevelChanged);
-            SubscribeLocalEvent<PdaComponent, InventoryRelayedEvent<ChameleonControllerOutfitSelectedEvent>>(OnRelayedEventToIdCard);
-            SubscribeLocalEvent<PdaComponent, InventoryRelayedEvent<VoiceMaskNameUpdatedEvent>>(OnRelayedEventToIdCard);
         }
 
+        [SubscribeLocalEvent]
         private void OnRelayedEventToIdCard<T>(Entity<PdaComponent> ent, ref InventoryRelayedEvent<T> args)
         {
             // Relay it to your ID so it can update as well.
@@ -125,6 +108,7 @@ namespace Content.Server.PDA
             UpdatePdaUi(uid, pda);
         }
 
+        [SubscribeLocalEvent]
         private void OnLightToggle(EntityUid uid, PdaComponent pda, LightToggleEvent args)
         {
             pda.FlashlightOn = args.IsOn;
@@ -138,11 +122,13 @@ namespace Content.Server.PDA
             UpdatePdaUi(uid, pda);
         }
 
+        [SubscribeLocalEvent]
         private void OnStationRenamed(StationRenamedEvent ev)
         {
             UpdateAllPdaUisOnStation();
         }
 
+        [SubscribeLocalEvent]
         private void OnAlertLevelChanged(AlertLevelChangedEvent args)
         {
             UpdateAllPdaUisOnStation();
@@ -157,6 +143,7 @@ namespace Content.Server.PDA
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnNotification(Entity<PdaComponent> ent, ref CartridgeLoaderNotificationSentEvent args)
         {
             _ringer.RingerPlayRingtone(ent.Owner);
@@ -227,6 +214,7 @@ namespace Content.Server.PDA
             _ui.SetUiState(uid, PdaUiKey.Key, state);
         }
 
+        [SubscribeLocalEvent]
         private void OnPdaOpen(Entity<PdaComponent> ent, ref BoundUIOpenedEvent args)
         {
             if (!PdaUiKey.Key.Equals(args.UiKey))
@@ -235,6 +223,7 @@ namespace Content.Server.PDA
             UpdatePdaUi(ent.Owner, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaRequestUpdateInterfaceMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))
@@ -243,6 +232,7 @@ namespace Content.Server.PDA
             UpdatePdaUi(uid, pda);
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaToggleFlashlightMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))
@@ -253,6 +243,7 @@ namespace Content.Server.PDA
             _unpoweredFlashlight.TryToggleLight(uid, user: null);
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowRingtoneMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))
@@ -262,6 +253,7 @@ namespace Content.Server.PDA
                 _ringer.TryToggleRingerUi(uid, msg.Actor);
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowMusicMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))
@@ -271,6 +263,7 @@ namespace Content.Server.PDA
                 _instrument.ToggleInstrumentUi(uid, msg.Actor, instrument);
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaShowUplinkMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))
@@ -292,6 +285,7 @@ namespace Content.Server.PDA
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnUiMessage(EntityUid uid, PdaComponent pda, PdaLockUplinkMessage msg)
         {
             if (!PdaUiKey.Key.Equals(msg.UiKey))

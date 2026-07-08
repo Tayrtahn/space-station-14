@@ -11,10 +11,9 @@ public sealed partial class ActivatableUIRequiresAccessSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActivatableUIRequiresAccessComponent, ActivatableUIOpenAttemptEvent>(OnUIOpenAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpenAttempt(Entity<ActivatableUIRequiresAccessComponent> activatableUI, ref ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled)

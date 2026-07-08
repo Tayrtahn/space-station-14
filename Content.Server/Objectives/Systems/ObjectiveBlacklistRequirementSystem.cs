@@ -14,10 +14,9 @@ public sealed partial class ObjectiveBlacklistRequirementSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ObjectiveBlacklistRequirementComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(EntityUid uid, ObjectiveBlacklistRequirementComponent comp, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

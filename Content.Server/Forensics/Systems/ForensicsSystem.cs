@@ -36,21 +36,13 @@ namespace Content.Server.Forensics
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<HandsComponent, ContactInteractionEvent>(OnInteract);
             SubscribeLocalEvent<FingerprintComponent, MapInitEvent>(OnFingerprintInit, after: new[] { typeof(BloodstreamSystem) });
             // The solution entities are spawned on MapInit as well, so we have to wait for that to be able to set the DNA in the bloodstream correctly without ResolveSolution failing
             SubscribeLocalEvent<DnaComponent, MapInitEvent>(OnDNAInit, after: new[] { typeof(BloodstreamSystem) });
-
-            SubscribeLocalEvent<ForensicsComponent, GibbedBeforeDeletionEvent>(OnBeingGibbed);
-            SubscribeLocalEvent<ForensicsComponent, MeleeHitEvent>(OnMeleeHit);
-            SubscribeLocalEvent<ForensicsComponent, GotRehydratedEvent>(OnRehydrated);
             SubscribeLocalEvent<CleansForensicsComponent, AfterInteractEvent>(OnAfterInteract, after: new[] { typeof(AbsorbentSystem) });
-            SubscribeLocalEvent<ForensicsComponent, CleanForensicsDoAfterEvent>(OnCleanForensicsDoAfter);
-            SubscribeLocalEvent<DnaComponent, TransferDnaEvent>(OnTransferDnaEvent);
-            SubscribeLocalEvent<DnaSubstanceTraceComponent, SolutionChangedEvent>(OnSolutionChanged);
-            SubscribeLocalEvent<CleansForensicsComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
         }
 
+        [SubscribeLocalEvent]
         private void OnSolutionChanged(Entity<DnaSubstanceTraceComponent> ent, ref SolutionChangedEvent ev)
         {
             var soln = GetSolutionsDNA(ev.Solution);
@@ -64,6 +56,7 @@ namespace Content.Server.Forensics
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnInteract(EntityUid uid, HandsComponent component, ContactInteractionEvent args)
         {
             ApplyEvidence(uid, args.Other);
@@ -87,6 +80,7 @@ namespace Content.Server.Forensics
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnBeingGibbed(Entity<ForensicsComponent> ent, ref GibbedBeforeDeletionEvent args)
         {
             string dna = Loc.GetString("forensics-dna-unknown");
@@ -102,6 +96,7 @@ namespace Content.Server.Forensics
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnMeleeHit(EntityUid uid, ForensicsComponent component, MeleeHitEvent args)
         {
             if ((args.BaseDamage.DamageDict.TryGetValue("Blunt", out var bluntDamage) && bluntDamage.Value > 0) ||
@@ -116,6 +111,7 @@ namespace Content.Server.Forensics
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnRehydrated(Entity<ForensicsComponent> ent, ref GotRehydratedEvent args)
         {
             CopyForensicsFrom(ent.Comp, args.Target);
@@ -182,6 +178,7 @@ namespace Content.Server.Forensics
             args.Handled = TryStartCleaning(cleanForensicsEntity, args.User, args.Target.Value);
         }
 
+        [SubscribeLocalEvent]
         private void OnUtilityVerb(Entity<CleansForensicsComponent> entity, ref GetVerbsEvent<UtilityVerb> args)
         {
             if (!args.CanInteract || !args.CanAccess)
@@ -248,6 +245,7 @@ namespace Content.Server.Forensics
 
         }
 
+        [SubscribeLocalEvent]
         private void OnCleanForensicsDoAfter(EntityUid uid, ForensicsComponent component, CleanForensicsDoAfterEvent args)
         {
             if (args.Handled || args.Cancelled || args.Args.Target == null)
@@ -308,6 +306,7 @@ namespace Content.Server.Forensics
 
         // TODO: Delete this. A lot of systems are manually raising this method event instead of calling the identical <see cref="TransferDna"/> method.
         // According to our code conventions we should not use method events.
+        [SubscribeLocalEvent]
         private void OnTransferDnaEvent(EntityUid uid, DnaComponent component, ref TransferDnaEvent args)
         {
             if (component.DNA == null)

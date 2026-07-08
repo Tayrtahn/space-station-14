@@ -7,15 +7,14 @@ namespace Content.Shared.Power.Generator;
 /// Shared logic for portable generators.
 /// </summary>
 /// <seealso cref="PortableGeneratorComponent"/>
-public abstract class SharedPortableGeneratorSystem : EntitySystem
+public abstract partial class SharedPortableGeneratorSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FuelGeneratorComponent, SwitchPowerCheckEvent>(OnSwitchPowerCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnSwitchPowerCheck(EntityUid uid, FuelGeneratorComponent comp, ref SwitchPowerCheckEvent args)
     {
         if (comp.On)

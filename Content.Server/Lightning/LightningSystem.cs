@@ -26,10 +26,9 @@ public sealed partial class LightningSystem : SharedLightningSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LightningComponent, ComponentRemove>(OnRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, LightningComponent component, ComponentRemove args)
     {
         if (!TryComp<BeamComponent>(uid, out var lightningBeam) || !TryComp<BeamComponent>(lightningBeam.VirtualBeamController, out var beamController))

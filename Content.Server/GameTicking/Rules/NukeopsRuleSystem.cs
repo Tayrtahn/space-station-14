@@ -77,23 +77,6 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NukeExplodedEvent>(OnNukeExploded);
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(OnRunLevelChanged);
-        SubscribeLocalEvent<NukeDisarmSuccessEvent>(OnNukeDisarm);
-
-        SubscribeLocalEvent<NukeOperativeComponent, ComponentRemove>(OnComponentRemove);
-        SubscribeLocalEvent<NukeOperativeComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<NukeOperativeComponent, EntityZombifiedEvent>(OnOperativeZombified);
-
-        SubscribeLocalEvent<NukeopsRoleComponent, GetBriefingEvent>(OnGetBriefing);
-
-        SubscribeLocalEvent<ConsoleFTLAttemptEvent>(OnShuttleFTLAttempt);
-        SubscribeLocalEvent<WarDeclaredEvent>(OnWarDeclared);
-        SubscribeLocalEvent<CommunicationConsoleCallShuttleAttemptEvent>(OnShuttleCallAttempt);
-
-        SubscribeLocalEvent<NukeopsRuleComponent, AfterAntagEntitySelectedEvent>(OnAfterAntagEntSelected);
-        SubscribeLocalEvent<NukeopsRuleComponent, RuleLoadedGridsEvent>(OnRuleLoadedGrids);
     }
 
     protected override void Started(EntityUid uid,
@@ -202,6 +185,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         args.AddLine("");
     }
 
+    [SubscribeLocalEvent]
     private void OnNukeExploded(NukeExplodedEvent ev)
     {
         var query = QueryActiveRules();
@@ -268,6 +252,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRunLevelChanged(GameRunLevelChangedEvent ev)
     {
         if (ev.New is not GameRunLevel.PostRound)
@@ -353,27 +338,32 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
             : WinCondition.NukeDiskNotOnCentCom);
     }
 
+    [SubscribeLocalEvent]
     private void OnNukeDisarm(NukeDisarmSuccessEvent ev)
     {
         CheckRoundShouldEnd();
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, NukeOperativeComponent component, ComponentRemove args)
     {
         CheckRoundShouldEnd();
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, NukeOperativeComponent component, MobStateChangedEvent ev)
     {
         if (ev.NewMobState == MobState.Dead)
             CheckRoundShouldEnd();
     }
 
+    [SubscribeLocalEvent]
     private void OnOperativeZombified(EntityUid uid, NukeOperativeComponent component, ref EntityZombifiedEvent args)
     {
         RemCompDeferred(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnRuleLoadedGrids(Entity<NukeopsRuleComponent> ent, ref RuleLoadedGridsEvent args)
     {
         // Check each nukie shuttle
@@ -389,6 +379,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleFTLAttempt(ref ConsoleFTLAttemptEvent ev)
     {
         var query = QueryActiveRules();
@@ -414,6 +405,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleCallAttempt(ref CommunicationConsoleCallShuttleAttemptEvent ev)
     {
         var query = QueryActiveRules();
@@ -434,6 +426,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWarDeclared(ref WarDeclaredEvent ev)
     {
         // TODO: this is VERY awful for multi-nukies
@@ -588,6 +581,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
         nukeops.RoundEndBehavior = RoundEndBehavior.Nothing;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAntagEntSelected(Entity<NukeopsRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         var target = (ent.Comp.TargetStation is not null) ? Name(ent.Comp.TargetStation.Value) : "the target";
@@ -600,6 +594,7 @@ public sealed partial class NukeopsRuleSystem : GameRuleSystem<NukeopsRuleCompon
             ent.Comp.GreetSoundNotification);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBriefing(Entity<NukeopsRoleComponent> role, ref GetBriefingEvent args)
     {
         // TODO Different character screen briefing for the 3 nukie types

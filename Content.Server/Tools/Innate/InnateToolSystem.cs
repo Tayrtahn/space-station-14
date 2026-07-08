@@ -27,12 +27,9 @@ public sealed partial class InnateToolSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<InnateToolComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<InnateToolComponent, HandCountChangedEvent>(OnHandCountChanged);
-        SubscribeLocalEvent<InnateToolComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<InnateToolComponent, DestructionEventArgs>(OnDestroyed);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, InnateToolComponent component, MapInitEvent args)
     {
         if (component.Tools.Count == 0)
@@ -41,6 +38,7 @@ public sealed partial class InnateToolSystem : EntitySystem
         component.ToSpawn = EntitySpawnCollection.GetSpawns(component.Tools, _robustRandom);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandCountChanged(EntityUid uid, InnateToolComponent component, HandCountChangedEvent args)
     {
         if (component.ToSpawn.Count == 0)
@@ -61,6 +59,7 @@ public sealed partial class InnateToolSystem : EntitySystem
         component.ToolUids.Add(item);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, InnateToolComponent component, ComponentShutdown args)
     {
         foreach (var tool in component.ToolUids)
@@ -69,6 +68,7 @@ public sealed partial class InnateToolSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDestroyed(EntityUid uid, InnateToolComponent component, DestructionEventArgs args)
     {
         Cleanup(uid, component);

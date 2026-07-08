@@ -20,10 +20,10 @@ public sealed partial class MatchstickSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MatchstickComponent, InteractUsingEvent>(OnInteractUsing);
     }
 
     // This is for something *else* lighting the matchstick, not the matchstick lighting something else.
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<MatchstickComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)

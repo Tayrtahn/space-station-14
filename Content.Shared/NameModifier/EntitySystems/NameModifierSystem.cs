@@ -12,10 +12,9 @@ public sealed partial class NameModifierSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NameModifierComponent, EntityRenamedEvent>(OnEntityRenamed);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityRenamed(Entity<NameModifierComponent> ent, ref EntityRenamedEvent args)
     {
         SetBaseName(ent, args.NewName);

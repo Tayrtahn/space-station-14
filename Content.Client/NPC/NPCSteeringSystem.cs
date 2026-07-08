@@ -53,9 +53,9 @@ public sealed partial class NPCSteeringSystem : SharedNPCSteeringSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<NPCSteeringDebugEvent>(OnDebugEvent);
     }
 
+    [SubscribeNetworkEvent]
     private void OnDebugEvent(NPCSteeringDebugEvent ev)
     {
         if (!DebugEnabled)

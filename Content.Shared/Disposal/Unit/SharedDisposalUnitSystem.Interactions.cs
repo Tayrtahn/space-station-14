@@ -20,6 +20,7 @@ public abstract partial class SharedDisposalUnitSystem
 {
     #region: Event handling
 
+    [SubscribeLocalEvent]
     private void AddAltVerbs(Entity<DisposalUnitComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -49,6 +50,7 @@ public abstract partial class SharedDisposalUnitSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AddInteractionVerb(Entity<DisposalUnitComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null || args.Using == null)
@@ -77,6 +79,7 @@ public abstract partial class SharedDisposalUnitSystem
         args.Verbs.Add(insertVerb);
     }
 
+    [SubscribeLocalEvent]
     private void AddEnterOrExitVerb(Entity<DisposalUnitComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (ent.Comp.Container == null)
@@ -118,6 +121,7 @@ public abstract partial class SharedDisposalUnitSystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<DisposalUnitComponent> ent, ref DisposalDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Args.Target == null || args.Args.Used == null)
@@ -128,6 +132,7 @@ public abstract partial class SharedDisposalUnitSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowInsert(Entity<DisposalUnitComponent> ent, ref BeforeThrowInsertEvent args)
     {
         if (ent.Comp.Container == null || !_container.CanInsert(args.ThrownEntity, ent.Comp.Container))
@@ -136,6 +141,7 @@ public abstract partial class SharedDisposalUnitSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<DisposalUnitComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         if (args.Cancelled || args.Container != ent.Comp.Container)
@@ -165,6 +171,7 @@ public abstract partial class SharedDisposalUnitSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<DisposalUnitComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -174,6 +181,7 @@ public abstract partial class SharedDisposalUnitSystem
         _ui.TryToggleUi(ent.Owner, DisposalUnitUiKey.Key, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteractUsing(Entity<DisposalUnitComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (args.Handled || !args.CanReach)
@@ -192,6 +200,7 @@ public abstract partial class SharedDisposalUnitSystem
     }
 
     // TODO: This should just use the same thing as entity storage?
+    [SubscribeLocalEvent]
     private void OnMovement(Entity<DisposalUnitComponent> ent, ref ContainerRelayMovementEntityEvent args)
     {
         var currentTime = _timing.CurTime;
@@ -211,6 +220,7 @@ public abstract partial class SharedDisposalUnitSystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     protected void OnCanDragDropOn(Entity<DisposalUnitComponent> ent, ref CanDropTargetEvent args)
     {
         if (args.Handled)
@@ -223,6 +233,7 @@ public abstract partial class SharedDisposalUnitSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDragDropOn(Entity<DisposalUnitComponent> ent, ref DragDropTargetEvent args)
     {
         if (args.Handled)

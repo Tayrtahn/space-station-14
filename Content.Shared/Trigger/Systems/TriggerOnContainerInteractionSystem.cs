@@ -14,14 +14,10 @@ public sealed partial class TriggerOnContainerInteractionSystem : TriggerOnXSyst
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnInsertedIntoContainerComponent, EntInsertedIntoContainerMessage>(OnInsertedIntoContainer);
-        SubscribeLocalEvent<TriggerOnRemovedFromContainerComponent, EntRemovedFromContainerMessage>(OnRemovedFromContainer);
-        SubscribeLocalEvent<TriggerOnGotInsertedIntoContainerComponent, EntGotInsertedIntoContainerMessage>(OnGotInsertedIntoContainer);
-        SubscribeLocalEvent<TriggerOnGotRemovedFromContainerComponent, EntGotRemovedFromContainerMessage>(OnGotRemovedFromContainer);
     }
 
     // Used by containers to trigger when entities are inserted into or removed from them
+    [SubscribeLocalEvent]
     private void OnInsertedIntoContainer(Entity<TriggerOnInsertedIntoContainerComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -33,6 +29,7 @@ public sealed partial class TriggerOnContainerInteractionSystem : TriggerOnXSyst
         Trigger.Trigger(ent.Owner, args.Entity, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemovedFromContainer(Entity<TriggerOnRemovedFromContainerComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -45,6 +42,7 @@ public sealed partial class TriggerOnContainerInteractionSystem : TriggerOnXSyst
     }
 
     // Used by entities to trigger when they are inserted into or removed from a container
+    [SubscribeLocalEvent]
     private void OnGotInsertedIntoContainer(Entity<TriggerOnGotInsertedIntoContainerComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -56,6 +54,7 @@ public sealed partial class TriggerOnContainerInteractionSystem : TriggerOnXSyst
         Trigger.Trigger(ent.Owner, args.Container.Owner, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotRemovedFromContainer(Entity<TriggerOnGotRemovedFromContainerComponent> ent, ref EntGotRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)

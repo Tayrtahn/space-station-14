@@ -21,10 +21,6 @@ public sealed partial class StealthSystem : SharedStealthSystem
         base.Initialize();
 
         _shader = ProtoMan.Index(Shader).InstanceUnique();
-
-        SubscribeLocalEvent<StealthComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<StealthComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<StealthComponent, BeforePostShaderRenderEvent>(OnShaderRender);
     }
 
     public override void SetEnabled(EntityUid uid, bool value, StealthComponent? component = null)
@@ -60,17 +56,20 @@ public sealed partial class StealthSystem : SharedStealthSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, StealthComponent component, ComponentStartup args)
     {
         SetShader(uid, component.Enabled, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, StealthComponent component, ComponentShutdown args)
     {
         if (!Terminating(uid))
             SetShader(uid, false, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShaderRender(EntityUid uid, StealthComponent component, BeforePostShaderRenderEvent args)
     {
         // Distortion effect uses screen coordinates. If a player moves, the entities appear to move on screen. this

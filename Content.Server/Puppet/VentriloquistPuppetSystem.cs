@@ -16,16 +16,13 @@ namespace Content.Server.Puppet
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<VentriloquistPuppetComponent, DroppedEvent>(OnDropped);
-            SubscribeLocalEvent<VentriloquistPuppetComponent, UseInHandEvent>(OnUseInHand);
-            SubscribeLocalEvent<VentriloquistPuppetComponent, GotUnequippedHandEvent>(OnUnequippedHand);
         }
 
         /// <summary>
         /// When used user inserts hand into dummy and the dummy can speak, when used again the user removes hand
         /// from dummy and the dummy cannot speak.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnUseInHand(EntityUid uid, VentriloquistPuppetComponent component, UseInHandEvent args)
         {
             if (args.Handled)
@@ -61,6 +58,7 @@ namespace Content.Server.Puppet
         /// <summary>
         /// When dropped the dummy is muted again.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnDropped(EntityUid uid, VentriloquistPuppetComponent component, DroppedEvent args)
         {
             if (HasComp<MutedComponent>(uid))
@@ -73,6 +71,7 @@ namespace Content.Server.Puppet
         /// <summary>
         /// When unequipped from a hand slot the dummy is muted again.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnUnequippedHand(EntityUid uid, VentriloquistPuppetComponent component, GotUnequippedHandEvent args)
         {
             if (HasComp<MutedComponent>(uid))

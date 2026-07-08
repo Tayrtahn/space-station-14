@@ -7,10 +7,9 @@ public abstract partial class SharedAtmosAlertsComputerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AtmosAlertsComputerComponent, AtmosAlertsComputerDeviceSilencedMessage>(OnDeviceSilencedMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceSilencedMessage(EntityUid uid, AtmosAlertsComputerComponent component, AtmosAlertsComputerDeviceSilencedMessage args)
     {
         if (args.SilenceDevice)

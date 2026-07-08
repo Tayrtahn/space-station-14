@@ -3,13 +3,11 @@ using Content.Server.Power.NodeGroups;
 
 namespace Content.Server.Power.EntitySystems;
 
-public sealed class PowerNetConnectorSystem : EntitySystem
+public sealed partial class PowerNetConnectorSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ApcComponent, ComponentInit>(OnApcInit);
-        SubscribeLocalEvent<ApcPowerProviderComponent, ComponentInit>(OnApcPowerProviderInit);
         SubscribeLocalEvent<BatteryChargerComponent, ComponentInit>(OnBatteryChargerInit);
         SubscribeLocalEvent<BatteryDischargerComponent, ComponentInit>(OnBatteryDischargerInit);
 
@@ -44,11 +42,13 @@ public sealed class PowerNetConnectorSystem : EntitySystem
         BaseNetConnectorInit(component);
     }
 
+    [SubscribeLocalEvent]
     private void OnApcPowerProviderInit(EntityUid uid, ApcPowerProviderComponent component, ComponentInit args)
     {
         BaseNetConnectorInit(component);
     }
 
+    [SubscribeLocalEvent]
     private void OnApcInit(EntityUid uid, ApcComponent component, ComponentInit args)
     {
         BaseNetConnectorInit(component);

@@ -18,10 +18,9 @@ public sealed partial class GravityAnomalySystem : SharedGravityAnomalySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GravityAnomalyComponent, AnomalySeverityChangedEvent>(OnSeverityChanged);
-        SubscribeLocalEvent<GravityAnomalyComponent, AnomalyStabilityChangedEvent>(OnStabilityChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnSeverityChanged(Entity<GravityAnomalyComponent> anomaly, ref AnomalySeverityChangedEvent args)
     {
         _radiation.SetIntensity(anomaly.Owner, anomaly.Comp.MaxRadiationIntensity * args.Severity);
@@ -43,6 +42,7 @@ public sealed partial class GravityAnomalySystem : SharedGravityAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStabilityChanged(Entity<GravityAnomalyComponent> anomaly, ref AnomalyStabilityChangedEvent args)
     {
         if (TryComp<GravityWellComponent>(anomaly, out var gravityWell))

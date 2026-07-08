@@ -10,10 +10,9 @@ public sealed partial class WeatherSystem : SharedWeatherSystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<WeatherStatusEffectComponent, ComponentInit>(OnCompInit);
-        SubscribeLocalEvent<WeatherStatusEffectComponent, ComponentShutdown>(OnCompShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompInit(Entity<WeatherStatusEffectComponent> ent, ref ComponentInit args)
     {
         // The map entitiy itself is networked by PVS if the player is on that map but not anything inside a container,
@@ -21,6 +20,7 @@ public sealed partial class WeatherSystem : SharedWeatherSystem
         _pvs.AddGlobalOverride(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompShutdown(Entity<WeatherStatusEffectComponent> ent, ref ComponentShutdown args)
     {
         _pvs.RemoveGlobalOverride(ent);

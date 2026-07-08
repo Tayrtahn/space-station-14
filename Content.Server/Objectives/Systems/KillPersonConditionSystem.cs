@@ -20,10 +20,9 @@ public sealed partial class KillPersonConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<KillPersonConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, KillPersonConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         if (!_target.GetTarget(uid, out var target))

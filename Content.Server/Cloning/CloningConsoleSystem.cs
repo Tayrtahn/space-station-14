@@ -34,20 +34,15 @@ namespace Content.Server.Cloning
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<CloningConsoleComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<CloningConsoleComponent, UiButtonPressedMessage>(OnButtonPressed);
-            SubscribeLocalEvent<CloningConsoleComponent, AfterActivatableUIOpenEvent>(OnUIOpen);
-            SubscribeLocalEvent<CloningConsoleComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<CloningConsoleComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<CloningConsoleComponent, NewLinkEvent>(OnNewLink);
-            SubscribeLocalEvent<CloningConsoleComponent, PortDisconnectedEvent>(OnPortDisconnected);
-            SubscribeLocalEvent<CloningConsoleComponent, AnchorStateChangedEvent>(OnAnchorChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, CloningConsoleComponent component, ComponentInit args)
         {
             _signalSystem.EnsureSourcePorts(uid, CloningConsoleComponent.ScannerPort, CloningConsoleComponent.PodPort);
         }
+
+        [SubscribeLocalEvent]
         private void OnButtonPressed(EntityUid uid, CloningConsoleComponent consoleComponent, UiButtonPressedMessage args)
         {
             if (!_powerReceiverSystem.IsPowered(uid))
@@ -63,11 +58,13 @@ namespace Content.Server.Cloning
             UpdateUserInterface(uid, consoleComponent);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, CloningConsoleComponent component, ref PowerChangedEvent args)
         {
             UpdateUserInterface(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, CloningConsoleComponent component, MapInitEvent args)
         {
             if (!TryComp<DeviceLinkSourceComponent>(uid, out var receiver))
@@ -89,6 +86,7 @@ namespace Content.Server.Cloning
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnNewLink(EntityUid uid, CloningConsoleComponent component, NewLinkEvent args)
         {
             if (TryComp<MedicalScannerComponent>(args.Sink, out var scanner) && args.SourcePort == CloningConsoleComponent.ScannerPort)
@@ -105,6 +103,7 @@ namespace Content.Server.Cloning
             RecheckConnections(uid, component.CloningPod, component.GeneticScanner, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPortDisconnected(EntityUid uid, CloningConsoleComponent component, PortDisconnectedEvent args)
         {
             if (args.Port == CloningConsoleComponent.ScannerPort)
@@ -116,11 +115,13 @@ namespace Content.Server.Cloning
             UpdateUserInterface(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnUIOpen(EntityUid uid, CloningConsoleComponent component, AfterActivatableUIOpenEvent args)
         {
             UpdateUserInterface(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, CloningConsoleComponent component, ref AnchorStateChangedEvent args)
         {
             if (args.Anchored)

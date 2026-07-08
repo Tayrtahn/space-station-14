@@ -92,9 +92,6 @@ public abstract partial class SharedGunSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeAllEvent<RequestShootEvent>(OnShootRequest);
-        SubscribeAllEvent<RequestStopShootEvent>(OnStopShootRequest);
-        SubscribeLocalEvent<GunComponent, MeleeHitEvent>(OnGunMelee);
 
         // Ammo providers
         InitializeBallistic();
@@ -108,15 +105,9 @@ public abstract partial class SharedGunSystem : EntitySystem
         InitializeClothing();
         InitializeContainer();
         InitializeSolution();
-
-        // Interactions
-        SubscribeLocalEvent<GunComponent, GetVerbsEvent<AlternativeVerb>>(OnAltVerb);
-        SubscribeLocalEvent<GunComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<GunComponent, CycleModeEvent>(OnCycleMode);
-        SubscribeLocalEvent<GunComponent, HandSelectedEvent>(OnGunSelected);
-        SubscribeLocalEvent<GunComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<GunComponent> gun, ref MapInitEvent args)
     {
 #if DEBUG
@@ -129,6 +120,7 @@ public abstract partial class SharedGunSystem : EntitySystem
         RefreshModifiers((gun, gun));
     }
 
+    [SubscribeLocalEvent]
     private void OnGunMelee(Entity<GunComponent> ent, ref MeleeHitEvent args)
     {
         if (!TryComp<MeleeWeaponComponent>(ent, out var melee))
@@ -141,6 +133,7 @@ public abstract partial class SharedGunSystem : EntitySystem
         }
     }
 
+    [SubscribeAllEvent]
     private void OnShootRequest(RequestShootEvent msg, EntitySessionEventArgs args)
     {
         var user = args.SenderSession.AttachedEntity;
@@ -162,6 +155,7 @@ public abstract partial class SharedGunSystem : EntitySystem
             gun.Comp.ShotCounter = 0;
     }
 
+    [SubscribeAllEvent]
     private void OnStopShootRequest(RequestStopShootEvent ev, EntitySessionEventArgs args)
     {
         var gunUid = GetEntity(ev.Gun);

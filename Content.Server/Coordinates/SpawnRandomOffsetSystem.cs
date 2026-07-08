@@ -11,10 +11,9 @@ public sealed partial class SpawnRandomOffsetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpawnRandomOffsetComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SpawnRandomOffsetComponent component, MapInitEvent args)
     {
         _randomHelper.RandomOffset(uid, component.Offset);

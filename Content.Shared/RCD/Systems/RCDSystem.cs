@@ -55,18 +55,11 @@ public sealed partial class RCDSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RCDComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<RCDComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<RCDComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<RCDComponent, RCDDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<RCDComponent, DoAfterAttemptEvent<RCDDoAfterEvent>>(OnDoAfterAttempt);
-        SubscribeLocalEvent<RCDComponent, RCDSystemMessage>(OnRCDSystemMessage);
-        SubscribeNetworkEvent<RCDConstructionGhostRotationEvent>(OnRCDconstructionGhostRotationEvent);
     }
 
     #region Event handling
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RCDComponent component, MapInitEvent args)
     {
         // On init, set the RCD to its first available recipe
@@ -82,6 +75,7 @@ public sealed partial class RCDSystem : EntitySystem
         QueueDel(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnRCDSystemMessage(EntityUid uid, RCDComponent component, RCDSystemMessage args)
     {
         // Exit if the RCD doesn't actually know the supplied prototype
@@ -99,6 +93,7 @@ public sealed partial class RCDSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, RCDComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -122,6 +117,7 @@ public sealed partial class RCDSystem : EntitySystem
         args.PushMarkup(msg);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, RCDComponent component, AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach)
@@ -238,6 +234,7 @@ public sealed partial class RCDSystem : EntitySystem
             QueueDel(effect);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterAttempt(EntityUid uid, RCDComponent component, DoAfterAttemptEvent<RCDDoAfterEvent> args)
     {
         if (args.Event?.DoAfter?.Args == null)
@@ -267,6 +264,7 @@ public sealed partial class RCDSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, RCDComponent component, RCDDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -305,6 +303,7 @@ public sealed partial class RCDSystem : EntitySystem
         _sharedCharges.AddCharges(uid, -args.Cost);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRCDconstructionGhostRotationEvent(RCDConstructionGhostRotationEvent ev, EntitySessionEventArgs session)
     {
         var uid = GetEntity(ev.NetEntity);

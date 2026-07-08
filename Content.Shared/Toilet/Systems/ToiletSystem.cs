@@ -22,12 +22,9 @@ public sealed partial class ToiletSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToiletComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ToiletComponent, GetVerbsEvent<AlternativeVerb>>(OnToggleSeatVerb);
-        SubscribeLocalEvent<ToiletComponent, ActivateInWorldEvent>(OnActivateInWorld);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ToiletComponent> ent, ref MapInitEvent args)
     {
         if (_random.Prob(0.5f))
@@ -46,6 +43,7 @@ public sealed partial class ToiletSystem : EntitySystem
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleSeatVerb(Entity<ToiletComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Hands == null || !CanToggle(ent))
@@ -69,6 +67,7 @@ public sealed partial class ToiletSystem : EntitySystem
         args.Verbs.Add(toggleVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(Entity<ToiletComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)

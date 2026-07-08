@@ -9,12 +9,12 @@ public sealed partial class EntityStorageVisualizerSystem : VisualizerSystem<Ent
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<EntityStorageVisualsComponent, ComponentInit>(OnComponentInit);
     }
 
     /// <summary>
     /// Sets the base sprite to this layer. Exists to make the inheritance tree less boilerplate-y.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, EntityStorageVisualsComponent comp, ComponentInit args)
     {
         if (comp.StateBaseClosed == null)

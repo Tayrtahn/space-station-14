@@ -46,13 +46,6 @@ public sealed partial class IdentitySystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<IdentityBlockerComponent, SeeIdentityAttemptEvent>(OnSeeIdentity);
-        SubscribeLocalEvent<IdentityBlockerComponent, InventoryRelayedEvent<SeeIdentityAttemptEvent>>(OnRelaySeeIdentity);
-        SubscribeLocalEvent<IdentityBlockerComponent, ItemMaskToggledEvent>(OnMaskToggled);
-
-        SubscribeLocalEvent<IdentityComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<IdentityComponent, ComponentInit>(OnComponentInit);
-
         SubscribeLocalEvent<IdentityComponent, DidEquipEvent>((uid, _, _) => QueueIdentityUpdate(uid));
         SubscribeLocalEvent<IdentityComponent, DidEquipHandEvent>((uid, _, _) => QueueIdentityUpdate(uid));
         SubscribeLocalEvent<IdentityComponent, DidUnequipEvent>((uid, _, _) => QueueIdentityUpdate(uid));
@@ -60,8 +53,6 @@ public sealed partial class IdentitySystem : EntitySystem
         SubscribeLocalEvent<IdentityComponent, WearerMaskToggledEvent>((uid, _, _) => QueueIdentityUpdate(uid));
         SubscribeLocalEvent<IdentityComponent, EntityRenamedEvent>((uid, _, _) => QueueIdentityUpdate(uid));
         SubscribeLocalEvent<IdentityComponent, VoiceMaskNameUpdatedEvent>((uid, _, _) => QueueIdentityUpdate(uid));
-
-        SubscribeLocalEvent<IdentityBlockerComponent, GetVerbsEvent<ExamineVerb>>(OnDetailedExamine);
     }
 
     /// <summary>
@@ -85,6 +76,7 @@ public sealed partial class IdentitySystem : EntitySystem
     #region Event Handlers
 
     // Creates an identity entity, and store it in the identity container
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<IdentityComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.IdentityEntitySlot is not { } slot)
@@ -100,12 +92,14 @@ public sealed partial class IdentitySystem : EntitySystem
         _container.Insert(ident, slot);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<IdentityComponent> ent, ref ComponentInit args)
     {
         ent.Comp.IdentityEntitySlot = _container.EnsureContainer<ContainerSlot>(ent, SlotName);
     }
 
     // Adds an identity blocker's coverage, and cancels the event if coverage is complete.
+    [SubscribeLocalEvent]
     private void OnSeeIdentity(Entity<IdentityBlockerComponent> ent, ref SeeIdentityAttemptEvent args)
     {
         if (ent.Comp.Enabled)
@@ -116,18 +110,21 @@ public sealed partial class IdentitySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRelaySeeIdentity(Entity<IdentityBlockerComponent> ent, ref InventoryRelayedEvent<SeeIdentityAttemptEvent> args)
     {
         OnSeeIdentity(ent, ref args.Args);
     }
 
     // Toggles if a mask is hiding the identity.
+    [SubscribeLocalEvent]
     private void OnMaskToggled(Entity<IdentityBlockerComponent> ent, ref ItemMaskToggledEvent args)
     {
         ent.Comp.Enabled = !args.Mask.Comp.IsToggled;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnDetailedExamine(EntityUid ent, IdentityBlockerComponent component, ref GetVerbsEvent<ExamineVerb> args)
     {
         var coverage = component.Coverage;

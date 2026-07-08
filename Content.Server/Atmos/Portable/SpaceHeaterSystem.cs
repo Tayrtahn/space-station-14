@@ -23,20 +23,9 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpaceHeaterComponent, ActivatableUIOpenAttemptEvent>(OnUIActivationAttempt);
-        SubscribeLocalEvent<SpaceHeaterComponent, BeforeActivatableUIOpenEvent>(OnBeforeOpened);
-
-        SubscribeLocalEvent<SpaceHeaterComponent, AtmosDeviceUpdateEvent>(OnDeviceUpdated);
-        SubscribeLocalEvent<SpaceHeaterComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<SpaceHeaterComponent, PowerChangedEvent>(OnPowerChanged);
-
-        SubscribeLocalEvent<SpaceHeaterComponent, SpaceHeaterChangeModeMessage>(OnModeChanged);
-        SubscribeLocalEvent<SpaceHeaterComponent, SpaceHeaterChangePowerLevelMessage>(OnPowerLevelChanged);
-        SubscribeLocalEvent<SpaceHeaterComponent, SpaceHeaterChangeTemperatureMessage>(OnTemperatureChanged);
-        SubscribeLocalEvent<SpaceHeaterComponent, SpaceHeaterToggleMessage>(OnToggle);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SpaceHeaterComponent spaceHeater, MapInitEvent args)
     {
         if (!TryComp<GasThermoMachineComponent>(uid, out var thermoMachine))
@@ -46,11 +35,13 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         thermoMachine.HeatCapacity = spaceHeater.PowerConsumption;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeOpened(EntityUid uid, SpaceHeaterComponent spaceHeater, BeforeActivatableUIOpenEvent args)
     {
         DirtyUI(uid, spaceHeater);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIActivationAttempt(EntityUid uid, SpaceHeaterComponent spaceHeater, ActivatableUIOpenAttemptEvent args)
     {
         if (Comp<TransformComponent>(uid).Anchored)
@@ -62,6 +53,7 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceUpdated(EntityUid uid, SpaceHeaterComponent spaceHeater, ref AtmosDeviceUpdateEvent args)
     {
         if (!_power.IsPowered(uid)
@@ -90,12 +82,14 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, SpaceHeaterComponent spaceHeater, ref PowerChangedEvent args)
     {
         UpdateAppearance(uid);
         DirtyUI(uid, spaceHeater);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggle(EntityUid uid, SpaceHeaterComponent spaceHeater, SpaceHeaterToggleMessage args)
     {
         ApcPowerReceiverComponent? powerReceiver = null;
@@ -108,6 +102,7 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         DirtyUI(uid, spaceHeater);
     }
 
+    [SubscribeLocalEvent]
     private void OnTemperatureChanged(EntityUid uid, SpaceHeaterComponent spaceHeater, SpaceHeaterChangeTemperatureMessage args)
     {
         if (!TryComp<GasThermoMachineComponent>(uid, out var thermoMachine))
@@ -121,6 +116,7 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         DirtyUI(uid, spaceHeater);
     }
 
+    [SubscribeLocalEvent]
     private void OnModeChanged(EntityUid uid, SpaceHeaterComponent spaceHeater, SpaceHeaterChangeModeMessage args)
     {
         if (!TryComp<GasThermoMachineComponent>(uid, out var thermoMachine))
@@ -136,6 +132,7 @@ public sealed partial class SpaceHeaterSystem : EntitySystem
         DirtyUI(uid, spaceHeater);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerLevelChanged(EntityUid uid, SpaceHeaterComponent spaceHeater, SpaceHeaterChangePowerLevelMessage args)
     {
         if (!TryComp<GasThermoMachineComponent>(uid, out var thermoMachine))

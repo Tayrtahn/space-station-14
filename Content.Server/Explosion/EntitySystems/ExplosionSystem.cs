@@ -78,24 +78,6 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
         base.Initialize();
 
         DebugTools.Assert(ProtoMan.HasIndex(DefaultExplosionPrototypeId));
-
-        // handled in ExplosionSystem.GridMap.cs
-        SubscribeLocalEvent<GridRemovalEvent>(OnGridRemoved);
-        SubscribeLocalEvent<GridStartupEvent>(OnGridStartup);
-        SubscribeLocalEvent<ExplosionResistanceComponent, GetExplosionResistanceEvent>(OnGetResistance);
-
-        // as long as explosion-resistance mice are never added, this should be fine (otherwise a mouse-hat will transfer it's power to the wearer).
-        SubscribeLocalEvent<ExplosionResistanceComponent, InventoryRelayedEvent<GetExplosionResistanceEvent>>(RelayedResistance);
-
-        SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnReset);
-
-        // Handled by ExplosionSystem.Processing.cs
-        SubscribeLocalEvent<MapRemovedEvent>(OnMapRemoved);
-
-        // handled in ExplosionSystemAirtight.cs
-        SubscribeLocalEvent<AirtightComponent, DamageChangedEvent>(OnAirtightDamaged);
         SubscribeCvars();
         InitAirtightMap();
         InitVisuals();
@@ -103,6 +85,7 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
         ProtoMan.PrototypesReloaded += ReloadExplosionPrototypes;
     }
 
+    [SubscribeLocalEvent]
     private void OnReset(RoundRestartCleanupEvent ev)
     {
         _explosionQueue.Clear();
@@ -122,6 +105,7 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
         ProtoMan.PrototypesReloaded -= ReloadExplosionPrototypes;
     }
 
+    [SubscribeLocalEvent]
     private void RelayedResistance(EntityUid uid, ExplosionResistanceComponent component,
         InventoryRelayedEvent<GetExplosionResistanceEvent> args)
     {
@@ -129,6 +113,7 @@ public sealed partial class ExplosionSystem : SharedExplosionSystem
             OnGetResistance(uid, component, ref args.Args);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetResistance(EntityUid uid, ExplosionResistanceComponent component, ref GetExplosionResistanceEvent args)
     {
         args.DamageCoefficient *= component.DamageCoefficient;

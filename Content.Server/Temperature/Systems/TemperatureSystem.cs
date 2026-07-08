@@ -17,14 +17,7 @@ public sealed partial class TemperatureSystem : SharedTemperatureSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TemperatureComponent, AtmosExposedUpdateEvent>(OnAtmosExposedUpdate);
-        SubscribeLocalEvent<TemperatureComponent, RejuvenateEvent>(OnRejuvenate);
         Subs.SubscribeWithRelay<TemperatureProtectionComponent, ModifyChangedTemperatureEvent>(OnTemperatureChangeAttempt, held: false);
-
-        SubscribeLocalEvent<InternalTemperatureComponent, MapInitEvent>(OnInit);
-
-        SubscribeLocalEvent<ChangeTemperatureOnCollideComponent, ProjectileHitEvent>(ChangeTemperatureOnCollide);
 
         InitializeDamage();
     }
@@ -89,6 +82,7 @@ public sealed partial class TemperatureSystem : SharedTemperatureSystem
         RaiseLocalEvent(uid, new OnTemperatureChangeEvent(temperature.CurrentTemperature, lastTemp, delta), broadcast: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosExposedUpdate(EntityUid uid, TemperatureComponent temperature, ref AtmosExposedUpdateEvent args)
     {
         var transform = args.Transform;
@@ -105,6 +99,7 @@ public sealed partial class TemperatureSystem : SharedTemperatureSystem
         ChangeHeat(uid, heat * temperature.AtmosTemperatureTransferEfficiency, temperature: temperature);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<InternalTemperatureComponent> entity, ref MapInitEvent args)
     {
         if (!TemperatureQuery.TryComp(entity, out var temp))
@@ -113,6 +108,7 @@ public sealed partial class TemperatureSystem : SharedTemperatureSystem
         entity.Comp.Temperature = temp.CurrentTemperature;
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(EntityUid uid, TemperatureComponent comp, RejuvenateEvent args)
     {
         ForceChangeTemperature(uid, Atmospherics.T20C, comp);
@@ -130,6 +126,7 @@ public sealed partial class TemperatureSystem : SharedTemperatureSystem
         args.TemperatureDelta *= ev.Coefficient;
     }
 
+    [SubscribeLocalEvent]
     private void ChangeTemperatureOnCollide(Entity<ChangeTemperatureOnCollideComponent> ent, ref ProjectileHitEvent args)
     {
         ChangeHeat(args.Target, ent.Comp.Heat, ent.Comp.IgnoreHeatResistance);// adjust the temperature

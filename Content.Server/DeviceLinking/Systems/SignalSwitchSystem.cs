@@ -16,16 +16,15 @@ public sealed partial class SignalSwitchSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SignalSwitchComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SignalSwitchComponent, ActivateInWorldEvent>(OnActivated);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SignalSwitchComponent comp, ComponentInit args)
     {
         _deviceLink.EnsureSourcePorts(uid, comp.OnPort, comp.OffPort, comp.StatusPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivated(EntityUid uid, SignalSwitchComponent comp, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)

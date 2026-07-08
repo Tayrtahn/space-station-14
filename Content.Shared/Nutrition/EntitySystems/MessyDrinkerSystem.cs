@@ -19,10 +19,9 @@ public sealed partial class MessyDrinkerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MessyDrinkerComponent, IngestingEvent>(OnIngested);
     }
 
+    [SubscribeLocalEvent]
     private void OnIngested(Entity<MessyDrinkerComponent> ent, ref IngestingEvent ev)
     {
         if (ent.Comp.SpillImmuneTag != null && _tag.HasTag(ev.Food, ent.Comp.SpillImmuneTag.Value))

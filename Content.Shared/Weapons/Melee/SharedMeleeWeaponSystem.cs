@@ -84,25 +84,10 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<MeleeWeaponComponent, HandSelectedEvent>(OnMeleeSelected);
-        SubscribeLocalEvent<MeleeWeaponComponent, ShotAttemptedEvent>(OnMeleeShotAttempted);
-        SubscribeLocalEvent<MeleeWeaponComponent, GunShotEvent>(OnMeleeShot);
-        SubscribeLocalEvent<MeleeWeaponComponent, DamageExamineEvent>(OnMeleeExamineDamage);
-        SubscribeLocalEvent<BonusMeleeDamageComponent, GetMeleeDamageEvent>(OnGetBonusMeleeDamage);
-        SubscribeLocalEvent<BonusMeleeDamageComponent, GetHeavyDamageModifierEvent>(OnGetBonusHeavyDamageModifier);
-        SubscribeLocalEvent<BonusMeleeAttackRateComponent, GetMeleeAttackRateEvent>(OnGetBonusMeleeAttackRate);
-
-        SubscribeLocalEvent<ItemToggleMeleeWeaponComponent, ItemToggledEvent>(OnItemToggle);
-
-        SubscribeAllEvent<HeavyAttackEvent>(OnHeavyAttack);
-        SubscribeAllEvent<LightAttackEvent>(OnLightAttack);
-        SubscribeAllEvent<DisarmAttackEvent>(OnDisarmAttack);
-        SubscribeAllEvent<StopAttackEvent>(OnStopAttack);
-
 #if DEBUG
-        SubscribeLocalEvent<MeleeWeaponComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, MeleeWeaponComponent component, MapInitEvent args)
     {
         if (component.NextAttack > Timing.CurTime)
@@ -110,12 +95,14 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
 #endif
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeShotAttempted(EntityUid uid, MeleeWeaponComponent comp, ref ShotAttemptedEvent args)
     {
         if (comp.NextAttack > Timing.CurTime)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeShot(EntityUid uid, MeleeWeaponComponent component, ref GunShotEvent args)
     {
         if (!TryComp<GunComponent>(uid, out var gun))
@@ -128,6 +115,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeExamineDamage(EntityUid uid, MeleeWeaponComponent component, ref DamageExamineEvent args)
     {
         if (component.Hidden)
@@ -140,6 +128,8 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
 
         _damageExamine.AddDamageExamine(args.Message, Damageable.ApplyUniversalAllModifiers(damageSpec), Loc.GetString("damage-melee"));
     }
+
+    [SubscribeLocalEvent]
     private void OnMeleeSelected(EntityUid uid, MeleeWeaponComponent component, HandSelectedEvent args)
     {
         var attackRate = GetAttackRate(uid, args.User, component);
@@ -163,6 +153,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
         DirtyField(uid, component, nameof(MeleeWeaponComponent.NextAttack));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBonusMeleeDamage(EntityUid uid, BonusMeleeDamageComponent component, ref GetMeleeDamageEvent args)
     {
         if (component.BonusDamage != null)
@@ -171,18 +162,21 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
             args.Modifiers.Add(component.DamageModifierSet);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBonusHeavyDamageModifier(EntityUid uid, BonusMeleeDamageComponent component, ref GetHeavyDamageModifierEvent args)
     {
         args.DamageModifier += component.HeavyDamageFlatModifier;
         args.Multipliers *= component.HeavyDamageMultiplier;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBonusMeleeAttackRate(EntityUid uid, BonusMeleeAttackRateComponent component, ref GetMeleeAttackRateEvent args)
     {
         args.Rate += component.FlatModifier;
         args.Multipliers *= component.Multiplier;
     }
 
+    [SubscribeAllEvent]
     private void OnStopAttack(StopAttackEvent msg, EntitySessionEventArgs args)
     {
         var user = args.SenderSession.AttachedEntity;
@@ -203,6 +197,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
         DirtyField(weaponUid, weapon, nameof(MeleeWeaponComponent.Attacking));
     }
 
+    [SubscribeAllEvent]
     private void OnLightAttack(LightAttackEvent msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not {} user)
@@ -217,6 +212,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
         AttemptAttack(user, weaponUid, weapon, msg, args.SenderSession);
     }
 
+    [SubscribeAllEvent]
     private void OnHeavyAttack(HeavyAttackEvent msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not {} user)
@@ -231,6 +227,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
         AttemptAttack(user, weaponUid, weapon, msg, args.SenderSession);
     }
 
+    [SubscribeAllEvent]
     private void OnDisarmAttack(DisarmAttackEvent msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not {} user)
@@ -991,6 +988,7 @@ public abstract partial class SharedMeleeWeaponSystem : EntitySystem
     /// <summary>
     /// Used to update the MeleeWeapon component on item toggle.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnItemToggle(EntityUid uid, ItemToggleMeleeWeaponComponent itemToggleMelee, ItemToggledEvent args)
     {
         if (!TryComp(uid, out MeleeWeaponComponent? meleeWeapon))

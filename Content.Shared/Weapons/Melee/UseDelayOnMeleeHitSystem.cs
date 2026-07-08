@@ -13,15 +13,15 @@ public sealed partial class UseDelayOnMeleeHitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<UseDelayOnMeleeHitComponent, MeleeHitEvent>(OnMeleeHit);
-        SubscribeLocalEvent<UseDelayOnMeleeHitComponent, ThrowDoHitEvent>(OnThrowHitEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowHitEvent(Entity<UseDelayOnMeleeHitComponent> ent, ref ThrowDoHitEvent args)
     {
         TryResetDelay(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeHit(Entity<UseDelayOnMeleeHitComponent> ent, ref MeleeHitEvent args)
     {
         TryResetDelay(ent);

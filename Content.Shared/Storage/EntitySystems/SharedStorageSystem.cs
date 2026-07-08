@@ -129,37 +129,8 @@ public abstract partial class SharedStorageSystem : EntitySystem
         {
             subs.Event<BoundUIClosedEvent>(OnBoundUIClosed);
         });
-
-        SubscribeLocalEvent<StorageComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<StorageComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<StorageComponent, GetVerbsEvent<ActivationVerb>>(AddUiVerb);
-        SubscribeLocalEvent<StorageComponent, ComponentGetState>(OnStorageGetState);
         SubscribeLocalEvent<StorageComponent, ComponentInit>(OnComponentInit, before: new[] { typeof(SharedContainerSystem) });
-        SubscribeLocalEvent<StorageComponent, GetVerbsEvent<UtilityVerb>>(AddTransferVerbs);
         SubscribeLocalEvent<StorageComponent, InteractUsingEvent>(OnInteractUsing, after: new[] { typeof(ItemSlotsSystem) });
-        SubscribeLocalEvent<StorageComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<StorageComponent, OpenStorageImplantEvent>(OnImplantActivate);
-        SubscribeLocalEvent<StorageComponent, AfterInteractEvent>(AfterInteract);
-        SubscribeLocalEvent<StorageComponent, DestructionEventArgs>(OnDestroy);
-        SubscribeLocalEvent<StorageComponent, BoundUserInterfaceMessageAttempt>(OnBoundUIAttempt);
-        SubscribeLocalEvent<StorageComponent, BoundUIOpenedEvent>(OnBoundUIOpen);
-        SubscribeLocalEvent<StorageComponent, LockToggledEvent>(OnLockToggled);
-        SubscribeLocalEvent<StorageComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-        SubscribeLocalEvent<StorageComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-        SubscribeLocalEvent<StorageComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<StorageComponent, AreaPickupDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<StorageComponent, GotReclaimedEvent>(OnReclaimed);
-
-        SubscribeLocalEvent<MetaDataComponent, StackCountChangedEvent>(OnStackCountChanged);
-
-        SubscribeAllEvent<OpenNestedStorageEvent>(OnStorageNested);
-        SubscribeAllEvent<StorageTransferItemEvent>(OnStorageTransfer);
-        SubscribeAllEvent<StorageInteractWithItemEvent>(OnInteractWithItem);
-        SubscribeAllEvent<StorageSetItemLocationEvent>(OnSetItemLocation);
-        SubscribeAllEvent<StorageInsertItemIntoLocationEvent>(OnInsertItemIntoLocation);
-        SubscribeAllEvent<StorageSaveItemLocationEvent>(OnSaveItemLocation);
-
-        SubscribeLocalEvent<ItemSizeChangedEvent>(OnItemSizeChanged);
 
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.OpenBackpack, InputCmdHandler.FromDelegate(HandleOpenBackpack, handle: false))
@@ -171,6 +142,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         UpdatePrototypeCache();
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSizeChanged(ref ItemSizeChangedEvent ev)
     {
         var itemEnt = new Entity<ItemComponent?>(ev.Entity, null);
@@ -198,17 +170,20 @@ public abstract partial class SharedStorageSystem : EntitySystem
         _openStorageLimit = obj;
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<StorageComponent> entity, ref ComponentRemove args)
     {
         UI.CloseUi(entity.Owner, StorageComponent.StorageUiKey.Key);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<StorageComponent> entity, ref MapInitEvent args)
     {
         UseDelay.SetLength(entity.Owner, entity.Comp.QuickInsertCooldown, QuickInsertUseDelayID);
         UseDelay.SetLength(entity.Owner, entity.Comp.OpenUiCooldown, OpenUiUseDelayID);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageGetState(EntityUid uid, StorageComponent component, ref ComponentGetState args)
     {
         var storedItems = new Dictionary<NetEntity, ItemStorageLocation>();
@@ -310,6 +285,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AddUiVerb(EntityUid uid, StorageComponent component, GetVerbsEvent<ActivationVerb> args)
     {
         if (component.ShowVerb == false || !CanInteract(args.User, (uid, component), args.CanAccess && args.CanInteract))
@@ -456,6 +432,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
 
     public virtual void UpdateUI(Entity<StorageComponent?> entity) {}
 
+    [SubscribeLocalEvent]
     private void AddTransferVerbs(EntityUid uid, StorageComponent component, GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -505,6 +482,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
     /// <summary>
     /// Sends a message to open the storage UI
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, StorageComponent storageComp, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex || !storageComp.OpenOnActivate || !CanInteract(args.User, (uid, storageComp)))
@@ -534,6 +512,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
     /// <summary>
     /// Specifically for storage implants.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnImplantActivate(EntityUid uid, StorageComponent storageComp, OpenStorageImplantEvent args)
     {
         if (args.Handled)
@@ -554,6 +533,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
     /// around a click.
     /// </summary>
     /// <returns></returns>
+    [SubscribeLocalEvent]
     private void AfterInteract(EntityUid uid, StorageComponent storageComp, AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || !UseDelay.TryResetDelay(uid, checkDelayed: true, id: QuickInsertUseDelayID))
@@ -637,6 +617,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, StorageComponent component, AreaPickupDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -702,11 +683,13 @@ public abstract partial class SharedStorageSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnReclaimed(EntityUid uid, StorageComponent storageComp, GotReclaimedEvent args)
     {
         ContainerSystem.EmptyContainer(storageComp.Container, destination: args.ReclaimerCoordinates);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestroy(EntityUid uid, StorageComponent storageComp, DestructionEventArgs args)
     {
         var coordinates = TransformSystem.GetMoverCoordinates(uid);
@@ -720,6 +703,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
     ///     item in the user's hand if it is currently empty, or interact with the item using the user's currently
     ///     held item.
     /// </summary>
+    [SubscribeAllEvent]
     private void OnInteractWithItem(StorageInteractWithItemEvent msg, EntitySessionEventArgs args)
     {
         if (!ValidateInput(args, msg.StorageUid, msg.InteractedItemUid, out var player, out var storage, out var item))
@@ -760,6 +744,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         RaiseLocalEvent(storage, ref failedEv);
     }
 
+    [SubscribeAllEvent]
     private void OnSetItemLocation(StorageSetItemLocationEvent msg, EntitySessionEventArgs args)
     {
         if (!ValidateInput(args, msg.StorageEnt, msg.ItemEnt, out var player, out var storage, out var item))
@@ -773,6 +758,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         TrySetItemStorageLocation(item!, storage!, msg.Location);
     }
 
+    [SubscribeAllEvent]
     private void OnStorageNested(OpenNestedStorageEvent msg, EntitySessionEventArgs args)
     {
         if (!NestedStorage)
@@ -801,6 +787,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         _nestedCheck = false;
     }
 
+    [SubscribeAllEvent]
     private void OnStorageTransfer(StorageTransferItemEvent msg, EntitySessionEventArgs args)
     {
         if (!TryGetEntity(msg.ItemEnt, out var itemUid) || !TryComp(itemUid, out ItemComponent? itemComp))
@@ -830,6 +817,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         InsertAt(storage!, item!, msg.Location, out _, player, stackAutomatically: false);
     }
 
+    [SubscribeAllEvent]
     private void OnInsertItemIntoLocation(StorageInsertItemIntoLocationEvent msg, EntitySessionEventArgs args)
     {
         if (!ValidateInput(args, msg.StorageEnt, msg.ItemEnt, out var player, out var storage, out var item, held: true))
@@ -842,6 +830,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         InsertAt(storage!, item!, msg.Location, out _, player, stackAutomatically: false);
     }
 
+    [SubscribeAllEvent]
     private void OnSaveItemLocation(StorageSaveItemLocationEvent msg, EntitySessionEventArgs args)
     {
         if (!ValidateInput(args, msg.Storage, msg.Item, out var player, out var storage, out var item))
@@ -850,11 +839,13 @@ public abstract partial class SharedStorageSystem : EntitySystem
         SaveItemLocation(storage!, item.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIOpen(Entity<StorageComponent> ent, ref BoundUIOpenedEvent args)
     {
         UpdateAppearance((ent.Owner, ent.Comp, null));
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIAttempt(Entity<StorageComponent> ent, ref BoundUserInterfaceMessageAttempt args)
     {
         if (args.UiKey is not StorageComponent.StorageUiKey.Key ||
@@ -893,6 +884,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(Entity<StorageComponent> entity, ref EntInsertedIntoContainerMessage args)
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -918,6 +910,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         UpdateUI((entity, entity.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<StorageComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
@@ -938,6 +931,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         UpdateUI((entity, entity.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(EntityUid uid, StorageComponent component, ContainerIsInsertingAttemptEvent args)
     {
         if (args.Cancelled || args.Container.ID != StorageComponent.ContainerId)
@@ -1833,6 +1827,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
     /// <summary>
     /// Checks if a storage's UI is open by anyone when locked, and closes it.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnLockToggled(EntityUid uid, StorageComponent component, ref LockToggledEvent args)
     {
         if (!args.Locked)
@@ -1846,6 +1841,7 @@ public abstract partial class SharedStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStackCountChanged(EntityUid uid, MetaDataComponent component, StackCountChangedEvent args)
     {
         if (ContainerSystem.TryGetContainingContainer((uid, null, component), out var container) &&

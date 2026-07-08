@@ -23,8 +23,6 @@ public sealed partial class ScatteringGrenadeSystem : SharedScatteringGrenadeSys
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScatteringGrenadeComponent, TriggerEvent>(OnScatteringTrigger);
     }
 
     /// <summary>
@@ -32,6 +30,7 @@ public sealed partial class ScatteringGrenadeSystem : SharedScatteringGrenadeSys
     /// will store the event happening in IsTriggered for the next frame update rather than
     /// handling it here to prevent crashing the game
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnScatteringTrigger(Entity<ScatteringGrenadeComponent> entity, ref TriggerEvent args)
     {
         if (args.Key != entity.Comp.TriggerKey)

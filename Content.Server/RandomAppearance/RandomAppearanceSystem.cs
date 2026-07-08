@@ -11,10 +11,9 @@ public sealed partial class RandomAppearanceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomAppearanceComponent, ComponentInit>(OnComponentInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, RandomAppearanceComponent component, ComponentInit args)
     {
         if (TryComp(uid, out AppearanceComponent? appearance) && component.EnumKey != null)

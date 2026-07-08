@@ -17,10 +17,9 @@ public sealed partial class GasMinerSystem : SharedGasMinerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasMinerComponent, AtmosDeviceUpdateEvent>(OnMinerUpdated);
     }
 
+    [SubscribeLocalEvent]
     private void OnMinerUpdated(Entity<GasMinerComponent> ent, ref AtmosDeviceUpdateEvent args)
     {
         var miner = ent.Comp;

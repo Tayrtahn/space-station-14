@@ -24,8 +24,6 @@ public sealed partial class SingularityGeneratorSystem : SharedSingularityGenera
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ParticleProjectileComponent, StartCollideEvent>(HandleParticleCollide);
-
         var vvHandle = _vvm.GetTypeHandler<SingularityGeneratorComponent>();
         vvHandle.AddPath(nameof(SingularityGeneratorComponent.Power), (_, comp) => comp.Power, SetPower);
         vvHandle.AddPath(nameof(SingularityGeneratorComponent.Threshold), (_, comp) => comp.Threshold, SetThreshold);
@@ -110,6 +108,7 @@ public sealed partial class SingularityGeneratorSystem : SharedSingularityGenera
     /// <param name="uid">The uid of the PA particles have collided with.</param>
     /// <param name="component">The state of the PA particles.</param>
     /// <param name="args">The state of the beginning of the collision.</param>
+    [SubscribeLocalEvent]
     private void HandleParticleCollide(EntityUid uid, ParticleProjectileComponent component, ref StartCollideEvent args)
     {
         if (!TryComp<SingularityGeneratorComponent>(args.OtherEntity, out var generatorComp))

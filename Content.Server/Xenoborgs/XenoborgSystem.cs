@@ -26,13 +26,9 @@ public sealed partial class XenoborgSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<XenoborgComponent, DestructionEventArgs>(OnXenoborgDestroyed);
-        SubscribeLocalEvent<MothershipCoreComponent, DestructionEventArgs>(OnCoreDestroyed);
-
-        SubscribeLocalEvent<XenoborgComponent, MindAddedMessage>(OnXenoborgMindAdded);
-        SubscribeLocalEvent<XenoborgComponent, MindRemovedMessage>(OnXenoborgMindRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnXenoborgDestroyed(EntityUid uid, XenoborgComponent component, DestructionEventArgs args)
     {
         // if a xenoborg is destroyed, it will check to see if it was the last one
@@ -51,6 +47,7 @@ public sealed partial class XenoborgSystem : EntitySystem
             _xenoborgsRule.SendXenoborgDeathAnnouncement((xenoborgsRuleEnt, xenoborgsRuleComp), mothershipCoreAlive);
     }
 
+    [SubscribeLocalEvent]
     private void OnCoreDestroyed(EntityUid ent, MothershipCoreComponent component, DestructionEventArgs args)
     {
         // if a mothership core is destroyed, it will see if there are any others
@@ -80,6 +77,7 @@ public sealed partial class XenoborgSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnXenoborgMindAdded(EntityUid ent, XenoborgComponent comp, MindAddedMessage args)
     {
         _roles.MindAddRole(args.Mind, comp.MindRole, silent: true);
@@ -94,6 +92,7 @@ public sealed partial class XenoborgSystem : EntitySystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnXenoborgMindRemoved(EntityUid ent, XenoborgComponent comp, MindRemovedMessage args)
     {
         // We don't need to update the mind if the mind is being fully detached!

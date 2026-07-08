@@ -28,10 +28,6 @@ public sealed partial class PowerSensorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PowerSensorComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<PowerSensorComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<PowerSensorComponent, InteractUsingEvent>(OnInteractUsing);
     }
 
     public override void Update(float deltaTime)
@@ -48,11 +44,13 @@ public sealed partial class PowerSensorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, PowerSensorComponent comp, ComponentInit args)
     {
         _deviceLink.EnsureSourcePorts(uid, comp.ChargingPort, comp.DischargingPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, PowerSensorComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -61,6 +59,7 @@ public sealed partial class PowerSensorSystem : EntitySystem
         args.PushMarkup(Loc.GetString("power-sensor-examine", ("output", comp.Output)));
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, PowerSensorComponent comp, InteractUsingEvent args)
     {
         if (args.Handled || !_tool.HasQuality(args.Used, comp.SwitchQuality))

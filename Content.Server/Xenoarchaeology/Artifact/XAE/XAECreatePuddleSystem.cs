@@ -21,10 +21,9 @@ public sealed partial class XAECreatePuddleSystem : BaseXAESystem<XAECreatePuddl
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<XAECreatePuddleComponent, MapInitEvent>(OnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, XAECreatePuddleComponent component, MapInitEvent _)
     {
         if (component.PossibleChemicals == null || component.PossibleChemicals.Count == 0)

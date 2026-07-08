@@ -16,8 +16,6 @@ namespace Content.Server.DeviceNetwork.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<StationLimitedNetworkComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<StationLimitedNetworkComponent, BeforePacketSentEvent>(OnBeforePacketSent);
         }
 
         /// <summary>
@@ -46,6 +44,7 @@ namespace Content.Server.DeviceNetwork.Systems
         /// <summary>
         /// Set the station id to the one the entity is on when the station limited component is added
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, StationLimitedNetworkComponent networkComponent, MapInitEvent args)
         {
             networkComponent.StationId = _stationSystem.GetOwningStation(uid);
@@ -54,6 +53,7 @@ namespace Content.Server.DeviceNetwork.Systems
         /// <summary>
         /// Checks if both devices are limited to the same station
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBeforePacketSent(EntityUid uid, StationLimitedNetworkComponent component, BeforePacketSentEvent args)
         {
             if (!component.StationId.HasValue)

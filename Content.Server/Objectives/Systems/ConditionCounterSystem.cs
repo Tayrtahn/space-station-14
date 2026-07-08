@@ -17,9 +17,9 @@ public sealed partial class CounterConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CounterConditionComponent, ObjectiveGetProgressEvent>(OnCounterGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnCounterGetProgress(Entity<CounterConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress(ent, _number.GetTarget(ent.Owner));

@@ -16,11 +16,9 @@ public sealed partial class MechSoundboardSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MechSoundboardComponent, MechEquipmentUiStateReadyEvent>(OnUiStateReady);
-        SubscribeLocalEvent<MechSoundboardComponent, MechEquipmentUiMessageRelayEvent>(OnSoundboardMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnUiStateReady(EntityUid uid, MechSoundboardComponent comp, MechEquipmentUiStateReadyEvent args)
     {
         // you have to specify a collection so it must exist probably
@@ -32,6 +30,7 @@ public sealed partial class MechSoundboardSystem : EntitySystem
         args.States.Add(GetNetEntity(uid), state);
     }
 
+    [SubscribeLocalEvent]
     private void OnSoundboardMessage(EntityUid uid, MechSoundboardComponent comp, MechEquipmentUiMessageRelayEvent args)
     {
         if (args.Message is not MechSoundboardPlayMessage msg)

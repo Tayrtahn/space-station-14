@@ -102,17 +102,6 @@ namespace Content.Shared.Interaction
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<BoundUserInterfaceCheckRangeEvent>(HandleUserInterfaceRangeCheck);
-
-            // TODO make this a broadcast event subscription again when engine has updated.
-            SubscribeLocalEvent<UserInterfaceComponent, BoundUserInterfaceMessageAttempt>(OnBoundInterfaceInteractAttempt);
-
-            SubscribeAllEvent<InteractInventorySlotEvent>(HandleInteractInventorySlotEvent);
-
-            SubscribeLocalEvent<UnremoveableComponent, ContainerGettingRemovedAttemptEvent>(OnRemoveAttempt);
-            SubscribeLocalEvent<UnremoveableComponent, GotUnequippedEvent>(OnUnequip);
-            SubscribeLocalEvent<UnremoveableComponent, GotUnequippedHandEvent>(OnUnequipHand);
-            SubscribeLocalEvent<UnremoveableComponent, DroppedEvent>(OnDropped);
 
             CommandBinds.Builder
                 .Bind(ContentKeyFunctions.AltActivateItemInWorld,
@@ -150,6 +139,7 @@ namespace Content.Shared.Interaction
         /// <summary>
         ///     Check that the user that is interacting with the BUI is capable of interacting and can access the entity.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBoundInterfaceInteractAttempt(Entity<UserInterfaceComponent> ent, ref BoundUserInterfaceMessageAttempt ev)
         {
             _uiQuery.TryComp(ev.Target, out var aUiComp);
@@ -207,6 +197,7 @@ namespace Content.Shared.Interaction
         /// <summary>
         ///     Prevents an item with the Unremovable component from being removed from a container by almost any means
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnRemoveAttempt(EntityUid uid, UnremoveableComponent item, ContainerGettingRemovedAttemptEvent args)
         {
             // don't prevent the server state for the container from being applied to the client correctly
@@ -219,6 +210,7 @@ namespace Content.Shared.Interaction
         ///     If item has DeleteOnDrop true then item will be deleted if removed from inventory, if it is false then item
         ///     loses Unremoveable when removed from inventory (gibbing).
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnUnequip(EntityUid uid, UnremoveableComponent item, GotUnequippedEvent args)
         {
             if (_gameTiming.ApplyingState)
@@ -230,6 +222,7 @@ namespace Content.Shared.Interaction
                 PredictedQueueDel(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnUnequipHand(EntityUid uid, UnremoveableComponent item, GotUnequippedHandEvent args)
         {
             if (_gameTiming.ApplyingState)
@@ -241,6 +234,7 @@ namespace Content.Shared.Interaction
                 PredictedQueueDel(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnDropped(EntityUid uid, UnremoveableComponent item, DroppedEvent args)
         {
             if (_gameTiming.ApplyingState)
@@ -280,6 +274,7 @@ namespace Content.Shared.Interaction
         ///     Handles the event were a client uses an item in their inventory or in their hands, either by
         ///     alt-clicking it or pressing 'E' while hovering over it.
         /// </summary>
+        [SubscribeAllEvent]
         private void HandleInteractInventorySlotEvent(InteractInventorySlotEvent msg, EntitySessionEventArgs args)
         {
             var item = GetEntity(msg.ItemUid);
@@ -1437,7 +1432,7 @@ namespace Content.Shared.Interaction
             RaiseLocalEvent(uidB.Value, ev);
         }
 
-
+        [SubscribeLocalEvent]
         private void HandleUserInterfaceRangeCheck(ref BoundUserInterfaceCheckRangeEvent ev)
         {
             if (ev.Result == BoundUserInterfaceRangeResult.Fail)

@@ -51,13 +51,6 @@ public abstract partial class SharedMindSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<MindContainerComponent, SuicideEvent>(OnSuicide);
-
-        SubscribeLocalEvent<VisitingMindComponent, EntityTerminatingEvent>(OnVisitingTerminating);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnReset);
-        SubscribeLocalEvent<MindComponent, ComponentStartup>(OnMindStartup);
-        SubscribeLocalEvent<MindComponent, EntityRenamedEvent>(OnRenamed);
-
         InitializeRelay();
     }
 
@@ -67,6 +60,7 @@ public abstract partial class SharedMindSystem : EntitySystem
         WipeAllMinds();
     }
 
+    [SubscribeLocalEvent]
     private void OnMindStartup(EntityUid uid, MindComponent component, ComponentStartup args)
     {
         component.MindRoleContainer = _container.EnsureContainer<Container>(uid, MindComponent.MindRoleContainerId);
@@ -92,6 +86,7 @@ public abstract partial class SharedMindSystem : EntitySystem
         component.UserId = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnReset(RoundRestartCleanupEvent ev)
     {
         WipeAllMinds();
@@ -159,6 +154,7 @@ public abstract partial class SharedMindSystem : EntitySystem
         return mind.Value;
     }
 
+    [SubscribeLocalEvent]
     private void OnVisitingTerminating(EntityUid uid, VisitingMindComponent component, ref EntityTerminatingEvent args)
     {
         if (component.MindId != null)
@@ -169,6 +165,7 @@ public abstract partial class SharedMindSystem : EntitySystem
     /// Checks to see if the user's mind prevents them from suicide
     /// Handles the suicide event without killing the user if true
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSuicide(EntityUid uid, MindContainerComponent component, SuicideEvent args)
     {
         if (args.Handled)
@@ -178,6 +175,7 @@ public abstract partial class SharedMindSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRenamed(Entity<MindComponent> ent, ref EntityRenamedEvent args)
     {
         ent.Comp.CharacterName = args.NewName;

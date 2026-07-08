@@ -23,13 +23,9 @@ public sealed partial class StandingStateSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StandingStateComponent, AttemptMobCollideEvent>(OnMobCollide);
-        SubscribeLocalEvent<StandingStateComponent, AttemptMobTargetCollideEvent>(OnMobTargetCollide);
-        SubscribeLocalEvent<StandingStateComponent, RefreshFrictionModifiersEvent>(OnRefreshFrictionModifiers);
-        SubscribeLocalEvent<StandingStateComponent, TileFrictionEvent>(OnTileFriction);
-        SubscribeLocalEvent<StandingStateComponent, EndClimbEvent>(OnEndClimb);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobTargetCollide(Entity<StandingStateComponent> ent, ref AttemptMobTargetCollideEvent args)
     {
         if (!ent.Comp.Standing)
@@ -38,6 +34,7 @@ public sealed partial class StandingStateSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMobCollide(Entity<StandingStateComponent> ent, ref AttemptMobCollideEvent args)
     {
         if (!ent.Comp.Standing)
@@ -46,6 +43,7 @@ public sealed partial class StandingStateSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshFrictionModifiers(Entity<StandingStateComponent> entity, ref RefreshFrictionModifiersEvent args)
     {
         if (entity.Comp.Standing)
@@ -55,12 +53,14 @@ public sealed partial class StandingStateSystem : EntitySystem
         args.ModifyAcceleration(entity.Comp.DownFrictionMod);
     }
 
+    [SubscribeLocalEvent]
     private void OnTileFriction(Entity<StandingStateComponent> entity, ref TileFrictionEvent args)
     {
         if (!entity.Comp.Standing)
             args.Modifier *= entity.Comp.DownFrictionMod;
     }
 
+    [SubscribeLocalEvent]
     private void OnEndClimb(Entity<StandingStateComponent> entity, ref EndClimbEvent args)
     {
         if (entity.Comp.Standing)

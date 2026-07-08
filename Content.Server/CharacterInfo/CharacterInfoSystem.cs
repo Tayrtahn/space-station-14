@@ -18,10 +18,9 @@ public sealed partial class CharacterInfoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<RequestCharacterInfoEvent>(OnRequestCharacterInfoEvent);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestCharacterInfoEvent(RequestCharacterInfoEvent msg, EntitySessionEventArgs args)
     {
         if (!args.SenderSession.AttachedEntity.HasValue

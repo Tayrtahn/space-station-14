@@ -40,16 +40,10 @@ public abstract partial class SharedConveyorController : VirtualController
 
         UpdatesAfter.Add(typeof(SharedMoverController));
 
-        SubscribeLocalEvent<ConveyedComponent, TileFrictionEvent>(OnConveyedFriction);
-        SubscribeLocalEvent<ConveyedComponent, ComponentStartup>(OnConveyedStartup);
-        SubscribeLocalEvent<ConveyedComponent, ComponentShutdown>(OnConveyedShutdown);
-
-        SubscribeLocalEvent<ConveyorComponent, StartCollideEvent>(OnConveyorStartCollide);
-        SubscribeLocalEvent<ConveyorComponent, ComponentStartup>(OnConveyorStartup);
-
         base.Initialize();
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyedFriction(Entity<ConveyedComponent> ent, ref TileFrictionEvent args)
     {
         if(!ent.Comp.Conveying)
@@ -59,17 +53,20 @@ public abstract partial class SharedConveyorController : VirtualController
         args.Modifier = 0f;
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyedStartup(Entity<ConveyedComponent> ent, ref ComponentStartup args)
     {
         // We need waking / sleeping to work and don't want collisionwake interfering with us.
         _wake.SetEnabled(ent.Owner, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyedShutdown(Entity<ConveyedComponent> ent, ref ComponentShutdown args)
     {
         _wake.SetEnabled(ent.Owner, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyorStartup(Entity<ConveyorComponent> ent, ref ComponentStartup args)
     {
         AwakenConveyor(ent.Owner);
@@ -105,6 +102,7 @@ public abstract partial class SharedConveyorController : VirtualController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyorStartCollide(Entity<ConveyorComponent> conveyor, ref StartCollideEvent args)
     {
         var otherUid = args.OtherEntity;

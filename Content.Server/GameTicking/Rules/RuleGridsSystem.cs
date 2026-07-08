@@ -18,13 +18,9 @@ public sealed partial class RuleGridsSystem : GameRuleSystem<RuleGridsComponent>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
-
-        SubscribeLocalEvent<RuleGridsComponent, RuleLoadedGridsEvent>(OnLoadedGrids);
-        SubscribeLocalEvent<RuleGridsComponent, AntagSelectLocationEvent>(OnSelectLocation);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         var rule = QueryActiveRules();
@@ -38,6 +34,7 @@ public sealed partial class RuleGridsSystem : GameRuleSystem<RuleGridsComponent>
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnLoadedGrids(Entity<RuleGridsComponent> ent, ref RuleLoadedGridsEvent args)
     {
         var (uid, comp) = ent;
@@ -51,6 +48,7 @@ public sealed partial class RuleGridsSystem : GameRuleSystem<RuleGridsComponent>
         comp.MapGrids.AddRange(args.Grids);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectLocation(Entity<RuleGridsComponent> ent, ref AntagSelectLocationEvent args)
     {
         var query = EntityQueryEnumerator<SpawnPointComponent, TransformComponent>();

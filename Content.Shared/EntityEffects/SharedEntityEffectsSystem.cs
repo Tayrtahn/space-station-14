@@ -21,9 +21,9 @@ public sealed partial class SharedEntityEffectsSystem : EntitySystem, IEntityEff
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ReactiveComponent, ReactionEntityEvent>(OnReactive);
     }
 
+    [SubscribeLocalEvent]
     private void OnReactive(Entity<ReactiveComponent> entity, ref ReactionEntityEvent args)
     {
         var scale = args.ReagentQuantity.Quantity.Float();
@@ -154,9 +154,9 @@ public abstract partial class EntityEffectSystem<T, TEffect> : EntitySystem wher
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<T, EntityEffectEvent<TEffect>>(Effect);
     }
 
+    [SubscribeLocalEvent]
     protected abstract void Effect(Entity<T> entity, ref EntityEffectEvent<TEffect> args);
 }
 

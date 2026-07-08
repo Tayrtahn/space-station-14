@@ -14,10 +14,9 @@ public sealed partial class CrematoriumSystem : SharedCrematoriumSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CrematoriumComponent, SuicideByEnvironmentEvent>(OnSuicideByEnvironment);
     }
 
+    [SubscribeLocalEvent]
     private void OnSuicideByEnvironment(Entity<CrematoriumComponent> ent, ref SuicideByEnvironmentEvent args)
     {
         if (args.Handled)

@@ -17,17 +17,16 @@ public sealed partial class DisposalSignalRouterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DisposalSignalRouterComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<DisposalSignalRouterComponent, SignalReceivedEvent>(OnSignalReceived);
         SubscribeLocalEvent<DisposalSignalRouterComponent, GetDisposalsNextDirectionEvent>(OnGetNextDirection, before: new[] { typeof(DisposalTubeSystem) });
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<DisposalSignalRouterComponent> ent, ref ComponentInit args)
     {
         _deviceLink.EnsureSinkPorts(ent, ent.Comp.OnPort, ent.Comp.OffPort, ent.Comp.TogglePort);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<DisposalSignalRouterComponent> ent, ref SignalReceivedEvent args)
     {
         // TogglePort flips it

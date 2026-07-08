@@ -11,10 +11,9 @@ public sealed partial class BleatingAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BleatingAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(Entity<BleatingAccentComponent> entity, ref AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message);

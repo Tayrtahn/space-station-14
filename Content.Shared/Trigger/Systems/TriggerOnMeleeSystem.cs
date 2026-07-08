@@ -6,24 +6,23 @@ namespace Content.Shared.Trigger.Systems;
 /// <summary>
 /// Trigger system for melee related triggers.
 /// </summary>
-public sealed class TriggerOnMeleeTriggerSystem : TriggerOnXSystem
+public sealed partial class TriggerOnMeleeTriggerSystem : TriggerOnXSystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnMeleeMissComponent, MeleeHitEvent>(OnMissTrigger);
-        SubscribeLocalEvent<TriggerOnMeleeSwingComponent, MeleeHitEvent>(OnSwingTrigger);
         SubscribeLocalEvent<TriggerOnMeleeHitComponent, MeleeHitEvent>(OnHitTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnMissTrigger(Entity<TriggerOnMeleeMissComponent> ent, ref MeleeHitEvent args)
     {
         if (args.HitEntities.Count == 0)
             Trigger.Trigger(ent.Owner, args.User, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnSwingTrigger(Entity<TriggerOnMeleeSwingComponent> ent, ref MeleeHitEvent args)
     {
         EntityUid? target;

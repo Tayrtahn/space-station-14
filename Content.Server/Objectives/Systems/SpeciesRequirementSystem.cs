@@ -7,15 +7,14 @@ namespace Content.Server.Objectives.Systems;
 /// <summary>
 /// Handles species requirement for objectives that require a certain species.
 /// </summary>
-public sealed class SpeciesRequirementSystem : EntitySystem
+public sealed partial class SpeciesRequirementSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpeciesRequirementComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(Entity<SpeciesRequirementComponent> requirement, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

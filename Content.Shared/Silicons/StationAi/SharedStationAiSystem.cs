@@ -85,31 +85,9 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         InitializeHeld();
         InitializeLight();
         InitializeCustomization();
-
-        SubscribeLocalEvent<StationAiWhitelistComponent, BoundUserInterfaceCheckRangeEvent>(OnAiBuiCheck);
-
-        SubscribeLocalEvent<StationAiOverlayComponent, AccessibleOverrideEvent>(OnAiAccessible);
-        SubscribeLocalEvent<StationAiOverlayComponent, InRangeOverrideEvent>(OnAiInRange);
-        SubscribeLocalEvent<StationAiOverlayComponent, MenuVisibilityEvent>(OnAiMenu);
-
-        SubscribeLocalEvent<StationAiHolderComponent, ComponentInit>(OnHolderInit);
-        SubscribeLocalEvent<StationAiHolderComponent, ComponentRemove>(OnHolderRemove);
-        SubscribeLocalEvent<StationAiHolderComponent, AfterInteractEvent>(OnHolderInteract);
-        SubscribeLocalEvent<StationAiHolderComponent, MapInitEvent>(OnHolderMapInit);
-        SubscribeLocalEvent<StationAiHolderComponent, EntInsertedIntoContainerMessage>(OnHolderConInsert);
-        SubscribeLocalEvent<StationAiHolderComponent, EntRemovedFromContainerMessage>(OnHolderConRemove);
-        SubscribeLocalEvent<StationAiHolderComponent, IntellicardDoAfterEvent>(OnIntellicardDoAfter);
-
-        SubscribeLocalEvent<StationAiCoreComponent, EntInsertedIntoContainerMessage>(OnAiInsert);
-        SubscribeLocalEvent<StationAiCoreComponent, EntRemovedFromContainerMessage>(OnAiRemove);
-        SubscribeLocalEvent<StationAiCoreComponent, ComponentShutdown>(OnAiShutdown);
-        SubscribeLocalEvent<StationAiCoreComponent, PowerChangedEvent>(OnCorePower);
-        SubscribeLocalEvent<StationAiCoreComponent, GetVerbsEvent<Verb>>(OnCoreVerbs);
-
-        SubscribeLocalEvent<StationAiCoreComponent, BreakageEventArgs>(OnBroken);
-        SubscribeLocalEvent<StationAiCoreComponent, RepairedEvent>(OnRepaired);
     }
 
+    [SubscribeLocalEvent]
     private void OnCoreVerbs(Entity<StationAiCoreComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         var user = args.User;
@@ -145,6 +123,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAiAccessible(Entity<StationAiOverlayComponent> ent, ref AccessibleOverrideEvent args)
     {
         // We don't want to allow entities to access the AI just because the eye is nearby.
@@ -162,11 +141,13 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         args.Accessible = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAiMenu(Entity<StationAiOverlayComponent> ent, ref MenuVisibilityEvent args)
     {
         args.Visibility &= ~MenuVisibility.NoFov;
     }
 
+    [SubscribeLocalEvent]
     private void OnAiBuiCheck(Entity<StationAiWhitelistComponent> ent, ref BoundUserInterfaceCheckRangeEvent args)
     {
         if (!HasComp<StationAiHeldComponent>(args.Actor))
@@ -199,6 +180,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAiInRange(Entity<StationAiOverlayComponent> ent, ref InRangeOverrideEvent args)
     {
         args.Handled = true;
@@ -222,7 +204,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         args.InRange = _vision.IsAccessible((targetXform.GridUid.Value, broadphase, grid), targetTile);
     }
 
-
+    [SubscribeLocalEvent]
     private void OnIntellicardDoAfter(Entity<StationAiHolderComponent> ent, ref IntellicardDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -258,6 +240,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderInteract(Entity<StationAiHolderComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target == null)
@@ -308,16 +291,19 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderInit(Entity<StationAiHolderComponent> ent, ref ComponentInit args)
     {
         _slots.AddItemSlot(ent.Owner, StationAiHolderComponent.Container, ent.Comp.Slot);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderRemove(Entity<StationAiHolderComponent> ent, ref ComponentRemove args)
     {
         _slots.RemoveItemSlot(ent.Owner, ent.Comp.Slot);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderConInsert(Entity<StationAiHolderComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -332,6 +318,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
             _metadata.SetEntityName(ent.Owner, MetaData(args.Entity).EntityName);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderConRemove(Entity<StationAiHolderComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -346,11 +333,13 @@ public abstract partial class SharedStationAiSystem : EntitySystem
             _metadata.SetEntityName(ent.Owner, Prototype(ent.Owner)?.Name ?? string.Empty);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderMapInit(Entity<StationAiHolderComponent> ent, ref MapInitEvent args)
     {
         UpdateAppearance((ent.Owner, ent.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnAiShutdown(Entity<StationAiCoreComponent> ent, ref ComponentShutdown args)
     {
         // TODO: Tryqueuedel
@@ -361,6 +350,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         ent.Comp.RemoteEntity = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnCorePower(Entity<StationAiCoreComponent> ent, ref PowerChangedEvent args)
     {
         if (!args.Powered)
@@ -369,6 +359,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBroken(Entity<StationAiCoreComponent> ent, ref BreakageEventArgs args)
     {
         KillHeldAi(ent);
@@ -377,6 +368,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
             _appearance.SetData(ent, StationAiVisuals.Broken, true, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnRepaired(Entity<StationAiCoreComponent> ent, ref RepairedEvent args)
     {
         if (TryComp<AppearanceComponent>(ent, out var appearance))
@@ -503,6 +495,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
         return container.ContainedEntities[0];
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnAiInsert(Entity<StationAiCoreComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != StationAiCoreComponent.Container)
@@ -518,6 +511,7 @@ public abstract partial class SharedStationAiSystem : EntitySystem
             AttachEye(ent);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnAiRemove(Entity<StationAiCoreComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != StationAiCoreComponent.Container)

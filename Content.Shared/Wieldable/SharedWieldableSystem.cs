@@ -44,32 +44,9 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<WieldableComponent, UseInHandEvent>(OnUseInHand, before: [typeof(SharedGunSystem), typeof(BatteryWeaponFireModesSystem)]);
-        SubscribeLocalEvent<WieldableComponent, ItemUnwieldedEvent>(OnItemUnwielded);
-        SubscribeLocalEvent<WieldableComponent, GotUnequippedHandEvent>(OnItemLeaveHand);
-        SubscribeLocalEvent<WieldableComponent, VirtualItemDeletedEvent>(OnVirtualItemDeleted);
-        SubscribeLocalEvent<WieldableComponent, GetVerbsEvent<InteractionVerb>>(AddToggleWieldVerb);
-        SubscribeLocalEvent<WieldableComponent, HandDeselectedEvent>(OnDeselectWieldable);
-
-        SubscribeLocalEvent<WieldingBlockerComponent, GotEquippedEvent>(OnBlockerEquipped);
-        SubscribeLocalEvent<WieldingBlockerComponent, GotEquippedHandEvent>(OnBlockerEquippedHand);
-        SubscribeLocalEvent<WieldingBlockerComponent, WieldAttemptEvent>(OnBlockerAttempt);
-        SubscribeLocalEvent<WieldingBlockerComponent, InventoryRelayedEvent<WieldAttemptEvent>>(OnBlockerAttempt);
-        SubscribeLocalEvent<WieldingBlockerComponent, HeldRelayedEvent<WieldAttemptEvent>>(OnBlockerAttempt);
-
-        SubscribeLocalEvent<MeleeRequiresWieldComponent, AttemptMeleeEvent>(OnMeleeAttempt);
-        SubscribeLocalEvent<GunRequiresWieldComponent, ExaminedEvent>(OnExamineRequires);
-        SubscribeLocalEvent<GunRequiresWieldComponent, ShotAttemptedEvent>(OnShootAttempt);
-        SubscribeLocalEvent<GunWieldBonusComponent, ItemWieldedEvent>(OnGunWielded);
-        SubscribeLocalEvent<GunWieldBonusComponent, ItemUnwieldedEvent>(OnGunUnwielded);
-        SubscribeLocalEvent<GunWieldBonusComponent, GunRefreshModifiersEvent>(OnGunRefreshModifiers);
-        SubscribeLocalEvent<GunWieldBonusComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<SpeedModifiedOnWieldComponent, ItemWieldedEvent>(OnSpeedModifierWielded);
-        SubscribeLocalEvent<SpeedModifiedOnWieldComponent, ItemUnwieldedEvent>(OnSpeedModifierUnwielded);
-        SubscribeLocalEvent<SpeedModifiedOnWieldComponent, HeldRelayedEvent<RefreshMovementSpeedModifiersEvent>>(OnRefreshSpeedWielded);
-
-        SubscribeLocalEvent<IncreaseDamageOnWieldComponent, GetMeleeDamageEvent>(OnGetMeleeDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeAttempt(EntityUid uid, MeleeRequiresWieldComponent component, ref AttemptMeleeEvent args)
     {
         if (TryComp<WieldableComponent>(uid, out var wieldable) &&
@@ -80,6 +57,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShootAttempt(EntityUid uid, GunRequiresWieldComponent component, ref ShotAttemptedEvent args)
     {
         if (TryComp<WieldableComponent>(uid, out var wieldable) &&
@@ -99,16 +77,19 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGunUnwielded(EntityUid uid, GunWieldBonusComponent component, ItemUnwieldedEvent args)
     {
         _gun.RefreshModifiers(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnGunWielded(EntityUid uid, GunWieldBonusComponent component, ref ItemWieldedEvent args)
     {
         _gun.RefreshModifiers(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeselectWieldable(EntityUid uid, WieldableComponent component, HandDeselectedEvent args)
     {
         if (_hands.GetHandCount(args.User) > 2)
@@ -117,6 +98,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         TryUnwield((uid, component), args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGunRefreshModifiers(Entity<GunWieldBonusComponent> bonus, ref GunRefreshModifiersEvent args)
     {
         if (TryComp(bonus, out WieldableComponent? wield) &&
@@ -129,16 +111,19 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeedModifierWielded(EntityUid uid, SpeedModifiedOnWieldComponent component, ItemWieldedEvent args)
     {
         _movementSpeedModifier.RefreshMovementSpeedModifiers(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeedModifierUnwielded(EntityUid uid, SpeedModifiedOnWieldComponent component, ItemUnwieldedEvent args)
     {
         _movementSpeedModifier.RefreshMovementSpeedModifiers(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshSpeedWielded(EntityUid uid, SpeedModifiedOnWieldComponent component, ref HeldRelayedEvent<RefreshMovementSpeedModifiersEvent> args)
     {
         if (TryComp<WieldableComponent>(uid, out var wield) && wield.Wielded)
@@ -147,12 +132,14 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamineRequires(Entity<GunRequiresWieldComponent> entity, ref ExaminedEvent args)
     {
         if (entity.Comp.WieldRequiresExamineMessage != null)
             args.PushText(Loc.GetString(entity.Comp.WieldRequiresExamineMessage));
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, GunWieldBonusComponent component, ref ExaminedEvent args)
     {
         if (HasComp<GunRequiresWieldComponent>(uid))
@@ -162,6 +149,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
             args.PushText(Loc.GetString(component.WieldBonusExamineMessage));
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleWieldVerb(EntityUid uid, WieldableComponent component, GetVerbsEvent<InteractionVerb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract)
@@ -205,18 +193,21 @@ public abstract partial class SharedWieldableSystem : EntitySystem
             args.ApplyDelay = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockerEquipped(Entity<WieldingBlockerComponent> ent, ref GotEquippedEvent args)
     {
         if (ent.Comp.BlockEquipped)
             UnwieldAll(args.EquipTarget, force: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockerEquippedHand(Entity<WieldingBlockerComponent> ent, ref GotEquippedHandEvent args)
     {
         if (ent.Comp.BlockInHand)
             UnwieldAll(args.User, force: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockerAttempt(Entity<WieldingBlockerComponent> ent, ref InventoryRelayedEvent<WieldAttemptEvent> args)
     {
         if (ent.Comp.BlockEquipped)
@@ -226,6 +217,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockerAttempt(Entity<WieldingBlockerComponent> ent, ref HeldRelayedEvent<WieldAttemptEvent> args)
     {
         if (ent.Comp.BlockInHand)
@@ -235,6 +227,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBlockerAttempt(Entity<WieldingBlockerComponent> ent, ref WieldAttemptEvent args)
     {
         args.Cancelled = true;
@@ -402,6 +395,7 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         _appearance.SetData(ent, WieldableVisuals.Wielded, wielded);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemUnwielded(EntityUid uid, WieldableComponent component, ItemUnwieldedEvent args)
     {
         _item.SetHeldPrefix(uid, component.OldInhandPrefix);
@@ -420,18 +414,21 @@ public abstract partial class SharedWieldableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnItemLeaveHand(EntityUid uid, WieldableComponent component, GotUnequippedHandEvent args)
     {
         if (uid == args.Unequipped)
             TryUnwield((uid, component), args.User, force: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnVirtualItemDeleted(EntityUid uid, WieldableComponent component, VirtualItemDeletedEvent args)
     {
         if (args.BlockingEntity == uid)
             TryUnwield((uid, component), args.User, force: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetMeleeDamage(EntityUid uid, IncreaseDamageOnWieldComponent component, ref GetMeleeDamageEvent args)
     {
         if (!TryComp<WieldableComponent>(uid, out var wield))

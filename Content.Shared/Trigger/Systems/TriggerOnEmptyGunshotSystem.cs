@@ -7,10 +7,9 @@ public sealed partial class TriggerOnEmptyGunshotSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnEmptyGunshotComponent, OnEmptyGunShotEvent>(OnEmptyGunShot);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmptyGunShot(Entity<TriggerOnEmptyGunshotComponent> ent, ref OnEmptyGunShotEvent args)
     {
         Trigger.Trigger(ent.Owner, args.User, ent.Comp.KeyOut);

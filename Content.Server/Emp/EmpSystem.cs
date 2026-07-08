@@ -5,23 +5,22 @@ using Content.Shared.Emp;
 
 namespace Content.Server.Emp;
 
-public sealed class EmpSystem : SharedEmpSystem
+public sealed partial class EmpSystem : SharedEmpSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmpDisabledComponent, RadioSendAttemptEvent>(OnRadioSendAttempt);
-        SubscribeLocalEvent<EmpDisabledComponent, RadioReceiveAttemptEvent>(OnRadioReceiveAttempt);
         SubscribeLocalEvent<EmpDisabledComponent, ApcToggleMainBreakerAttemptEvent>(OnApcToggleMainBreaker);
         SubscribeLocalEvent<EmpDisabledComponent, SurveillanceCameraSetActiveAttemptEvent>(OnCameraSetActive);
     }
 
+    [SubscribeLocalEvent]
     private void OnRadioSendAttempt(EntityUid uid, EmpDisabledComponent component, ref RadioSendAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRadioReceiveAttempt(EntityUid uid, EmpDisabledComponent component, ref RadioReceiveAttemptEvent args)
     {
         args.Cancelled = true;

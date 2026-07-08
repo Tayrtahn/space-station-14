@@ -26,10 +26,6 @@ public abstract partial class SharedBorgSwitchableTypeSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BorgSwitchableTypeComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BorgSwitchableTypeComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<BorgSwitchableTypeComponent, BorgToggleSelectTypeEvent>(OnSelectBorgTypeAction);
-
         Subs.BuiEvents<BorgSwitchableTypeComponent>(BorgSwitchableTypeUiKey.SelectBorgType,
             sub =>
             {
@@ -41,6 +37,7 @@ public abstract partial class SharedBorgSwitchableTypeSystem : EntitySystem
     // UI-adjacent code
     //
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<BorgSwitchableTypeComponent> ent, ref MapInitEvent args)
     {
         _actionsSystem.AddAction(ent, ref ent.Comp.SelectTypeAction, ActionId);
@@ -52,11 +49,13 @@ public abstract partial class SharedBorgSwitchableTypeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<BorgSwitchableTypeComponent> ent, ref ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(ent.Owner, ent.Comp.SelectTypeAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectBorgTypeAction(Entity<BorgSwitchableTypeComponent> ent, ref BorgToggleSelectTypeEvent args)
     {
         if (args.Handled || !TryComp<ActorComponent>(ent, out var actor))

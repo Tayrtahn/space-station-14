@@ -14,8 +14,6 @@ public sealed partial class DoorSystem : SharedDoorSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DoorComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<DoorComponent, AnimationCompletedEvent>(OnAnimationCompleted);
     }
 
     protected override void OnComponentInit(Entity<DoorComponent> ent, ref ComponentInit args)
@@ -76,6 +74,7 @@ public sealed partial class DoorSystem : SharedDoorSystem
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(Entity<DoorComponent> ent, ref AnimationCompletedEvent args)
     {
         if (args.Key != DoorComponent.OpenKey && args.Key != DoorComponent.CloseKey)
@@ -105,6 +104,7 @@ public sealed partial class DoorSystem : SharedDoorSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<DoorComponent> entity, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

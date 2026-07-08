@@ -22,10 +22,9 @@ public sealed partial class ChaoticJumpSystem : VirtualController
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChaoticJumpComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ChaoticJumpComponent> chaotic, ref MapInitEvent args)
     {
         //So the entity doesn't teleport instantly. For tesla, for example, it's important for it to eat tesla's generator.

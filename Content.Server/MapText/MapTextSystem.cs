@@ -4,15 +4,15 @@ using Robust.Shared.GameStates;
 namespace Content.Server.MapText;
 
 /// <inheritdoc/>
-public sealed class MapTextSystem : SharedMapTextSystem
+public sealed partial class MapTextSystem : SharedMapTextSystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MapTextComponent, ComponentGetState>(GetCompState);
     }
 
+    [SubscribeLocalEvent]
     private void GetCompState(Entity<MapTextComponent> ent, ref ComponentGetState args)
     {
         args.State = new MapTextComponentState

@@ -14,9 +14,9 @@ public sealed partial class ProjectileSystem : SharedProjectileSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<ImpactEffectEvent>(OnProjectileImpact);
     }
 
+    [SubscribeNetworkEvent]
     private void OnProjectileImpact(ImpactEffectEvent ev)
     {
         var coords = GetCoordinates(ev.Coordinates);

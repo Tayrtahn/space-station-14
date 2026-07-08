@@ -15,10 +15,10 @@ public sealed partial class DisposalSignallerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DisposalSignallerComponent, ComponentInit>(OnInit);
         SubscribeLocalEvent<DisposalSignallerComponent, GetDisposalsNextDirectionEvent>(OnGetNextDirection, after: new[] { typeof(DisposalTubeSystem) });
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<DisposalSignallerComponent> ent, ref ComponentInit args)
     {
         _link.EnsureSourcePorts(ent, ent.Comp.Port);

@@ -15,10 +15,9 @@ public sealed partial class ClientSpriteMovementSystem : SharedSpriteMovementSys
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpriteMovementComponent, AfterAutoHandleStateEvent>(OnAfterAutoHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAutoHandleState(Entity<SpriteMovementComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (!_spriteQuery.TryGetComponent(ent, out var sprite))

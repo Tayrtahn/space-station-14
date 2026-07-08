@@ -9,10 +9,9 @@ public abstract partial class SharedSpiderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpiderComponent, MapInitEvent>(OnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SpiderComponent component, MapInitEvent args)
     {
         _action.AddAction(uid, ref component.Action, component.WebAction, uid);

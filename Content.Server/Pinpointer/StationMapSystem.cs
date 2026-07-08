@@ -19,11 +19,6 @@ public sealed partial class StationMapSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StationMapComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<StationMapUserComponent, EntParentChangedMessage>(OnUserParentChanged);
-
-        SubscribeLocalEvent<NukeopsStationMapComponent, ChooseStationMapEvent>(OnNukeOpsStationMap);
-        SubscribeLocalEvent<NukeopsTargetStationSelectedEvent>(OnNukeopsStationSelected);
 
         Subs.BuiEvents<StationMapComponent>(StationMapUiKey.Key,
             subs =>
@@ -33,6 +28,7 @@ public sealed partial class StationMapSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<StationMapComponent> ent, ref MapInitEvent args)
     {
         if (!ent.Comp.InitializeWithStation)
@@ -63,6 +59,7 @@ public sealed partial class StationMapSystem : EntitySystem
         RemCompDeferred<StationMapUserComponent>(args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnUserParentChanged(EntityUid uid, StationMapUserComponent component, ref EntParentChangedMessage args)
     {
         _ui.CloseUi(component.Map, StationMapUiKey.Key, uid);
@@ -77,6 +74,7 @@ public sealed partial class StationMapSystem : EntitySystem
         comp.Map = uid;
     }
 
+    [SubscribeLocalEvent]
     private void OnNukeOpsStationMap(Entity<NukeopsStationMapComponent> entity, ref ChooseStationMapEvent args)
     {
         // If we have this component, we don't want a fallback map!
@@ -92,6 +90,7 @@ public sealed partial class StationMapSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnNukeopsStationSelected(ref NukeopsTargetStationSelectedEvent args)
     {
         if (args.TargetStation == null || !TryComp<RuleGridsComponent>(args.RuleEntity, out var ruleGrids))

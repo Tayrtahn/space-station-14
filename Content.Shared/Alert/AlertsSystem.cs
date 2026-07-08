@@ -16,15 +16,6 @@ public abstract partial class AlertsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AlertsComponent, ComponentStartup>(HandleComponentStartup);
-        SubscribeLocalEvent<AlertsComponent, ComponentShutdown>(HandleComponentShutdown);
-        SubscribeLocalEvent<AlertsComponent, PlayerAttachedEvent>(OnPlayerAttached);
-
-        SubscribeLocalEvent<AlertAutoRemoveComponent, EntityUnpausedEvent>(OnAutoRemoveUnPaused);
-
-        SubscribeAllEvent<ClickAlertEvent>(HandleClickAlert);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(HandlePrototypesReloaded);
         LoadPrototypes();
     }
 
@@ -282,6 +273,7 @@ public abstract partial class AlertsSystem : EntitySystem
     /// </summary>
     protected virtual void AfterClearAlert(Entity<AlertsComponent> alerts) { }
 
+    [SubscribeLocalEvent]
     private void OnAutoRemoveUnPaused(Entity<AlertAutoRemoveComponent> entity, ref EntityUnpausedEvent args)
     {
         if (!_alertsQuery.TryComp(entity, out var alertComp))
@@ -306,16 +298,19 @@ public abstract partial class AlertsSystem : EntitySystem
             Dirty(entity, alertComp);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void HandleComponentShutdown(EntityUid uid, AlertsComponent component, ComponentShutdown args)
     {
         RaiseLocalEvent(uid, new AlertSyncEvent(uid), true);
     }
 
+    [SubscribeLocalEvent]
     private void HandleComponentStartup(EntityUid uid, AlertsComponent component, ComponentStartup args)
     {
         RaiseLocalEvent(uid, new AlertSyncEvent(uid), true);
     }
 
+    [SubscribeLocalEvent]
     private void HandlePrototypesReloaded(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<AlertPrototype>())
@@ -343,6 +338,7 @@ public abstract partial class AlertsSystem : EntitySystem
         return _typeToAlert.TryGetValue(alertType, out alert);
     }
 
+    [SubscribeAllEvent]
     private void HandleClickAlert(ClickAlertEvent msg, EntitySessionEventArgs args)
     {
         var player = args.SenderSession.AttachedEntity;
@@ -385,6 +381,7 @@ public abstract partial class AlertsSystem : EntitySystem
         return clickEvent.Handled;
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(EntityUid uid, AlertsComponent component, PlayerAttachedEvent args)
     {
         Dirty(uid, component);

@@ -28,21 +28,16 @@ public abstract partial class SharedAtmosPipeLayersSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AtmosPipeLayersComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<AtmosPipeLayersComponent, GetVerbsEvent<Verb>>(OnGetVerb);
-        SubscribeLocalEvent<AtmosPipeLayersComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<AtmosPipeLayersComponent, UseInHandEvent>(OnUseInHandEvent);
-        SubscribeLocalEvent<AtmosPipeLayersComponent, TrySetNextPipeLayerCompletedEvent>(OnSetNextPipeLayerCompleted);
-        SubscribeLocalEvent<AtmosPipeLayersComponent, TrySettingPipeLayerCompletedEvent>(OnSettingPipeLayerCompleted);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<AtmosPipeLayersComponent> ent, ref ExaminedEvent args)
     {
         var layerName = GetPipeLayerName(ent.Comp.CurrentPipeLayer);
         args.PushMarkup(Loc.GetString("atmos-pipe-layers-component-current-layer", ("layerName", layerName)));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<AtmosPipeLayersComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract)
@@ -113,6 +108,7 @@ public abstract partial class SharedAtmosPipeLayersSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<AtmosPipeLayersComponent> ent, ref InteractUsingEvent args)
     {
         if (ent.Comp.NumberOfPipeLayers <= 1 || ent.Comp.PipeLayersLocked)
@@ -130,6 +126,7 @@ public abstract partial class SharedAtmosPipeLayersSystem : EntitySystem
         _tool.UseTool(args.Used, args.User, ent, ent.Comp.Delay, tool.Qualities, new TrySetNextPipeLayerCompletedEvent());
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHandEvent(Entity<AtmosPipeLayersComponent> ent, ref UseInHandEvent args)
     {
         if (ent.Comp.NumberOfPipeLayers <= 1 || ent.Comp.PipeLayersLocked)
@@ -151,6 +148,7 @@ public abstract partial class SharedAtmosPipeLayersSystem : EntitySystem
         _tool.UseTool(tool.Value, args.User, ent, ent.Comp.Delay, tool.Value.Comp.Qualities, new TrySetNextPipeLayerCompletedEvent());
     }
 
+    [SubscribeLocalEvent]
     private void OnSetNextPipeLayerCompleted(Entity<AtmosPipeLayersComponent> ent, ref TrySetNextPipeLayerCompletedEvent args)
     {
         if (args.Cancelled)
@@ -159,6 +157,7 @@ public abstract partial class SharedAtmosPipeLayersSystem : EntitySystem
         SetNextPipeLayer(ent, args.User, args.Used);
     }
 
+    [SubscribeLocalEvent]
     private void OnSettingPipeLayerCompleted(Entity<AtmosPipeLayersComponent> ent, ref TrySettingPipeLayerCompletedEvent args)
     {
         if (args.Cancelled)

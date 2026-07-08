@@ -11,22 +11,21 @@ public sealed partial class ModifyWearerNameSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ModifyWearerNameComponent, InventoryRelayedEvent<RefreshNameModifiersEvent>>(OnRefreshNameModifiers);
-        SubscribeLocalEvent<ModifyWearerNameComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<ModifyWearerNameComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<ModifyWearerNameComponent> entity, ref ClothingGotEquippedEvent args)
     {
         _nameMod.RefreshNameModifiers(args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<ModifyWearerNameComponent> entity, ref ClothingGotUnequippedEvent args)
     {
         _nameMod.RefreshNameModifiers(args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<ModifyWearerNameComponent> entity, ref InventoryRelayedEvent<RefreshNameModifiersEvent> args)
     {
         args.Args.AddModifier(entity.Comp.LocId, entity.Comp.Priority);

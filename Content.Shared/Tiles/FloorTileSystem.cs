@@ -51,9 +51,9 @@ public sealed partial class FloorTileSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FloorTileComponent, AfterInteractEvent>(OnAfterInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, FloorTileComponent component, AfterInteractEvent args)
     {
         if (!args.CanReach || args.Handled)

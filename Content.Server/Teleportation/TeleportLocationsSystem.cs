@@ -20,16 +20,15 @@ public sealed partial class TeleportLocationsSystem : SharedTeleportLocationsSys
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TeleportLocationsComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<TeleportLocationsComponent, BeforeActivatableUIOpenEvent>(OnBeforeUiOpen);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<TeleportLocationsComponent> ent, ref MapInitEvent args)
     {
         UpdateTeleportPoints(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeUiOpen(Entity<TeleportLocationsComponent> ent, ref BeforeActivatableUIOpenEvent args)
     {
         UpdateTeleportPoints(ent);

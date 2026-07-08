@@ -13,22 +13,22 @@ public sealed partial class HideLayerClothingSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<HideLayerClothingComponent, ClothingGotUnequippedEvent>(OnHideGotUnequipped);
-        SubscribeLocalEvent<HideLayerClothingComponent, ClothingGotEquippedEvent>(OnHideGotEquipped);
-        SubscribeLocalEvent<HideLayerClothingComponent, ItemMaskToggledEvent>(OnHideToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnHideToggled(Entity<HideLayerClothingComponent> ent, ref ItemMaskToggledEvent args)
     {
         if (args.Wearer != null)
             SetLayerVisibility(ent!, args.Wearer.Value, hideLayers: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnHideGotEquipped(Entity<HideLayerClothingComponent> ent, ref ClothingGotEquippedEvent args)
     {
         SetLayerVisibility(ent!, args.Wearer, hideLayers: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnHideGotUnequipped(Entity<HideLayerClothingComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         SetLayerVisibility(ent!, args.Wearer, hideLayers: false);

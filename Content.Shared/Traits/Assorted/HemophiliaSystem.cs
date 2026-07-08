@@ -3,13 +3,13 @@ using Content.Shared.StatusEffectNew;
 
 namespace Content.Shared.Traits.Assorted;
 
-public sealed class HemophiliaSystem : EntitySystem
+public sealed partial class HemophiliaSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<HemophiliaStatusEffectComponent, StatusEffectRelayedEvent<BleedModifierEvent>>(OnBleedModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnBleedModifier(Entity<HemophiliaStatusEffectComponent> ent, ref StatusEffectRelayedEvent<BleedModifierEvent> args)
     {
         var ev = args.Args;

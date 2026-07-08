@@ -14,9 +14,9 @@ public sealed partial class LightFadeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LightFadeComponent, ComponentStartup>(OnFadeStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnFadeStartup(EntityUid uid, LightFadeComponent component, ComponentStartup args)
     {
         if (!TryComp<PointLightComponent>(uid, out var light))

@@ -15,9 +15,6 @@ internal sealed partial class StunOnCollideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StunOnCollideComponent, StartCollideEvent>(HandleCollide);
-        SubscribeLocalEvent<StunOnCollideComponent, ThrowDoHitEvent>(HandleThrow);
     }
 
     private void TryDoCollideStun(Entity<StunOnCollideComponent> ent, EntityUid target)
@@ -49,6 +46,7 @@ internal sealed partial class StunOnCollideSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleCollide(Entity<StunOnCollideComponent> ent, ref StartCollideEvent args)
     {
         if (args.OurFixtureId != ent.Comp.FixtureID)
@@ -57,6 +55,7 @@ internal sealed partial class StunOnCollideSystem : EntitySystem
         TryDoCollideStun(ent, args.OtherEntity);
     }
 
+    [SubscribeLocalEvent]
     private void HandleThrow(Entity<StunOnCollideComponent> ent, ref ThrowDoHitEvent args)
     {
         TryDoCollideStun(ent, args.Target);

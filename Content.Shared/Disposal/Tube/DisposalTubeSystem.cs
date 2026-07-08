@@ -20,10 +20,9 @@ public sealed partial class DisposalTubeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DisposalTubeComponent, GetDisposalsNextDirectionEvent>(OnGetTubeNextDirection);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetTubeNextDirection(Entity<DisposalTubeComponent> ent, ref GetDisposalsNextDirectionEvent args)
     {
         var exits = GetTubeConnectableDirections(ent);

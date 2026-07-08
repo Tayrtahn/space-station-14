@@ -16,16 +16,15 @@ namespace Content.Shared.DeviceLinking.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<TwoWayLeverComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<TwoWayLeverComponent, ActivateInWorldEvent>(OnActivated);
-            SubscribeLocalEvent<TwoWayLeverComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, TwoWayLeverComponent component, ComponentInit args)
         {
             _signalSystem.EnsureSourcePorts(uid, component.LeftPort, component.RightPort, component.MiddlePort);
         }
 
+        [SubscribeLocalEvent]
         private void OnActivated(EntityUid uid, TwoWayLeverComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -44,6 +43,7 @@ namespace Content.Shared.DeviceLinking.Systems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGetInteractionVerbs(EntityUid uid, TwoWayLeverComponent component, GetVerbsEvent<InteractionVerb> args)
         {
             if (!args.CanAccess || !args.CanInteract || (args.Hands == null))

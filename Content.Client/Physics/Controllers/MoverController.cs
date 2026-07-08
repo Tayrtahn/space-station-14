@@ -22,16 +22,9 @@ public sealed partial class MoverController : SharedMoverController
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RelayInputMoverComponent, LocalPlayerAttachedEvent>(OnRelayPlayerAttached);
-        SubscribeLocalEvent<RelayInputMoverComponent, LocalPlayerDetachedEvent>(OnRelayPlayerDetached);
-        SubscribeLocalEvent<InputMoverComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<InputMoverComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
-
-        SubscribeLocalEvent<InputMoverComponent, UpdateIsPredictedEvent>(OnUpdatePredicted);
-        SubscribeLocalEvent<MovementRelayTargetComponent, UpdateIsPredictedEvent>(OnUpdateRelayTargetPredicted);
-        SubscribeLocalEvent<PullableComponent, UpdateIsPredictedEvent>(OnUpdatePullablePredicted);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdatePredicted(Entity<InputMoverComponent> entity, ref UpdateIsPredictedEvent args)
     {
         // Enable prediction if an entity is controlled by the player
@@ -39,12 +32,14 @@ public sealed partial class MoverController : SharedMoverController
             args.IsPredicted = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateRelayTargetPredicted(Entity<MovementRelayTargetComponent> entity, ref UpdateIsPredictedEvent args)
     {
         if (entity.Comp.Source == _playerManager.LocalEntity)
             args.IsPredicted = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdatePullablePredicted(Entity<PullableComponent> entity, ref UpdateIsPredictedEvent args)
     {
         // Enable prediction if an entity is being pulled by the player.
@@ -59,6 +54,7 @@ public sealed partial class MoverController : SharedMoverController
         // What if the entity is being pulled by a vehicle controlled by the player?
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayPlayerAttached(Entity<RelayInputMoverComponent> entity, ref LocalPlayerAttachedEvent args)
     {
         PhysicsSystem.UpdateIsPredicted(entity.Owner);
@@ -67,6 +63,7 @@ public sealed partial class MoverController : SharedMoverController
             SetMoveInput((entity.Comp.RelayEntity, inputMover), MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayPlayerDetached(Entity<RelayInputMoverComponent> entity, ref LocalPlayerDetachedEvent args)
     {
         PhysicsSystem.UpdateIsPredicted(entity.Owner);
@@ -75,11 +72,13 @@ public sealed partial class MoverController : SharedMoverController
             SetMoveInput((entity.Comp.RelayEntity, inputMover), MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(Entity<InputMoverComponent> entity, ref LocalPlayerAttachedEvent args)
     {
         SetMoveInput(entity, MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(Entity<InputMoverComponent> entity, ref LocalPlayerDetachedEvent args)
     {
         SetMoveInput(entity, MoveButtons.None);

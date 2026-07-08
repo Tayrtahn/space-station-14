@@ -10,14 +10,15 @@ public sealed partial class TileEntityEffectSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TileEntityEffectComponent, StepTriggeredOffEvent>(OnTileStepTriggered);
-        SubscribeLocalEvent<TileEntityEffectComponent, StepTriggerAttemptEvent>(OnTileStepTriggerAttempt);
     }
+
+    [SubscribeLocalEvent]
     private void OnTileStepTriggerAttempt(Entity<TileEntityEffectComponent> ent, ref StepTriggerAttemptEvent args)
     {
         args.Continue = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnTileStepTriggered(Entity<TileEntityEffectComponent> ent, ref StepTriggeredOffEvent args)
     {
         var otherUid = args.Tripper;

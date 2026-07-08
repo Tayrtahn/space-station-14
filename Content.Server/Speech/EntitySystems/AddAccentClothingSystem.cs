@@ -3,17 +3,16 @@ using Content.Shared.Clothing;
 
 namespace Content.Server.Speech.EntitySystems;
 
-public sealed class AddAccentClothingSystem : EntitySystem
+public sealed partial class AddAccentClothingSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AddAccentClothingComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<AddAccentClothingComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
     }
 
 
-//  TODO: Turn this into a relay event.
+    //  TODO: Turn this into a relay event.
+    [SubscribeLocalEvent]
     private void OnGotEquipped(EntityUid uid, AddAccentClothingComponent component, ref ClothingGotEquippedEvent args)
     {
         // does the user already has this accent?
@@ -32,6 +31,7 @@ public sealed class AddAccentClothingSystem : EntitySystem
         component.IsActive = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(EntityUid uid, AddAccentClothingComponent component, ref ClothingGotUnequippedEvent args)
     {
         if (!component.IsActive)

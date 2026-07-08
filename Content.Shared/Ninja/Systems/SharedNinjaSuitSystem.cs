@@ -27,17 +27,9 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NinjaSuitComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<NinjaSuitComponent, ClothingGotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<NinjaSuitComponent, GetItemActionsEvent>(OnGetItemActions);
-        SubscribeLocalEvent<NinjaSuitComponent, ToggleClothingCheckEvent>(OnCloakCheck);
-        SubscribeLocalEvent<NinjaSuitComponent, CheckItemCreatorEvent>(OnStarCheck);
-        SubscribeLocalEvent<NinjaSuitComponent, CreateItemAttemptEvent>(OnCreateStarAttempt);
-        SubscribeLocalEvent<NinjaSuitComponent, ItemToggleActivateAttemptEvent>(OnActivateAttempt);
-        SubscribeLocalEvent<NinjaSuitComponent, GotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<NinjaSuitComponent> ent, ref ClothingGotEquippedEvent args)
     {
         var user = args.Wearer;
@@ -51,6 +43,7 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
         _ninja.AssignSuit(user, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NinjaSuitComponent> ent, ref MapInitEvent args)
     {
         var (uid, comp) = ent;
@@ -62,6 +55,7 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
     /// <summary>
     /// Add all the actions when a suit is equipped by a ninja.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGetItemActions(Entity<NinjaSuitComponent> ent, ref GetItemActionsEvent args)
     {
         if (!_ninja.IsNinja(args.User))
@@ -75,18 +69,21 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
     /// <summary>
     /// Only add toggle cloak action when equipped by a ninja.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnCloakCheck(Entity<NinjaSuitComponent> ent, ref ToggleClothingCheckEvent args)
     {
         if (!_ninja.IsNinja(args.User))
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStarCheck(Entity<NinjaSuitComponent> ent, ref CheckItemCreatorEvent args)
     {
         if (!_ninja.IsNinja(args.User))
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCreateStarAttempt(Entity<NinjaSuitComponent> ent, ref CreateItemAttemptEvent args)
     {
         if (CheckDisabled(ent, args.User))
@@ -96,6 +93,7 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
     /// <summary>
     /// Call the shared and serverside code for when anyone unequips a suit.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<NinjaSuitComponent> ent, ref GotUnequippedEvent args)
     {
         var user = args.EquipTarget;
@@ -122,6 +120,7 @@ public abstract partial class SharedNinjaSuitSystem : EntitySystem
         _useDelay.TryResetDelay(uid, id: comp.DisableDelayId);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateAttempt(Entity<NinjaSuitComponent> ent, ref ItemToggleActivateAttemptEvent args)
     {
         if (!_ninja.IsNinja(args.User))

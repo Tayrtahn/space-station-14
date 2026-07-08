@@ -11,9 +11,9 @@ public sealed partial class SecretDataAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<SecretDataAnomalyComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SecretDataAnomalyComponent anomaly, MapInitEvent args)
     {
         RandomizeSecret(uid,_random.Next(anomaly.RandomStartSecretMin, anomaly.RandomStartSecretMax), anomaly);

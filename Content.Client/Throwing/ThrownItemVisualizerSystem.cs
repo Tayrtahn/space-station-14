@@ -18,11 +18,9 @@ public sealed partial class ThrownItemVisualizerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThrownItemComponent, AfterAutoHandleStateEvent>(OnAutoHandleState);
-        SubscribeLocalEvent<ThrownItemComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnAutoHandleState(EntityUid uid, ThrownItemComponent component, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite) || !component.Animate)
@@ -41,6 +39,7 @@ public sealed partial class ThrownItemVisualizerSystem : EntitySystem
         _anim.Play((uid, animationPlayer), anim, AnimationKey);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, ThrownItemComponent component, ComponentShutdown args)
     {
         if (!_anim.HasRunningAnimation(uid, AnimationKey))

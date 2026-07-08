@@ -10,9 +10,9 @@ public sealed partial class ClientFoodSequenceSystem : SharedFoodSequenceSystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<FoodSequenceStartPointComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<FoodSequenceStartPointComponent> start, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<SpriteComponent>(start, out var sprite))

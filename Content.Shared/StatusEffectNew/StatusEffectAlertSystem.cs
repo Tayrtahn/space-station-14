@@ -15,12 +15,9 @@ public sealed partial class StatusEffectAlertSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StatusEffectAlertComponent, StatusEffectAppliedEvent>(OnStatusEffectApplied);
-        SubscribeLocalEvent<StatusEffectAlertComponent, StatusEffectRemovedEvent>(OnStatusEffectRemoved);
-        SubscribeLocalEvent<StatusEffectAlertComponent, StatusEffectEndTimeUpdatedEvent>(OnEndTimeUpdated);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusEffectApplied(Entity<StatusEffectAlertComponent> ent, ref StatusEffectAppliedEvent args)
     {
         if (!_effectQuery.TryComp(ent, out var effectComp))
@@ -29,11 +26,13 @@ public sealed partial class StatusEffectAlertSystem : EntitySystem
         _alerts.UpdateAlert(args.Target, ent.Comp.Alert, cooldown: ent.Comp.ShowDuration ? effectComp.EndEffectTime : null);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusEffectRemoved(Entity<StatusEffectAlertComponent> ent, ref StatusEffectRemovedEvent args)
     {
         _alerts.ClearAlert(args.Target, ent.Comp.Alert);
     }
 
+    [SubscribeLocalEvent]
     private void OnEndTimeUpdated(Entity<StatusEffectAlertComponent> ent, ref StatusEffectEndTimeUpdatedEvent args)
     {
         _alerts.UpdateAlert(args.Target, ent.Comp.Alert, cooldown: ent.Comp.ShowDuration ? args.EndTime : null);

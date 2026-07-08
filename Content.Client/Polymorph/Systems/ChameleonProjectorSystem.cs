@@ -18,14 +18,9 @@ public sealed partial class ChameleonProjectorSystem : SharedChameleonProjectorS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChameleonDisguiseComponent, AfterAutoHandleStateEvent>(OnHandleState);
-
-        SubscribeLocalEvent<ChameleonDisguisedComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ChameleonDisguisedComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ChameleonDisguisedComponent, GetFlashEffectTargetEvent>(OnGetFlashEffectTargetEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<ChameleonDisguiseComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         CopyComp<SpriteComponent>(ent);
@@ -38,6 +33,7 @@ public sealed partial class ChameleonProjectorSystem : SharedChameleonProjectorS
             _appearance.QueueUpdate(ent, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<ChameleonDisguisedComponent> ent, ref ComponentStartup args)
     {
         if (!_spriteQuery.TryComp(ent, out var sprite))
@@ -47,12 +43,14 @@ public sealed partial class ChameleonProjectorSystem : SharedChameleonProjectorS
         _sprite.SetVisible((ent.Owner, sprite), false);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ChameleonDisguisedComponent> ent, ref ComponentShutdown args)
     {
         if (_spriteQuery.TryComp(ent, out var sprite))
             _sprite.SetVisible((ent.Owner, sprite), ent.Comp.WasVisible);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetFlashEffectTargetEvent(Entity<ChameleonDisguisedComponent> ent, ref GetFlashEffectTargetEvent args)
     {
         args.Target = ent.Comp.Disguise;

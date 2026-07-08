@@ -61,24 +61,7 @@ namespace Content.Server.Atmos.EntitySystems
         public override void Initialize()
         {
             UpdatesAfter.Add(typeof(AtmosphereSystem));
-
-            SubscribeLocalEvent<FlammableComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<FlammableComponent, InteractUsingEvent>(OnInteractUsing);
-            SubscribeLocalEvent<FlammableComponent, StartCollideEvent>(OnCollide);
-            SubscribeLocalEvent<FlammableComponent, IsHotEvent>(OnIsHot);
-            SubscribeLocalEvent<FlammableComponent, TileFireEvent>(OnTileFire);
-            SubscribeLocalEvent<FlammableComponent, RejuvenateEvent>(OnRejuvenate);
-            SubscribeLocalEvent<FlammableComponent, ResistFireAlertEvent>(OnResistFireAlert);
             Subs.SubscribeWithRelay<FlammableComponent, ExtinguishEvent>(OnExtinguishEvent);
-
-            SubscribeLocalEvent<IgniteOnCollideComponent, StartCollideEvent>(IgniteOnCollide);
-            SubscribeLocalEvent<IgniteOnCollideComponent, LandEvent>(OnIgniteLand);
-
-            SubscribeLocalEvent<IgniteOnMeleeHitComponent, MeleeHitEvent>(OnMeleeHit);
-
-            SubscribeLocalEvent<ExtinguishOnInteractComponent, ActivateInWorldEvent>(OnExtinguishActivateInWorld);
-
-            SubscribeLocalEvent<IgniteOnHeatDamageComponent, DamageChangedEvent>(OnDamageChanged);
         }
 
         private void OnExtinguishEvent(Entity<FlammableComponent> ent, ref ExtinguishEvent args)
@@ -89,6 +72,7 @@ namespace Content.Server.Atmos.EntitySystems
             AdjustFireStacks(ent, args.FireStacksAdjustment, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnMeleeHit(EntityUid uid, IgniteOnMeleeHitComponent component, MeleeHitEvent args)
         {
             foreach (var entity in args.HitEntities)
@@ -102,11 +86,13 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnIgniteLand(EntityUid uid, IgniteOnCollideComponent component, ref LandEvent args)
         {
             RemCompDeferred<IgniteOnCollideComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void IgniteOnCollide(EntityUid uid, IgniteOnCollideComponent component, ref StartCollideEvent args)
         {
             if (!args.OtherFixture.Hard || component.Count == 0)
@@ -131,6 +117,7 @@ namespace Content.Server.Atmos.EntitySystems
                 RemCompDeferred<IgniteOnCollideComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, FlammableComponent component, MapInitEvent args)
         {
             component.NextUpdate = _timing.CurTime + UpdateTime;
@@ -146,6 +133,7 @@ namespace Content.Server.Atmos.EntitySystems
                 hard: false, collisionMask: (int)CollisionGroup.FullTileLayer, body: body);
         }
 
+        [SubscribeLocalEvent]
         private void OnInteractUsing(EntityUid uid, FlammableComponent flammable, InteractUsingEvent args)
         {
             if (args.Handled)
@@ -161,6 +149,7 @@ namespace Content.Server.Atmos.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnExtinguishActivateInWorld(EntityUid uid, ExtinguishOnInteractComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -189,6 +178,7 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnCollide(EntityUid uid, FlammableComponent flammable, ref StartCollideEvent args)
         {
             var otherUid = args.OtherEntity;
@@ -232,11 +222,13 @@ namespace Content.Server.Atmos.EntitySystems
             SetFireStacks(otherUid, avg / mass2, otherFlammable, ignite: true);
         }
 
+        [SubscribeLocalEvent]
         private void OnIsHot(EntityUid uid, FlammableComponent flammable, IsHotEvent args)
         {
             args.IsHot = flammable.OnFire;
         }
 
+        [SubscribeLocalEvent]
         private void OnTileFire(Entity<FlammableComponent> ent, ref TileFireEvent args)
         {
             var tempDelta = args.Temperature - ent.Comp.MinIgnitionTemperature;
@@ -247,11 +239,13 @@ namespace Content.Server.Atmos.EntitySystems
                 _fireEvents[ent] = tempDelta;
         }
 
+        [SubscribeLocalEvent]
         private void OnRejuvenate(EntityUid uid, FlammableComponent component, RejuvenateEvent args)
         {
             Extinguish(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnResistFireAlert(Entity<FlammableComponent> ent, ref ResistFireAlertEvent args)
         {
             if (args.Handled)
@@ -353,6 +347,7 @@ namespace Content.Server.Atmos.EntitySystems
             UpdateAppearance(uid, flammable);
         }
 
+        [SubscribeLocalEvent]
         private void OnDamageChanged(EntityUid uid, IgniteOnHeatDamageComponent component, DamageChangedEvent args)
         {
             // Make sure the entity is flammable

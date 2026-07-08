@@ -11,15 +11,15 @@ namespace Content.Server.Chemistry.EntitySystems.DeleteOnSolutionEmptySystem
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<DeleteOnSolutionEmptyComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<DeleteOnSolutionEmptyComponent, SolutionChangedEvent>(OnSolutionChange);
         }
 
+        [SubscribeLocalEvent]
         public void OnStartup(Entity<DeleteOnSolutionEmptyComponent> entity, ref ComponentStartup args)
         {
             CheckSolutions(entity);
         }
 
+        [SubscribeLocalEvent]
         public void OnSolutionChange(Entity<DeleteOnSolutionEmptyComponent> entity, ref SolutionChangedEvent args)
         {
             var solution = args.Solution.Comp.Solution;

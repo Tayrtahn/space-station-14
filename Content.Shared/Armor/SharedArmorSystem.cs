@@ -20,11 +20,6 @@ public abstract partial class SharedArmorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ArmorComponent, InventoryRelayedEvent<CoefficientQueryEvent>>(OnCoefficientQuery);
-        SubscribeLocalEvent<ArmorComponent, InventoryRelayedEvent<DamageModifyEvent>>(OnDamageModify);
-        SubscribeLocalEvent<ArmorComponent, BorgModuleRelayedEvent<DamageModifyEvent>>(OnBorgDamageModify);
-        SubscribeLocalEvent<ArmorComponent, GetVerbsEvent<ExamineVerb>>(OnArmorVerbExamine);
     }
 
     /// <summary>
@@ -32,6 +27,7 @@ public abstract partial class SharedArmorSystem : EntitySystem
     /// </summary>
     /// <param name="ent">The item that's being relayed to</param>
     /// <param name="args">The event, contains the running count of armor percentage as a coefficient</param>
+    [SubscribeLocalEvent]
     private void OnCoefficientQuery(Entity<ArmorComponent> ent, ref InventoryRelayedEvent<CoefficientQueryEvent> args)
     {
         if (TryComp<MaskComponent>(ent, out var mask) && mask.IsToggled)
@@ -43,6 +39,7 @@ public abstract partial class SharedArmorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageModify(EntityUid uid, ArmorComponent component, InventoryRelayedEvent<DamageModifyEvent> args)
     {
         if (TryComp<MaskComponent>(uid, out var mask) && mask.IsToggled)
@@ -51,6 +48,7 @@ public abstract partial class SharedArmorSystem : EntitySystem
         args.Args.Damage = DamageSpecifier.ApplyModifierSet(args.Args.Damage, component.Modifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnBorgDamageModify(EntityUid uid, ArmorComponent component,
         ref BorgModuleRelayedEvent<DamageModifyEvent> args)
     {
@@ -60,6 +58,7 @@ public abstract partial class SharedArmorSystem : EntitySystem
         args.Args.Damage = DamageSpecifier.ApplyModifierSet(args.Args.Damage, component.Modifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnArmorVerbExamine(EntityUid uid, ArmorComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || !component.ShowArmorOnExamine)

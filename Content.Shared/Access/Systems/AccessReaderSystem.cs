@@ -40,25 +40,16 @@ public sealed partial class AccessReaderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AccessReaderComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AccessReaderComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<AccessReaderComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<AccessReaderComponent, LinkAttemptEvent>(OnLinkAttempt);
-        SubscribeLocalEvent<AccessReaderComponent, AccessReaderConfigurationAttemptEvent>(OnConfigurationAttempt);
-        SubscribeLocalEvent<AccessReaderComponent, FindAvailableLocksEvent>(OnFindAvailableLocks);
-        SubscribeLocalEvent<AccessReaderComponent, CheckUserHasLockAccessEvent>(OnCheckLockAccess);
-
-        SubscribeLocalEvent<AccessReaderComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<AccessReaderComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<AccessReaderComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.AccessListsOriginal ??= [.. ent.Comp.AccessLists];
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<AccessReaderComponent> ent, ref ExaminedEvent args)
     {
         if (!GetMainAccessReader(ent, out var mainAccessReader) ||
@@ -108,6 +99,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
         args.PushMarkup(originalSettingsMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, AccessReaderComponent component, ref ComponentGetState args)
     {
         args.State = new AccessReaderComponentState(
@@ -120,6 +112,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
             component.AccessLogLimit);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, AccessReaderComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not AccessReaderComponentState state)
@@ -142,6 +135,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
         component.AccessLogLimit = state.AccessLogLimit;
     }
 
+    [SubscribeLocalEvent]
     private void OnLinkAttempt(EntityUid uid, AccessReaderComponent component, LinkAttemptEvent args)
     {
         if (args.User == null) // AutoLink (and presumably future external linkers) have no user.
@@ -150,6 +144,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, AccessReaderComponent reader, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Access))
@@ -171,6 +166,7 @@ public sealed partial class AccessReaderSystem : EntitySystem
         Dirty(uid, reader);
     }
 
+    [SubscribeLocalEvent]
     private void OnConfigurationAttempt(Entity<AccessReaderComponent> ent, ref AccessReaderConfigurationAttemptEvent args)
     {
         // The first time that the access list of the reader is modified,
@@ -178,11 +174,13 @@ public sealed partial class AccessReaderSystem : EntitySystem
         ent.Comp.AccessListsOriginal ??= new(ent.Comp.AccessLists);
     }
 
+    [SubscribeLocalEvent]
     private void OnFindAvailableLocks(Entity<AccessReaderComponent> ent, ref FindAvailableLocksEvent args)
     {
         args.FoundReaders |= LockTypes.Access;
     }
 
+    [SubscribeLocalEvent]
     private void OnCheckLockAccess(Entity<AccessReaderComponent> ent, ref CheckUserHasLockAccessEvent args)
     {
         // Are we looking for an access lock?

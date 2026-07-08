@@ -16,9 +16,9 @@ public sealed partial class BatterySensorSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<BatterySensorComponent, DeviceNetworkPacketEvent>(PacketReceived);
     }
 
+    [SubscribeLocalEvent]
     private void PacketReceived(EntityUid uid, BatterySensorComponent component, DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? cmd))

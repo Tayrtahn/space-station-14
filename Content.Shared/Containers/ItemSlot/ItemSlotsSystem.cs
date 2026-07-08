@@ -39,24 +39,6 @@ namespace Content.Shared.Containers.ItemSlots
             base.Initialize();
 
             InitializeLock();
-
-            SubscribeLocalEvent<ItemSlotsComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<ItemSlotsComponent, ComponentInit>(Oninitialize);
-
-            SubscribeLocalEvent<ItemSlotsComponent, InteractUsingEvent>(OnInteractUsing);
-            SubscribeLocalEvent<ItemSlotsComponent, InteractHandEvent>(OnInteractHand);
-            SubscribeLocalEvent<ItemSlotsComponent, UseInHandEvent>(OnUseInHand);
-
-            SubscribeLocalEvent<ItemSlotsComponent, GetVerbsEvent<AlternativeVerb>>(AddAlternativeVerbs);
-            SubscribeLocalEvent<ItemSlotsComponent, GetVerbsEvent<InteractionVerb>>(AddInteractionVerbsVerbs);
-
-            SubscribeLocalEvent<ItemSlotsComponent, BreakageEventArgs>(OnBreak);
-            SubscribeLocalEvent<ItemSlotsComponent, DestructionEventArgs>(OnBreak);
-
-            SubscribeLocalEvent<ItemSlotsComponent, ComponentGetState>(GetItemSlotsState);
-            SubscribeLocalEvent<ItemSlotsComponent, ComponentHandleState>(HandleItemSlotsState);
-
-            SubscribeLocalEvent<ItemSlotsComponent, ItemSlotButtonPressedEvent>(HandleButtonPressed);
         }
 
         #region ComponentManagement
@@ -64,6 +46,7 @@ namespace Content.Shared.Containers.ItemSlots
         /// <summary>
         ///     Spawn in starting items for any item slots that should have one.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, ItemSlotsComponent itemSlots, MapInitEvent args)
         {
             foreach (var slot in itemSlots.Slots.Values)
@@ -81,6 +64,7 @@ namespace Content.Shared.Containers.ItemSlots
         /// <summary>
         ///     Ensure item slots have containers.
         /// </summary>
+        [SubscribeLocalEvent]
         private void Oninitialize(EntityUid uid, ItemSlotsComponent itemSlots, ComponentInit args)
         {
             foreach (var (id, slot) in itemSlots.Slots)
@@ -157,6 +141,7 @@ namespace Content.Shared.Containers.ItemSlots
         /// <summary>
         ///     Attempt to take an item from a slot, if any are set to EjectOnInteract.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnInteractHand(EntityUid uid, ItemSlotsComponent itemSlots, InteractHandEvent args)
         {
             if (args.Handled)
@@ -176,6 +161,7 @@ namespace Content.Shared.Containers.ItemSlots
         /// <summary>
         ///     Attempt to eject an item from the first valid item slot.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnUseInHand(EntityUid uid, ItemSlotsComponent itemSlots, UseInHandEvent args)
         {
             if (args.Handled)
@@ -201,6 +187,7 @@ namespace Content.Shared.Containers.ItemSlots
         ///     other interactions to still happen (e.g., open UI, or toggle-open), despite the user holding an item.
         ///     Maybe this is undesirable.
         /// </remarks>
+        [SubscribeLocalEvent]
         private void OnInteractUsing(EntityUid uid, ItemSlotsComponent itemSlots, InteractUsingEvent args)
         {
             if (args.Handled)
@@ -625,6 +612,7 @@ namespace Content.Shared.Containers.ItemSlots
 
         #region Verbs
 
+        [SubscribeLocalEvent]
         private void AddAlternativeVerbs(EntityUid uid,
             ItemSlotsComponent itemSlots,
             GetVerbsEvent<AlternativeVerb> args)
@@ -723,6 +711,7 @@ namespace Content.Shared.Containers.ItemSlots
             }
         }
 
+        [SubscribeLocalEvent]
         private void AddInteractionVerbsVerbs(EntityUid uid,
             ItemSlotsComponent itemSlots,
             GetVerbsEvent<InteractionVerb> args)
@@ -808,6 +797,7 @@ namespace Content.Shared.Containers.ItemSlots
 
         #region BUIs
 
+        [SubscribeLocalEvent]
         private void HandleButtonPressed(EntityUid uid, ItemSlotsComponent component, ItemSlotButtonPressedEvent args)
         {
             if (!component.Slots.TryGetValue(args.SlotId, out var slot))
@@ -824,6 +814,7 @@ namespace Content.Shared.Containers.ItemSlots
         /// <summary>
         ///     Eject items from (some) slots when the entity is destroyed.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBreak(EntityUid uid, ItemSlotsComponent component, EntityEventArgs args)
         {
             foreach (var slot in component.Slots.Values)
@@ -881,6 +872,7 @@ namespace Content.Shared.Containers.ItemSlots
         ///     Note that the slot's ContainerSlot performs its own networking, so we don't need to send information
         ///     about the contained entity.
         /// </remarks>
+        [SubscribeLocalEvent]
         private void HandleItemSlotsState(EntityUid uid, ItemSlotsComponent component, ref ComponentHandleState args)
         {
             if (args.Current is not ItemSlotsComponentState state)
@@ -908,6 +900,7 @@ namespace Content.Shared.Containers.ItemSlots
             }
         }
 
+        [SubscribeLocalEvent]
         private void GetItemSlotsState(EntityUid uid, ItemSlotsComponent component, ref ComponentGetState args)
         {
             args.State = new ItemSlotsComponentState(component.Slots);

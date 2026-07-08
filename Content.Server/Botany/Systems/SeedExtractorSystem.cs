@@ -16,10 +16,9 @@ public sealed partial class SeedExtractorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SeedExtractorComponent, InteractUsingEvent>(OnInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, SeedExtractorComponent seedExtractor, InteractUsingEvent args)
     {
         if (!this.IsPowered(uid, EntityManager))

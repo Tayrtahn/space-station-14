@@ -30,15 +30,12 @@ namespace Content.Server.RatKing
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<RatKingComponent, RatKingRaiseArmyActionEvent>(OnRaiseArmy);
-            SubscribeLocalEvent<RatKingComponent, RatKingDomainActionEvent>(OnDomain);
-            SubscribeLocalEvent<RatKingComponent, AfterPointedAtEvent>(OnPointedAt);
         }
 
         /// <summary>
         /// Summons an allied rat servant at the King, costing a small amount of hunger
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnRaiseArmy(EntityUid uid, RatKingComponent component, RatKingRaiseArmyActionEvent args)
         {
             if (args.Handled)
@@ -69,6 +66,7 @@ namespace Content.Server.RatKing
         /// uses hunger to release a specific amount of ammonia into the air. This heals the rat king
         /// and his servants through a specific metabolism.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnDomain(EntityUid uid, RatKingComponent component, RatKingDomainActionEvent args)
         {
             if (args.Handled)
@@ -91,6 +89,7 @@ namespace Content.Server.RatKing
             tileMix?.AdjustMoles(Gas.Ammonia, component.MolesAmmoniaPerDomain);
         }
 
+        [SubscribeLocalEvent]
         private void OnPointedAt(EntityUid uid, RatKingComponent component, ref AfterPointedAtEvent args)
         {
             if (component.CurrentOrder != RatKingOrderType.CheeseEm)

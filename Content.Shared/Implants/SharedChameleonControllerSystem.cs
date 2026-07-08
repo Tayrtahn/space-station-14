@@ -9,10 +9,9 @@ public abstract partial class SharedChameleonControllerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChameleonControllerOpenMenuEvent>(OpenUI);
     }
 
+    [SubscribeLocalEvent]
     private void OpenUI(ChameleonControllerOpenMenuEvent ev)
     {
         var implant = ev.Action.Comp.Container;

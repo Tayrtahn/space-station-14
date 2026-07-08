@@ -105,11 +105,9 @@ public sealed partial class DecalPlacementSystem : EntitySystem
 
                 return true;
             }, true)).Register<DecalPlacementSystem>();
-
-        SubscribeLocalEvent<FillActionSlotEvent>(OnFillSlot);
-        SubscribeLocalEvent<PlaceDecalActionEvent>(OnPlaceDecalAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlaceDecalAction(PlaceDecalActionEvent args)
     {
         if (args.Handled)
@@ -135,6 +133,7 @@ public sealed partial class DecalPlacementSystem : EntitySystem
         RaiseNetworkEvent(new RequestDecalPlacementEvent(decal, GetNetCoordinates(args.Target)));
     }
 
+    [SubscribeLocalEvent]
     private void OnFillSlot(FillActionSlotEvent ev)
     {
         if (!_active || _placing)

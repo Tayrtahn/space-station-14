@@ -17,9 +17,9 @@ public sealed partial class DoorJackObjectiveConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SpaceNinjaComponent, EmaggedSomethingEvent>(OnDoorjack);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoorjack(EntityUid uid, SpaceNinjaComponent comp, ref EmaggedSomethingEvent args)
     {
         // incase someone lets ninja emag non-doors double check it here

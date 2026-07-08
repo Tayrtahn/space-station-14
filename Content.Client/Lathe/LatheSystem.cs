@@ -14,10 +14,9 @@ public sealed partial class LatheSystem : SharedLatheSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LatheComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, LatheComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

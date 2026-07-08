@@ -25,10 +25,9 @@ public sealed partial class ChasingWalkSystem : VirtualController
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChasingWalkComponent, MapInitEvent>(OnChasingMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnChasingMapInit(EntityUid uid, ChasingWalkComponent component, MapInitEvent args)
     {
         component.NextImpulseTime = _gameTiming.CurTime;

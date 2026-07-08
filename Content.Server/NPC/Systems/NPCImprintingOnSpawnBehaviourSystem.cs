@@ -19,9 +19,9 @@ public sealed partial class NPCImprintingOnSpawnBehaviourSystem : SharedNPCImpri
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<NPCImprintingOnSpawnBehaviourComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NPCImprintingOnSpawnBehaviourComponent> imprinting, ref MapInitEvent args)
     {
         HashSet<EntityUid> friends = new();

@@ -16,12 +16,9 @@ public abstract partial class SharedConfigurationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ConfigurationComponent, ConfigurationUpdatedMessage>(OnUpdate);
-        SubscribeLocalEvent<ConfigurationComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<ConfigurationComponent, ContainerIsInsertingAttemptEvent>(OnInsert);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, ConfigurationComponent component, InteractUsingEvent args)
     {
         // TODO use activatable ui system
@@ -34,6 +31,7 @@ public abstract partial class SharedConfigurationSystem : EntitySystem
         args.Handled = _uiSystem.TryOpenUi(uid, ConfigurationUiKey.Key, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdate(EntityUid uid, ConfigurationComponent component, ConfigurationUpdatedMessage args)
     {
         foreach (var key in component.Config.Keys)
@@ -54,6 +52,7 @@ public abstract partial class SharedConfigurationSystem : EntitySystem
         // TODO support verbs.
     }
 
+    [SubscribeLocalEvent]
     private void OnInsert(EntityUid uid, ConfigurationComponent component, ContainerIsInsertingAttemptEvent args)
     {
         if (!_toolSystem.HasQuality(args.EntityUid, component.QualityNeeded))

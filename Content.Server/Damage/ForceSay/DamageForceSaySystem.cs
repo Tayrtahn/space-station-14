@@ -23,14 +23,10 @@ public sealed partial class DamageForceSaySystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<DamageForceSayComponent, StunnedEvent>(OnStunned);
-        SubscribeLocalEvent<DamageForceSayComponent, MobStateChangedEvent>(OnMobStateChanged);
-
         // need to raise after mobthreshold
         // so that we don't accidentally raise one for damage before one for mobstate
         // (this won't double raise, because of the cooldown)
         SubscribeLocalEvent<DamageForceSayComponent, DamageChangedEvent>(OnDamageChanged, after: new []{ typeof(MobThresholdSystem)} );
-        SubscribeLocalEvent<DamageForceSayComponent, SleepStateChangedEvent>(OnSleep);
     }
 
     public override void Update(float frameTime)
@@ -81,6 +77,7 @@ public sealed partial class DamageForceSaySystem : EntitySystem
         nextCrit.Timeout = _timing.CurTime + TimeSpan.FromMilliseconds(actor.PlayerSession.Ping * 3);
     }
 
+    [SubscribeLocalEvent]
     private void OnSleep(EntityUid uid, DamageForceSayComponent component, SleepStateChangedEvent args)
     {
         if (!args.FellAsleep)
@@ -93,6 +90,7 @@ public sealed partial class DamageForceSaySystem : EntitySystem
         AllowNextSpeech(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnStunned(EntityUid uid, DamageForceSayComponent component, ref StunnedEvent args)
     {
         TryForceSay(uid, component);
@@ -121,6 +119,7 @@ public sealed partial class DamageForceSaySystem : EntitySystem
         TryForceSay(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, DamageForceSayComponent component, MobStateChangedEvent args)
     {
         if (args is not { OldMobState: MobState.Alive, NewMobState: MobState.Critical or MobState.Dead })

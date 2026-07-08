@@ -62,8 +62,6 @@ namespace Content.Server.NodeContainer.EntitySystems
             _sawmill = LogManager.GetSawmill("nodegroup");
 
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
-
-            SubscribeNetworkEvent<NodeVis.MsgEnable>(HandleEnableMsg);
         }
 
         public override void Shutdown()
@@ -73,6 +71,7 @@ namespace Content.Server.NodeContainer.EntitySystems
             _playerManager.PlayerStatusChanged -= OnPlayerStatusChanged;
         }
 
+        [SubscribeNetworkEvent]
         private void HandleEnableMsg(NodeVis.MsgEnable msg, EntitySessionEventArgs args)
         {
             var session = args.SenderSession;

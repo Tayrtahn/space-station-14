@@ -21,10 +21,9 @@ public sealed partial class EntityPickupAnimationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EntityPickupAnimationComponent, AnimationCompletedEvent>(OnEntityPickupAnimationCompleted);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityPickupAnimationCompleted(EntityUid uid, EntityPickupAnimationComponent component, AnimationCompletedEvent args)
     {
         Del(uid);

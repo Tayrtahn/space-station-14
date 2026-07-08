@@ -27,10 +27,6 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MultipartMachineComponent, ClientExaminedEvent>(OnMachineExamined);
-        SubscribeLocalEvent<MultipartMachineComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeLocalEvent<MultipartMachineGhostComponent, TimedDespawnEvent>(OnGhostDespawned);
     }
 
     /// <summary>
@@ -41,6 +37,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Entity/Component that has been inspected.</param>
     /// <param name="args">Args for the event.</param>
+    [SubscribeLocalEvent]
     private void OnMachineExamined(Entity<MultipartMachineComponent> ent, ref ClientExaminedEvent args)
     {
         if (ent.Comp.Ghosts.Count != 0)
@@ -83,6 +80,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<MultipartMachineComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         foreach (var part in ent.Comp.Parts.Values)
@@ -98,6 +96,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Ghost entity that has been despawned.</param>
     /// <param name="args">Args for the event.</param>
+    [SubscribeLocalEvent]
     private void OnGhostDespawned(Entity<MultipartMachineGhostComponent> ent, ref TimedDespawnEvent args)
     {
         if (!TryComp<MultipartMachineComponent>(ent.Comp.LinkedMachine, out var machine))

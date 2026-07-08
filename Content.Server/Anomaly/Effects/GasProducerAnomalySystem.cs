@@ -21,9 +21,9 @@ public sealed partial class GasProducerAnomalySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasProducerAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, GasProducerAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         if (!component.ReleaseOnMaxSeverity)

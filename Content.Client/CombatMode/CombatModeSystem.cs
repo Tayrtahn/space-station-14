@@ -25,11 +25,10 @@ public sealed partial class CombatModeSystem : SharedCombatModeSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<CombatModeComponent, AfterAutoHandleStateEvent>(OnHandleState);
-
         Subs.CVar(_cfg, CCVars.CombatModeIndicatorsPointShow, OnShowCombatIndicatorsChanged, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, CombatModeComponent component, ref AfterAutoHandleStateEvent args)
     {
         UpdateHud(uid);

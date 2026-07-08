@@ -37,12 +37,6 @@ public sealed partial class RingerSystem : SharedRingerSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RingerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<RingerComponent, CurrencyInsertAttemptEvent>(OnCurrencyInsert);
-
-        SubscribeLocalEvent<RingerAccessUplinkComponent, GenerateUplinkCodeEvent>(OnGenerateUplinkCode);
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(CleanupReserved);
 
         InitialSetup();
     }
@@ -50,6 +44,7 @@ public sealed partial class RingerSystem : SharedRingerSystem
     /// <summary>
     /// Randomizes a ringtone for <see cref="RingerComponent"/> on <see cref="MapInitEvent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<RingerComponent> ent, ref MapInitEvent args)
     {
         var ringtone = GenerateRingtone();
@@ -62,6 +57,7 @@ public sealed partial class RingerSystem : SharedRingerSystem
     /// <summary>
     /// Handles the <see cref="CurrencyInsertAttemptEvent"/> for <see cref="RingerUplinkComponent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnCurrencyInsert(Entity<RingerComponent> ent, ref CurrencyInsertAttemptEvent args)
     {
         // TODO: Store isn't predicted, can't move it to shared
@@ -79,6 +75,7 @@ public sealed partial class RingerSystem : SharedRingerSystem
     /// <summary>
     /// Handles the <see cref="GenerateUplinkCodeEvent"/> for generating an uplink code.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGenerateUplinkCode(Entity<RingerAccessUplinkComponent> ent, ref GenerateUplinkCodeEvent ev)
     {
         var code = GenerateRingtone(true, true);
@@ -256,6 +253,7 @@ public sealed partial class RingerSystem : SharedRingerSystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void CleanupReserved(RoundRestartCleanupEvent ev)
     {
         ReservedSerializedRingtones.Clear();

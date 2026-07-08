@@ -12,9 +12,9 @@ public sealed partial class AutoLinkSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<AutoLinkTransmitterComponent, MapInitEvent>(OnAutoLinkMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnAutoLinkMapInit(EntityUid uid, AutoLinkTransmitterComponent component, MapInitEvent args)
     {
         var xform = Transform(uid);

@@ -32,8 +32,6 @@ public sealed partial class RoboticsConsoleSystem : SharedRoboticsConsoleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoboticsConsoleComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
         Subs.BuiEvents<RoboticsConsoleComponent>(RoboticsConsoleUiKey.Key, subs =>
         {
             subs.Event<BoundUIOpenedEvent>(OnOpened);
@@ -70,6 +68,7 @@ public sealed partial class RoboticsConsoleSystem : SharedRoboticsConsoleSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(Entity<RoboticsConsoleComponent> ent, ref DeviceNetworkPacketEvent args)
     {
         var payload = args.Data;

@@ -38,23 +38,17 @@ public sealed partial class SlipperySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SlipperyComponent, StepTriggerAttemptEvent>(HandleAttemptCollide);
-        SubscribeLocalEvent<SlipperyComponent, StepTriggeredOffEvent>(HandleStepTrigger);
-        SubscribeLocalEvent<NoSlipComponent, SlipAttemptEvent>(OnNoSlipAttempt);
-        SubscribeLocalEvent<SlowedOverSlipperyComponent, SlipAttemptEvent>(OnSlowedOverSlipAttempt);
-        SubscribeLocalEvent<ThrownItemComponent, SlipCausingAttemptEvent>(OnThrownSlipAttempt);
         SubscribeLocalEvent<NoSlipComponent, InventoryRelayedEvent<SlipAttemptEvent>>((e, c, ev) => OnNoSlipAttempt(e, c, ev.Args));
         SubscribeLocalEvent<SlowedOverSlipperyComponent, InventoryRelayedEvent<SlipAttemptEvent>>((e, c, ev) => OnSlowedOverSlipAttempt(e, c, ev.Args));
-        SubscribeLocalEvent<SlowedOverSlipperyComponent, InventoryRelayedEvent<GetSlowedOverSlipperyModifierEvent>>(OnGetSlowedOverSlipperyModifier);
-        SubscribeLocalEvent<SlipperyComponent, EndCollideEvent>(OnEntityExit);
     }
 
+    [SubscribeLocalEvent]
     private void HandleStepTrigger(EntityUid uid, SlipperyComponent component, ref StepTriggeredOffEvent args)
     {
         TrySlip(uid, component, args.Tripper);
     }
 
+    [SubscribeLocalEvent]
     private void HandleAttemptCollide(
         EntityUid uid,
         SlipperyComponent component,
@@ -63,26 +57,31 @@ public sealed partial class SlipperySystem : EntitySystem
         args.Continue |= CanSlip(uid, args.Tripper);
     }
 
+    [SubscribeLocalEvent]
     private static void OnNoSlipAttempt(EntityUid uid, NoSlipComponent component, SlipAttemptEvent args)
     {
         args.NoSlip = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSlowedOverSlipAttempt(EntityUid uid, SlowedOverSlipperyComponent component, SlipAttemptEvent args)
     {
         args.SlowOverSlippery = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnThrownSlipAttempt(EntityUid uid, ThrownItemComponent comp, ref SlipCausingAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetSlowedOverSlipperyModifier(EntityUid uid, SlowedOverSlipperyComponent comp, ref InventoryRelayedEvent<GetSlowedOverSlipperyModifierEvent> args)
     {
         args.Args.SlowdownModifier *= comp.SlowdownModifier;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityExit(EntityUid uid, SlipperyComponent component, ref EndCollideEvent args)
     {
         if (HasComp<SpeedModifiedByContactComponent>(args.OtherEntity))

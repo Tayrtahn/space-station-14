@@ -32,17 +32,9 @@ public abstract partial class SharedTabletopSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeAllEvent<TabletopDraggingPlayerChangedEvent>(OnDraggingPlayerChanged);
-
-        SubscribeLocalEvent<TabletopGameComponent, GetVerbsEvent<ActivationVerb>>(AddPlayGameVerb);
-        SubscribeLocalEvent<TabletopGameComponent, InteractUsingEvent>(OnInteractUsing);
-
-        SubscribeNetworkEvent<TabletopRequestTakeOut>(OnTabletopRequestTakeOut);
-
-        SubscribeAllEvent<TabletopMoveEvent>(OnTabletopMove);
     }
 
+    [SubscribeNetworkEvent]
     private void OnTabletopRequestTakeOut(TabletopRequestTakeOut msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession is not { } playerSession)
@@ -74,6 +66,7 @@ public abstract partial class SharedTabletopSystem : EntitySystem
         PredictedQueueDel(result);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<TabletopGameComponent> ent, ref InteractUsingEvent args)
     {
         if (!_cfg.GetCVar(CCVars.GameTabletopPlace))
@@ -107,6 +100,7 @@ public abstract partial class SharedTabletopSystem : EntitySystem
     /// <summary>
     /// Add a verb that allows the player to start playing a tabletop game.
     /// </summary>
+    [SubscribeLocalEvent]
     private void AddPlayGameVerb(Entity<TabletopGameComponent> ent, ref GetVerbsEvent<ActivationVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -128,6 +122,7 @@ public abstract partial class SharedTabletopSystem : EntitySystem
     /// <summary>
     /// Move an entity which is dragged by the user, but check if they are allowed to do so and to these coordinates.
     /// </summary>
+    [SubscribeAllEvent]
     protected virtual void OnTabletopMove(TabletopMoveEvent msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession is not { AttachedEntity: { } playerEntity })
@@ -145,6 +140,7 @@ public abstract partial class SharedTabletopSystem : EntitySystem
         _transforms.SetLocalPosition(moved, msg.Coordinates.Position, transform);
     }
 
+    [SubscribeAllEvent]
     private void OnDraggingPlayerChanged(TabletopDraggingPlayerChangedEvent msg, EntitySessionEventArgs args)
     {
         var dragged = GetEntity(msg.DraggedEntityUid);

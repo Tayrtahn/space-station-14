@@ -41,41 +41,9 @@ public abstract partial class SharedActionsSystem : EntitySystem
     {
         base.Initialize();
         InitializeActionDoAfter();
-
-        SubscribeLocalEvent<ActionComponent, MapInitEvent>(OnActionMapInit);
-
-        SubscribeLocalEvent<ActionComponent, ComponentShutdown>(OnActionShutdown);
-
-        SubscribeLocalEvent<ActionsComponent, ActionComponentChangeEvent>(OnActionCompChange);
-        SubscribeLocalEvent<ActionsComponent, RelayedActionComponentChangeEvent>(OnRelayActionCompChange);
-        SubscribeLocalEvent<ActionsComponent, DidEquipEvent>(OnDidEquip);
-        SubscribeLocalEvent<ActionsComponent, DidEquipHandEvent>(OnHandEquipped);
-        SubscribeLocalEvent<ActionsComponent, DidUnequipEvent>(OnDidUnequip);
-        SubscribeLocalEvent<ActionsComponent, DidUnequipHandEvent>(OnHandUnequipped);
-        SubscribeLocalEvent<ActionsComponent, RejuvenateEvent>(OnRejuventate);
-
-        SubscribeLocalEvent<ActionsComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ActionsComponent, ComponentGetState>(OnGetState);
-
-        SubscribeLocalEvent<ActionComponent, ActionValidateEvent>(OnValidate);
-        SubscribeLocalEvent<InstantActionComponent, ActionValidateEvent>(OnInstantValidate);
-        SubscribeLocalEvent<EntityTargetActionComponent, ActionValidateEvent>(OnEntityValidate);
-        SubscribeLocalEvent<WorldTargetActionComponent, ActionValidateEvent>(OnWorldValidate);
-
-        SubscribeLocalEvent<InstantActionComponent, ActionGetEventEvent>(OnInstantGetEvent);
-        SubscribeLocalEvent<EntityTargetActionComponent, ActionGetEventEvent>(OnEntityGetEvent);
-        SubscribeLocalEvent<WorldTargetActionComponent, ActionGetEventEvent>(OnWorldGetEvent);
-
-        SubscribeLocalEvent<InstantActionComponent, ActionSetEventEvent>(OnInstantSetEvent);
-        SubscribeLocalEvent<EntityTargetActionComponent, ActionSetEventEvent>(OnEntitySetEvent);
-        SubscribeLocalEvent<WorldTargetActionComponent, ActionSetEventEvent>(OnWorldSetEvent);
-
-        SubscribeLocalEvent<EntityTargetActionComponent, ActionSetTargetEvent>(OnEntitySetTarget);
-        SubscribeLocalEvent<WorldTargetActionComponent, ActionSetTargetEvent>(OnWorldSetTarget);
-
-        SubscribeAllEvent<RequestPerformActionEvent>(OnActionRequest);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionMapInit(Entity<ActionComponent> ent, ref MapInitEvent args)
     {
         var comp = ent.Comp;
@@ -83,12 +51,14 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.OriginalIconColor));
     }
 
+    [SubscribeLocalEvent]
     private void OnActionShutdown(Entity<ActionComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.AttachedEntity is {} user && !TerminatingOrDeleted(user))
             RemoveAction(user, (ent, ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ActionsComponent> ent, ref ComponentShutdown args)
     {
         foreach (var actionId in ent.Comp.Actions)
@@ -97,6 +67,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(Entity<ActionsComponent> ent, ref ComponentGetState args)
     {
         args.State = new ActionsComponentState(GetNetEntitySet(ent.Comp.Actions));
@@ -216,6 +187,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         DirtyField(ent, ent.Comp, nameof(ActionComponent.UseDelay));
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuventate(Entity<ActionsComponent> ent, ref RejuvenateEvent args)
     {
         foreach (var act in ent.Comp.Actions)
@@ -257,6 +229,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     ///     When receiving a request to perform an action, this validates whether the action is allowed. If it is, it
     ///     will raise the relevant action event
     /// </summary>
+    [SubscribeAllEvent]
     private void OnActionRequest(RequestPerformActionEvent ev, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not { } user)
@@ -330,6 +303,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnValidate(Entity<ActionComponent> ent, ref ActionValidateEvent args)
     {
         if ((ent.Comp.CheckConsciousness && !_actionBlocker.CanConsciouslyPerformAction(args.User))
@@ -337,12 +311,14 @@ public abstract partial class SharedActionsSystem : EntitySystem
             args.Invalid = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInstantValidate(Entity<InstantActionComponent> ent, ref ActionValidateEvent args)
     {
         _adminLogger.Add(LogType.Action,
             $"{ToPrettyString(args.User):user} is performing the {Name(ent):action} action provided by {ToPrettyString(args.Provider):provider}.");
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityValidate(Entity<EntityTargetActionComponent> ent, ref ActionValidateEvent args)
     {
         // let WorldTargetAction handle it
@@ -376,6 +352,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         ev.Target = target;
     }
 
+    [SubscribeLocalEvent]
     private void OnWorldValidate(Entity<WorldTargetActionComponent> ent, ref ActionValidateEvent args)
     {
         if (args.Input.EntityCoordinatesTarget is not { } netTarget)
@@ -469,24 +446,28 @@ public abstract partial class SharedActionsSystem : EntitySystem
         return _transform.InRange(coords, xform.Coordinates, comp.Range);
     }
 
+    [SubscribeLocalEvent]
     private void OnInstantGetEvent(Entity<InstantActionComponent> ent, ref ActionGetEventEvent args)
     {
         if (ent.Comp.Event is {} ev)
             args.Event = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityGetEvent(Entity<EntityTargetActionComponent> ent, ref ActionGetEventEvent args)
     {
         if (ent.Comp.Event is {} ev)
             args.Event = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnWorldGetEvent(Entity<WorldTargetActionComponent> ent, ref ActionGetEventEvent args)
     {
         if (ent.Comp.Event is {} ev)
             args.Event = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnInstantSetEvent(Entity<InstantActionComponent> ent, ref ActionSetEventEvent args)
     {
         if (args.Event is InstantActionEvent ev)
@@ -496,6 +477,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntitySetEvent(Entity<EntityTargetActionComponent> ent, ref ActionSetEventEvent args)
     {
         if (args.Event is EntityTargetActionEvent ev)
@@ -505,6 +487,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWorldSetEvent(Entity<WorldTargetActionComponent> ent, ref ActionSetEventEvent args)
     {
         if (args.Event is WorldTargetActionEvent ev)
@@ -514,6 +497,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntitySetTarget(Entity<EntityTargetActionComponent> ent, ref ActionSetTargetEvent args)
     {
         if (ent.Comp.Event is {} ev)
@@ -523,6 +507,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWorldSetTarget(Entity<WorldTargetActionComponent> ent, ref ActionSetTargetEvent args)
     {
         if (ent.Comp.Event is {} ev)
@@ -876,6 +861,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
 
     #endregion
 
+    [SubscribeLocalEvent]
     private void OnRelayActionCompChange(Entity<ActionsComponent> ent, ref RelayedActionComponentChangeEvent args)
     {
         if (args.Handled)
@@ -898,6 +884,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActionCompChange(Entity<ActionsComponent> ent, ref ActionComponentChangeEvent args)
     {
         if (args.Handled)
@@ -918,6 +905,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
     }
 
     #region EquipHandlers
+    [SubscribeLocalEvent]
     private void OnDidEquip(Entity<ActionsComponent> ent, ref DidEquipEvent args)
     {
         if (GameTiming.ApplyingState)
@@ -932,6 +920,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         GrantActions((ent, ent), ev.Actions, args.Equipment);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandEquipped(Entity<ActionsComponent> ent, ref DidEquipHandEvent args)
     {
         if (GameTiming.ApplyingState)
@@ -946,6 +935,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         GrantActions((ent, ent), ev.Actions, args.Equipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnDidUnequip(EntityUid uid, ActionsComponent component, DidUnequipEvent args)
     {
         if (GameTiming.ApplyingState)
@@ -954,6 +944,7 @@ public abstract partial class SharedActionsSystem : EntitySystem
         RemoveProvidedActions(uid, args.Equipment, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandUnequipped(EntityUid uid, ActionsComponent component, DidUnequipHandEvent args)
     {
         if (GameTiming.ApplyingState)

@@ -16,14 +16,12 @@ public sealed partial class ArmableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ArmableComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<ArmableComponent, ItemToggledEvent>(ArmingDone);
     }
 
     /// <summary>
     /// Shows the status of the armable entity on examination.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, ArmableComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || !comp.ShowStatusOnExamination || !TryComp<ItemToggleComponent>(uid, out var itemToggle))
@@ -45,6 +43,7 @@ public sealed partial class ArmableSystem : EntitySystem
     /// Changes the appearance and disables the ItemToggleComponent as to not show the deactivate verb.
     /// Whatever is armed should probably not be trivially disarmed.
     /// </summary>
+    [SubscribeLocalEvent]
     private void ArmingDone(Entity<ArmableComponent> entity, ref ItemToggledEvent args)
     {
         if (!args.Activated)

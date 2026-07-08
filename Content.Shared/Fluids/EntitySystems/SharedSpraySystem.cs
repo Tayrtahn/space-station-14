@@ -5,16 +5,14 @@ using Robust.Shared.Map;
 
 namespace Content.Shared.Fluids.EntitySystems;
 
-public abstract class SharedSpraySystem : EntitySystem
+public abstract partial class SharedSpraySystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EquipSprayComponent, GetVerbsEvent<EquipmentVerb>>(OnGetVerb);
-        SubscribeLocalEvent<SprayLiquidEvent>(SprayLiquid);
     }
 
+    [SubscribeLocalEvent]
     private void SprayLiquid(SprayLiquidEvent ev)
     {
         var equipSprayEnt = ev.Action.Comp.Container;
@@ -34,6 +32,7 @@ public abstract class SharedSpraySystem : EntitySystem
         Spray((equipSprayEnt.Value, sprayComponent), ev.Performer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<EquipSprayComponent> entity, ref GetVerbsEvent<EquipmentVerb> args)
     {
         if (entity.Comp.VerbLocId == null || !args.CanAccess || !args.CanInteract)

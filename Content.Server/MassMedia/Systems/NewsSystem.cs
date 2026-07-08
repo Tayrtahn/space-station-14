@@ -72,10 +72,6 @@ public sealed partial class NewsSystem : SharedNewsSystem
             }, true);
 
         _cfg.OnValueChanged(CCVars.DiscordNewsWebhookSendDuringRound, value => _webhookSendDuringRound = value, true);
-        SubscribeLocalEvent<RoundEndMessageEvent>(OnRoundEndMessageEvent);
-
-        // News writer
-        SubscribeLocalEvent<NewsWriterComponent, MapInitEvent>(OnMapInit);
 
         // New writer bui messages
         Subs.BuiEvents<NewsWriterComponent>(NewsWriterUiKey.Key, subs =>
@@ -86,12 +82,6 @@ public sealed partial class NewsSystem : SharedNewsSystem
             subs.Event<NewsWriterSaveDraftMessage>(OnNewsWriterDraftUpdatedMessage);
             subs.Event<NewsWriterRequestDraftMessage>(OnRequestArticleDraftMessage);
         });
-
-        // News reader
-        SubscribeLocalEvent<NewsReaderCartridgeComponent, NewsArticlePublishedEvent>(OnArticlePublished);
-        SubscribeLocalEvent<NewsReaderCartridgeComponent, NewsArticleDeletedEvent>(OnArticleDeleted);
-        SubscribeLocalEvent<NewsReaderCartridgeComponent, CartridgeMessageEvent>(OnReaderUiMessage);
-        SubscribeLocalEvent<NewsReaderCartridgeComponent, CartridgeUiReadyEvent>(OnReaderUiReady);
     }
 
     public override void Update(float frameTime)
@@ -111,6 +101,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
 
     #region Writer Event Handlers
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NewsWriterComponent> ent, ref MapInitEvent args)
     {
         var station = _station.GetOwningStation(ent);
@@ -254,6 +245,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
 
     #region Reader Event Handlers
 
+    [SubscribeLocalEvent]
     private void OnArticlePublished(Entity<NewsReaderCartridgeComponent> ent, ref NewsArticlePublishedEvent args)
     {
         if (Comp<CartridgeComponent>(ent).LoaderUid is not { } loaderUid)
@@ -270,6 +262,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
             args.Article.Title);
     }
 
+    [SubscribeLocalEvent]
     private void OnArticleDeleted(Entity<NewsReaderCartridgeComponent> ent, ref NewsArticleDeletedEvent args)
     {
         if (Comp<CartridgeComponent>(ent).LoaderUid is not { } loaderUid)
@@ -278,6 +271,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
         UpdateReaderUi(ent, loaderUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnReaderUiMessage(Entity<NewsReaderCartridgeComponent> ent, ref CartridgeMessageEvent args)
     {
         if (args is not NewsReaderUiMessageEvent message)
@@ -299,6 +293,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
         UpdateReaderUi(ent, GetEntity(args.LoaderUid));
     }
 
+    [SubscribeLocalEvent]
     private void OnReaderUiReady(Entity<NewsReaderCartridgeComponent> ent, ref CartridgeUiReadyEvent args)
     {
         UpdateReaderUi(ent, args.Loader);
@@ -398,6 +393,7 @@ public sealed partial class NewsSystem : SharedNewsSystem
 
     #region Discord Hook
 
+    [SubscribeLocalEvent]
     private void OnRoundEndMessageEvent(RoundEndMessageEvent ev)
     {
         if (_webhookSendDuringRound)

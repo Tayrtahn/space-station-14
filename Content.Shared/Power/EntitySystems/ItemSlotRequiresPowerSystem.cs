@@ -10,9 +10,9 @@ public sealed partial class ItemSlotRequiresPowerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemSlotRequiresPowerComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<ItemSlotRequiresPowerComponent> ent, ref ItemSlotInsertAttemptEvent args)
     {
         if (!_receiver.IsPowered(ent.Owner))

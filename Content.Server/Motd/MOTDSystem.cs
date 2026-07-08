@@ -25,7 +25,6 @@ public sealed partial class MOTDSystem : EntitySystem
     {
         base.Initialize();
         Subs.CVar(_configurationManager, CCVars.MOTD, OnMOTDChanged, invokeImmediately: true);
-        SubscribeLocalEvent<PlayerJoinedLobbyEvent>(OnPlayerJoinedLobby);
     }
 
     /// <summary>
@@ -74,6 +73,7 @@ public sealed partial class MOTDSystem : EntitySystem
     /// <summary>
     /// Posts the Message Of The Day to any players who join the lobby.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPlayerJoinedLobby(PlayerJoinedLobbyEvent ev)
     {
         TrySendMOTD(ev.PlayerSession);

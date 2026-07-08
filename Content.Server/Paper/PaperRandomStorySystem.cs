@@ -11,10 +11,9 @@ public sealed partial class PaperRandomStorySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PaperRandomStoryComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<PaperRandomStoryComponent> paperStory, ref MapInitEvent ev)
     {
         if (!TryComp<PaperComponent>(paperStory, out var paper))

@@ -17,11 +17,6 @@ public sealed partial class RandomArtifactSpriteSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomArtifactSpriteComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<RandomArtifactSpriteComponent, ArtifactUnlockingStartedEvent>(UnlockingStageStarted);
-        SubscribeLocalEvent<RandomArtifactSpriteComponent, ArtifactUnlockingFinishedEvent>(UnlockingStageFinished);
-        SubscribeLocalEvent<RandomArtifactSpriteComponent, XenoArtifactActivatedEvent>(ArtifactActivated);
     }
 
     public override void Update(float frameTime)
@@ -43,6 +38,7 @@ public sealed partial class RandomArtifactSpriteSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RandomArtifactSpriteComponent component, MapInitEvent args)
     {
         var randomSprite = _random.Next(component.MinSprite, component.MaxSprite + 1);
@@ -50,16 +46,19 @@ public sealed partial class RandomArtifactSpriteSystem : EntitySystem
         _item.SetHeldPrefix(uid, "ano" + randomSprite.ToString("D2")); //set item artifact inhands
     }
 
+    [SubscribeLocalEvent]
     private void UnlockingStageStarted(Entity<RandomArtifactSpriteComponent> ent, ref ArtifactUnlockingStartedEvent args)
     {
         _appearance.SetData(ent, SharedArtifactsVisuals.IsUnlocking, true);
     }
 
+    [SubscribeLocalEvent]
     private void UnlockingStageFinished(Entity<RandomArtifactSpriteComponent> ent, ref ArtifactUnlockingFinishedEvent args)
     {
         _appearance.SetData(ent, SharedArtifactsVisuals.IsUnlocking, false);
     }
 
+    [SubscribeLocalEvent]
     private void ArtifactActivated(Entity<RandomArtifactSpriteComponent> ent, ref XenoArtifactActivatedEvent args)
     {
         _appearance.SetData(ent, SharedArtifactsVisuals.IsActivated, true);

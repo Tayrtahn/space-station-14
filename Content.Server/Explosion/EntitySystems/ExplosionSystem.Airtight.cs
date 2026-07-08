@@ -201,6 +201,7 @@ public sealed partial class ExplosionSystem
     /// <summary>
     ///     On receiving damage, re-evaluate how much explosion damage is needed to destroy an airtight entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAirtightDamaged(EntityUid uid, AirtightComponent airtight, DamageChangedEvent args)
     {
         // do we need to update our explosion blocking map?

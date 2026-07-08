@@ -26,12 +26,9 @@ public sealed partial class MindShieldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MindShieldImplantComponent, ImplantImplantedEvent>(OnImplantImplanted);
-        SubscribeLocalEvent<MindShieldImplantComponent, ImplantRemovedEvent>(OnImplantRemoved);
-        SubscribeLocalEvent<MindShieldComponent, AttemptConvertRevolutionaryEvent>(OnAttemptConvert);
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantImplanted(Entity<MindShieldImplantComponent> ent, ref ImplantImplantedEvent ev)
     {
         EnsureComp<MindShieldComponent>(ev.Implanted);
@@ -57,11 +54,13 @@ public sealed partial class MindShieldSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantRemoved(Entity<MindShieldImplantComponent> ent, ref ImplantRemovedEvent args)
     {
         RemComp<MindShieldComponent>(args.Implanted);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptConvert(Entity<MindShieldComponent> ent, ref AttemptConvertRevolutionaryEvent args)
     {
         args.Cancelled = true;

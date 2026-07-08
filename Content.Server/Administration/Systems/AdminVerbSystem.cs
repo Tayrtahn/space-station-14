@@ -72,14 +72,13 @@ namespace Content.Server.Administration.Systems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<GetVerbsEvent<Verb>>(GetVerbs);
-            SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
 
             // TODO: This is genuinely terrible, solutions are already networked and we shouldn't need to update the BUI like this.
             SubscribeLocalEvent<SolutionComponent, SolutionChangedEvent>((x, ref _) => OnSolutionChanged(x.Owner));
             SubscribeLocalEvent<SolutionManagerComponent, SolutionChangedEvent>((x, ref _) => OnSolutionChanged(x.Owner));
         }
 
+        [SubscribeLocalEvent]
         private void GetVerbs(GetVerbsEvent<Verb> ev)
         {
             AddAdminVerbs(ev);
@@ -638,6 +637,7 @@ namespace Content.Server.Administration.Systems
               _openSolutionUis.Remove(session);
         }
 
+        [SubscribeLocalEvent]
         private void Reset(RoundRestartCleanupEvent ev)
         {
             foreach (var euis in _openSolutionUis.Values)

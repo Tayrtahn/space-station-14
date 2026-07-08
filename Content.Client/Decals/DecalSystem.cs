@@ -24,9 +24,6 @@ namespace Content.Client.Decals
 
             _overlay = new DecalOverlay(_sprites, EntityManager, ProtoMan);
             _overlayManager.AddOverlay(_overlay);
-
-            SubscribeLocalEvent<DecalGridComponent, ComponentHandleState>(OnHandleState);
-            SubscribeNetworkEvent<DecalChunkUpdateEvent>(OnChunkUpdate);
         }
 
         public void ToggleOverlay()
@@ -61,6 +58,7 @@ namespace Content.Client.Decals
             chunk.Decals.Remove(decalId);
         }
 
+        [SubscribeLocalEvent]
         private void OnHandleState(EntityUid gridUid, DecalGridComponent gridComp, ref ComponentHandleState args)
         {
             // is this a delta or full state?
@@ -102,6 +100,7 @@ namespace Content.Client.Decals
                 UpdateChunks(gridUid, gridComp, modifiedChunks);
         }
 
+        [SubscribeNetworkEvent]
         private void OnChunkUpdate(DecalChunkUpdateEvent ev)
         {
             foreach (var (netGrid, updatedGridChunks) in ev.Data)

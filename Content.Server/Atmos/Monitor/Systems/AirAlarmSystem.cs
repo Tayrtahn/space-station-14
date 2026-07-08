@@ -170,15 +170,6 @@ public sealed partial class AirAlarmSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AirAlarmComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
-        SubscribeLocalEvent<AirAlarmComponent, AtmosDeviceUpdateEvent>(OnAtmosUpdate);
-        SubscribeLocalEvent<AirAlarmComponent, AtmosAlarmEvent>(OnAtmosAlarm);
-        SubscribeLocalEvent<AirAlarmComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<AirAlarmComponent, DeviceListUpdateEvent>(OnDeviceListUpdate);
-        SubscribeLocalEvent<AirAlarmComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<AirAlarmComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AirAlarmComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<AirAlarmComponent, ActivateInWorldEvent>(OnActivate);
 
         Subs.BuiEvents<AirAlarmComponent>(SharedAirAlarmInterfaceKey.Key, subs =>
         {
@@ -192,6 +183,7 @@ public sealed partial class AirAlarmSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceListUpdate(EntityUid uid, AirAlarmComponent component, DeviceListUpdateEvent args)
     {
         foreach (var device in args.OldDevices)
@@ -214,6 +206,7 @@ public sealed partial class AirAlarmSystem : EntitySystem
         SyncRegisterAllDevices(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, AirAlarmComponent component, ref PowerChangedEvent args)
     {
         if (args.Powered)
@@ -235,11 +228,13 @@ public sealed partial class AirAlarmSystem : EntitySystem
             RemoveActiveInterface(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, AirAlarmComponent comp, ComponentInit args)
     {
         _deviceLink.EnsureSourcePorts(uid, comp.DangerPort, comp.WarningPort, comp.NormalPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, AirAlarmComponent comp, MapInitEvent args)
     {
         // for mapped linked air alarms, start with high so when it changes for the first time it goes from high to low
@@ -247,11 +242,13 @@ public sealed partial class AirAlarmSystem : EntitySystem
         _deviceLink.SendSignal(uid, GetPort(comp), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, AirAlarmComponent component, ComponentShutdown args)
     {
         _activeUserInterfaces.Remove(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, AirAlarmComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)
@@ -403,6 +400,7 @@ public sealed partial class AirAlarmSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosAlarm(EntityUid uid, AirAlarmComponent component, AtmosAlarmEvent args)
     {
         if (_ui.IsUiOpen(uid, SharedAirAlarmInterfaceKey.Key))
@@ -532,6 +530,7 @@ public sealed partial class AirAlarmSystem : EntitySystem
         SetData(uid, address, devData);
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketRecv(EntityUid uid, AirAlarmComponent controller, DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? cmd))
@@ -608,6 +607,7 @@ public sealed partial class AirAlarmSystem : EntitySystem
         _ui.CloseUi(uid, SharedAirAlarmInterfaceKey.Key);
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosUpdate(EntityUid uid, AirAlarmComponent alarm, ref AtmosDeviceUpdateEvent args)
     {
         alarm.CurrentModeUpdater?.Update(uid);

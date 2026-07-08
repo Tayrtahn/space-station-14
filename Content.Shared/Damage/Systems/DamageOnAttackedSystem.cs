@@ -24,8 +24,6 @@ public sealed partial class DamageOnAttackedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DamageOnAttackedComponent, AttackedEvent>(OnAttacked);
     }
 
     /// <summary>
@@ -34,6 +32,7 @@ public sealed partial class DamageOnAttackedSystem : EntitySystem
     /// </summary>
     /// <param name="entity">The entity being hit</param>
     /// <param name="args">Contains the user that hit the entity</param>
+    [SubscribeLocalEvent]
     private void OnAttacked(Entity<DamageOnAttackedComponent> entity, ref AttackedEvent args)
     {
         if (!entity.Comp.IsDamageActive)

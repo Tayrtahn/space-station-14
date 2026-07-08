@@ -14,12 +14,11 @@ public sealed partial class FoldableClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FoldableClothingComponent, FoldAttemptEvent>(OnFoldAttempt);
         SubscribeLocalEvent<FoldableClothingComponent, FoldedEvent>(OnFolded,
             after: [typeof(MaskSystem)]); // Mask system also modifies clothing / equipment RSI state prefixes.
     }
 
+    [SubscribeLocalEvent]
     private void OnFoldAttempt(Entity<FoldableClothingComponent> ent, ref FoldAttemptEvent args)
     {
         if (args.Cancelled)

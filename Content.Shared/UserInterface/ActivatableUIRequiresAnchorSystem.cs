@@ -12,10 +12,9 @@ public sealed partial class ActivatableUIRequiresAnchorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ActivatableUIRequiresAnchorComponent, ActivatableUIOpenAttemptEvent>(OnActivatableUIOpenAttempt);
-        SubscribeLocalEvent<ActivatableUIRequiresAnchorComponent, BoundUserInterfaceCheckRangeEvent>(OnUICheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnUICheck(Entity<ActivatableUIRequiresAnchorComponent> ent, ref BoundUserInterfaceCheckRangeEvent args)
     {
         if (args.Result == BoundUserInterfaceRangeResult.Fail)
@@ -27,6 +26,7 @@ public sealed partial class ActivatableUIRequiresAnchorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivatableUIOpenAttempt(Entity<ActivatableUIRequiresAnchorComponent> ent, ref ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled)

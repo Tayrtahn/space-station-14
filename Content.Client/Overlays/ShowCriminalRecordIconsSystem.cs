@@ -9,10 +9,9 @@ public sealed partial class ShowCriminalRecordIconsSystem : EquipmentHudSystem<S
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CriminalRecordComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(EntityUid uid, CriminalRecordComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)

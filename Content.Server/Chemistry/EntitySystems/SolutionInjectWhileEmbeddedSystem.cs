@@ -15,10 +15,9 @@ public sealed partial class SolutionInjectWhileEmbeddedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionInjectWhileEmbeddedComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SolutionInjectWhileEmbeddedComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextUpdate = _gameTiming.CurTime + ent.Comp.UpdateInterval;

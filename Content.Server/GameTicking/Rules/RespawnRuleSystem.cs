@@ -30,9 +30,6 @@ public sealed partial class RespawnRuleSystem : GameRuleSystem<RespawnDeadRuleCo
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SuicideEvent>(OnSuicide);
-        SubscribeLocalEvent<MobStateChangedEvent>(OnMobStateChanged);
     }
 
     public override void Update(float frameTime)
@@ -60,6 +57,7 @@ public sealed partial class RespawnRuleSystem : GameRuleSystem<RespawnDeadRuleCo
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSuicide(SuicideEvent ev)
     {
         if (!TryComp<ActorComponent>(ev.Victim, out var actor))
@@ -73,6 +71,7 @@ public sealed partial class RespawnRuleSystem : GameRuleSystem<RespawnDeadRuleCo
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(MobStateChangedEvent args)
     {
         if (args.NewMobState != MobState.Dead)

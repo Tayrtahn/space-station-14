@@ -15,16 +15,15 @@ public sealed partial class ThermalRegulatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThermalRegulatorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ThermalRegulatorComponent, EntityUnpausedEvent>(OnUnpaused);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ThermalRegulatorComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextUpdate = _gameTiming.CurTime + ent.Comp.UpdateInterval;
     }
 
+    [SubscribeLocalEvent]
     private void OnUnpaused(Entity<ThermalRegulatorComponent> ent, ref EntityUnpausedEvent args)
     {
         ent.Comp.NextUpdate += args.PausedTime;

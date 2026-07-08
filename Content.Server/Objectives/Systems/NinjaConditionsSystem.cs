@@ -22,13 +22,10 @@ public sealed partial class NinjaConditionsSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<SpiderChargeConditionComponent, RequirementCheckEvent>(OnSpiderChargeRequirementCheck);
-        SubscribeLocalEvent<SpiderChargeConditionComponent, ObjectiveAfterAssignEvent>(OnSpiderChargeAfterAssign);
-
-        SubscribeLocalEvent<StealResearchConditionComponent, ObjectiveGetProgressEvent>(OnStealResearchGetProgress);
     }
 
     // spider charge
+    [SubscribeLocalEvent]
     private void OnSpiderChargeRequirementCheck(EntityUid uid, SpiderChargeConditionComponent comp, ref RequirementCheckEvent args)
     {
         if (args.Cancelled || !_roles.MindHasRole<NinjaRoleComponent>(args.MindId))
@@ -60,6 +57,7 @@ public sealed partial class NinjaConditionsSystem : EntitySystem
         comp.Target = _random.Pick(warps);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpiderChargeAfterAssign(EntityUid uid, SpiderChargeConditionComponent comp, ref ObjectiveAfterAssignEvent args)
     {
         string title;
@@ -77,6 +75,7 @@ public sealed partial class NinjaConditionsSystem : EntitySystem
 
     // steal research
 
+    [SubscribeLocalEvent]
     private void OnStealResearchGetProgress(EntityUid uid, StealResearchConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = StealResearchProgress(comp, _number.GetTarget(uid));

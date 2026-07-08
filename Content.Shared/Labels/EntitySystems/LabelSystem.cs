@@ -21,19 +21,9 @@ public sealed partial class LabelSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LabelComponent, MapInitEvent>(OnLabelCompMapInit);
-        SubscribeLocalEvent<LabelComponent, ComponentShutdown>(OnLabelShutdown);
-        SubscribeLocalEvent<LabelComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<LabelComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
-
-        SubscribeLocalEvent<PaperLabelComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<PaperLabelComponent, ComponentRemove>(OnComponentRemove);
-        SubscribeLocalEvent<PaperLabelComponent, EntInsertedIntoContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<PaperLabelComponent, EntRemovedFromContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<PaperLabelComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnLabelCompMapInit(Entity<LabelComponent> ent, ref MapInitEvent args)
     {
         if (!string.IsNullOrEmpty(ent.Comp.CurrentLabel))
@@ -45,6 +35,7 @@ public sealed partial class LabelSystem : EntitySystem
         _nameModifier.RefreshNameModifiers(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnLabelShutdown(Entity<LabelComponent> ent, ref ComponentShutdown args)
     {
         _nameModifier.RefreshNameModifiers(ent.Owner);
@@ -111,6 +102,7 @@ public sealed partial class LabelSystem : EntitySystem
         return HasComp<LabelComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<LabelComponent> ent, ref ExaminedEvent args)
     {
         if (!ent.Comp.Examinable)
@@ -124,6 +116,7 @@ public sealed partial class LabelSystem : EntitySystem
         args.PushMessage(message);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<LabelComponent> entity, ref RefreshNameModifiersEvent args)
     {
         // We need to check lifestage so labels queued for deferred removal don't get applied.
@@ -131,6 +124,7 @@ public sealed partial class LabelSystem : EntitySystem
             args.AddModifier("comp-label-format", extraArgs: ("label", entity.Comp.CurrentLabel));
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<PaperLabelComponent> ent, ref ComponentInit args)
     {
         _itemSlots.AddItemSlot(ent, ContainerName, ent.Comp.LabelSlot);
@@ -138,11 +132,13 @@ public sealed partial class LabelSystem : EntitySystem
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(Entity<PaperLabelComponent> ent, ref ComponentRemove args)
     {
         _itemSlots.RemoveItemSlot(ent, ent.Comp.LabelSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<PaperLabelComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp.LabelSlot.Item is not {Valid: true} item)
@@ -173,6 +169,7 @@ public sealed partial class LabelSystem : EntitySystem
     }
 
     // Not ref-sub due to being used for multiple subscriptions.
+    [SubscribeLocalEvent]
     private void OnContainerModified(EntityUid uid, PaperLabelComponent label, ContainerModifiedMessage args)
     {
         if (!label.Initialized)

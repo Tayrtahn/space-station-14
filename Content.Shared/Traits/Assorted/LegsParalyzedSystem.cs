@@ -13,40 +13,40 @@ public sealed partial class LegsParalyzedSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<LegsParalyzedComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<LegsParalyzedComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<LegsParalyzedComponent, BuckledEvent>(OnBuckled);
-        SubscribeLocalEvent<LegsParalyzedComponent, UnbuckledEvent>(OnUnbuckled);
-        SubscribeLocalEvent<LegsParalyzedComponent, ThrowPushbackAttemptEvent>(OnThrowPushbackAttempt);
-        SubscribeLocalEvent<LegsParalyzedComponent, UpdateCanMoveEvent>(OnUpdateCanMoveEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, LegsParalyzedComponent component, ComponentStartup args)
     {
         // TODO: In future probably must be surgery related wound
         _movementSpeedModifierSystem.ChangeBaseSpeed(uid, 0, 0, 20);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, LegsParalyzedComponent component, ComponentShutdown args)
     {
         _standingSystem.Stand(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnBuckled(EntityUid uid, LegsParalyzedComponent component, ref BuckledEvent args)
     {
         _standingSystem.Stand(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnbuckled(EntityUid uid, LegsParalyzedComponent component, ref UnbuckledEvent args)
     {
         _standingSystem.Down(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateCanMoveEvent(EntityUid uid, LegsParalyzedComponent component, UpdateCanMoveEvent args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowPushbackAttempt(EntityUid uid, LegsParalyzedComponent component, ThrowPushbackAttemptEvent args)
     {
         args.Cancel();

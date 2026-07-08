@@ -12,14 +12,9 @@ public sealed partial class HandTriggerSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnGotEquippedHandComponent, GotEquippedHandEvent>(OnGotEquipped);
-        SubscribeLocalEvent<TriggerOnGotUnequippedHandComponent, GotUnequippedHandEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<TriggerOnDidEquipHandComponent, DidEquipHandEvent>(OnDidEquip);
-        SubscribeLocalEvent<TriggerOnDidUnequipHandComponent, DidUnequipHandEvent>(OnDidUnequip);
-        SubscribeLocalEvent<TriggerOnDroppedComponent, DroppedEvent>(OnDropped);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<TriggerOnGotEquippedHandComponent> ent, ref GotEquippedHandEvent args)
     {
         // If the entity was equipped on the server (without prediction) then the container change is networked to the client
@@ -31,6 +26,7 @@ public sealed partial class HandTriggerSystem : TriggerOnXSystem
         Trigger.Trigger(ent.Owner, args.User, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<TriggerOnGotUnequippedHandComponent> ent, ref GotUnequippedHandEvent args)
     {
         if (_timing.ApplyingState)
@@ -39,6 +35,7 @@ public sealed partial class HandTriggerSystem : TriggerOnXSystem
         Trigger.Trigger(ent.Owner, args.User, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnDidEquip(Entity<TriggerOnDidEquipHandComponent> ent, ref DidEquipHandEvent args)
     {
         if (_timing.ApplyingState)
@@ -47,6 +44,7 @@ public sealed partial class HandTriggerSystem : TriggerOnXSystem
         Trigger.Trigger(ent.Owner, args.Equipped, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnDidUnequip(Entity<TriggerOnDidUnequipHandComponent> ent, ref DidUnequipHandEvent args)
     {
         if (_timing.ApplyingState)
@@ -55,6 +53,7 @@ public sealed partial class HandTriggerSystem : TriggerOnXSystem
         Trigger.Trigger(ent.Owner, args.Unequipped, ent.Comp.KeyOut);
     }
 
+    [SubscribeLocalEvent]
     private void OnDropped(Entity<TriggerOnDroppedComponent> ent, ref DroppedEvent args)
     {
         // We don't need the guard statement here because this one is not a container event, but raised directly when interacting.

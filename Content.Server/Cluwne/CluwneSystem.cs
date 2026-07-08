@@ -34,17 +34,14 @@ public sealed partial class CluwneSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CluwneComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<CluwneComponent, MobStateChangedEvent>(OnMobState);
         SubscribeLocalEvent<CluwneComponent, EmoteEvent>(OnEmote, before:
         new[] { typeof(VocalSystem), typeof(BodyEmotesSystem) });
-        SubscribeLocalEvent<CluwneComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
     /// <summary>
     /// On death removes active comps and gives genetic damage to prevent cloning, reduce this to allow cloning.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMobState(Entity<CluwneComponent> ent, ref MobStateChangedEvent args)
     {
         if (args.NewMobState == MobState.Dead)
@@ -61,6 +58,7 @@ public sealed partial class CluwneSystem : EntitySystem
     /// <summary>
     /// OnStartup gives the cluwne outfit, ensures clumsy, and makes sure emote sounds are laugh.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<CluwneComponent> ent, ref ComponentStartup args)
     {
         if (ent.Comp.EmoteSoundsId == null)
@@ -118,6 +116,7 @@ public sealed partial class CluwneSystem : EntitySystem
     /// <summary>
     /// Applies "Cluwnified" prefix
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<CluwneComponent> ent, ref RefreshNameModifiersEvent args)
     {
         args.AddModifier(ent.Comp.NamePrefix);

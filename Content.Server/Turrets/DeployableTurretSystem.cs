@@ -35,31 +35,27 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeployableTurretComponent, AmmoShotEvent>(OnAmmoShot);
-        SubscribeLocalEvent<DeployableTurretComponent, ChargeChangedEvent>(OnChargeChanged);
-        SubscribeLocalEvent<DeployableTurretComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<DeployableTurretComponent, BreakageEventArgs>(OnBroken);
-        SubscribeLocalEvent<DeployableTurretComponent, RepairedEvent>(OnRepaired);
-        SubscribeLocalEvent<DeployableTurretComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<DeployableTurretComponent, BeforeBroadcastAttemptEvent>(OnBeforeBroadcast);
     }
 
+    [SubscribeLocalEvent]
     private void OnAmmoShot(Entity<DeployableTurretComponent> ent, ref AmmoShotEvent args)
     {
         UpdateAmmoStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnChargeChanged(Entity<DeployableTurretComponent> ent, ref ChargeChangedEvent args)
     {
         UpdateAmmoStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<DeployableTurretComponent> ent, ref PowerChangedEvent args)
     {
         UpdateAmmoStatus(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnBroken(Entity<DeployableTurretComponent> ent, ref BreakageEventArgs args)
     {
         if (TryComp<AppearanceComponent>(ent, out var appearance))
@@ -68,12 +64,14 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
         SetState(ent, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnRepaired(Entity<DeployableTurretComponent> ent, ref RepairedEvent args)
     {
         if (TryComp<AppearanceComponent>(ent, out var appearance))
             _appearance.SetData(ent, DeployableTurretVisuals.Broken, false, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(Entity<DeployableTurretComponent> ent, ref DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? command))
@@ -107,6 +105,7 @@ public sealed partial class DeployableTurretSystem : SharedDeployableTurretSyste
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeBroadcast(Entity<DeployableTurretComponent> ent, ref BeforeBroadcastAttemptEvent args)
     {
         if (!TryComp<DeviceNetworkComponent>(ent, out var deviceNetwork))

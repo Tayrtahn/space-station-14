@@ -34,13 +34,6 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<SprayPainterComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<SprayPainterComponent, SprayPainterDoAfterEvent>(OnPainterDoAfter);
-        SubscribeLocalEvent<SprayPainterComponent, GetVerbsEvent<AlternativeVerb>>(OnPainterGetAltVerbs);
-        SubscribeLocalEvent<PaintableComponent, InteractUsingEvent>(OnPaintableInteract);
-        SubscribeLocalEvent<PaintedComponent, ExaminedEvent>(OnPainedExamined);
-
         Subs.BuiEvents<SprayPainterComponent>(SprayPainterUiKey.Key,
             subs =>
             {
@@ -55,6 +48,7 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
             });
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SprayPainterComponent> ent, ref MapInitEvent args)
     {
         bool stylesByGroupPopulated = false;
@@ -85,6 +79,7 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
 
     #region Interaction
 
+    [SubscribeLocalEvent]
     private void OnPainterDoAfter(Entity<SprayPainterComponent> ent, ref SprayPainterDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -118,6 +113,7 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPainterGetAltVerbs(Entity<SprayPainterComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.Using.HasValue)
@@ -170,6 +166,7 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
     /// Handles spray paint interactions with an object.
     /// An object must belong to a spray paintable group to be painted, and the painter must have sufficient ammo to paint it.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPaintableInteract(Entity<PaintableComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)
@@ -226,6 +223,7 @@ public abstract partial class SharedSprayPainterSystem : EntitySystem
     /// <summary>
     /// Prints out if an object has been painted recently.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPainedExamined(Entity<PaintedComponent> ent, ref ExaminedEvent args)
     {
         // If the paint's dried, it isn't detectable.

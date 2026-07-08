@@ -42,11 +42,6 @@ public sealed partial class ReplaySpectatorSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<GetVerbsEvent<AlternativeVerb>>(OnGetAlternativeVerbs);
-        SubscribeLocalEvent<ReplaySpectatorComponent, EntityTerminatingEvent>(OnTerminating);
-        SubscribeLocalEvent<ReplaySpectatorComponent, LocalPlayerDetachedEvent>(OnDetached);
-        SubscribeLocalEvent<ReplaySpectatorComponent, EntParentChangedMessage>(OnParentChanged);
-
         InitializeBlockers();
 
         _replayPlayback.BeforeSetTick += OnBeforeSetTick;

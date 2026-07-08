@@ -8,14 +8,13 @@ namespace Content.Shared.Power.Generator;
 /// Shared logic for power-switchable devices.
 /// </summary>
 /// <seealso cref="PowerSwitchableComponent"/>
-public abstract class SharedPowerSwitchableSystem : EntitySystem
+public abstract partial class SharedPowerSwitchableSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<PowerSwitchableComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<PowerSwitchableComponent, GetVerbsEvent<InteractionVerb>>(GetVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, PowerSwitchableComponent comp, ExaminedEvent args)
     {
         // Show which voltage is currently selected.
@@ -23,6 +22,7 @@ public abstract class SharedPowerSwitchableSystem : EntitySystem
         args.PushMarkup(Loc.GetString(comp.ExamineText, ("voltage", voltage)));
     }
 
+    [SubscribeLocalEvent]
     private void GetVerbs(EntityUid uid, PowerSwitchableComponent comp, GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)

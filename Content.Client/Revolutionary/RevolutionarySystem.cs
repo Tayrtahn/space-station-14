@@ -12,11 +12,9 @@ public sealed partial class RevolutionarySystem : SharedRevolutionarySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RevolutionaryComponent, GetStatusIconsEvent>(GetRevIcon);
-        SubscribeLocalEvent<HeadRevolutionaryComponent, GetStatusIconsEvent>(GetHeadRevIcon);
     }
 
+    [SubscribeLocalEvent]
     private void GetRevIcon(Entity<RevolutionaryComponent> ent, ref GetStatusIconsEvent args)
     {
         if (HasComp<HeadRevolutionaryComponent>(ent))
@@ -26,6 +24,7 @@ public sealed partial class RevolutionarySystem : SharedRevolutionarySystem
             args.StatusIcons.Add(iconPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void GetHeadRevIcon(Entity<HeadRevolutionaryComponent> ent, ref GetStatusIconsEvent args)
     {
         if (ProtoMan.Resolve(ent.Comp.StatusIcon, out var iconPrototype))

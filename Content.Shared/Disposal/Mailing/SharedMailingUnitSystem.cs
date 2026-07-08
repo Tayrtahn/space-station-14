@@ -31,20 +31,16 @@ public abstract partial class SharedMailingUnitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MailingUnitComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<MailingUnitComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<MailingUnitComponent, BeforeDisposalFlushEvent>(OnBeforeFlush);
-        SubscribeLocalEvent<MailingUnitComponent, ConfigurationUpdatedEvent>(OnConfigurationUpdated);
         SubscribeLocalEvent<MailingUnitComponent, ActivateInWorldEvent>(HandleActivate, before: new[] { typeof(SharedDisposalUnitSystem) });
-        SubscribeLocalEvent<MailingUnitComponent, TargetSelectedMessage>(OnTargetSelected);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<MailingUnitComponent> ent, ref ComponentInit args)
     {
         UpdateTargetList(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(Entity<MailingUnitComponent> ent, ref DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? command) || !_power.IsPowered(ent.Owner))
@@ -83,6 +79,7 @@ public abstract partial class SharedMailingUnitSystem : EntitySystem
     /// <summary>
     /// Prevents the unit from flushing if no target is selected
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeFlush(Entity<MailingUnitComponent> ent, ref BeforeDisposalFlushEvent args)
     {
         if (string.IsNullOrEmpty(ent.Comp.Target))
@@ -137,6 +134,7 @@ public abstract partial class SharedMailingUnitSystem : EntitySystem
     /// <summary>
     /// Gets called when the units tag got updated
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnConfigurationUpdated(Entity<MailingUnitComponent> ent, ref ConfigurationUpdatedEvent args)
     {
         var configuration = args.Configuration.Config;
@@ -164,6 +162,7 @@ public abstract partial class SharedMailingUnitSystem : EntitySystem
         _userInterface.OpenUi(ent.Owner, MailingUnitUiKey.Key, actor.PlayerSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnTargetSelected(Entity<MailingUnitComponent> ent, ref TargetSelectedMessage args)
     {
         ent.Comp.Target = args.Target;

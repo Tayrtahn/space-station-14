@@ -11,25 +11,23 @@ namespace Content.Client.Strip;
 /// <summary>
 ///     This is the client-side stripping system, which just triggers UI updates on events.
 /// </summary>
-public sealed class StrippableSystem : SharedStrippableSystem
+public sealed partial class StrippableSystem : SharedStrippableSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StrippableComponent, CuffedStateChangeEvent>(OnCuffStateChange);
-        SubscribeLocalEvent<StrippableComponent, DidEquipEvent>(UpdateUi);
-        SubscribeLocalEvent<StrippableComponent, DidUnequipEvent>(UpdateUi);
-        SubscribeLocalEvent<StrippableComponent, DidEquipHandEvent>(UpdateUi);
         SubscribeLocalEvent<StrippableComponent, DidUnequipHandEvent>(UpdateUi);
         SubscribeLocalEvent<StrippableComponent, EnsnaredChangedEvent>(UpdateUi);
     }
 
+    [SubscribeLocalEvent]
     private void OnCuffStateChange(EntityUid uid, StrippableComponent component, ref CuffedStateChangeEvent args)
     {
         UpdateUi(uid, component);
     }
 
+    [SubscribeLocalEvent]
+    [SubscribeLocalEvent]
     public void UpdateUi(EntityUid uid, StrippableComponent? component = null, EntityEventArgs? args = null)
     {
         if (!TryComp(uid, out UserInterfaceComponent? uiComp))

@@ -21,9 +21,9 @@ public sealed partial class SurveillanceCameraSpeakerSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<SurveillanceCameraSpeakerComponent, SurveillanceCameraSpeechSendEvent>(OnSpeechSent);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeechSent(EntityUid uid, SurveillanceCameraSpeakerComponent component,
         SurveillanceCameraSpeechSendEvent args)
     {

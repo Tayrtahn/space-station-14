@@ -14,15 +14,9 @@ namespace Content.Shared.PDA
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<PdaComponent, ComponentInit>(OnComponentInit);
-            SubscribeLocalEvent<PdaComponent, ComponentRemove>(OnComponentRemove);
-
-            SubscribeLocalEvent<PdaComponent, EntInsertedIntoContainerMessage>(OnItemInserted);
-            SubscribeLocalEvent<PdaComponent, EntRemovedFromContainerMessage>(OnItemRemoved);
-
-            SubscribeLocalEvent<PdaComponent, GetAdditionalAccessEvent>(OnGetAdditionalAccess);
         }
+
+        [SubscribeLocalEvent]
         protected virtual void OnComponentInit(EntityUid uid, PdaComponent pda, ComponentInit args)
         {
             if (pda.IdCard != null)
@@ -35,6 +29,7 @@ namespace Content.Shared.PDA
             UpdatePdaAppearance(uid, pda);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentRemove(EntityUid uid, PdaComponent pda, ComponentRemove args)
         {
             ItemSlotsSystem.RemoveItemSlot(uid, pda.IdSlot);
@@ -42,6 +37,7 @@ namespace Content.Shared.PDA
             ItemSlotsSystem.RemoveItemSlot(uid, pda.PaiSlot);
         }
 
+        [SubscribeLocalEvent]
         protected virtual void OnItemInserted(EntityUid uid, PdaComponent pda, EntInsertedIntoContainerMessage args)
         {
             if (args.Container.ID == PdaComponent.PdaIdSlotId)
@@ -51,6 +47,7 @@ namespace Content.Shared.PDA
             UpdateJobStatus(uid);
         }
 
+        [SubscribeLocalEvent]
         protected virtual void OnItemRemoved(EntityUid uid, PdaComponent pda, EntRemovedFromContainerMessage args)
         {
             if (args.Container.ID == pda.IdSlot.ID)
@@ -60,6 +57,7 @@ namespace Content.Shared.PDA
             UpdateJobStatus(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetAdditionalAccess(EntityUid uid, PdaComponent component, ref GetAdditionalAccessEvent args)
         {
             if (component.ContainedId is { } id)

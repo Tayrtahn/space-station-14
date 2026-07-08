@@ -24,13 +24,9 @@ namespace Content.Server.Stunnable.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<StunbatonComponent, ExaminedEvent>(OnExamined);
-            SubscribeLocalEvent<StunbatonComponent, SolutionChangedEvent>(OnSolutionChange);
-            SubscribeLocalEvent<StunbatonComponent, StaminaDamageOnHitAttemptEvent>(OnStaminaHitAttempt);
-            SubscribeLocalEvent<StunbatonComponent, ChargeChangedEvent>(OnChargeChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnStaminaHitAttempt(Entity<StunbatonComponent> entity, ref StaminaDamageOnHitAttemptEvent args)
         {
             if (!_itemToggle.IsActivated(entity.Owner) ||
@@ -40,6 +36,7 @@ namespace Content.Server.Stunnable.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnExamined(Entity<StunbatonComponent> entity, ref ExaminedEvent args)
         {
             var onMsg = _itemToggle.IsActivated(entity.Owner)
@@ -75,6 +72,7 @@ namespace Content.Server.Stunnable.Systems
         }
 
         // https://github.com/space-wizards/space-station-14/pull/17288#discussion_r1241213341
+        [SubscribeLocalEvent]
         private void OnSolutionChange(Entity<StunbatonComponent> entity, ref SolutionChangedEvent args)
         {
             // Explode if baton is activated and rigged.
@@ -96,6 +94,7 @@ namespace Content.Server.Stunnable.Systems
             });
         }
 
+        [SubscribeLocalEvent]
         private void OnChargeChanged(Entity<StunbatonComponent> entity, ref ChargeChangedEvent args)
         {
             if (TryComp<BatteryComponent>(entity.Owner, out var battery) &&

@@ -22,10 +22,10 @@ public sealed partial class AdminNotesSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GetVerbsEvent<Verb>>(AddVerbs);
         _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
     }
 
+    [SubscribeLocalEvent]
     private void AddVerbs(GetVerbsEvent<Verb> ev)
     {
         if (EntityManager.GetComponentOrNull<ActorComponent>(ev.User) is not {PlayerSession: var user} ||

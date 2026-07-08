@@ -52,13 +52,6 @@ public sealed partial class DragonSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DragonComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<DragonComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<DragonComponent, DragonSpawnRiftActionEvent>(OnSpawnRift);
-        SubscribeLocalEvent<DragonComponent, RefreshMovementSpeedModifiersEvent>(OnDragonMove);
-        SubscribeLocalEvent<DragonComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<DragonComponent, EntityZombifiedEvent>(OnZombified);
     }
 
     public override void Update(float frameTime)
@@ -111,17 +104,20 @@ public sealed partial class DragonSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, DragonComponent component, MapInitEvent args)
     {
         Roar(uid, component);
         _actions.AddAction(uid, ref component.SpawnRiftActionEntity, component.SpawnRiftAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, DragonComponent component, ComponentShutdown args)
     {
         DeleteRifts(uid, false, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnRift(EntityUid uid, DragonComponent component, DragonSpawnRiftActionEvent args)
     {
         if (component.Weakened)
@@ -179,6 +175,7 @@ public sealed partial class DragonSystem : EntitySystem
     }
 
     // TODO: just make this a move speed modifier component???
+    [SubscribeLocalEvent]
     private void OnDragonMove(EntityUid uid, DragonComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         if (component.Weakened)
@@ -187,6 +184,7 @@ public sealed partial class DragonSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, DragonComponent component, MobStateChangedEvent args)
     {
         // Deletes all rifts after dying
@@ -200,6 +198,7 @@ public sealed partial class DragonSystem : EntitySystem
         DeleteRifts(uid, false, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnZombified(Entity<DragonComponent> ent, ref EntityZombifiedEvent args)
     {
         // prevent carp attacking zombie dragon

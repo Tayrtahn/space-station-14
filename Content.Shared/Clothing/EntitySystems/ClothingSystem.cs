@@ -19,18 +19,9 @@ public abstract partial class ClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ClothingComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ClothingComponent, AfterAutoHandleStateEvent>(AfterAutoHandleState);
-        SubscribeLocalEvent<ClothingComponent, GotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<ClothingComponent, GotUnequippedEvent>(OnGotUnequipped);
-
-        SubscribeLocalEvent<ClothingComponent, ClothingEquipDoAfterEvent>(OnEquipDoAfter);
-        SubscribeLocalEvent<ClothingComponent, ClothingUnequipDoAfterEvent>(OnUnequipDoAfter);
-
-        SubscribeLocalEvent<ClothingComponent, BeforeItemStrippedEvent>(OnItemStripped);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<ClothingComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled || !ent.Comp.QuickEquip)
@@ -79,6 +70,7 @@ public abstract partial class ClothingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnGotEquipped(EntityUid uid, ClothingComponent component, GotEquippedEvent args)
     {
         component.InSlot = args.Slot;
@@ -95,6 +87,7 @@ public abstract partial class ClothingSystem : EntitySystem
         RaiseLocalEvent(args.EquipTarget, ref didEquippedEvent);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnGotUnequipped(EntityUid uid, ClothingComponent component, GotUnequippedEvent args)
     {
         if ((component.Slots & args.SlotFlags) != SlotFlags.NONE)
@@ -111,11 +104,13 @@ public abstract partial class ClothingSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void AfterAutoHandleState(Entity<ClothingComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         _itemSys.VisualsChanged(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipDoAfter(Entity<ClothingComponent> ent, ref ClothingEquipDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target is not { } target)
@@ -123,6 +118,7 @@ public abstract partial class ClothingSystem : EntitySystem
         args.Handled = _invSystem.TryEquip(args.User, target, ent, args.Slot, clothing: ent.Comp, predicted: true, checkDoafter: false);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipDoAfter(Entity<ClothingComponent> ent, ref ClothingUnequipDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target is not { } target)
@@ -132,6 +128,7 @@ public abstract partial class ClothingSystem : EntitySystem
             _handsSystem.TryPickup(args.User, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemStripped(Entity<ClothingComponent> ent, ref BeforeItemStrippedEvent args)
     {
         args.Additive += ent.Comp.StripDelay;

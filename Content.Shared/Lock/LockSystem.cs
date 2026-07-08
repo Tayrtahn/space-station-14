@@ -40,29 +40,11 @@ public sealed partial class LockSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LockComponent, ComponentStartup>(OnStartup);
         SubscribeLocalEvent<LockComponent, ActivateInWorldEvent>(OnActivated, before: [typeof(ActivatableUISystem)]);
         SubscribeLocalEvent<LockComponent, UseInHandEvent>(OnUseInHand, before: [typeof(ActivatableUISystem)]);
-        SubscribeLocalEvent<LockComponent, StorageOpenAttemptEvent>(OnStorageOpenAttempt);
-        SubscribeLocalEvent<LockComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<LockComponent, GetVerbsEvent<AlternativeVerb>>(AddToggleLockVerb);
-        SubscribeLocalEvent<LockComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<LockComponent, LockDoAfter>(OnDoAfterLock);
-        SubscribeLocalEvent<LockComponent, UnlockDoAfter>(OnDoAfterUnlock);
-
-
-        SubscribeLocalEvent<LockedWiresPanelComponent, LockToggleAttemptEvent>(OnLockToggleAttempt);
-        SubscribeLocalEvent<LockedWiresPanelComponent, AttemptChangePanelEvent>(OnAttemptChangePanel);
-        SubscribeLocalEvent<LockedAnchorableComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-        SubscribeLocalEvent<LockedStorageComponent, StorageInteractAttemptEvent>(OnStorageInteractAttempt);
-
-        SubscribeLocalEvent<UIRequiresLockComponent, ActivatableUIOpenAttemptEvent>(OnUIOpenAttempt);
-        SubscribeLocalEvent<UIRequiresLockComponent, LockToggledEvent>(LockToggled);
-
-        SubscribeLocalEvent<ItemToggleRequiresLockComponent, ItemToggleActivateAttemptEvent>(OnActivateAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, LockComponent lockComp, ComponentStartup args)
     {
         _appearanceSystem.SetData(uid, LockVisuals.Locked, lockComp.Locked);
@@ -103,6 +85,7 @@ public sealed partial class LockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageOpenAttempt(EntityUid uid, LockComponent component, ref StorageOpenAttemptEvent args)
     {
         if (!component.Locked)
@@ -114,6 +97,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, LockComponent lockComp, ExaminedEvent args)
     {
         if (!lockComp.ShowExamine)
@@ -358,6 +342,7 @@ public sealed partial class LockSystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleLockVerb(EntityUid uid, LockComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract || !component.ShowLockVerbs)
@@ -377,6 +362,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, LockComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Access))
@@ -398,6 +384,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterLock(EntityUid uid, LockComponent component, LockDoAfter args)
     {
         if (args.Cancelled)
@@ -406,6 +393,7 @@ public sealed partial class LockSystem : EntitySystem
         TryLock(uid, args.User, skipDoAfter: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterUnlock(EntityUid uid, LockComponent component, UnlockDoAfter args)
     {
         if (args.Cancelled)
@@ -414,12 +402,14 @@ public sealed partial class LockSystem : EntitySystem
         TryUnlock(uid, args.User, skipDoAfter: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageInteractAttempt(Entity<LockedStorageComponent> ent, ref StorageInteractAttemptEvent args)
     {
         if (IsLocked(ent.Owner))
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggleAttempt(Entity<LockedWiresPanelComponent> ent, ref LockToggleAttemptEvent args)
     {
         if (args.Cancelled)
@@ -437,7 +427,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Cancelled = true;
     }
 
-
+    [SubscribeLocalEvent]
     private void OnAttemptChangePanel(Entity<LockedWiresPanelComponent> ent, ref AttemptChangePanelEvent args)
     {
         if (args.Cancelled)
@@ -453,6 +443,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(Entity<LockedAnchorableComponent> ent, ref UnanchorAttemptEvent args)
     {
         if (args.Cancelled)
@@ -468,6 +459,7 @@ public sealed partial class LockSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpenAttempt(EntityUid uid, UIRequiresLockComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled)
@@ -489,6 +481,7 @@ public sealed partial class LockSystem : EntitySystem
         _audio.PlayPredicted(component.AccessDeniedSound, uid, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void LockToggled(EntityUid uid, UIRequiresLockComponent component, LockToggledEvent args)
     {
         if (!TryComp<LockComponent>(uid, out var lockComp) || lockComp.Locked == component.RequireLocked)
@@ -506,6 +499,7 @@ public sealed partial class LockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateAttempt(EntityUid uid, ItemToggleRequiresLockComponent component, ref ItemToggleActivateAttemptEvent args)
     {
         if (args.Cancelled)

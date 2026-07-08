@@ -9,7 +9,6 @@ public sealed partial class RussianAccentSystem : EntitySystem
     [Dependency] private ReplacementAccentSystem _replacement = default!;
     public override void Initialize()
     {
-        SubscribeLocalEvent<RussianAccentComponent, AccentGetEvent>(OnAccent);
     }
 
     public string Accentuate(string message)
@@ -43,6 +42,7 @@ public sealed partial class RussianAccentSystem : EntitySystem
         return accentedMessage.ToString();
     }
 
+    [SubscribeLocalEvent]
     private void OnAccent(EntityUid uid, RussianAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message);

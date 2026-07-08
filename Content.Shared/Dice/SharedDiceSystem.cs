@@ -17,12 +17,9 @@ public abstract partial class SharedDiceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DiceComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<DiceComponent, LandEvent>(OnLand);
-        SubscribeLocalEvent<DiceComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<DiceComponent> entity, ref UseInHandEvent args)
     {
         if (args.Handled)
@@ -32,11 +29,13 @@ public abstract partial class SharedDiceSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnLand(Entity<DiceComponent> entity, ref LandEvent args)
     {
         Roll(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<DiceComponent> entity, ref ExaminedEvent args)
     {
         //No details check, since the sprite updates to show the side.

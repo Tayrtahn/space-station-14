@@ -24,12 +24,9 @@ public sealed partial class StorageSystem : SharedStorageSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StorageComponent, ComponentHandleState>(OnStorageHandleState);
-        SubscribeNetworkEvent<PickupAnimationEvent>(HandlePickupAnimation);
-        SubscribeAllEvent<AnimateInsertingEntitiesEvent>(HandleAnimatingInsertingEntities);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageHandleState(EntityUid uid, StorageComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not StorageComponentState state)
@@ -120,6 +117,7 @@ public sealed partial class StorageSystem : SharedStorageSystem
         PickupAnimation(uid, initialCoordinates, finalCoordinates, initialRotation);
     }
 
+    [SubscribeNetworkEvent]
     private void HandlePickupAnimation(PickupAnimationEvent msg)
     {
         PickupAnimation(GetEntity(msg.ItemUid), GetCoordinates(msg.InitialPosition), GetCoordinates(msg.FinalPosition), msg.InitialAngle);
@@ -146,6 +144,7 @@ public sealed partial class StorageSystem : SharedStorageSystem
     /// Animate the newly stored entities in <paramref name="msg"/> flying towards this storage's position
     /// </summary>
     /// <param name="msg"></param>
+    [SubscribeAllEvent]
     public void HandleAnimatingInsertingEntities(AnimateInsertingEntitiesEvent msg)
     {
         TryComp(GetEntity(msg.Storage), out TransformComponent? transformComp);

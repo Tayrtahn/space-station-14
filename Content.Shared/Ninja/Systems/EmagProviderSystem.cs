@@ -23,13 +23,12 @@ public sealed partial class EmagProviderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmagProviderComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
     }
 
     /// <summary>
     /// Emag clicked entities that are on the whitelist.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(Entity<EmagProviderComponent> ent, ref BeforeInteractHandEvent args)
     {
         // TODO: change this into a generic check event thing

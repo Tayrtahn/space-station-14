@@ -15,18 +15,16 @@ public sealed partial class ClockSystem : SharedClockSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStart);
-        SubscribeLocalEvent<GlobalTimeManagerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ClockComponent, BreakageEventArgs>(OnBreak);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStart(RoundStartingEvent ev)
     {
         var manager = Spawn();
         AddComp<GlobalTimeManagerComponent>(manager);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<GlobalTimeManagerComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.TimeOffset = TimeSpan.FromHours(_robustRandom.NextFloat(0, 24));
@@ -34,6 +32,7 @@ public sealed partial class ClockSystem : SharedClockSystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnBreak(Entity<ClockComponent> ent, ref BreakageEventArgs args)
     {
         ent.Comp.StuckTime = GetClockTime(ent);

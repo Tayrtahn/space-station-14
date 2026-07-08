@@ -22,16 +22,15 @@ public sealed partial class WoolySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WoolyComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<WoolyComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, WoolyComponent component, MapInitEvent args)
     {
         component.NextGrowth = _timing.CurTime + component.GrowthDelay;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<WoolyComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity was our contained solution

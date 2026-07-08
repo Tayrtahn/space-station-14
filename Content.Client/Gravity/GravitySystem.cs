@@ -12,13 +12,13 @@ public sealed partial class GravitySystem : SharedGravitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GravityGeneratorComponent, AppearanceChangeEvent>(OnAppearanceChange);
         InitializeShake();
     }
 
     /// <summary>
     /// Ensures that the visible state of gravity generators are synced with their sprites.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, GravityGeneratorComponent comp, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

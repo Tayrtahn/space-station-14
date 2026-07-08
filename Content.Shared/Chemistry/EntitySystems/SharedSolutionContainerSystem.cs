@@ -87,27 +87,15 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
 
         InitializeRelays();
         InitializeContainerManager();
-
-        SubscribeLocalEvent<SolutionComponent, ComponentGetState>(OnSolutionGetState);
-        SubscribeLocalEvent<SolutionComponent, ComponentHandleState>(OnSolutionHandleState);
-        SubscribeLocalEvent<SolutionComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<SolutionComponent, MapInitEvent>(OnSolutionInit);
-        SubscribeLocalEvent<SolutionComponent, ComponentShutdown>(OnSolutionShutdown);
-
-        SubscribeLocalEvent<ExaminableSolutionComponent, ExaminedEvent>(OnExamineSolution);
-        SubscribeLocalEvent<ExaminableSolutionComponent, GetVerbsEvent<ExamineVerb>>(OnSolutionExaminableVerb);
-
-        SubscribeLocalEvent<SolutionManagerComponent, MapInitEvent>(OnManagerInit);
-        SubscribeLocalEvent<SolutionManagerComponent, ComponentShutdown>(OnManagerShutdown);
-        SubscribeLocalEvent<SolutionManagerComponent, EntInsertedIntoContainerMessage>(OnSolutionAdded);
-        SubscribeLocalEvent<SolutionManagerComponent, EntRemovedFromContainerMessage>(OnSolutionRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionGetState(Entity<SolutionComponent> ent, ref ComponentGetState args)
     {
         args.State = new SolutionComponentState(ent.Comp.Id, ent.Comp.Solution);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionHandleState(Entity<SolutionComponent> ent, ref ComponentHandleState args)
     {
         if (args.Current is not SolutionComponentState cast)
@@ -861,16 +849,19 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
 
     #region Event Handlers
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<SolutionComponent> entity, ref ComponentInit args)
     {
         entity.Comp.Solution.ValidateSolution();
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionInit(Entity<SolutionComponent> entity, ref MapInitEvent args)
     {
         UpdateChemicals(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionShutdown(Entity<SolutionComponent> entity, ref ComponentShutdown args)
     {
         // If we are contained within another entity, update that entity. Otherwise, don't update if we're being deleted.
@@ -881,6 +872,7 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
     /// <summary>
     ///     Shift click examine.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamineSolution(Entity<ExaminableSolutionComponent> entity, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange ||
@@ -988,6 +980,7 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
     /// <summary>
     ///     Full reagent scan, such as with chemical analysis goggles.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSolutionExaminableVerb(Entity<ExaminableSolutionComponent> entity, ref GetVerbsEvent<ExamineVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess)
@@ -1075,6 +1068,7 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnManagerInit(Entity<SolutionManagerComponent> entity, ref MapInitEvent args)
     {
         InitializeManager(entity);
@@ -1095,12 +1089,14 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
         entity.Comp.SolutionEnts = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnManagerShutdown(Entity<SolutionManagerComponent> entity, ref ComponentShutdown args)
     {
         if (ContainerSystem.TryGetContainer(entity, entity.Comp.Container, out var solutionContainer))
             ContainerSystem.ShutdownContainer(solutionContainer);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionAdded(Entity<SolutionManagerComponent> entity, ref EntInsertedIntoContainerMessage args)
     {
         // Container networking boilerplate
@@ -1122,6 +1118,7 @@ public abstract partial class SharedSolutionContainerSystem : EntitySystem
         entity.Comp.Solutions[solution.Id] = (args.Entity, solution);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionRemoved(Entity<SolutionManagerComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // Container networking jank

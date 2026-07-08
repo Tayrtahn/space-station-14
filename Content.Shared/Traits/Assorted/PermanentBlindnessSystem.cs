@@ -15,11 +15,9 @@ public sealed partial class PermanentBlindnessSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PermanentBlindnessComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<PermanentBlindnessComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<PermanentBlindnessComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<PermanentBlindnessComponent> blindness, ref ExaminedEvent args)
     {
         if (args.IsInDetailsRange && blindness.Comp.Blindness == 0)
@@ -28,6 +26,7 @@ public sealed partial class PermanentBlindnessSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<PermanentBlindnessComponent> blindness, ref ComponentShutdown args)
     {
         if (!TryComp<BlindableComponent>(blindness.Owner, out var blindable))
@@ -44,6 +43,7 @@ public sealed partial class PermanentBlindnessSystem : EntitySystem
         _blinding.AdjustEyeDamage((blindness.Owner, blindable), -blindable.EyeDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<PermanentBlindnessComponent> blindness, ref MapInitEvent args)
     {
         if (!TryComp<BlindableComponent>(blindness.Owner, out var blindable))

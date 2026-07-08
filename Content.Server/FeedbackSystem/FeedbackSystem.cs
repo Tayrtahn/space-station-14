@@ -13,9 +13,9 @@ public sealed partial class FeedbackSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RoundEndMessageEvent>(OnRoundEnd);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEnd(RoundEndMessageEvent args)
     {
         var validPopups = new List<ProtoId<FeedbackPopupPrototype>>();

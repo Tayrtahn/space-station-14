@@ -12,10 +12,9 @@ public sealed partial class DamagePopupSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamagePopupComponent, DamageChangedEvent>(OnDamageChange);
-        SubscribeLocalEvent<DamagePopupComponent, InteractHandEvent>(OnInteractHand);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChange(Entity<DamagePopupComponent> ent, ref DamageChangedEvent args)
     {
         if (args.DamageDelta != null)
@@ -37,6 +36,7 @@ public sealed partial class DamagePopupSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<DamagePopupComponent> ent, ref InteractHandEvent args)
     {
         if (ent.Comp.AllowTypeChange)

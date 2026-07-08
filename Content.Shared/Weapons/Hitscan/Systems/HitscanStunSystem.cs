@@ -11,10 +11,9 @@ public sealed partial class HitscanStunSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HitscanStaminaDamageComponent, HitscanRaycastFiredEvent>(OnHitscanHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitscanHit(Entity<HitscanStaminaDamageComponent> hitscan, ref HitscanRaycastFiredEvent args)
     {
         if (args.Data.HitEntity == null)

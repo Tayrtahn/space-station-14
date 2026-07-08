@@ -48,12 +48,6 @@ namespace Content.Client.Examine
 
             UpdatesOutsidePrediction = true;
 
-            SubscribeLocalEvent<GetVerbsEvent<ExamineVerb>>(AddExamineVerb);
-
-            SubscribeNetworkEvent<ExamineSystemMessages.ExamineInfoResponseMessage>(OnExamineInfoResponse);
-
-            SubscribeLocalEvent<ItemComponent, DroppedEvent>(OnExaminedItemDropped);
-
             CommandBinds.Builder
                 .Bind(ContentKeyFunctions.ExamineEntity, new PointerInputCmdHandler(HandleExamine, outsidePrediction: true))
                 .Register<ExamineSystem>();
@@ -61,6 +55,7 @@ namespace Content.Client.Examine
             _idCounter = 0;
         }
 
+        [SubscribeLocalEvent]
         private void OnExaminedItemDropped(EntityUid item, ItemComponent comp, DroppedEvent args)
         {
             if (!args.User.Valid)
@@ -125,6 +120,7 @@ namespace Content.Client.Examine
             return true;
         }
 
+        [SubscribeLocalEvent]
         private void AddExamineVerb(GetVerbsEvent<ExamineVerb> args)
         {
             if (!CanExamine(args.User, args.Target))
@@ -143,6 +139,7 @@ namespace Content.Client.Examine
             args.Verbs.Add(verb);
         }
 
+        [SubscribeNetworkEvent]
         private void OnExamineInfoResponse(ExamineSystemMessages.ExamineInfoResponseMessage ev)
         {
             var player = _playerManager.LocalEntity;

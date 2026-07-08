@@ -37,12 +37,9 @@ public abstract partial class SharedFlatpackSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<FlatpackComponent, InteractUsingEvent>(OnFlatpackInteractUsing);
-        SubscribeLocalEvent<FlatpackComponent, ExaminedEvent>(OnFlatpackExamined);
-
-        SubscribeLocalEvent<FlatpackCreatorComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<FlatpackCreatorComponent> ent, ref ItemSlotInsertAttemptEvent args)
     {
         if (args.Slot.ID != ent.Comp.SlotId || args.Cancelled)
@@ -57,6 +54,7 @@ public abstract partial class SharedFlatpackSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnFlatpackInteractUsing(Entity<FlatpackComponent> ent, ref InteractUsingEvent args)
     {
         var (uid, comp) = ent;
@@ -106,6 +104,7 @@ public abstract partial class SharedFlatpackSystem : EntitySystem
         _audio.PlayPredicted(comp.UnpackSound, args.Used, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnFlatpackExamined(Entity<FlatpackComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

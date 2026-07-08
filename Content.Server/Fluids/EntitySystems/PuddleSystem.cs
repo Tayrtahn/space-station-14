@@ -46,12 +46,10 @@ public sealed partial class PuddleSystem : SharedPuddleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PuddleComponent, SpreadNeighborsEvent>(OnPuddleSpread);
-        SubscribeLocalEvent<PuddleComponent, SlipEvent>(OnPuddleSlip);
     }
 
     // TODO: This can be predicted once https://github.com/space-wizards/RobustToolbox/pull/5849 is merged
+    [SubscribeLocalEvent]
     private void OnPuddleSpread(Entity<PuddleComponent> entity, ref SpreadNeighborsEvent args)
     {
         // Overflow is the source of the overflowing liquid. This contains the excess fluid above overflow limit (20u)
@@ -239,6 +237,7 @@ public sealed partial class PuddleSystem : SharedPuddleSystem
     }
 
     // TODO: This can be predicted once https://github.com/space-wizards/RobustToolbox/pull/5849 is merged
+    [SubscribeLocalEvent]
     private void OnPuddleSlip(Entity<PuddleComponent> entity, ref SlipEvent args)
     {
         // Reactive entities have a chance to get a touch reaction from slipping on a puddle

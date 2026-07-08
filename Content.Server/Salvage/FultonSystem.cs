@@ -16,16 +16,16 @@ public sealed partial class FultonSystem : SharedFultonSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FultonedComponent, ComponentStartup>(OnFultonedStartup);
-        SubscribeLocalEvent<FultonedComponent, ComponentShutdown>(OnFultonedShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonedShutdown(EntityUid uid, FultonedComponent component, ComponentShutdown args)
     {
         Del(component.Effect);
         component.Effect = EntityUid.Invalid;
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonedStartup(EntityUid uid, FultonedComponent component, ComponentStartup args)
     {
         if (Exists(component.Effect))

@@ -11,8 +11,6 @@ namespace Content.Shared.Examine
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GroupExamineComponent, GetVerbsEvent<ExamineVerb>>(OnGroupExamineVerb);
         }
 
         /// <summary>
@@ -20,6 +18,7 @@ namespace Content.Shared.Examine
         ///     This checks if any of the ExamineGroups are relevant (has 1 or more of the relevant components on the entity)
         ///     and if so, creates an ExamineVerb details button for the ExamineGroup.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnGroupExamineVerb(EntityUid uid, GroupExamineComponent component, GetVerbsEvent<ExamineVerb> args)
         {
             foreach (var group in component.Group)

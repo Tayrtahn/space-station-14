@@ -160,6 +160,7 @@ public sealed partial class ResearchSystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDatabaseRegistrationChanged(EntityUid uid, TechnologyDatabaseComponent component, ref ResearchRegistrationChangedEvent args)
     {
         if (args.Server != null)

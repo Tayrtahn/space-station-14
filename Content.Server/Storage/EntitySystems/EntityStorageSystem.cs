@@ -19,14 +19,9 @@ public sealed partial class EntityStorageSystem : SharedEntityStorageSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EntityStorageComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<InsideEntityStorageComponent, InhaleLocationEvent>(OnInsideInhale);
-        SubscribeLocalEvent<InsideEntityStorageComponent, ExhaleLocationEvent>(OnInsideExhale);
-        SubscribeLocalEvent<InsideEntityStorageComponent, AtmosExposedGetAirEvent>(OnInsideExposed);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, EntityStorageComponent component, MapInitEvent args)
     {
         if (!component.Open && component.Air.TotalMoles == 0)
@@ -86,6 +81,7 @@ public sealed partial class EntityStorageSystem : SharedEntityStorageSystem
 
     #region Gas mix event handlers
 
+    [SubscribeLocalEvent]
     private void OnInsideInhale(EntityUid uid, InsideEntityStorageComponent component, InhaleLocationEvent args)
     {
         if (TryComp<EntityStorageComponent>(component.Storage, out var storage) && storage.Airtight)
@@ -94,6 +90,7 @@ public sealed partial class EntityStorageSystem : SharedEntityStorageSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInsideExhale(EntityUid uid, InsideEntityStorageComponent component, ExhaleLocationEvent args)
     {
         if (TryComp<EntityStorageComponent>(component.Storage, out var storage) && storage.Airtight)
@@ -102,6 +99,7 @@ public sealed partial class EntityStorageSystem : SharedEntityStorageSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInsideExposed(EntityUid uid, InsideEntityStorageComponent component, ref AtmosExposedGetAirEvent args)
     {
         if (args.Handled)

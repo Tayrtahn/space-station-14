@@ -16,17 +16,16 @@ public sealed partial class CuffableSystem : SharedCuffableSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CuffableComponent, ComponentShutdown>(OnCuffableShutdown);
-        SubscribeLocalEvent<CuffableComponent, ComponentHandleState>(OnCuffableHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnCuffableShutdown(EntityUid uid, CuffableComponent component, ComponentShutdown args)
     {
         if (TryComp<SpriteComponent>(uid, out var sprite))
             _sprite.LayerSetVisible((uid, sprite), HumanoidVisualLayers.Handcuffs, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnCuffableHandleState(EntityUid uid, CuffableComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not CuffableComponentState cuffState)

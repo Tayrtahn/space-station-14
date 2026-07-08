@@ -39,9 +39,6 @@ namespace Content.Server.DeviceNetwork.Systems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<DeviceNetworkComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<DeviceNetworkComponent, ComponentShutdown>(OnNetworkShutdown);
-            SubscribeLocalEvent<DeviceNetworkComponent, ExaminedEvent>(OnExamine);
 
             _activeQueue = _queueA;
             _nextQueue = _queueB;
@@ -90,6 +87,7 @@ namespace Content.Server.DeviceNetwork.Systems
             _activeQueue = _activeQueue == _queueA ? _queueB : _queueA;
         }
 
+        [SubscribeLocalEvent]
         private void OnExamine(EntityUid uid, DeviceNetworkComponent device, ExaminedEvent args)
         {
             if (device.ExaminableAddress)
@@ -101,6 +99,7 @@ namespace Content.Server.DeviceNetwork.Systems
         /// <summary>
         /// Automatically attempt to connect some devices when a map starts.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, DeviceNetworkComponent device, MapInitEvent args)
         {
             if (device.ReceiveFrequency == null
@@ -133,6 +132,7 @@ namespace Content.Server.DeviceNetwork.Systems
         /// <summary>
         /// Automatically disconnect when an entity with a DeviceNetworkComponent shuts down.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnNetworkShutdown(EntityUid uid, DeviceNetworkComponent component, ComponentShutdown args)
         {
             foreach (var list in component.DeviceLists)

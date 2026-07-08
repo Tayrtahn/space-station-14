@@ -26,11 +26,6 @@ public abstract partial class SharedNinjaGlovesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NinjaGlovesComponent, ToggleClothingCheckEvent>(OnToggleCheck);
-        SubscribeLocalEvent<NinjaGlovesComponent, ItemToggleActivateAttemptEvent>(OnActivateAttempt);
-        SubscribeLocalEvent<NinjaGlovesComponent, ItemToggledEvent>(OnToggled);
-        SubscribeLocalEvent<NinjaGlovesComponent, ExaminedEvent>(OnExamined);
     }
 
     /// <summary>
@@ -56,6 +51,7 @@ public abstract partial class SharedNinjaGlovesSystem : EntitySystem
     /// <summary>
     /// Adds the toggle action when equipped by a ninja only.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnToggleCheck(Entity<NinjaGlovesComponent> ent, ref ToggleClothingCheckEvent args)
     {
         if (!_ninja.IsNinja(args.User))
@@ -65,6 +61,7 @@ public abstract partial class SharedNinjaGlovesSystem : EntitySystem
     /// <summary>
     /// Show if the gloves are enabled when examining.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<NinjaGlovesComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -74,6 +71,7 @@ public abstract partial class SharedNinjaGlovesSystem : EntitySystem
         args.PushText(Loc.GetString($"ninja-gloves-examine-{on}"));
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateAttempt(Entity<NinjaGlovesComponent> ent, ref ItemToggleActivateAttemptEvent args)
     {
         if (args.User is not {} user
@@ -87,6 +85,7 @@ public abstract partial class SharedNinjaGlovesSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<NinjaGlovesComponent> ent, ref ItemToggledEvent args)
     {
         if ((args.User ?? ent.Comp.User) is not {} user)

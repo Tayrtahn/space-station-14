@@ -22,12 +22,9 @@ public sealed partial class ActionOnInteractSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActionOnInteractComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<ActionOnInteractComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<ActionOnInteractComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ActionOnInteractComponent component, MapInitEvent args)
     {
         if (component.Actions == null)
@@ -40,6 +37,7 @@ public sealed partial class ActionOnInteractSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, ActionOnInteractComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -67,6 +65,7 @@ public sealed partial class ActionOnInteractSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, ActionOnInteractComponent component, AfterInteractEvent args)
     {
         if (args.Handled)

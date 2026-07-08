@@ -20,11 +20,9 @@ public sealed partial class PettableFriendSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PettableFriendComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<PettableFriendComponent, GotRehydratedEvent>(OnRehydrated);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<PettableFriendComponent> ent, ref UseInHandEvent args)
     {
         var (uid, comp) = ent;
@@ -48,6 +46,7 @@ public sealed partial class PettableFriendSystem : EntitySystem
         _popup.PopupClient(Loc.GetString(comp.FailureString, ("target", uid)), user, user);
     }
 
+    [SubscribeLocalEvent]
     private void OnRehydrated(Entity<PettableFriendComponent> ent, ref GotRehydratedEvent args)
     {
         // can only pet before hydrating, after that the fish cannot be negotiated with

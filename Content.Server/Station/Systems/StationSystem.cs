@@ -44,24 +44,16 @@ public sealed partial class StationSystem : SharedStationSystem
 
         _sawmill = LogManager.GetSawmill("station");
 
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(OnRoundEnd);
-        SubscribeLocalEvent<PostGameMapLoad>(OnPostGameMapLoad);
-        SubscribeLocalEvent<StationDataComponent, ComponentStartup>(OnStationAdd);
-        SubscribeLocalEvent<StationDataComponent, ComponentShutdown>(OnStationDeleted);
-        SubscribeLocalEvent<StationMemberComponent, ComponentShutdown>(OnStationGridDeleted);
-        SubscribeLocalEvent<StationMemberComponent, PostGridSplitEvent>(OnStationSplitEvent);
-
-        SubscribeLocalEvent<StationGridAddedEvent>(OnStationGridAdded);
-        SubscribeLocalEvent<StationGridRemovedEvent>(OnStationGridRemoved);
-
         _player.PlayerStatusChanged += OnPlayerStatusChanged;
     }
 
+    [SubscribeLocalEvent]
     private void OnStationSplitEvent(EntityUid uid, StationMemberComponent component, ref PostGridSplitEvent args)
     {
         AddGridToStation(component.Station, args.Grid); // Add the new grid as a member.
     }
 
+    [SubscribeLocalEvent]
     private void OnStationGridDeleted(EntityUid uid, StationMemberComponent component, ComponentShutdown args)
     {
         if (!TryComp<StationDataComponent>(component.Station, out var stationData))
@@ -99,6 +91,7 @@ public sealed partial class StationSystem : SharedStationSystem
 
     #region Event handlers
 
+    [SubscribeLocalEvent]
     private void OnStationAdd(EntityUid uid, StationDataComponent component, ComponentStartup args)
     {
         RaiseNetworkEvent(new StationsUpdatedEvent(GetStationNames()), Filter.Broadcast());
@@ -109,6 +102,7 @@ public sealed partial class StationSystem : SharedStationSystem
         _pvsOverride.AddGlobalOverride(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationDeleted(EntityUid uid, StationDataComponent component, ComponentShutdown args)
     {
         foreach (var grid in component.Grids)
@@ -122,6 +116,7 @@ public sealed partial class StationSystem : SharedStationSystem
         RaiseNetworkEvent(new StationsUpdatedEvent(GetStationNames()), Filter.Broadcast());
     }
 
+    [SubscribeLocalEvent]
     private void OnPostGameMapLoad(PostGameMapLoad ev)
     {
         var dict = new Dictionary<string, List<EntityUid>>();
@@ -157,6 +152,7 @@ public sealed partial class StationSystem : SharedStationSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEnd(GameRunLevelChangedEvent eventArgs)
     {
         if (eventArgs.New != GameRunLevel.PreRoundLobby)
@@ -169,12 +165,14 @@ public sealed partial class StationSystem : SharedStationSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStationGridAdded(StationGridAddedEvent ev)
     {
         // When a grid is added to a station, update all trackers on that grid
         UpdateTrackersOnGrid(ev.GridId, ev.Station);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationGridRemoved(StationGridRemovedEvent ev)
     {
         // When a grid is removed from a station, update all trackers on that grid to null

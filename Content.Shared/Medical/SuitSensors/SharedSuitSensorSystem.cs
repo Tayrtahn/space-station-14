@@ -47,18 +47,6 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SuitSensorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawn);
-        SubscribeLocalEvent<SuitSensorComponent, ClothingGotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<SuitSensorComponent, ClothingGotUnequippedEvent>(OnUnequipped);
-        SubscribeLocalEvent<SuitSensorComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<SuitSensorComponent, EmpDisabledRemovedEvent>(OnEmpFinished);
-        SubscribeLocalEvent<SuitSensorComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<SuitSensorComponent, GetVerbsEvent<Verb>>(OnVerb);
-        SubscribeLocalEvent<SuitSensorComponent, EntGotInsertedIntoContainerMessage>(OnInsert);
-        SubscribeLocalEvent<SuitSensorComponent, EntGotRemovedFromContainerMessage>(OnRemove);
-        SubscribeLocalEvent<SuitSensorComponent, SuitSensorChangeDoAfterEvent>(OnSuitSensorDoAfter);
     }
 
     /// <summary>
@@ -76,6 +64,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         return sensor.Comp.StationId.HasValue;
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SuitSensorComponent> ent, ref MapInitEvent args)
     {
         // Fallback
@@ -99,6 +88,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerSpawn(PlayerSpawnCompleteEvent ev)
     {
         // If the player spawns in arrivals then the grid underneath them may not be appropriate.
@@ -124,18 +114,21 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<SuitSensorComponent> ent, ref ClothingGotEquippedEvent args)
     {
         ent.Comp.User = args.Wearer;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<SuitSensorComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         ent.Comp.User = null;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(Entity<SuitSensorComponent> ent, ref EmpPulseEvent args)
     {
         args.Affected = true;
@@ -149,6 +142,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         // SetSensor already calls Dirty
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpFinished(Entity<SuitSensorComponent> ent, ref EmpDisabledRemovedEvent args)
     {
         SetSensor(ent.AsNullable(), ent.Comp.PreviousMode, null);
@@ -162,6 +156,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
     /// <param name="args"><see cref="ExaminedEvent"/> arguments,
     /// used to determine range and retrieve the active mode.</param>
     /// <exception cref="InvalidOperationException">Invalid mode was provided.</exception>
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<SuitSensorComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -179,6 +174,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         args.PushMarkup(Loc.GetString(locId));
     }
 
+    [SubscribeLocalEvent]
     private void OnVerb(Entity<SuitSensorComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         // check if user can change sensor
@@ -205,6 +201,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnInsert(Entity<SuitSensorComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.ActivationContainer)
@@ -214,6 +211,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<SuitSensorComponent> ent, ref EntGotRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.ActivationContainer)
@@ -309,6 +307,7 @@ public abstract partial class SharedSuitSensorSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSuitSensorDoAfter(Entity<SuitSensorComponent> sensors, ref SuitSensorChangeDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)

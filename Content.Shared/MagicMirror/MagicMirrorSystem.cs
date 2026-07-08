@@ -31,20 +31,12 @@ public sealed partial class MagicMirrorSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<MagicMirrorComponent, AfterInteractEvent>(OnMagicMirrorInteract);
-        SubscribeLocalEvent<MagicMirrorComponent, BeforeActivatableUIOpenEvent>(OnBeforeUIOpen);
-        SubscribeLocalEvent<MagicMirrorComponent, ActivatableUIOpenAttemptEvent>(OnAttemptOpenUI);
-
         Subs.BuiEvents<MagicMirrorComponent>(MagicMirrorUiKey.Key,
             subs =>
             {
                 subs.Event<BoundUIClosedEvent>(OnUiClosed);
                 subs.Event<MagicMirrorSelectMessage>(OnMagicMirrorSelect);
             });
-
-        SubscribeLocalEvent<MagicMirrorComponent, MagicMirrorSelectDoAfterEvent>(OnSelectSlotDoAfter);
-
-        SubscribeLocalEvent<MagicMirrorComponent, BoundUserInterfaceCheckRangeEvent>(OnMirrorRangeCheck);
     }
 
 
@@ -103,6 +95,7 @@ public sealed partial class MagicMirrorSystem : EntitySystem
         ent.Comp.DoAfter = doAfterId?.Index;
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectSlotDoAfter(Entity<MagicMirrorComponent> ent, ref MagicMirrorSelectDoAfterEvent args)
     {
         ent.Comp.DoAfter = null;
@@ -140,6 +133,7 @@ public sealed partial class MagicMirrorSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMagicMirrorInteract(Entity<MagicMirrorComponent> mirror, ref AfterInteractEvent args)
     {
         if (!args.CanReach || args.Target == null)
@@ -152,6 +146,7 @@ public sealed partial class MagicMirrorSystem : EntitySystem
         _userInterface.TryOpenUi(mirror.Owner, MagicMirrorUiKey.Key, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnMirrorRangeCheck(EntityUid uid, MagicMirrorComponent component, ref BoundUserInterfaceCheckRangeEvent args)
     {
         if (args.Result == BoundUserInterfaceRangeResult.Fail)
@@ -168,6 +163,7 @@ public sealed partial class MagicMirrorSystem : EntitySystem
             args.Result = BoundUserInterfaceRangeResult.Fail;
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptOpenUI(EntityUid uid, MagicMirrorComponent component, ref ActivatableUIOpenAttemptEvent args)
     {
         var user = component.Target ?? args.User;
@@ -176,6 +172,7 @@ public sealed partial class MagicMirrorSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeUIOpen(Entity<MagicMirrorComponent> ent, ref BeforeActivatableUIOpenEvent args)
     {
         UpdateInterface(ent, args.User);

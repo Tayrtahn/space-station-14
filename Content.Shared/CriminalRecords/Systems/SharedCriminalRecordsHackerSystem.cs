@@ -14,10 +14,9 @@ public abstract partial class SharedCriminalRecordsHackerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CriminalRecordsHackerComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(Entity<CriminalRecordsHackerComponent> ent, ref BeforeInteractHandEvent args)
     {
         // TODO: generic event

@@ -6,15 +6,14 @@ using Robust.Shared.Random;
 
 namespace Content.Shared.Weapons.Hitscan.Systems;
 
-public sealed class HitscanReflectSystem : EntitySystem
+public sealed partial class HitscanReflectSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HitscanReflectComponent, AttemptHitscanRaycastFiredEvent>(OnHitscanHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitscanHit(Entity<HitscanReflectComponent> hitscan, ref AttemptHitscanRaycastFiredEvent args)
     {
         var data = args.Data;

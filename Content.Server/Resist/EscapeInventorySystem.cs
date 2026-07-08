@@ -23,12 +23,9 @@ public sealed partial class EscapeInventorySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CanEscapeInventoryComponent, MoveInputEvent>(OnRelayMovement);
-        SubscribeLocalEvent<CanEscapeInventoryComponent, EscapeInventoryEvent>(OnEscape);
-        SubscribeLocalEvent<CanEscapeInventoryComponent, DroppedEvent>(OnDropped);
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayMovement(EntityUid uid, CanEscapeInventoryComponent component, ref MoveInputEvent args)
     {
         if (!args.HasDirectionalMovement)
@@ -75,6 +72,7 @@ public sealed partial class EscapeInventorySystem : EntitySystem
         _popupSystem.PopupEntity(Loc.GetString("escape-inventory-component-start-resisting-target"), container, container);
     }
 
+    [SubscribeLocalEvent]
     private void OnEscape(EntityUid uid, CanEscapeInventoryComponent component, EscapeInventoryEvent args)
     {
         component.DoAfter = null;
@@ -86,6 +84,7 @@ public sealed partial class EscapeInventorySystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDropped(EntityUid uid, CanEscapeInventoryComponent component, DroppedEvent args)
     {
         if (component.DoAfter != null)

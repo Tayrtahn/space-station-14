@@ -30,19 +30,9 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
     {
 
         UpdatesBefore.Add(typeof(PowerNetSystem));
-
-        SubscribeLocalEvent<FuelGeneratorComponent, PortableGeneratorSetTargetPowerMessage>(OnTargetPowerSet);
-        SubscribeLocalEvent<FuelGeneratorComponent, PortableGeneratorEjectFuelMessage>(OnEjectFuel);
-        SubscribeLocalEvent<FuelGeneratorComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<SolidFuelGeneratorAdapterComponent, GeneratorGetFuelEvent>(SolidGetFuel);
-        SubscribeLocalEvent<SolidFuelGeneratorAdapterComponent, GeneratorUseFuel>(SolidUseFuel);
-        SubscribeLocalEvent<SolidFuelGeneratorAdapterComponent, GeneratorEmpty>(SolidEmpty);
-        SubscribeLocalEvent<ChemicalFuelGeneratorAdapterComponent, GeneratorGetFuelEvent>(ChemicalGetFuel);
-        SubscribeLocalEvent<ChemicalFuelGeneratorAdapterComponent, GeneratorUseFuel>(ChemicalUseFuel);
-        SubscribeLocalEvent<ChemicalFuelGeneratorAdapterComponent, GeneratorGetCloggedEvent>(ChemicalGetClogged);
-        SubscribeLocalEvent<ChemicalFuelGeneratorAdapterComponent, GeneratorEmpty>(ChemicalEmpty);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(EntityUid uid, FuelGeneratorComponent component, ref AnchorStateChangedEvent args)
     {
         // Turn off generator if unanchored while running.
@@ -53,16 +43,19 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         SetFuelGeneratorOn(uid, false, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEjectFuel(EntityUid uid, FuelGeneratorComponent component, PortableGeneratorEjectFuelMessage args)
     {
         EmptyGenerator(uid);
     }
 
+    [SubscribeLocalEvent]
     private void SolidEmpty(EntityUid uid, SolidFuelGeneratorAdapterComponent component, GeneratorEmpty args)
     {
         _materialStorage.EjectAllMaterial(uid);
     }
 
+    [SubscribeLocalEvent]
     private void ChemicalEmpty(Entity<ChemicalFuelGeneratorAdapterComponent> entity, ref GeneratorEmpty args)
     {
         if (!_solutionContainer.ResolveSolution(entity.Owner, entity.Comp.SolutionName, ref entity.Comp.Solution, out var solution))
@@ -72,6 +65,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         _puddle.TrySpillAt(entity.Owner, spillSolution, out _);
     }
 
+    [SubscribeLocalEvent]
     private void ChemicalGetClogged(Entity<ChemicalFuelGeneratorAdapterComponent> entity, ref GeneratorGetCloggedEvent args)
     {
         if (!_solutionContainer.ResolveSolution(entity.Owner, entity.Comp.SolutionName, ref entity.Comp.Solution, out var solution))
@@ -87,6 +81,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void ChemicalUseFuel(Entity<ChemicalFuelGeneratorAdapterComponent> entity, ref GeneratorUseFuel args)
     {
         if (!_solutionContainer.ResolveSolution(entity.Owner, entity.Comp.SolutionName, ref entity.Comp.Solution, out var solution))
@@ -120,6 +115,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void ChemicalGetFuel(Entity<ChemicalFuelGeneratorAdapterComponent> entity, ref GeneratorGetFuelEvent args)
     {
         if (!_solutionContainer.ResolveSolution(entity.Owner, entity.Comp.SolutionName, ref entity.Comp.Solution, out var solution))
@@ -137,6 +133,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         args.Fuel = fuel;
     }
 
+    [SubscribeLocalEvent]
     private void SolidUseFuel(EntityUid uid, SolidFuelGeneratorAdapterComponent component, GeneratorUseFuel args)
     {
         var availableMaterial = _materialStorage.GetMaterialAmount(uid, component.FuelMaterial);
@@ -167,6 +164,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         return toRemove;
     }
 
+    [SubscribeLocalEvent]
     private void SolidGetFuel(
         EntityUid uid,
         SolidFuelGeneratorAdapterComponent component,
@@ -176,6 +174,7 @@ public sealed partial class GeneratorSystem : SharedGeneratorSystem
         args.Fuel = material * component.Multiplier;
     }
 
+    [SubscribeLocalEvent]
     private void OnTargetPowerSet(EntityUid uid, FuelGeneratorComponent component,
         PortableGeneratorSetTargetPowerMessage args)
     {

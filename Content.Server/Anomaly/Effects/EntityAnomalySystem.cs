@@ -16,13 +16,9 @@ public sealed partial class EntityAnomalySystem : SharedEntityAnomalySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<EntitySpawnAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<EntitySpawnAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
-        SubscribeLocalEvent<EntitySpawnAnomalyComponent, AnomalyStabilityChangedEvent>(OnStabilityChanged);
-        SubscribeLocalEvent<EntitySpawnAnomalyComponent, AnomalySeverityChangedEvent>(OnSeverityChanged);
-        SubscribeLocalEvent<EntitySpawnAnomalyComponent, AnomalyShutdownEvent>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<EntitySpawnAnomalyComponent> component, ref AnomalyPulseEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -34,6 +30,7 @@ public sealed partial class EntityAnomalySystem : SharedEntityAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(Entity<EntitySpawnAnomalyComponent> component, ref AnomalySupercriticalEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -45,6 +42,7 @@ public sealed partial class EntityAnomalySystem : SharedEntityAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<EntitySpawnAnomalyComponent> component, ref AnomalyShutdownEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -56,6 +54,7 @@ public sealed partial class EntityAnomalySystem : SharedEntityAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStabilityChanged(Entity<EntitySpawnAnomalyComponent> component, ref AnomalyStabilityChangedEvent args)
     {
         foreach (var entry in component.Comp.Entries)
@@ -67,6 +66,7 @@ public sealed partial class EntityAnomalySystem : SharedEntityAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSeverityChanged(Entity<EntitySpawnAnomalyComponent> component, ref AnomalySeverityChangedEvent args)
     {
         foreach (var entry in component.Comp.Entries)

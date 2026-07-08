@@ -48,7 +48,6 @@ namespace Content.Shared.Chemistry.Reaction
             base.Initialize();
 
             InitializeReactionCache();
-            SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
         }
 
         /// <summary>
@@ -83,6 +82,7 @@ namespace Content.Shared.Chemistry.Reaction
         ///     Updates the reaction cache when the prototypes are reloaded.
         /// </summary>
         /// <param name="eventArgs">The set of modified prototypes.</param>
+        [SubscribeLocalEvent]
         private void OnPrototypesReloaded(PrototypesReloadedEventArgs eventArgs)
         {
             if (eventArgs.WasModified<ReactionPrototype>())

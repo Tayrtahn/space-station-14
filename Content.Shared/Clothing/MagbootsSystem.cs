@@ -21,25 +21,22 @@ public sealed partial class SharedMagbootsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MagbootsComponent, ItemToggledEvent>(OnToggled);
-        SubscribeLocalEvent<MagbootsComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<MagbootsComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<MagbootsComponent, IsWeightlessEvent>(OnIsWeightless);
-        SubscribeLocalEvent<MagbootsComponent, InventoryRelayedEvent<IsWeightlessEvent>>(OnIsWeightless);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<MagbootsComponent> ent, ref ItemToggledEvent args)
     {
         if (_container.TryGetContainingContainer((ent.Owner, null, null), out var container))
             UpdateMagbootEffects(container.Owner, ent, args.Activated);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<MagbootsComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         UpdateMagbootEffects(args.Wearer, ent, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<MagbootsComponent> ent, ref ClothingGotEquippedEvent args)
     {
         UpdateMagbootEffects(args.Wearer, ent, _toggle.IsActivated(ent.Owner));
@@ -59,6 +56,7 @@ public sealed partial class SharedMagbootsSystem : EntitySystem
             _alerts.ClearAlert(user, ent.Comp.MagbootsAlert);
     }
 
+    [SubscribeLocalEvent]
     private void OnIsWeightless(Entity<MagbootsComponent> ent, ref IsWeightlessEvent args)
     {
         if (args.Handled || !_toggle.IsActivated(ent.Owner))
@@ -72,6 +70,7 @@ public sealed partial class SharedMagbootsSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnIsWeightless(Entity<MagbootsComponent> ent, ref InventoryRelayedEvent<IsWeightlessEvent> args)
     {
         OnIsWeightless(ent, ref args.Args);

@@ -16,8 +16,6 @@ public sealed partial class XATTimerSystem : BaseQueryUpdateXATSystem<XATTimerCo
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<XATTimerComponent, MapInitEvent>(OnMapInit);
         XATSubscribeDirectEvent<ExaminedEvent>(OnExamine);
     }
 
@@ -43,6 +41,7 @@ public sealed partial class XATTimerSystem : BaseQueryUpdateXATSystem<XATTimerCo
             Trigger(artifact, node);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<XATTimerComponent> ent, ref MapInitEvent args)
     {
         var delay = GetNextDelay(ent);

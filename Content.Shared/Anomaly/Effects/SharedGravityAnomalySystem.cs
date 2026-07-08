@@ -22,10 +22,9 @@ public abstract partial class SharedGravityAnomalySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GravityAnomalyComponent, AnomalyPulseEvent>(OnAnomalyPulse);
-        SubscribeLocalEvent<GravityAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyPulse(EntityUid uid, GravityAnomalyComponent component, ref AnomalyPulseEvent args)
     {
         var xform = Transform(uid);
@@ -45,6 +44,7 @@ public abstract partial class SharedGravityAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, GravityAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         var xform = Transform(uid);

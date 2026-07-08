@@ -27,10 +27,9 @@ public sealed partial class PipeRestrictOverlapSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PipeRestrictOverlapComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<PipeRestrictOverlapComponent, AnchorAttemptEvent>(OnAnchorAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(Entity<PipeRestrictOverlapComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)
@@ -43,6 +42,7 @@ public sealed partial class PipeRestrictOverlapSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorAttempt(Entity<PipeRestrictOverlapComponent> ent, ref AnchorAttemptEvent args)
     {
         if (args.Cancelled)

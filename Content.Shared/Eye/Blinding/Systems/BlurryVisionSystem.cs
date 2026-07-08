@@ -4,14 +4,11 @@ using Content.Shared.Inventory;
 
 namespace Content.Shared.Eye.Blinding.Systems;
 
-public sealed class BlurryVisionSystem : EntitySystem
+public sealed partial class BlurryVisionSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VisionCorrectionComponent, GotEquippedEvent>(OnGlassesEquipped);
-        SubscribeLocalEvent<VisionCorrectionComponent, GotUnequippedEvent>(OnGlassesUnequipped);
         SubscribeLocalEvent<VisionCorrectionComponent, InventoryRelayedEvent<GetBlurEvent>>(OnGetBlur);
     }
 
@@ -46,11 +43,13 @@ public sealed class BlurryVisionSystem : EntitySystem
         Dirty(ent, blurry);
     }
 
+    [SubscribeLocalEvent]
     private void OnGlassesEquipped(Entity<VisionCorrectionComponent> glasses, ref GotEquippedEvent args)
     {
         UpdateBlurMagnitude(args.EquipTarget);
     }
 
+    [SubscribeLocalEvent]
     private void OnGlassesUnequipped(Entity<VisionCorrectionComponent> glasses, ref GotUnequippedEvent args)
     {
         UpdateBlurMagnitude(args.EquipTarget);

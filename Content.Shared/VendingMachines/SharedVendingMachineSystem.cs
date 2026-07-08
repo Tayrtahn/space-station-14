@@ -39,15 +39,6 @@ public abstract partial class SharedVendingMachineSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<VendingMachineComponent, ComponentGetState>(OnVendingGetState);
-        SubscribeLocalEvent<VendingMachineComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<VendingMachineComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<VendingMachineComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<VendingMachineComponent, RestockDoAfterEvent>(OnRestockDoAfter);
-        SubscribeLocalEvent<VendingMachineComponent, ActivatableUIOpenAttemptEvent>(OnActivatableUIOpenAttempt);
-        SubscribeLocalEvent<VendingMachineComponent, BreakageEventArgs>(OnBreak);
-
-        SubscribeLocalEvent<VendingMachineRestockComponent, AfterInteractEvent>(OnAfterInteract);
 
         Subs.BuiEvents<VendingMachineComponent>(VendingMachineUiKey.Key, subs =>
         {
@@ -55,6 +46,7 @@ public abstract partial class SharedVendingMachineSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnVendingGetState(Entity<VendingMachineComponent> entity, ref ComponentGetState args)
     {
         var component = entity.Comp;
@@ -145,11 +137,13 @@ public abstract partial class SharedVendingMachineSystem : EntitySystem
         AuthorizedVend(entity.Owner, actor, args.Type, args.ID, entity.Comp);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnMapInit(EntityUid uid, VendingMachineComponent component, MapInitEvent args)
     {
         RestockInventoryFromPrototype(uid, component, component.InitialStockQuality);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(Entity<VendingMachineComponent> ent, ref EmpPulseEvent args)
     {
         if (!ent.Comp.Broken && _receiver.IsPowered(ent.Owner))
@@ -333,6 +327,7 @@ public abstract partial class SharedVendingMachineSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, VendingMachineComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -429,12 +424,14 @@ public abstract partial class SharedVendingMachineSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivatableUIOpenAttempt(EntityUid uid, VendingMachineComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (component.Broken)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBreak(EntityUid uid, VendingMachineComponent vendComponent, BreakageEventArgs eventArgs)
     {
         vendComponent.Broken = true;

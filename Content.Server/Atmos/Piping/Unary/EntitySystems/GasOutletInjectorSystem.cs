@@ -19,17 +19,15 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasOutletInjectorComponent, AtmosDeviceUpdateEvent>(OnOutletInjectorUpdated);
-            SubscribeLocalEvent<GasOutletInjectorComponent, ActivateInWorldEvent>(OnActivate);
-            SubscribeLocalEvent<GasOutletInjectorComponent, MapInitEvent>(OnMapInit);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, GasOutletInjectorComponent component, MapInitEvent args)
         {
             UpdateAppearance(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnActivate(EntityUid uid, GasOutletInjectorComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -48,6 +46,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             _appearance.SetData(uid, OutletInjectorVisuals.Enabled, component.Enabled, appearance);
         }
 
+        [SubscribeLocalEvent]
         private void OnOutletInjectorUpdated(EntityUid uid, GasOutletInjectorComponent injector, ref AtmosDeviceUpdateEvent args)
         {
             if (!injector.Enabled)

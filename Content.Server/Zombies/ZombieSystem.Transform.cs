@@ -84,6 +84,7 @@ public sealed partial class ZombieSystem
     /// <summary>
     /// Handles an entity turning into a zombie when they die or go into crit
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDamageChanged(EntityUid uid, ZombifyOnDeathComponent component, MobStateChangedEvent args)
     {
         if (args.NewMobState == MobState.Dead)

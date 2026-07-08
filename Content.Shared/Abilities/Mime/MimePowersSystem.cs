@@ -26,13 +26,6 @@ public sealed partial class MimePowersSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MimePowersComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<MimePowersComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<MimePowersComponent, InvisibleWallActionEvent>(OnInvisibleWall);
-
-        SubscribeLocalEvent<MimePowersComponent, BreakVowAlertEvent>(OnBreakVowAlert);
-        SubscribeLocalEvent<MimePowersComponent, RetakeVowAlertEvent>(OnRetakeVowAlert);
     }
 
     public override void Update(float frameTime)
@@ -55,6 +48,7 @@ public sealed partial class MimePowersSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<MimePowersComponent> ent, ref ComponentInit args)
     {
         EnsureComp<MutedComponent>(ent);
@@ -70,6 +64,7 @@ public sealed partial class MimePowersSystem : EntitySystem
         _actionsSystem.AddAction(ent, ref ent.Comp.InvisibleWallActionEntity, ent.Comp.InvisibleWallAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<MimePowersComponent> ent, ref ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(ent.Owner, ent.Comp.InvisibleWallActionEntity);
@@ -78,6 +73,7 @@ public sealed partial class MimePowersSystem : EntitySystem
     /// <summary>
     /// Creates an invisible wall in a free space after some checks.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInvisibleWall(Entity<MimePowersComponent> ent, ref InvisibleWallActionEvent args)
     {
         if (!ent.Comp.Enabled)
@@ -111,6 +107,7 @@ public sealed partial class MimePowersSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBreakVowAlert(Entity<MimePowersComponent> ent, ref BreakVowAlertEvent args)
     {
         if (args.Handled)
@@ -120,6 +117,7 @@ public sealed partial class MimePowersSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRetakeVowAlert(Entity<MimePowersComponent> ent, ref RetakeVowAlertEvent args)
     {
         if (args.Handled)

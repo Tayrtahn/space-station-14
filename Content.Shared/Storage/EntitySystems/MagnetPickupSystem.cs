@@ -33,9 +33,9 @@ public sealed partial class MagnetPickupSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MagnetPickupComponent, MapInitEvent>(OnMagnetMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMagnetMapInit(EntityUid uid, MagnetPickupComponent component, MapInitEvent args)
     {
         component.NextScan = _timing.CurTime;

@@ -19,7 +19,6 @@ public sealed partial class SingletonDeviceNetServerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SingletonDeviceNetServerComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
     /// <summary>
@@ -85,6 +84,7 @@ public sealed partial class SingletonDeviceNetServerSystem : EntitySystem
     /// <summary>
     /// Disconnects the server losing power
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, SingletonDeviceNetServerComponent component, ref PowerChangedEvent args)
     {
         component.Available = args.Powered;

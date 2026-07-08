@@ -32,27 +32,22 @@ public abstract partial class SharedArtifactCrusherSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ArtifactCrusherComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ArtifactCrusherComponent, StorageAfterOpenEvent>(OnStorageAfterOpen);
-        SubscribeLocalEvent<ArtifactCrusherComponent, StorageOpenAttemptEvent>(OnStorageOpenAttempt);
-        SubscribeLocalEvent<ArtifactCrusherComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<ArtifactCrusherComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<ArtifactCrusherComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<ArtifactCrusherComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<ArtifactCrusherComponent> ent, ref ComponentInit args)
     {
         ent.Comp.OutputContainer = ContainerSystem.EnsureContainer<Container>(ent, ent.Comp.OutputContainerName);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageAfterOpen(Entity<ArtifactCrusherComponent> ent, ref StorageAfterOpenEvent args)
     {
         StopCrushing(ent);
         ContainerSystem.EmptyContainer(ent.Comp.OutputContainer);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(Entity<ArtifactCrusherComponent> ent, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -69,17 +64,20 @@ public abstract partial class SharedArtifactCrusherSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageOpenAttempt(Entity<ArtifactCrusherComponent> ent, ref StorageOpenAttemptEvent args)
     {
         if (ent.Comp.AutoLock && ent.Comp.Crushing)
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ArtifactCrusherComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(ent.Comp.AutoLock ? Loc.GetString("artifact-crusher-examine-autolocks") : Loc.GetString("artifact-crusher-examine-no-autolocks"));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<ArtifactCrusherComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null || ent.Comp.Crushing)
@@ -102,6 +100,7 @@ public abstract partial class SharedArtifactCrusherSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<ArtifactCrusherComponent> ent, ref PowerChangedEvent args)
     {
         if (!args.Powered)

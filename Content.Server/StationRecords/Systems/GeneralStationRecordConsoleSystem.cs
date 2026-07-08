@@ -14,8 +14,6 @@ public sealed partial class GeneralStationRecordConsoleSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GeneralStationRecordConsoleComponent, RecordModifiedEvent>(UpdateUserInterface);
-        SubscribeLocalEvent<GeneralStationRecordConsoleComponent, AfterGeneralRecordCreatedEvent>(UpdateUserInterface);
         SubscribeLocalEvent<GeneralStationRecordConsoleComponent, RecordRemovedEvent>(UpdateUserInterface);
 
         Subs.BuiEvents<GeneralStationRecordConsoleComponent>(GeneralStationRecordConsoleKey.Key, subs =>
@@ -39,6 +37,7 @@ public sealed partial class GeneralStationRecordConsoleSystem : EntitySystem
         UpdateUserInterface(ent); // Apparently an event does not get raised for this.
     }
 
+    [SubscribeLocalEvent]
     private void UpdateUserInterface<T>(Entity<GeneralStationRecordConsoleComponent> ent, ref T args)
     {
         UpdateUserInterface(ent);

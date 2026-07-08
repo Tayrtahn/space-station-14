@@ -11,8 +11,6 @@ public sealed partial class AntagRandomSpawnSystem : GameRuleSystem<AntagRandomS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AntagRandomSpawnComponent, AntagSelectLocationEvent>(OnSelectLocation);
     }
 
     protected override void Added(EntityUid uid, AntagRandomSpawnComponent comp, GameRuleComponent gameRule, GameRuleAddedEvent args)
@@ -26,6 +24,7 @@ public sealed partial class AntagRandomSpawnSystem : GameRuleSystem<AntagRandomS
             comp.Coords = coords;
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectLocation(Entity<AntagRandomSpawnComponent> ent, ref AntagSelectLocationEvent args)
     {
         if (ent.Comp.Coords != null)

@@ -32,14 +32,9 @@ public sealed partial class SwapTeleporterSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<SwapTeleporterComponent, AfterInteractEvent>(OnInteract);
-        SubscribeLocalEvent<SwapTeleporterComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerb);
-        SubscribeLocalEvent<SwapTeleporterComponent, ActivateInWorldEvent>(OnActivateInWorld);
-        SubscribeLocalEvent<SwapTeleporterComponent, ExaminedEvent>(OnExamined);
-
-        SubscribeLocalEvent<SwapTeleporterComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(Entity<SwapTeleporterComponent> ent, ref AfterInteractEvent args)
     {
         var (uid, comp) = ent;
@@ -78,6 +73,7 @@ public sealed partial class SwapTeleporterSystem : EntitySystem
         _popup.PopupClient(Loc.GetString("swap-teleporter-popup-link-create"), uid, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAltVerb(Entity<SwapTeleporterComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         var (uid, comp) = ent;
@@ -99,6 +95,7 @@ public sealed partial class SwapTeleporterSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(Entity<SwapTeleporterComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -229,6 +226,7 @@ public sealed partial class SwapTeleporterSystem : EntitySystem
         return GetTeleportingEntity((parent, parentXform));
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<SwapTeleporterComponent> ent, ref ExaminedEvent args)
     {
         var (_, comp) = ent;
@@ -247,6 +245,7 @@ public sealed partial class SwapTeleporterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<SwapTeleporterComponent> ent, ref ComponentShutdown args)
     {
         DestroyLink((ent, ent), null);

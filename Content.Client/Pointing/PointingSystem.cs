@@ -16,14 +16,10 @@ public sealed partial class PointingSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<GetVerbsEvent<Verb>>(AddPointingVerb);
-        SubscribeLocalEvent<PointingArrowComponent, ComponentStartup>(OnArrowStartup);
-        SubscribeLocalEvent<RoguePointingArrowComponent, ComponentStartup>(OnRogueArrowStartup);
-        SubscribeLocalEvent<PointingArrowComponent, ComponentHandleState>(HandleCompState);
-
         InitializeVisualizer();
     }
 
+    [SubscribeLocalEvent]
     private void AddPointingVerb(GetVerbsEvent<Verb> args)
     {
         if (IsClientSide(args.Target))
@@ -63,6 +59,7 @@ public sealed partial class PointingSystem
         RaiseNetworkEvent(new PointingAttemptEvent(target));
     }
 
+    [SubscribeLocalEvent]
     private void OnArrowStartup(EntityUid uid, PointingArrowComponent component, ComponentStartup args)
     {
         if (TryComp<SpriteComponent>(uid, out var sprite))
@@ -71,6 +68,7 @@ public sealed partial class PointingSystem
         BeginPointAnimation(uid, component.StartPosition, component.Offset, component.AnimationKey);
     }
 
+    [SubscribeLocalEvent]
     private void OnRogueArrowStartup(EntityUid uid, RoguePointingArrowComponent arrow, ComponentStartup args)
     {
         if (TryComp<SpriteComponent>(uid, out var sprite))
@@ -80,6 +78,7 @@ public sealed partial class PointingSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleCompState(Entity<PointingArrowComponent> entity, ref ComponentHandleState args)
     {
         if (args.Current is not SharedPointingArrowComponentState state)

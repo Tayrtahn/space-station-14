@@ -16,9 +16,6 @@ public sealed partial class AutoEmoteSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AutoEmoteComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AutoEmoteComponent, EntityUnpausedEvent>(OnUnpaused);
     }
 
     public override void Update(float frameTime)
@@ -59,6 +56,7 @@ public sealed partial class AutoEmoteSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, AutoEmoteComponent autoEmote, MapInitEvent args)
     {
         // Start timers
@@ -68,6 +66,7 @@ public sealed partial class AutoEmoteSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUnpaused(EntityUid uid, AutoEmoteComponent autoEmote, ref EntityUnpausedEvent args)
     {
         foreach (var key in autoEmote.EmoteTimers.Keys)

@@ -31,12 +31,9 @@ public sealed partial class MedibotSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmaggableMedibotComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<MedibotComponent, UserActivateInWorldEvent>(OnInteract);
-        SubscribeLocalEvent<MedibotComponent, MedibotInjectDoAfterEvent>(OnInject);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, EmaggableMedibotComponent comp, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -56,6 +53,7 @@ public sealed partial class MedibotSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(Entity<MedibotComponent> medibot, ref UserActivateInWorldEvent args)
     {
         if (!CheckInjectable(medibot!, args.Target, true)) return;
@@ -67,6 +65,7 @@ public sealed partial class MedibotSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnInject(EntityUid uid, MedibotComponent comp, ref MedibotInjectDoAfterEvent args)
     {
         if (args.Cancelled) return;

@@ -36,13 +36,9 @@ public sealed partial class BluespaceLockerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BluespaceLockerComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<BluespaceLockerComponent, StorageBeforeOpenEvent>(PreOpen);
-        SubscribeLocalEvent<BluespaceLockerComponent, StorageAfterCloseEvent>(PostClose);
-        SubscribeLocalEvent<BluespaceLockerComponent, BluespaceLockerDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, BluespaceLockerComponent component, ComponentStartup args)
     {
         GetTarget(uid, component, true);
@@ -68,6 +64,7 @@ public sealed partial class BluespaceLockerSystem : EntitySystem
         Spawn(effectSourceComponent.BehaviorProperties.BluespaceEffectPrototype, effectTargetUid.ToCoordinates());
     }
 
+    [SubscribeLocalEvent]
     private void PreOpen(EntityUid uid, BluespaceLockerComponent component, ref StorageBeforeOpenEvent args)
     {
         EntityStorageComponent? entityStorageComponent = null;
@@ -268,11 +265,13 @@ public sealed partial class BluespaceLockerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void PostClose(EntityUid uid, BluespaceLockerComponent component, ref StorageAfterCloseEvent args)
     {
         PostClose(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, BluespaceLockerComponent component, DoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)

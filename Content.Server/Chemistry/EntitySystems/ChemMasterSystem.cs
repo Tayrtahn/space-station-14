@@ -45,25 +45,15 @@ namespace Content.Server.Chemistry.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ChemMasterComponent, ComponentStartup>(SubscribeUpdateUiState);
-            SubscribeLocalEvent<ChemMasterComponent, SolutionChangedEvent>(SubscribeUpdateUiState);
             SubscribeLocalEvent<ChemMasterComponent, EntInsertedIntoContainerMessage>(SubscribeUpdateUiState);
             SubscribeLocalEvent<ChemMasterComponent, EntRemovedFromContainerMessage>(SubscribeUpdateUiState);
             // Subscribing to DragDropTargetEvent is a quick fix to ensure the UI updates when fluids are dragged and dropped into the ChemMaster, since Shared.Fluids.EntitySystems.SolutionDumpingSystem.cs bypasses UpdateChemicals().
             // TODO: Remove when proper support for infinite volume solutions is added.
             SubscribeLocalEvent<ChemMasterComponent, DragDropTargetEvent>(SubscribeUpdateUiState);
             SubscribeLocalEvent<ChemMasterComponent, BoundUIOpenedEvent>(SubscribeUpdateUiState);
-
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterSetModeMessage>(OnSetModeMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterSortingTypeCycleMessage>(OnCycleSortingTypeMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterSetPillTypeMessage>(OnSetPillTypeMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterReagentAmountButtonMessage>(OnReagentButtonMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterCreatePillsMessage>(OnCreatePillsMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterOutputToBottleMessage>(OnOutputToBottleMessage);
-            SubscribeLocalEvent<ChemMasterComponent, ChemMasterOutputDrawSourceMessage>(OnSetDrawSourceMessage);
         }
 
+        [SubscribeLocalEvent]
         private void SubscribeUpdateUiState<T>(Entity<ChemMasterComponent> ent, ref T ev)
         {
             UpdateUiState(ent);
@@ -87,6 +77,7 @@ namespace Content.Server.Chemistry.EntitySystems
             _userInterfaceSystem.SetUiState(owner, ChemMasterUiKey.Key, state);
         }
 
+        [SubscribeLocalEvent]
         private void OnSetModeMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterSetModeMessage message)
         {
             // Ensure the mode is valid, either Transfer or Discard.
@@ -98,6 +89,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(chemMaster);
         }
 
+        [SubscribeLocalEvent]
         private void OnCycleSortingTypeMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterSortingTypeCycleMessage message)
         {
             chemMaster.Comp.SortingType++;
@@ -107,6 +99,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(chemMaster);
         }
 
+        [SubscribeLocalEvent]
         private void OnSetPillTypeMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterSetPillTypeMessage message)
         {
             // Ensure valid pill type. There are 20 pills selectable, 0-19.
@@ -118,6 +111,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(chemMaster);
         }
 
+        [SubscribeLocalEvent]
         private void OnReagentButtonMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterReagentAmountButtonMessage message)
         {
             // Ensure the amount corresponds to one of the reagent amount buttons.
@@ -140,6 +134,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(chemMaster);
         }
 
+        [SubscribeLocalEvent]
         private void OnSetDrawSourceMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterOutputDrawSourceMessage message)
         {
             //Ensure draw source is valid, either from the internal buffer or the inserted beaker
@@ -201,6 +196,7 @@ namespace Content.Server.Chemistry.EntitySystems
             UpdateUiState(chemMaster, updateLabel: fromBuffer);
         }
 
+        [SubscribeLocalEvent]
         private void OnCreatePillsMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterCreatePillsMessage message)
         {
             var user = message.Actor;
@@ -252,6 +248,7 @@ namespace Content.Server.Chemistry.EntitySystems
             ClickSound(chemMaster);
         }
 
+        [SubscribeLocalEvent]
         private void OnOutputToBottleMessage(Entity<ChemMasterComponent> chemMaster, ref ChemMasterOutputToBottleMessage message)
         {
             var user = message.Actor;

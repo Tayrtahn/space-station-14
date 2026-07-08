@@ -5,18 +5,16 @@ using Content.Shared.Radio.Components;
 
 namespace Content.Shared.Radio.EntitySystems;
 
-public abstract class SharedHeadsetSystem : EntitySystem
+public abstract partial class SharedHeadsetSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HeadsetComponent, InventoryRelayedEvent<GetDefaultRadioChannelEvent>>(OnGetDefault);
-        SubscribeLocalEvent<HeadsetComponent, GotEquippedEvent>(OnGotEquipped);
         SubscribeLocalEvent<HeadsetComponent, GotUnequippedEvent>(OnGotUnequipped);
         SubscribeLocalEvent<HeadsetComponent, EmpPulseEvent>(OnEmpPulse);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDefault(EntityUid uid, HeadsetComponent component, InventoryRelayedEvent<GetDefaultRadioChannelEvent> args)
     {
         if (!component.Enabled || !component.IsEquipped)
@@ -29,6 +27,7 @@ public abstract class SharedHeadsetSystem : EntitySystem
             args.Args.Channel ??= keyHolder.DefaultChannel;
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnGotEquipped(EntityUid uid, HeadsetComponent component, GotEquippedEvent args)
     {
         component.IsEquipped = args.SlotFlags.HasFlag(component.RequiredSlot);

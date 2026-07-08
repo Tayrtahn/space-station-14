@@ -16,10 +16,9 @@ public abstract partial class SharedParrotMemorySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ParrotMemoryComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<ParrotMemoryComponent> entity, ref GetVerbsEvent<Verb> args)
     {
         var user = args.User;

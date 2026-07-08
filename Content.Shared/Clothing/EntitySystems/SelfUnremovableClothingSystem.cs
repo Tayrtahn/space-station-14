@@ -8,16 +8,14 @@ namespace Content.Shared.Clothing.EntitySystems;
 /// <summary>
 ///     A system for the operation of a component that prohibits the player from taking off his own clothes that have this component.
 /// </summary>
-public sealed class SelfUnremovableClothingSystem : EntitySystem
+public sealed partial class SelfUnremovableClothingSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SelfUnremovableClothingComponent, BeingUnequippedAttemptEvent>(OnUnequip);
-        SubscribeLocalEvent<SelfUnremovableClothingComponent, ExaminedEvent>(OnUnequipMarkup);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequip(Entity<SelfUnremovableClothingComponent> selfUnremovableClothing, ref BeingUnequippedAttemptEvent args)
     {
         if (TryComp<ClothingComponent>(selfUnremovableClothing, out var clothing) && (clothing.Slots & args.SlotFlags) == SlotFlags.NONE)
@@ -29,6 +27,7 @@ public sealed class SelfUnremovableClothingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipMarkup(Entity<SelfUnremovableClothingComponent> selfUnremovableClothing, ref ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString("comp-self-unremovable-clothing"));

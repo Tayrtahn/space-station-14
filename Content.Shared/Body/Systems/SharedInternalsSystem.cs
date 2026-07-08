@@ -29,15 +29,9 @@ public abstract partial class SharedInternalsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<InternalsComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
-
-        SubscribeLocalEvent<InternalsComponent, ComponentStartup>(OnInternalsStartup);
-        SubscribeLocalEvent<InternalsComponent, ComponentShutdown>(OnInternalsShutdown);
-
-        SubscribeLocalEvent<InternalsComponent, InternalsDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<InternalsComponent, ToggleInternalsAlertEvent>(OnToggleInternalsAlert);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetInteractionVerbs(
         Entity<InternalsComponent> ent,
         ref GetVerbsEvent<InteractionVerb> args)
@@ -139,6 +133,7 @@ public abstract partial class SharedInternalsSystem : EntitySystem
             });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<InternalsComponent> ent, ref InternalsDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled)
@@ -149,6 +144,7 @@ public abstract partial class SharedInternalsSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleInternalsAlert(Entity<InternalsComponent> ent, ref ToggleInternalsAlertEvent args)
     {
         if (args.Handled)
@@ -157,11 +153,13 @@ public abstract partial class SharedInternalsSystem : EntitySystem
         args.Handled |= ToggleInternals(ent, ent, false, internals: ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnInternalsStartup(Entity<InternalsComponent> ent, ref ComponentStartup args)
     {
         _alerts.ShowAlert(ent.Owner, ent.Comp.InternalsAlert, GetSeverity(ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnInternalsShutdown(Entity<InternalsComponent> ent, ref ComponentShutdown args)
     {
         _alerts.ClearAlert(ent.Owner, ent.Comp.InternalsAlert);

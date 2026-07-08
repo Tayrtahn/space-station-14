@@ -23,8 +23,6 @@ namespace Content.Server.Solar.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<SolarControlConsoleComponent, SolarControlConsoleAdjustMessage>(OnUIMessage);
         }
 
         public override void Update(float frameTime)
@@ -42,6 +40,7 @@ namespace Content.Server.Solar.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnUIMessage(EntityUid uid, SolarControlConsoleComponent component, SolarControlConsoleAdjustMessage msg)
         {
             if (double.IsFinite(msg.Rotation))

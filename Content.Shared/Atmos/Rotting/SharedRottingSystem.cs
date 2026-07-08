@@ -20,21 +20,15 @@ public abstract partial class SharedRottingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PerishableComponent, MapInitEvent>(OnPerishableMapInit);
-        SubscribeLocalEvent<PerishableComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<PerishableComponent, ExaminedEvent>(OnPerishableExamined);
-
-        SubscribeLocalEvent<RottingComponent, MobStateChangedEvent>(OnRottingMobStateChanged);
-        SubscribeLocalEvent<RottingComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<RottingComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnPerishableMapInit(Entity<PerishableComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.RotNextUpdate = _timing.CurTime + ent.Comp.PerishUpdateRate;
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<PerishableComponent> ent, ref MobStateChangedEvent args)
     {
         if (args.NewMobState != MobState.Dead && args.OldMobState != MobState.Dead)
@@ -48,6 +42,7 @@ public abstract partial class SharedRottingSystem : EntitySystem
         DirtyField(ent.Owner, ent.Comp, nameof(PerishableComponent.RotAccumulator));
     }
 
+    [SubscribeLocalEvent]
     private void OnPerishableExamined(Entity<PerishableComponent> perishable, ref ExaminedEvent args)
     {
         int stage = PerishStage(perishable, MaxStages);
@@ -62,6 +57,7 @@ public abstract partial class SharedRottingSystem : EntitySystem
         args.PushMarkup(Loc.GetString(description, ("target", Identity.Entity(perishable, EntityManager))));
     }
 
+    [SubscribeLocalEvent]
     private void OnRottingMobStateChanged(EntityUid uid, RottingComponent component, MobStateChangedEvent args)
     {
         if (args.NewMobState == MobState.Dead)
@@ -70,11 +66,13 @@ public abstract partial class SharedRottingSystem : EntitySystem
         RemCompDeferred(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(EntityUid uid, RottingComponent component, RejuvenateEvent args)
     {
         RemCompDeferred<RottingComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, RottingComponent component, ExaminedEvent args)
     {
         var stage = RotStage(uid, component);

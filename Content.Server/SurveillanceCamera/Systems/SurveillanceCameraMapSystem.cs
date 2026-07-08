@@ -15,9 +15,6 @@ public sealed partial class SurveillanceCameraMapSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<SurveillanceCameraComponent, MapInitEvent>(OnCameraInit, after: [typeof(DeviceNetworkSystem)]);
-        SubscribeLocalEvent<SurveillanceCameraComponent, MoveEvent>(OnCameraMoved);
-
-        SubscribeNetworkEvent<RequestCameraMarkerUpdateMessage>(OnRequestCameraMarkerUpdate);
     }
 
     private void OnCameraInit(Entity<SurveillanceCameraComponent> ent, ref MapInitEvent args)
@@ -25,6 +22,7 @@ public sealed partial class SurveillanceCameraMapSystem : EntitySystem
         UpdateCameraMarker(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCameraMoved(Entity<SurveillanceCameraComponent> ent, ref MoveEvent args)
     {
         if (!args.ParentChanged)
@@ -50,6 +48,7 @@ public sealed partial class SurveillanceCameraMapSystem : EntitySystem
             UpdateCameraMarker(ent);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestCameraMarkerUpdate(RequestCameraMarkerUpdateMessage args)
     {
         var cameraEntity = GetEntity(args.CameraEntity);

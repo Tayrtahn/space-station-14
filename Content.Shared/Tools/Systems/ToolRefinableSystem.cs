@@ -36,15 +36,12 @@ public sealed partial class ToolRefinablSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToolRefinableComponent, GetVerbsEvent<InteractionVerb>>(AddVerb);
-        SubscribeLocalEvent<ToolRefinableComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<ToolRefinableComponent, ToolRefineDoAfterEvent>(OnDoAfter);
     }
 
     #region Subscriptions
 
     /// <summary> Normal interactions. </summary>
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<ToolRefinableComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled || !_toolSystem.HasQuality(args.Used, ent.Comp.QualityNeeded))
@@ -64,6 +61,7 @@ public sealed partial class ToolRefinablSystem : EntitySystem
     }
 
     /// <summary> Verb interactions. </summary>
+    [SubscribeLocalEvent]
     private void AddVerb(Entity<ToolRefinableComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         var used = args.Using;
@@ -119,6 +117,7 @@ public sealed partial class ToolRefinablSystem : EntitySystem
     }
 
     /// <summary> DoAfter for refining. </summary>
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<ToolRefinableComponent> ent, ref ToolRefineDoAfterEvent args)
     {
         if (args.Cancelled || args.Used == null || !args.Target.HasValue)

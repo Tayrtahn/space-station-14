@@ -12,11 +12,9 @@ public abstract partial class SharedDamageOtherOnHitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DamageOtherOnHitComponent, DamageExamineEvent>(OnDamageExamine);
-        SubscribeLocalEvent<DamageOtherOnHitComponent, AttemptPacifiedThrowEvent>(OnAttemptPacifiedThrow);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageExamine(Entity<DamageOtherOnHitComponent> ent, ref DamageExamineEvent args)
     {
         _damageExamine.AddDamageExamine(args.Message, _damageable.ApplyUniversalAllModifiers(ent.Comp.Damage * _damageable.UniversalThrownDamageModifier), Loc.GetString("damage-throw"));
@@ -25,6 +23,7 @@ public abstract partial class SharedDamageOtherOnHitSystem : EntitySystem
     /// <summary>
     /// Prevent players with the Pacified status effect from throwing things that deal damage.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAttemptPacifiedThrow(Entity<DamageOtherOnHitComponent> ent, ref AttemptPacifiedThrowEvent args)
     {
         args.Cancel("pacified-cannot-throw");

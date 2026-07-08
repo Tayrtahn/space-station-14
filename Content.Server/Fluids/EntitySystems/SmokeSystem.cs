@@ -49,12 +49,6 @@ public sealed partial class SmokeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SmokeComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<SmokeComponent, EndCollideEvent>(OnEndCollide);
-        SubscribeLocalEvent<SmokeComponent, ReactionAttemptEvent>(OnReactionAttempt);
-        SubscribeLocalEvent<SmokeComponent, SolutionRelayEvent<ReactionAttemptEvent>>(OnReactionAttempt);
-        SubscribeLocalEvent<SmokeComponent, SpreadNeighborsEvent>(OnSmokeSpread);
     }
 
     /// <inheritdoc/>
@@ -74,6 +68,7 @@ public sealed partial class SmokeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(Entity<SmokeComponent> entity, ref StartCollideEvent args)
     {
         if (_smokeAffectedQuery.HasComponent(args.OtherEntity))
@@ -84,6 +79,7 @@ public sealed partial class SmokeSystem : EntitySystem
         smokeAffected.NextSecond = _timing.CurTime + TimeSpan.FromSeconds(1);
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(Entity<SmokeComponent> entity, ref EndCollideEvent args)
     {
         // if we are already in smoke, make sure the thing we are exiting is the current smoke we are in.
@@ -115,6 +111,7 @@ public sealed partial class SmokeSystem : EntitySystem
             RemComp(args.OtherEntity, smokeAffectedComponent);
     }
 
+    [SubscribeLocalEvent]
     private void OnSmokeSpread(Entity<SmokeComponent> entity, ref SpreadNeighborsEvent args)
     {
         if (entity.Comp.SpreadAmount == 0 || !_solutionContainerSystem.ResolveSolution(entity.Owner, SmokeComponent.SolutionName, ref entity.Comp.Solution, out var solution))
@@ -178,6 +175,7 @@ public sealed partial class SmokeSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnReactionAttempt(Entity<SmokeComponent> entity, ref ReactionAttemptEvent args)
     {
         if (args.Cancelled)
@@ -194,6 +192,7 @@ public sealed partial class SmokeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnReactionAttempt(Entity<SmokeComponent> entity, ref SolutionRelayEvent<ReactionAttemptEvent> args)
     {
         if (args.Solution.Comp.Id == SmokeComponent.SolutionName)

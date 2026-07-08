@@ -13,10 +13,9 @@ public sealed partial class ActivatableUIRequiresVisionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ActivatableUIRequiresVisionComponent, ActivatableUIOpenAttemptEvent>(OnOpenAttempt);
-        SubscribeLocalEvent<BlindableComponent, BlindnessChangedEvent>(OnBlindnessChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnOpenAttempt(EntityUid uid, ActivatableUIRequiresVisionComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled)
@@ -30,6 +29,7 @@ public sealed partial class ActivatableUIRequiresVisionSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBlindnessChanged(EntityUid uid, BlindableComponent component, ref BlindnessChangedEvent args)
     {
         if (!args.Blind)

@@ -43,17 +43,11 @@ public abstract partial class SharedTetherGunSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TetherGunComponent, ActivateInWorldEvent>(OnTetherActivate);
-        SubscribeLocalEvent<TetherGunComponent, AfterInteractEvent>(OnTetherRanged);
-        SubscribeAllEvent<RequestTetherMoveEvent>(OnTetherMove);
-
-        SubscribeLocalEvent<TetheredComponent, BuckleAttemptEvent>(OnTetheredBuckleAttempt);
-        SubscribeLocalEvent<TetheredComponent, UpdateCanMoveEvent>(OnTetheredUpdateCanMove);
-        SubscribeLocalEvent<TetheredComponent, EntGotInsertedIntoContainerMessage>(OnTetheredContainerInserted);
 
         InitializeForce();
     }
 
+    [SubscribeLocalEvent]
     private void OnTetheredContainerInserted(EntityUid uid, TetheredComponent component, EntGotInsertedIntoContainerMessage args)
     {
         if (TryComp<TetherGunComponent>(component.Tetherer, out var tetherGun))
@@ -69,11 +63,13 @@ public abstract partial class SharedTetherGunSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTetheredBuckleAttempt(EntityUid uid, TetheredComponent component, ref BuckleAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnTetheredUpdateCanMove(EntityUid uid, TetheredComponent component, UpdateCanMoveEvent args)
     {
         args.Cancel();
@@ -104,6 +100,7 @@ public abstract partial class SharedTetherGunSystem : EntitySystem
         }
     }
 
+    [SubscribeAllEvent]
     private void OnTetherMove(RequestTetherMoveEvent msg, EntitySessionEventArgs args)
     {
         var user = args.SenderSession.AttachedEntity;
@@ -128,6 +125,7 @@ public abstract partial class SharedTetherGunSystem : EntitySystem
         TransformSystem.SetCoordinates(gun.TetherEntity.Value, coords);
     }
 
+    [SubscribeLocalEvent]
     private void OnTetherRanged(EntityUid uid, TetherGunComponent component, AfterInteractEvent args)
     {
         if (args.Target == null || args.Handled)
@@ -152,6 +150,7 @@ public abstract partial class SharedTetherGunSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnTetherActivate(EntityUid uid, TetherGunComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)

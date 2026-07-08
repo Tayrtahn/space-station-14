@@ -23,9 +23,6 @@ public sealed partial class StunSystem : SharedStunSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<StunVisualsComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<StunVisualsComponent, AppearanceChangeEvent>(OnAppearanceChanged);
-
         CommandBinds.Builder
             .BindAfter(EngineKeyFunctions.UseSecondary, new PointerInputCmdHandler(OnUseSecondary, true, true), typeof(SharedInteractionSystem))
             .Register<StunSystem>();
@@ -46,6 +43,7 @@ public sealed partial class StunSystem : SharedStunSystem
     /// <summary>
     ///     Add stun visual layers
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<StunVisualsComponent> entity, ref ComponentInit args)
     {
         if (!TryComp<SpriteComponent>(entity, out var sprite))
@@ -62,6 +60,7 @@ public sealed partial class StunSystem : SharedStunSystem
         UpdateAppearance((entity, sprite), entity.Comp.State);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChanged(Entity<StunVisualsComponent> entity, ref AppearanceChangeEvent args)
     {
         if (args.Sprite != null)

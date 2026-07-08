@@ -13,12 +13,9 @@ public sealed partial class SpillWhenWornSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpillWhenWornComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<SpillWhenWornComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<SpillWhenWornComponent, SolutionAccessAttemptEvent>(OnSolutionAccessAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<SpillWhenWornComponent> ent, ref ClothingGotEquippedEvent args)
     {
         if (_solutionContainer.TryGetSolution(ent.Owner, ent.Comp.Solution, out var soln, out var solution)
@@ -34,12 +31,14 @@ public sealed partial class SpillWhenWornSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<SpillWhenWornComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         ent.Comp.IsWorn = false;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionAccessAttempt(Entity<SpillWhenWornComponent> ent, ref SolutionAccessAttemptEvent args)
     {
         // If we're not being worn right now, we don't care

@@ -26,7 +26,6 @@ namespace Content.Client.Sandbox
         public override void Initialize()
         {
             _adminManager.AdminStatusUpdated += CheckStatus;
-            SubscribeNetworkEvent<MsgSandboxStatus>(OnSandboxStatus);
         }
 
         private void CheckStatus()
@@ -51,6 +50,7 @@ namespace Content.Client.Sandbox
             base.Shutdown();
         }
 
+        [SubscribeNetworkEvent]
         private void OnSandboxStatus(MsgSandboxStatus ev)
         {
             SetAllowed(ev.SandboxAllowed);

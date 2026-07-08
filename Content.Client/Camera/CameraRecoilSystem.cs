@@ -14,7 +14,6 @@ public sealed partial class CameraRecoilSystem : SharedCameraRecoilSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<CameraKickEvent>(OnCameraKick);
 
         Subs.CVar(_configManager, CCVars.ScreenShakeIntensity, OnCvarChanged, true);
     }
@@ -24,6 +23,7 @@ public sealed partial class CameraRecoilSystem : SharedCameraRecoilSystem
         _intensity = value;
     }
 
+    [SubscribeNetworkEvent]
     private void OnCameraKick(CameraKickEvent ev)
     {
         KickCamera(GetEntity(ev.NetEntity), ev.Recoil);

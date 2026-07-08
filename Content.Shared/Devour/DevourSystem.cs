@@ -27,15 +27,9 @@ public sealed partial class DevourSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DevourerComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<DevourerComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<DevourerComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<DevourerComponent, DevourActionEvent>(OnDevourAction);
-        SubscribeLocalEvent<DevourerComponent, DevourDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<DevourerComponent, GibbedBeforeDeletionEvent>(OnGibContents);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<DevourerComponent> ent, ref ComponentStartup args)
     {
         //Devourer doesn't actually chew, since he sends targets right into his stomach.
@@ -43,11 +37,13 @@ public sealed partial class DevourSystem : EntitySystem
         ent.Comp.Stomach = _containerSystem.EnsureContainer<Container>(ent.Owner, DevourerComponent.StomachContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<DevourerComponent> ent, ref MapInitEvent args)
     {
         _actionsSystem.AddAction(ent.Owner, ref ent.Comp.DevourActionEntity, ent.Comp.DevourAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<DevourerComponent> ent, ref ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(ent.Owner, ent.Comp.DevourActionEntity);
@@ -56,6 +52,7 @@ public sealed partial class DevourSystem : EntitySystem
     /// <summary>
     /// The devour action
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDevourAction(Entity<DevourerComponent> ent, ref DevourActionEvent args)
     {
         if (args.Handled || _whitelistSystem.IsWhitelistFailOrNull(ent.Comp.Whitelist, args.Target))
@@ -98,6 +95,7 @@ public sealed partial class DevourSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<DevourerComponent> ent, ref DevourDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -127,6 +125,7 @@ public sealed partial class DevourSystem : EntitySystem
         _audioSystem.PlayPredicted(ent.Comp.SoundDevour, ent.Owner, ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnGibContents(Entity<DevourerComponent> ent, ref GibbedBeforeDeletionEvent args)
     {
         if (ent.Comp.StomachStorageWhitelist == null)

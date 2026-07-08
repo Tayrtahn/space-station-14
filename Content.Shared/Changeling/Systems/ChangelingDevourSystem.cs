@@ -36,19 +36,15 @@ public sealed partial class ChangelingDevourSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingDevourComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ChangelingDevourComponent, ChangelingDevourActionEvent>(OnDevourAction);
-        SubscribeLocalEvent<ChangelingDevourComponent, ChangelingDevourWindupDoAfterEvent>(OnDevourWindup);
-        SubscribeLocalEvent<ChangelingDevourComponent, ChangelingDevourConsumeDoAfterEvent>(OnDevourConsume);
-        SubscribeLocalEvent<ChangelingDevourComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ChangelingDevourComponent> ent, ref MapInitEvent args)
     {
         _actionsSystem.AddAction(ent, ref ent.Comp.ChangelingDevourActionEntity, ent.Comp.ChangelingDevourAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ChangelingDevourComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.ChangelingDevourActionEntity != null)
@@ -59,6 +55,7 @@ public sealed partial class ChangelingDevourSystem : EntitySystem
 
     // The action was used.
     // Start the first doafter for the windup.
+    [SubscribeLocalEvent]
     private void OnDevourAction(Entity<ChangelingDevourComponent> ent, ref ChangelingDevourActionEvent args)
     {
         if (args.Handled
@@ -98,6 +95,7 @@ public sealed partial class ChangelingDevourSystem : EntitySystem
 
     // First doafter finished.
     // Start the second doafter for the actual consumption and deal a small amount of damage.
+    [SubscribeLocalEvent]
     private void OnDevourWindup(Entity<ChangelingDevourComponent> ent, ref ChangelingDevourWindupDoAfterEvent args)
     {
         args.Handled = true;
@@ -141,6 +139,7 @@ public sealed partial class ChangelingDevourSystem : EntitySystem
 
     // Second doafter finished.
     // Save the identity and deal more damage.
+    [SubscribeLocalEvent]
     private void OnDevourConsume(Entity<ChangelingDevourComponent> ent, ref ChangelingDevourConsumeDoAfterEvent args)
     {
         args.Handled = true;

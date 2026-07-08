@@ -16,11 +16,9 @@ public sealed partial class ProximityDetectionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ProximityDetectorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ProximityDetectorComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ProximityDetectorComponent> ent, ref MapInitEvent args)
     {
         var component = ent.Comp;
@@ -29,6 +27,7 @@ public sealed partial class ProximityDetectionSystem : EntitySystem
         DirtyField(ent, component, nameof(ProximityDetectorComponent.NextUpdate));
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<ProximityDetectorComponent> ent, ref ItemToggledEvent args)
     {
         if (args.Activated)

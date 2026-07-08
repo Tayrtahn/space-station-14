@@ -29,8 +29,6 @@ public sealed partial class GasAnalyzerSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<GasAnalyzerComponent, AfterInteractEvent>(OnAfterInteract);
-
         Subs.BuiEvents<GasAnalyzerComponent>(GasAnalyzerUiKey.Key, subs =>
         {
             subs.Event<BoundUIOpenedEvent>(OnBoundUIOpened);
@@ -59,6 +57,7 @@ public sealed partial class GasAnalyzerSystem : EntitySystem
     /// <summary>
     /// Activates the analyzer when used in the world, scanning the target entity (if it exists) and the tile the analyzer is in
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<GasAnalyzerComponent> entity, ref AfterInteractEvent args)
     {
         var target = args.Target;

@@ -25,19 +25,9 @@ public abstract partial class SharedJetpackSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<JetpackComponent, GetItemActionsEvent>(OnJetpackGetAction);
-        SubscribeLocalEvent<JetpackComponent, DroppedEvent>(OnJetpackDropped);
-        SubscribeLocalEvent<JetpackComponent, ToggleJetpackEvent>(OnJetpackToggle);
-
-        SubscribeLocalEvent<JetpackUserComponent, RefreshWeightlessModifiersEvent>(OnJetpackUserWeightlessMovement);
-        SubscribeLocalEvent<JetpackUserComponent, CanWeightlessMoveEvent>(OnJetpackUserCanWeightless);
-        SubscribeLocalEvent<JetpackUserComponent, EntParentChangedMessage>(OnJetpackUserEntParentChanged);
-        SubscribeLocalEvent<JetpackComponent, EntGotInsertedIntoContainerMessage>(OnJetpackMoved);
-
-        SubscribeLocalEvent<GravityChangedEvent>(OnJetpackUserGravityChanged);
-        SubscribeLocalEvent<JetpackComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackUserWeightlessMovement(Entity<JetpackUserComponent> ent, ref RefreshWeightlessModifiersEvent args)
     {
         // Yes this bulldozes the values but primarily for backwards compat atm.
@@ -47,12 +37,14 @@ public abstract partial class SharedJetpackSystem : EntitySystem
         args.WeightlessFrictionNoInput = ent.Comp.WeightlessFrictionNoInput;
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, JetpackComponent component, MapInitEvent args)
     {
         _actionContainer.EnsureAction(uid, ref component.ToggleActionEntity, component.ToggleAction);
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackUserGravityChanged(ref GravityChangedEvent ev)
     {
         var gridUid = ev.ChangedGridIndex;
@@ -69,22 +61,26 @@ public abstract partial class SharedJetpackSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackDropped(EntityUid uid, JetpackComponent component, DroppedEvent args)
     {
         SetEnabled(uid, component, false, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackMoved(Entity<JetpackComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         if (args.Container.Owner != ent.Comp.JetpackUser)
             SetEnabled(ent, ent.Comp, false, ent.Comp.JetpackUser);
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackUserCanWeightless(EntityUid uid, JetpackUserComponent component, ref CanWeightlessMoveEvent args)
     {
         args.CanMove = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackUserEntParentChanged(EntityUid uid, JetpackUserComponent component, ref EntParentChangedMessage args)
     {
         if (TryComp<JetpackComponent>(component.Jetpack, out var jetpack) &&
@@ -125,6 +121,7 @@ public abstract partial class SharedJetpackSystem : EntitySystem
         _movementSpeedModifier.RefreshWeightlessModifiers(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackToggle(EntityUid uid, JetpackComponent component, ToggleJetpackEvent args)
     {
         if (args.Handled)
@@ -148,6 +145,7 @@ public abstract partial class SharedJetpackSystem : EntitySystem
                (!HasComp<GravityComponent>(gridUid));
     }
 
+    [SubscribeLocalEvent]
     private void OnJetpackGetAction(EntityUid uid, JetpackComponent component, GetItemActionsEvent args)
     {
         args.AddAction(ref component.ToggleActionEntity, component.ToggleAction);

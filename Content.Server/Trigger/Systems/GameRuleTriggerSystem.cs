@@ -18,10 +18,9 @@ public sealed partial class GameRuleTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AddGameRuleOnTriggerComponent, TriggerEvent>(AddRuleOnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void AddRuleOnTrigger(Entity<AddGameRuleOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

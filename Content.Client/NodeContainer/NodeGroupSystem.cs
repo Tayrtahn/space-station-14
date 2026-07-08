@@ -29,8 +29,6 @@ namespace Content.Client.NodeContainer
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeNetworkEvent<NodeVis.MsgData>(DataMsgHandler);
         }
 
         public override void Shutdown()
@@ -40,6 +38,7 @@ namespace Content.Client.NodeContainer
             _overlayManager.RemoveOverlay<NodeVisualizationOverlay>();
         }
 
+        [SubscribeNetworkEvent]
         private void DataMsgHandler(NodeVis.MsgData ev)
         {
             if (!VisEnabled)

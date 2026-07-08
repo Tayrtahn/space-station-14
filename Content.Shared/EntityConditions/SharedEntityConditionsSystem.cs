@@ -83,8 +83,9 @@ public abstract partial class EntityConditionSystem<T, TCon> : EntitySystem wher
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<T, EntityConditionEvent<TCon>>(Condition);
     }
+
+    [SubscribeLocalEvent]
     protected abstract void Condition(Entity<T> entity, ref EntityConditionEvent<TCon> args);
 }
 

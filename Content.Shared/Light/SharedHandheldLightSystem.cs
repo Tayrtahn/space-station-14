@@ -22,12 +22,9 @@ public abstract partial class SharedHandheldLightSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<HandheldLightComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<HandheldLightComponent, ComponentHandleState>(OnHandleState);
-        SubscribeLocalEvent<HandheldLightComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<HandheldLightComponent, GetVerbsEvent<ActivationVerb>>(AddToggleLightVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, HandheldLightComponent component, ComponentInit args)
     {
         UpdateVisuals(uid, component);
@@ -36,6 +33,7 @@ public abstract partial class SharedHandheldLightSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, HandheldLightComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not HandheldLightComponent.HandheldLightComponentState state)
@@ -45,6 +43,7 @@ public abstract partial class SharedHandheldLightSystem : EntitySystem
         SetActivated(uid, state.Activated, component, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, HandheldLightComponent component, ExaminedEvent args)
     {
         args.PushMarkup(component.Activated
@@ -93,6 +92,7 @@ public abstract partial class SharedHandheldLightSystem : EntitySystem
         _appearance.SetData(uid, ToggleableVisuals.Enabled, component.Activated, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void AddToggleLightVerb(Entity<HandheldLightComponent> ent, ref GetVerbsEvent<ActivationVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !ent.Comp.ToggleOnInteract)

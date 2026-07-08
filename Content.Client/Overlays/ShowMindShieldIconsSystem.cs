@@ -9,12 +9,11 @@ public sealed partial class ShowMindShieldIconsSystem : EquipmentHudSystem<ShowM
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MindShieldComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
-        SubscribeLocalEvent<FakeMindShieldComponent, GetStatusIconsEvent>(OnGetStatusIconsEventFake);
     }
+
     // TODO: Probably need to get this OFF of client since this can be read by bad actors rather easily
     //  ...imagine cheating in a game about silly paper dolls
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEventFake(EntityUid uid, FakeMindShieldComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)
@@ -23,6 +22,7 @@ public sealed partial class ShowMindShieldIconsSystem : EquipmentHudSystem<ShowM
             ev.StatusIcons.Add(fakeStatusIconPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(EntityUid uid, MindShieldComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)

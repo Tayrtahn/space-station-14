@@ -11,9 +11,9 @@ public abstract partial class SharedClockSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ClockComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<ClockComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

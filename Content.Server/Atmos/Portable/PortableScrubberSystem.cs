@@ -32,12 +32,6 @@ namespace Content.Server.Atmos.Portable
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<PortableScrubberComponent, AtmosDeviceUpdateEvent>(OnDeviceUpdated);
-            SubscribeLocalEvent<PortableScrubberComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-            SubscribeLocalEvent<PortableScrubberComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<PortableScrubberComponent, ExaminedEvent>(OnExamined);
-            SubscribeLocalEvent<PortableScrubberComponent, DestructionEventArgs>(OnDestroyed);
-            SubscribeLocalEvent<PortableScrubberComponent, GasAnalyzerScanEvent>(OnScrubberAnalyzed);
         }
 
         private bool IsFull(PortableScrubberComponent component)
@@ -45,6 +39,7 @@ namespace Content.Server.Atmos.Portable
             return component.Air.Pressure >= component.MaxPressure;
         }
 
+        [SubscribeLocalEvent]
         private void OnDeviceUpdated(EntityUid uid, PortableScrubberComponent component, ref AtmosDeviceUpdateEvent args)
         {
             var timeDelta = args.dt;
@@ -91,6 +86,7 @@ namespace Content.Server.Atmos.Portable
         /// <summary>
         /// If there is a port under us, let us connect with adjacent atmos pipes.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, PortableScrubberComponent component, ref AnchorStateChangedEvent args)
         {
             if (!_nodeContainer.TryGetNode(uid, component.PortName, out PipeNode? portableNode))
@@ -101,6 +97,7 @@ namespace Content.Server.Atmos.Portable
             _appearance.SetData(uid, PortableScrubberVisuals.IsDraining, portableNode.ConnectionsEnabled);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, PortableScrubberComponent component, ref PowerChangedEvent args)
         {
             UpdateAppearance(uid, IsFull(component), args.Powered);
@@ -110,6 +107,7 @@ namespace Content.Server.Atmos.Portable
         /// <summary>
         /// Examining tells you how full it is as a %.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnExamined(EntityUid uid, PortableScrubberComponent component, ExaminedEvent args)
         {
             if (args.IsInDetailsRange)
@@ -122,6 +120,7 @@ namespace Content.Server.Atmos.Portable
         /// <summary>
         /// When this is destroyed, we dump out all the gas inside.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnDestroyed(EntityUid uid, PortableScrubberComponent component, DestructionEventArgs args)
         {
             var environment = _atmosphereSystem.GetContainingMixture(uid, false, true);
@@ -149,6 +148,7 @@ namespace Content.Server.Atmos.Portable
         /// <summary>
         /// Returns the gas mixture for the gas analyzer
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnScrubberAnalyzed(EntityUid uid, PortableScrubberComponent component, GasAnalyzerScanEvent args)
         {
             args.GasMixtures ??= new List<(string, GasMixture?)>();

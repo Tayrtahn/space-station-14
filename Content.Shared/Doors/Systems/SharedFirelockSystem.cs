@@ -19,18 +19,6 @@ public abstract partial class SharedFirelockSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // Access/Prying
-        SubscribeLocalEvent<FirelockComponent, BeforeDoorOpenedEvent>(OnBeforeDoorOpened);
-        SubscribeLocalEvent<FirelockComponent, BeforePryEvent>(OnBeforePry);
-        SubscribeLocalEvent<FirelockComponent, GetPryTimeModifierEvent>(OnDoorGetPryTimeModifier);
-        SubscribeLocalEvent<FirelockComponent, PriedEvent>(OnAfterPried);
-
-        // Visuals
-        SubscribeLocalEvent<FirelockComponent, MapInitEvent>(UpdateVisuals);
-        SubscribeLocalEvent<FirelockComponent, ComponentStartup>(OnComponentStartup);
-
-        SubscribeLocalEvent<FirelockComponent, ExaminedEvent>(OnExamined);
     }
 
     public bool EmergencyPressureStop(EntityUid uid, FirelockComponent? firelock = null, DoorComponent? door = null)
@@ -51,6 +39,7 @@ public abstract partial class SharedFirelockSystem : EntitySystem
 
     #region Access/Prying
 
+    [SubscribeLocalEvent]
     private void OnBeforeDoorOpened(EntityUid uid, FirelockComponent component, BeforeDoorOpenedEvent args)
     {
         // Give the Door remote the ability to force a firelock open even if it is holding back dangerous gas
@@ -62,6 +51,7 @@ public abstract partial class SharedFirelockSystem : EntitySystem
             WarnPlayer((uid, component), args.User.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforePry(EntityUid uid, FirelockComponent component, ref BeforePryEvent args)
     {
         if (args.Cancelled || !component.Powered || args.StrongPry || args.PryPowered)
@@ -70,6 +60,7 @@ public abstract partial class SharedFirelockSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoorGetPryTimeModifier(EntityUid uid, FirelockComponent component, ref GetPryTimeModifierEvent args)
     {
         WarnPlayer((uid, component), args.User);
@@ -96,6 +87,7 @@ public abstract partial class SharedFirelockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterPried(EntityUid uid, FirelockComponent component, ref PriedEvent args)
     {
         component.EmergencyCloseCooldown = _gameTiming.CurTime + component.EmergencyCloseCooldownDuration;
@@ -105,11 +97,13 @@ public abstract partial class SharedFirelockSystem : EntitySystem
 
     #region Visuals
 
+    [SubscribeLocalEvent]
     protected virtual void OnComponentStartup(Entity<FirelockComponent> ent, ref ComponentStartup args)
     {
         UpdateVisuals(ent.Owner,ent.Comp, args);
     }
 
+    [SubscribeLocalEvent]
     private void UpdateVisuals(EntityUid uid, FirelockComponent component, EntityEventArgs args) => UpdateVisuals(uid, component);
 
     private void UpdateVisuals(EntityUid uid,
@@ -137,6 +131,7 @@ public abstract partial class SharedFirelockSystem : EntitySystem
 
     #endregion
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<FirelockComponent> ent, ref ExaminedEvent args)
     {
         using (args.PushGroup(nameof(FirelockComponent)))

@@ -37,8 +37,6 @@ public sealed partial class SalvageJobBoardSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<EntitySoldEvent>(OnSold);
-        SubscribeLocalEvent<SalvageJobBoardConsoleComponent, BoundUIOpenedEvent>(OnBUIOpened);
         Subs.BuiEvents<SalvageJobBoardConsoleComponent>(SalvageJobBoardUiKey.Key,
             subs =>
             {
@@ -46,6 +44,7 @@ public sealed partial class SalvageJobBoardSystem : EntitySystem
             });
     }
 
+    [SubscribeLocalEvent]
     private void OnSold(ref EntitySoldEvent args)
     {
         if (!TryComp<SalvageJobsDataComponent>(args.Station, out var salvageJobsData))
@@ -238,6 +237,7 @@ public sealed partial class SalvageJobBoardSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBUIOpened(Entity<SalvageJobBoardConsoleComponent> ent, ref BoundUIOpenedEvent args)
     {
         if (args.UiKey is not SalvageJobBoardUiKey.Key)

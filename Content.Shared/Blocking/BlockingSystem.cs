@@ -42,26 +42,16 @@ public sealed partial class BlockingSystem : EntitySystem
     {
         base.Initialize();
         InitializeUser();
-
-        SubscribeLocalEvent<BlockingComponent, GotEquippedHandEvent>(OnEquip);
-        SubscribeLocalEvent<BlockingComponent, GotUnequippedHandEvent>(OnUnequip);
-        SubscribeLocalEvent<BlockingComponent, DroppedEvent>(OnDrop);
-
-        SubscribeLocalEvent<BlockingComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<BlockingComponent, ToggleActionEvent>(OnToggleAction);
-
-        SubscribeLocalEvent<BlockingComponent, ComponentShutdown>(OnShutdown);
-
-        SubscribeLocalEvent<BlockingComponent, GetVerbsEvent<ExamineVerb>>(OnVerbExamine);
-        SubscribeLocalEvent<BlockingComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, BlockingComponent component, MapInitEvent args)
     {
         _actionContainer.EnsureAction(uid, ref component.BlockingToggleActionEntity, component.BlockingToggleAction);
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquip(EntityUid uid, BlockingComponent component, GotEquippedHandEvent args)
     {
         component.User = args.User;
@@ -76,21 +66,25 @@ public sealed partial class BlockingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequip(EntityUid uid, BlockingComponent component, GotUnequippedHandEvent args)
     {
         StopBlockingHelper(uid, component, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnDrop(EntityUid uid, BlockingComponent component, DroppedEvent args)
     {
         StopBlockingHelper(uid, component, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, BlockingComponent component, GetItemActionsEvent args)
     {
         args.AddAction(ref component.BlockingToggleActionEntity, component.BlockingToggleAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAction(EntityUid uid, BlockingComponent component, ToggleActionEvent args)
     {
         if (args.Handled)
@@ -121,6 +115,7 @@ public sealed partial class BlockingSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, BlockingComponent component, ComponentShutdown args)
     {
         //In theory the user should not be null when this fires off
@@ -290,6 +285,7 @@ public sealed partial class BlockingSystem : EntitySystem
         component.User = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnVerbExamine(EntityUid uid, BlockingComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess)

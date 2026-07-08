@@ -28,16 +28,9 @@ public sealed partial class PryingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PryingComponent, ComponentStartup>(OnPryingStartup);
-        SubscribeLocalEvent<PryingComponent, ComponentShutdown>(OnPryingShutdown);
-
-        // Mob prying doors
-        SubscribeLocalEvent<DoorComponent, GetVerbsEvent<AlternativeVerb>>(OnDoorAltVerb);
-        SubscribeLocalEvent<DoorComponent, DoorPryDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<DoorComponent, InteractUsingEvent>(TryPryDoor);
     }
 
+    [SubscribeLocalEvent]
     private void OnPryingStartup(Entity<PryingComponent> ent, ref ComponentStartup args)
     {
         if (ent.Comp.PryingAlertProtoId == null)
@@ -46,6 +39,7 @@ public sealed partial class PryingSystem : EntitySystem
         _alerts.ShowAlert(ent.Owner, ent.Comp.PryingAlertProtoId.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnPryingShutdown(Entity<PryingComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.PryingAlertProtoId == null)
@@ -54,6 +48,7 @@ public sealed partial class PryingSystem : EntitySystem
         _alerts.ClearAlert(ent.Owner, ent.Comp.PryingAlertProtoId.Value);
     }
 
+    [SubscribeLocalEvent]
     private void TryPryDoor(EntityUid uid, DoorComponent comp, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -62,6 +57,7 @@ public sealed partial class PryingSystem : EntitySystem
         args.Handled = TryPry(uid, args.User, out _, args.Used);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoorAltVerb(EntityUid uid, DoorComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess)
@@ -173,6 +169,7 @@ public sealed partial class PryingSystem : EntitySystem
         return _doAfterSystem.TryStartDoAfter(doAfterArgs, out id);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, DoorComponent door, DoorPryDoAfterEvent args)
     {
         if (args.Cancelled)

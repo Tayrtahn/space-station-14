@@ -13,8 +13,6 @@ public sealed partial class EnsnareableSystem : SharedEnsnareableSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EnsnareableComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
     protected override void OnEnsnareInit(Entity<EnsnareableComponent> ent, ref ComponentInit args)
@@ -28,6 +26,7 @@ public sealed partial class EnsnareableSystem : SharedEnsnareableSystem
         _sprite.LayerMapReserve((ent.Owner, sprite), EnsnaredVisualLayers.Ensnared);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, EnsnareableComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null || !_sprite.LayerMapTryGet((uid, args.Sprite), EnsnaredVisualLayers.Ensnared, out var layer, false))

@@ -32,24 +32,15 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasMixerComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<GasMixerComponent, AtmosDeviceUpdateEvent>(OnMixerUpdated);
-            SubscribeLocalEvent<GasMixerComponent, ActivateInWorldEvent>(OnMixerActivate);
-            SubscribeLocalEvent<GasMixerComponent, GasAnalyzerScanEvent>(OnMixerAnalyzed);
-            // Bound UI subscriptions
-            SubscribeLocalEvent<GasMixerComponent, GasMixerChangeOutputPressureMessage>(OnOutputPressureChangeMessage);
-            SubscribeLocalEvent<GasMixerComponent, GasMixerChangeNodePercentageMessage>(OnChangeNodePercentageMessage);
-            SubscribeLocalEvent<GasMixerComponent, GasMixerToggleStatusMessage>(OnToggleStatusMessage);
-
-            SubscribeLocalEvent<GasMixerComponent, AtmosDeviceDisabledEvent>(OnMixerLeaveAtmosphere);
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, GasMixerComponent mixer, ComponentInit args)
         {
             UpdateAppearance(uid, mixer);
         }
 
+        [SubscribeLocalEvent]
         private void OnMixerUpdated(EntityUid uid, GasMixerComponent mixer, ref AtmosDeviceUpdateEvent args)
         {
             // TODO ATMOS: Cache total moles since it's expensive.
@@ -128,6 +119,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
                 _ambientSoundSystem.SetAmbience(uid, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnMixerLeaveAtmosphere(EntityUid uid, GasMixerComponent mixer, ref AtmosDeviceDisabledEvent args)
         {
             mixer.Enabled = false;
@@ -137,6 +129,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             _userInterfaceSystem.CloseUi(uid, GasFilterUiKey.Key);
         }
 
+        [SubscribeLocalEvent]
         private void OnMixerActivate(EntityUid uid, GasMixerComponent mixer, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -175,6 +168,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             _appearance.SetData(uid, FilterVisuals.Enabled, mixer.Enabled, appearance);
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleStatusMessage(EntityUid uid, GasMixerComponent mixer, GasMixerToggleStatusMessage args)
         {
             mixer.Enabled = args.Enabled;
@@ -184,6 +178,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             UpdateAppearance(uid, mixer);
         }
 
+        [SubscribeLocalEvent]
         private void OnOutputPressureChangeMessage(EntityUid uid, GasMixerComponent mixer, GasMixerChangeOutputPressureMessage args)
         {
             mixer.TargetPressure = Math.Clamp(args.Pressure, 0f, mixer.MaxTargetPressure);
@@ -192,6 +187,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             DirtyUI(uid, mixer);
         }
 
+        [SubscribeLocalEvent]
         private void OnChangeNodePercentageMessage(EntityUid uid, GasMixerComponent mixer,
             GasMixerChangeNodePercentageMessage args)
         {
@@ -206,6 +202,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
         /// <summary>
         /// Returns the gas mixture for the gas analyzer
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnMixerAnalyzed(EntityUid uid, GasMixerComponent component, GasAnalyzerScanEvent args)
         {
             args.GasMixtures ??= new List<(string, GasMixture?)>();

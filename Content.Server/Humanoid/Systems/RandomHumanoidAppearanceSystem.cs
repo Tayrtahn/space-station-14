@@ -14,10 +14,9 @@ public sealed partial class RandomHumanoidAppearanceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomHumanoidAppearanceComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RandomHumanoidAppearanceComponent component, MapInitEvent args)
     {
         // If we have an initial profile/base layer set, do not randomize this humanoid.

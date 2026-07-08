@@ -17,8 +17,6 @@ public sealed partial class IgniteOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<IgniteOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
     // TODO: move this into ignition source component
@@ -40,6 +38,7 @@ public sealed partial class IgniteOnTriggerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<IgniteOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

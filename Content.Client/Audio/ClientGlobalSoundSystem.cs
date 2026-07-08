@@ -24,17 +24,11 @@ public sealed partial class ClientGlobalSoundSystem : SharedGlobalSoundSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
-        SubscribeNetworkEvent<AdminSoundEvent>(PlayAdminSound);
         Subs.CVar(_cfg, CCVars.AdminSoundsEnabled, ToggleAdminSound, true);
-
-        SubscribeNetworkEvent<StationEventMusicEvent>(PlayStationEventMusic);
-        SubscribeNetworkEvent<StopStationEventMusic>(StopStationEventMusic);
         Subs.CVar(_cfg, CCVars.EventMusicEnabled, ToggleStationEventMusic, true);
-
-        SubscribeNetworkEvent<GameGlobalSoundEvent>(PlayGameSound);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestart(RoundRestartCleanupEvent ev)
     {
         ClearAudio();
@@ -62,6 +56,7 @@ public sealed partial class ClientGlobalSoundSystem : SharedGlobalSoundSystem
         _eventAudio.Clear();
     }
 
+    [SubscribeNetworkEvent]
     private void PlayAdminSound(AdminSoundEvent soundEvent)
     {
         if(!_adminAudioEnabled) return;
@@ -70,6 +65,7 @@ public sealed partial class ClientGlobalSoundSystem : SharedGlobalSoundSystem
         _adminAudio.Add(stream?.Entity);
     }
 
+    [SubscribeNetworkEvent]
     private void PlayStationEventMusic(StationEventMusicEvent soundEvent)
     {
         // Either the cvar is disabled or it's already playing
@@ -79,11 +75,13 @@ public sealed partial class ClientGlobalSoundSystem : SharedGlobalSoundSystem
         _eventAudio.Add(soundEvent.Type, stream?.Entity);
     }
 
+    [SubscribeNetworkEvent]
     private void PlayGameSound(GameGlobalSoundEvent soundEvent)
     {
         _audio.PlayGlobal(soundEvent.Specifier, Filter.Local(), false, soundEvent.AudioParams);
     }
 
+    [SubscribeNetworkEvent]
     private void StopStationEventMusic(StopStationEventMusic soundEvent)
     {
         if (!_eventAudio.TryGetValue(soundEvent.Type, out var stream))

@@ -36,8 +36,6 @@ public sealed partial class VomitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StomachComponent, BodyRelayedEvent<TryVomitEvent>>(TryVomitSolution);
     }
 
     private const float ChemMultiplier = 0.1f;
@@ -49,6 +47,7 @@ public sealed partial class VomitSystem : EntitySystem
     private readonly SoundSpecifier _vomitSound = new SoundCollectionSpecifier(VomitCollection,
         AudioParams.Default.WithVariation(0.2f).WithVolume(-4f));
 
+    [SubscribeLocalEvent]
     private void TryVomitSolution(Entity<StomachComponent> ent, ref BodyRelayedEvent<TryVomitEvent> args)
     {
         if (!_solutionContainer.ResolveSolution(ent.Owner,

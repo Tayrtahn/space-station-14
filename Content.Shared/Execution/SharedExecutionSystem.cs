@@ -36,13 +36,9 @@ public sealed partial class SharedExecutionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExecutionComponent, GetVerbsEvent<UtilityVerb>>(OnGetInteractionsVerbs);
-        SubscribeLocalEvent<ExecutionComponent, GetMeleeDamageEvent>(OnGetMeleeDamage);
-        SubscribeLocalEvent<ExecutionComponent, SuicideByEnvironmentEvent>(OnSuicideByEnvironment);
-        SubscribeLocalEvent<ExecutionComponent, ExecutionDoAfterEvent>(OnExecutionDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetInteractionsVerbs(EntityUid uid, ExecutionComponent comp, GetVerbsEvent<UtilityVerb> args)
     {
         if (args.Hands == null || args.Using == null || !args.CanAccess || !args.CanInteract)
@@ -123,6 +119,7 @@ public sealed partial class SharedExecutionSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetMeleeDamage(Entity<ExecutionComponent> entity, ref GetMeleeDamageEvent args)
     {
         if (!TryComp<MeleeWeaponComponent>(entity, out var melee) || !entity.Comp.Executing)
@@ -135,6 +132,7 @@ public sealed partial class SharedExecutionSystem : EntitySystem
         args.ResistanceBypass = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSuicideByEnvironment(Entity<ExecutionComponent> entity, ref SuicideByEnvironmentEvent args)
     {
         if (!TryComp<MeleeWeaponComponent>(entity, out var melee))
@@ -186,6 +184,7 @@ public sealed partial class SharedExecutionSystem : EntitySystem
             );
     }
 
+    [SubscribeLocalEvent]
     private void OnExecutionDoAfter(Entity<ExecutionComponent> entity, ref ExecutionDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Used == null || args.Target == null)

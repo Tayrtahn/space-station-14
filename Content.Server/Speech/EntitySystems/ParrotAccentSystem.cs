@@ -15,10 +15,9 @@ public sealed partial class ParrotAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ParrotAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(Entity<ParrotAccentComponent> entity, ref AccentGetEvent args)
     {
         args.Message = Accentuate(entity, args.Message);

@@ -36,10 +36,9 @@ public sealed partial class ReagentProducerAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ReagentProducerAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<ReagentProducerAnomalyComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<ReagentProducerAnomalyComponent> entity, ref AnomalyPulseEvent args)
     {
         if (_random.NextFloat(0.0f, 1.0f) > args.Stability)
@@ -101,6 +100,7 @@ public sealed partial class ReagentProducerAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ReagentProducerAnomalyComponent> entity, ref MapInitEvent args)
     {
         ChangeReagent(entity, 0.1f); //MapInit Reagent 100% change

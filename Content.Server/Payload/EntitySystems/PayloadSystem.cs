@@ -33,14 +33,6 @@ public sealed partial class PayloadSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PayloadCaseComponent, TriggerEvent>(OnCaseTriggered);
-        SubscribeLocalEvent<PayloadTriggerComponent, TriggerEvent>(OnTriggerTriggered);
-        SubscribeLocalEvent<PayloadCaseComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<PayloadCaseComponent, EntInsertedIntoContainerMessage>(OnEntityInserted);
-        SubscribeLocalEvent<PayloadCaseComponent, EntRemovedFromContainerMessage>(OnEntityRemoved);
-        SubscribeLocalEvent<PayloadCaseComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<ChemicalPayloadComponent, TriggerEvent>(HandleChemicalPayloadTrigger);
     }
 
     public IEnumerable<EntityUid> GetAllPayloads(EntityUid uid)
@@ -55,6 +47,7 @@ public sealed partial class PayloadSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCaseTriggered(EntityUid uid, PayloadCaseComponent component, TriggerEvent args)
     {
         // TODO: Adjust to the new trigger system
@@ -65,6 +58,7 @@ public sealed partial class PayloadSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTriggerTriggered(EntityUid uid, PayloadTriggerComponent component, TriggerEvent args)
     {
         // TODO: Adjust to the new trigger system
@@ -81,6 +75,7 @@ public sealed partial class PayloadSystem : EntitySystem
         RaiseLocalEvent(parent, ref args);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<PayloadCaseComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         if (args.Container.ID == PayloadContainer && !_tagSystem.HasTag(args.EntityUid, PayloadTag))
@@ -90,6 +85,7 @@ public sealed partial class PayloadSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityInserted(EntityUid uid, PayloadCaseComponent _, EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != TriggerContainer || !TryComp(args.Entity, out PayloadTriggerComponent? trigger))
@@ -120,6 +116,7 @@ public sealed partial class PayloadSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityRemoved(EntityUid uid, PayloadCaseComponent component, EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != TriggerContainer || !TryComp(args.Entity, out PayloadTriggerComponent? trigger))
@@ -135,6 +132,7 @@ public sealed partial class PayloadSystem : EntitySystem
         trigger.GrantedComponents.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, PayloadCaseComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(PayloadCaseComponent)))
@@ -156,6 +154,7 @@ public sealed partial class PayloadSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleChemicalPayloadTrigger(Entity<ChemicalPayloadComponent> entity, ref TriggerEvent args)
     {
         if (args.Key != null && !entity.Comp.KeysIn.Contains(args.Key))

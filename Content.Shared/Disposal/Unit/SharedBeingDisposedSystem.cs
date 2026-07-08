@@ -18,16 +18,9 @@ public abstract partial class SharedBeingDisposedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BeingDisposedComponent, DisposalSystemTransitionEvent>(OnTransition);
-        SubscribeLocalEvent<BeingDisposedComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<BeingDisposedComponent, EntityStartedFollowingEvent>(OnStartedFollowing);
-        SubscribeLocalEvent<BeingDisposedComponent, EntityStoppedFollowingEvent>(OnStoppedFollowing);
-
-        SubscribeLocalEvent<BeingDisposedComponent, InteractionAttemptEvent>(OnInteractionAttempt);
-        SubscribeLocalEvent<BeingDisposedComponent, AttackAttemptEvent>(OnAttackAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransition(Entity<BeingDisposedComponent> ent, ref DisposalSystemTransitionEvent args)
     {
         if (!TryComp<DisposalHolderComponent>(ent.Comp.Holder, out var holder))
@@ -44,6 +37,7 @@ public abstract partial class SharedBeingDisposedSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<BeingDisposedComponent> ent, ref ComponentShutdown args)
     {
         // Remove followers from the disposal holder
@@ -56,6 +50,7 @@ public abstract partial class SharedBeingDisposedSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartedFollowing(Entity<BeingDisposedComponent> ent, ref EntityStartedFollowingEvent args)
     {
         // Attach new followers to the disposal holder to prevent mispredicts
@@ -65,18 +60,21 @@ public abstract partial class SharedBeingDisposedSystem : EntitySystem
         _disposalHolder.AttachEntity((ent.Comp.Holder, holder), args.Follower);
     }
 
+    [SubscribeLocalEvent]
     private void OnStoppedFollowing(Entity<BeingDisposedComponent> ent, ref EntityStoppedFollowingEvent args)
     {
         // Remove departing followers from the disposal holder
         _disposalHolder.DetachEntity(args.Follower);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractionAttempt(Entity<BeingDisposedComponent> ent, ref InteractionAttemptEvent args)
     {
         // Prevent interactions while travelling through disposals
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAttackAttempt(Entity<BeingDisposedComponent> ent, ref AttackAttemptEvent args)
     {
         // Prevent attacking while travelling through disposals

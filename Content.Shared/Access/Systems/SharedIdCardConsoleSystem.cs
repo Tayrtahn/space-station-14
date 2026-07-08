@@ -17,17 +17,16 @@ namespace Content.Shared.Access.Systems
         {
             base.Initialize();
             _sawmill = LogManager.GetSawmill(Sawmill);
-
-            SubscribeLocalEvent<IdCardConsoleComponent, ComponentInit>(OnComponentInit);
-            SubscribeLocalEvent<IdCardConsoleComponent, ComponentRemove>(OnComponentRemove);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentInit(EntityUid uid, IdCardConsoleComponent component, ComponentInit args)
         {
             _itemSlotsSystem.AddItemSlot(uid, IdCardConsoleComponent.PrivilegedIdCardSlotId, component.PrivilegedIdSlot);
             _itemSlotsSystem.AddItemSlot(uid, IdCardConsoleComponent.TargetIdCardSlotId, component.TargetIdSlot);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentRemove(EntityUid uid, IdCardConsoleComponent component, ComponentRemove args)
         {
             _itemSlotsSystem.RemoveItemSlot(uid, component.PrivilegedIdSlot);

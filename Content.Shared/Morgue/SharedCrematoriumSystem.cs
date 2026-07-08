@@ -30,12 +30,9 @@ public abstract partial class SharedCrematoriumSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CrematoriumComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<CrematoriumComponent, GetVerbsEvent<AlternativeVerb>>(AddCremateVerb);
-        SubscribeLocalEvent<ActiveCrematoriumComponent, StorageOpenAttemptEvent>(OnAttemptOpen);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<CrematoriumComponent> ent, ref ExaminedEvent args)
     {
         if (!TryComp<AppearanceComponent>(ent, out var appearance))
@@ -62,11 +59,13 @@ public abstract partial class SharedCrematoriumSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptOpen(Entity<ActiveCrematoriumComponent> ent, ref StorageOpenAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void AddCremateVerb(EntityUid uid, CrematoriumComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!TryComp<EntityStorageComponent>(uid, out var storage))

@@ -11,9 +11,9 @@ public abstract partial class SharedDragDropSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeAllEvent<DragDropRequestEvent>(OnDragDropRequestEvent);
     }
 
+    [SubscribeAllEvent]
     private void OnDragDropRequestEvent(DragDropRequestEvent msg, EntitySessionEventArgs args)
     {
         var dragged = GetEntity(msg.Dragged);

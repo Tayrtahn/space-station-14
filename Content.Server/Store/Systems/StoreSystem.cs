@@ -12,20 +12,12 @@ public sealed partial class StoreSystem : SharedStoreSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<StoreComponent, ActivatableUIOpenAttemptEvent>(OnStoreOpenAttempt);
-        SubscribeLocalEvent<StoreComponent, BeforeActivatableUIOpenEvent>(BeforeActivatableUiOpen);
-
-        SubscribeLocalEvent<StoreComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<StoreComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<StoreComponent, ComponentShutdown>(OnShutdown);
-
-        SubscribeLocalEvent<RemoteStoreComponent, OpenUplinkImplantEvent>(OnImplantActivate);
-
         InitializeUi();
         InitializeCommand();
         InitializeRefund();
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, StoreComponent component, MapInitEvent args)
     {
         RefreshAllListings(component);
@@ -36,6 +28,7 @@ public sealed partial class StoreSystem : SharedStoreSystem
             UI.SetUi(uid, StoreUiKey.Key, new InterfaceData("StoreBoundUserInterface"));
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, StoreComponent component, ComponentStartup args)
     {
         // for traitors, because the StoreComponent for the PDA can be added at any time.
@@ -48,12 +41,14 @@ public sealed partial class StoreSystem : SharedStoreSystem
         RaiseLocalEvent(uid, ref ev, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, StoreComponent component, ComponentShutdown args)
     {
         var ev = new StoreRemovedEvent();
         RaiseLocalEvent(uid, ref ev, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnStoreOpenAttempt(EntityUid uid, StoreComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (!component.OwnerOnly)
@@ -74,6 +69,7 @@ public sealed partial class StoreSystem : SharedStoreSystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantActivate(Entity<RemoteStoreComponent> entity, ref OpenUplinkImplantEvent args)
     {
         if (GetRemoteStore(entity.AsNullable()) is not { } store)

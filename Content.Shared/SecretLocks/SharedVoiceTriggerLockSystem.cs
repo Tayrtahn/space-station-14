@@ -11,10 +11,9 @@ public sealed partial class SharedVoiceTriggerLockSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VoiceTriggerLockComponent, LockToggledEvent>(OnLockToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggled(Entity<VoiceTriggerLockComponent> ent, ref LockToggledEvent args)
     {
         if (!TryComp<TriggerOnVoiceComponent>(ent.Owner, out var triggerComp))

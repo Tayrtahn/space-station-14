@@ -27,10 +27,9 @@ public sealed partial class InteractionPopupSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<InteractionPopupComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<InteractionPopupComponent, ActivateInWorldEvent>(OnActivateInWorld);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(EntityUid uid, InteractionPopupComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)
@@ -42,6 +41,7 @@ public sealed partial class InteractionPopupSystem : EntitySystem
         SharedInteract(uid, component, args, args.Target, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(EntityUid uid, InteractionPopupComponent component, InteractHandEvent args)
     {
         SharedInteract(uid, component, args, args.Target, args.User);

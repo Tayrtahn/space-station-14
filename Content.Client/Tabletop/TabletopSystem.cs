@@ -47,12 +47,9 @@ namespace Content.Client.Tabletop
                 .Bind(EngineKeyFunctions.Use, new PointerInputCmdHandler(OnUse, false, true))
                 .Bind(EngineKeyFunctions.UseSecondary, new PointerInputCmdHandler(OnUseSecondary, true, true))
                 .Register<TabletopSystem>();
-
-            SubscribeNetworkEvent<TabletopPlayEvent>(OnTabletopPlay);
-            SubscribeLocalEvent<TabletopDraggableComponent, ComponentRemove>(HandleDraggableRemoved);
-            SubscribeLocalEvent<TabletopDraggableComponent, AppearanceChangeEvent>(OnAppearanceChange);
         }
 
+        [SubscribeLocalEvent]
         private void HandleDraggableRemoved(EntityUid uid, TabletopDraggableComponent component, ComponentRemove args)
         {
             if (_draggedEntity == uid)
@@ -116,6 +113,7 @@ namespace Content.Client.Tabletop
         /// Runs when the player presses the "Play Game" verb on a tabletop game.
         /// Opens a viewport where they can then play the game.
         /// </summary>
+        [SubscribeNetworkEvent]
         private void OnTabletopPlay(TabletopPlayEvent msg)
         {
             // Close the currently opened window, if it exists
@@ -211,6 +209,7 @@ namespace Content.Client.Tabletop
             return false;
         }
 
+        [SubscribeLocalEvent]
         private void OnAppearanceChange(EntityUid uid, TabletopDraggableComponent comp, ref AppearanceChangeEvent args)
         {
             if (args.Sprite == null)

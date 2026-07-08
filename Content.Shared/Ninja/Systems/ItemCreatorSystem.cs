@@ -13,11 +13,9 @@ public abstract partial class SharedItemCreatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemCreatorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ItemCreatorComponent, GetItemActionsEvent>(OnGetActions);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ItemCreatorComponent> ent, ref MapInitEvent args)
     {
         var (uid, comp) = ent;
@@ -29,6 +27,7 @@ public abstract partial class SharedItemCreatorSystem : EntitySystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(Entity<ItemCreatorComponent> ent, ref GetItemActionsEvent args)
     {
         if (CheckItemCreator(ent, args.User))

@@ -23,9 +23,9 @@ public abstract partial class SharedSiliconLawSystem : EntitySystem
     public override void Initialize()
     {
         InitializeUpdater();
-        SubscribeLocalEvent<EmagSiliconLawComponent, GotEmaggedEvent>(OnGotEmagged);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEmagged(EntityUid uid, EmagSiliconLawComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))

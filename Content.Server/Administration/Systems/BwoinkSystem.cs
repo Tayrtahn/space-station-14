@@ -106,9 +106,6 @@ namespace Content.Server.Administration.Systems
             );
             _maxAdditionalChars = GenerateAHelpMessage(defaultParams).Message.Length;
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
-
-            SubscribeLocalEvent<GameRunLevelChangedEvent>(OnGameRunLevelChanged);
-            SubscribeNetworkEvent<BwoinkClientTypingUpdated>(OnClientTypingUpdated);
             SubscribeLocalEvent<RoundRestartCleanupEvent>(_ => _activeConversations.Clear());
 
         	_rateLimit.Register(
@@ -281,6 +278,7 @@ namespace Content.Server.Administration.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGameRunLevelChanged(GameRunLevelChangedEvent args)
         {
             // Don't make a new embed if we
@@ -306,6 +304,7 @@ namespace Content.Server.Administration.Systems
             _relayMessages.Clear();
         }
 
+        [SubscribeNetworkEvent]
         private void OnClientTypingUpdated(BwoinkClientTypingUpdated msg, EntitySessionEventArgs args)
         {
             if (_typingUpdateTimestamps.TryGetValue(args.SenderSession.UserId, out var tuple) &&

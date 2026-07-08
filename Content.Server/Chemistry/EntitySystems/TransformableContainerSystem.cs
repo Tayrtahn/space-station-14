@@ -14,12 +14,9 @@ public sealed partial class TransformableContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TransformableContainerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<TransformableContainerComponent, SolutionChangedEvent>(OnSolutionChange);
-        SubscribeLocalEvent<TransformableContainerComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<TransformableContainerComponent> entity, ref MapInitEvent args)
     {
         var meta = MetaData(entity.Owner);
@@ -29,6 +26,7 @@ public sealed partial class TransformableContainerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionChange(Entity<TransformableContainerComponent> entity, ref SolutionChangedEvent args)
     {
         if (!_solutionsSystem.TryGetFitsInDispenser(entity.Owner, out _, out var solution))
@@ -62,6 +60,7 @@ public sealed partial class TransformableContainerSystem : EntitySystem
         _nameMod.RefreshNameModifiers(entity.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<TransformableContainerComponent> entity, ref RefreshNameModifiersEvent args)
     {
         if (ProtoMan.Resolve(entity.Comp.CurrentReagent, out var currentReagent))

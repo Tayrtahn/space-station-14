@@ -40,14 +40,6 @@ public sealed partial class ReflectSystem : EntitySystem
 
         Subs.SubscribeWithRelay<ReflectComponent, ProjectileReflectAttemptEvent>(OnReflectUserCollide, baseEvent: false);
         Subs.SubscribeWithRelay<ReflectComponent, HitScanReflectAttemptEvent>(OnReflectUserHitscan, baseEvent: false);
-        SubscribeLocalEvent<ReflectComponent, ProjectileReflectAttemptEvent>(OnReflectCollide);
-        SubscribeLocalEvent<ReflectComponent, HitScanReflectAttemptEvent>(OnReflectHitscan);
-
-        SubscribeLocalEvent<ReflectComponent, GotEquippedEvent>(OnReflectEquipped);
-        SubscribeLocalEvent<ReflectComponent, GotUnequippedEvent>(OnReflectUnequipped);
-        SubscribeLocalEvent<ReflectComponent, GotEquippedHandEvent>(OnReflectHandEquipped);
-        SubscribeLocalEvent<ReflectComponent, GotUnequippedHandEvent>(OnReflectHandUnequipped);
-        SubscribeLocalEvent<ReflectComponent, ExaminedEvent>(OnExamine);
     }
 
     private void OnReflectUserCollide(Entity<ReflectComponent> ent, ref ProjectileReflectAttemptEvent args)
@@ -77,6 +69,7 @@ public sealed partial class ReflectSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectCollide(Entity<ReflectComponent> ent, ref ProjectileReflectAttemptEvent args)
     {
         if (args.Cancelled)
@@ -86,6 +79,7 @@ public sealed partial class ReflectSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectHitscan(Entity<ReflectComponent> ent, ref HitScanReflectAttemptEvent args)
     {
         if (args.Reflected)
@@ -180,24 +174,28 @@ public sealed partial class ReflectSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectEquipped(Entity<ReflectComponent> ent, ref GotEquippedEvent args)
     {
         ent.Comp.InRightPlace = (ent.Comp.SlotFlags & args.SlotFlags) == args.SlotFlags;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectUnequipped(Entity<ReflectComponent> ent, ref GotUnequippedEvent args)
     {
         ent.Comp.InRightPlace = false;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectHandEquipped(Entity<ReflectComponent> ent, ref GotEquippedHandEvent args)
     {
         ent.Comp.InRightPlace = ent.Comp.ReflectingInHands;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnReflectHandUnequipped(Entity<ReflectComponent> ent, ref GotUnequippedHandEvent args)
     {
         ent.Comp.InRightPlace = false;
@@ -205,6 +203,7 @@ public sealed partial class ReflectSystem : EntitySystem
     }
 
     #region Examine
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ReflectComponent> ent, ref ExaminedEvent args)
     {
         // This isn't examine verb or something just because it looks too much bad.

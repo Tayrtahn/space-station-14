@@ -15,12 +15,9 @@ public sealed partial class SurveillanceCameraMicrophoneSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SurveillanceCameraMicrophoneComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SurveillanceCameraMicrophoneComponent, ListenEvent>(RelayEntityMessage);
-        SubscribeLocalEvent<SurveillanceCameraMicrophoneComponent, ListenAttemptEvent>(CanListen);
-        SubscribeLocalEvent<ExpandICChatRecipientsEvent>(OnExpandRecipients);
     }
 
+    [SubscribeLocalEvent]
     private void OnExpandRecipients(ExpandICChatRecipientsEvent ev)
     {
         var sourceXform = Transform(ev.Source);
@@ -50,6 +47,7 @@ public sealed partial class SurveillanceCameraMicrophoneSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SurveillanceCameraMicrophoneComponent component, ComponentInit args)
     {
         if (component.Enabled)
@@ -58,6 +56,7 @@ public sealed partial class SurveillanceCameraMicrophoneSystem : EntitySystem
             RemCompDeferred<ActiveListenerComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     public void CanListen(EntityUid uid, SurveillanceCameraMicrophoneComponent microphone, ListenAttemptEvent args)
     {
         // TODO maybe just make this a part of ActiveListenerComponent?
@@ -65,6 +64,7 @@ public sealed partial class SurveillanceCameraMicrophoneSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     public void RelayEntityMessage(EntityUid uid, SurveillanceCameraMicrophoneComponent component, ListenEvent args)
     {
         if (!TryComp(uid, out SurveillanceCameraComponent? camera))

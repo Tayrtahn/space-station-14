@@ -20,9 +20,9 @@ public sealed partial class MeteorSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MeteorComponent, StartCollideEvent>(OnCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(EntityUid uid, MeteorComponent component, ref StartCollideEvent args)
     {
         if (TerminatingOrDeleted(args.OtherEntity) || TerminatingOrDeleted(uid))

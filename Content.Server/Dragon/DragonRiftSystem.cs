@@ -31,13 +31,9 @@ public sealed partial class DragonRiftSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DragonRiftComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<DragonRiftComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<DragonRiftComponent, AnchorStateChangedEvent>(OnAnchorChange);
-        SubscribeLocalEvent<DragonRiftComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(Entity<DragonRiftComponent> ent, ref ComponentGetState args)
     {
         args.State = new DragonRiftComponentState
@@ -104,11 +100,13 @@ public sealed partial class DragonRiftSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, DragonRiftComponent component, ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString("carp-rift-examine", ("percentage", MathF.Round(component.Accumulator / component.MaxAccumulator * 100))));
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChange(EntityUid uid, DragonRiftComponent component, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored && component.State == DragonRiftState.Charging)
@@ -117,6 +115,7 @@ public sealed partial class DragonRiftSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, DragonRiftComponent comp, ComponentShutdown args)
     {
         if (!TryComp<DragonComponent>(comp.Dragon, out var dragon) || dragon.Weakened)

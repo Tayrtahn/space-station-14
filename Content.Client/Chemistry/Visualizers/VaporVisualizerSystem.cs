@@ -7,17 +7,17 @@ namespace Content.Client.Chemistry.Visualizers;
 /// <summary>
 /// Handles vapor playing the 'being sprayed' animation if necessary.
 /// </summary>
-public sealed class VaporVisualizerSystem : VisualizerSystem<VaporVisualsComponent>
+public sealed partial class VaporVisualizerSystem : VisualizerSystem<VaporVisualsComponent>
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<VaporVisualsComponent, ComponentInit>(OnComponentInit);
     }
 
     /// <summary>
     /// Constructs the 'being sprayed' animation for the vapor entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, VaporVisualsComponent comp, ComponentInit args)
     {
         comp.VaporFlick = new Animation()

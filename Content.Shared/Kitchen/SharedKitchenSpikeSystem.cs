@@ -53,43 +53,21 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<KitchenSpikeComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<KitchenSpikeComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<KitchenSpikeComponent, EntInsertedIntoContainerMessage>(OnEntInsertedIntoContainer);
-        SubscribeLocalEvent<KitchenSpikeComponent, EntRemovedFromContainerMessage>(OnEntRemovedFromContainer);
-        SubscribeLocalEvent<KitchenSpikeComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<KitchenSpikeComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<KitchenSpikeComponent, CanDropTargetEvent>(OnCanDrop);
-        SubscribeLocalEvent<KitchenSpikeComponent, DragDropTargetEvent>(OnDragDrop);
-        SubscribeLocalEvent<KitchenSpikeComponent, SpikeHookDoAfterEvent>(OnSpikeHookDoAfter);
-        SubscribeLocalEvent<KitchenSpikeComponent, SpikeUnhookDoAfterEvent>(OnSpikeUnhookDoAfter);
-        SubscribeLocalEvent<KitchenSpikeComponent, SpikeButcherDoAfterEvent>(OnSpikeButcherDoAfter);
-        SubscribeLocalEvent<KitchenSpikeComponent, ExaminedEvent>(OnSpikeExamined);
-        SubscribeLocalEvent<KitchenSpikeComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
-        SubscribeLocalEvent<KitchenSpikeComponent, DestructionEventArgs>(OnDestruction);
-
-        SubscribeLocalEvent<KitchenSpikeVictimComponent, ExaminedEvent>(OnVictimExamined);
-
-        // Prevent the victim from doing anything while on the spike.
-        SubscribeLocalEvent<KitchenSpikeHookedComponent, ChangeDirectionAttemptEvent>(OnAttempt);
-        SubscribeLocalEvent<KitchenSpikeHookedComponent, UseAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, ThrowAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, DropAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, AttackAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, PickupAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, IsEquippingAttemptEvent>(OnAttempt);
         SubscribeLocalEvent<KitchenSpikeHookedComponent, IsUnequippingAttemptEvent>(OnAttempt);
-
-        // Container Jank
-        SubscribeLocalEvent<KitchenSpikeHookedComponent, AccessibleOverrideEvent>(OnAccessibleOverride);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<KitchenSpikeComponent> ent, ref ComponentInit args)
     {
         ent.Comp.BodyContainer = _containerSystem.EnsureContainer<ContainerSlot>(ent, ent.Comp.ContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<KitchenSpikeComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         if (args.Cancelled || TryComp<ButcherableComponent>(args.EntityUid, out _))
@@ -98,6 +76,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInsertedIntoContainer(Entity<KitchenSpikeComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_gameTiming.ApplyingState)
@@ -113,6 +92,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         _appearanceSystem.SetData(ent.Owner, KitchenSpikeVisuals.Status, KitchenSpikeStatus.Bloody);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemovedFromContainer(Entity<KitchenSpikeComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (_gameTiming.ApplyingState)
@@ -124,6 +104,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         _appearanceSystem.SetData(ent.Owner, KitchenSpikeVisuals.Status, KitchenSpikeStatus.Empty);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<KitchenSpikeComponent> ent, ref InteractHandEvent args)
     {
         var victim = ent.Comp.BodyContainer.ContainedEntity;
@@ -142,6 +123,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<KitchenSpikeComponent> ent, ref InteractUsingEvent args)
     {
         var victim = ent.Comp.BodyContainer.ContainedEntity;
@@ -193,6 +175,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDrop(Entity<KitchenSpikeComponent> ent, ref CanDropTargetEvent args)
     {
         if (args.Handled)
@@ -202,6 +185,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDragDrop(Entity<KitchenSpikeComponent> ent, ref DragDropTargetEvent args)
     {
         if (args.Handled)
@@ -230,6 +214,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpikeHookDoAfter(Entity<KitchenSpikeComponent> ent, ref SpikeHookDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || !args.Target.HasValue)
@@ -258,6 +243,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpikeUnhookDoAfter(Entity<KitchenSpikeComponent> ent, ref SpikeUnhookDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || !args.Target.HasValue)
@@ -283,6 +269,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpikeButcherDoAfter(Entity<KitchenSpikeComponent> ent, ref SpikeButcherDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || !args.Target.HasValue || !args.Used.HasValue || !TryComp<ButcherableComponent>(args.Target, out var butcherable))
@@ -346,6 +333,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpikeExamined(Entity<KitchenSpikeComponent> ent, ref ExaminedEvent args)
     {
         var victim = ent.Comp.BodyContainer.ContainedEntity;
@@ -358,6 +346,7 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         args.PushMessage(_examineSystem.GetExamineText(victim.Value, args.Examiner), -2);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<KitchenSpikeComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         var victim = ent.Comp.BodyContainer.ContainedEntity;
@@ -375,21 +364,25 @@ public sealed partial class SharedKitchenSpikeSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(Entity<KitchenSpikeComponent> ent, ref DestructionEventArgs args)
     {
         _containerSystem.EmptyContainer(ent.Comp.BodyContainer, destination: Transform(ent).Coordinates);
     }
 
+    [SubscribeLocalEvent]
     private void OnVictimExamined(Entity<KitchenSpikeVictimComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString("comp-kitchen-spike-victim-examine", ("target", Identity.Entity(ent, EntityManager))));
     }
 
+    [SubscribeLocalEvent]
     private static void OnAttempt(EntityUid uid, KitchenSpikeHookedComponent component, CancellableEntityEventArgs args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnAccessibleOverride(Entity<KitchenSpikeHookedComponent> ent, ref AccessibleOverrideEvent args)
     {
         // Check if the entity is the target to avoid giving the hooked entity access to everything.

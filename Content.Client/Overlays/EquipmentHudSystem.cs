@@ -21,20 +21,6 @@ public abstract partial class EquipmentHudSystem<T> : EntitySystem where T : ICo
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<T, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<T, ComponentRemove>(OnRemove);
-
-        SubscribeLocalEvent<LocalPlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<LocalPlayerDetachedEvent>(OnPlayerDetached);
-
-        SubscribeLocalEvent<T, GotEquippedEvent>(OnCompEquip);
-        SubscribeLocalEvent<T, GotUnequippedEvent>(OnCompUnequip);
-
-        SubscribeLocalEvent<T, RefreshEquipmentHudEvent<T>>(OnRefreshComponentHud);
-        SubscribeLocalEvent<T, InventoryRelayedEvent<RefreshEquipmentHudEvent<T>>>(OnRefreshEquipmentHud);
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
     }
 
     private void Update(RefreshEquipmentHudEvent<T> ev)
@@ -56,47 +42,56 @@ public abstract partial class EquipmentHudSystem<T> : EntitySystem where T : ICo
 
     protected virtual void DeactivateInternal() { }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<T> ent, ref ComponentStartup args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<T> ent, ref ComponentRemove args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(LocalPlayerAttachedEvent args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(LocalPlayerDetachedEvent args)
     {
         if (_player.LocalSession?.AttachedEntity is null)
             Deactivate();
     }
 
+    [SubscribeLocalEvent]
     private void OnCompEquip(Entity<T> ent, ref GotEquippedEvent args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnCompUnequip(Entity<T> ent, ref GotUnequippedEvent args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestart(RoundRestartCleanupEvent args)
     {
         Deactivate();
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnRefreshEquipmentHud(Entity<T> ent, ref InventoryRelayedEvent<RefreshEquipmentHudEvent<T>> args)
     {
         OnRefreshComponentHud(ent, ref args.Args);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnRefreshComponentHud(Entity<T> ent, ref RefreshEquipmentHudEvent<T> args)
     {
         args.Active = true;

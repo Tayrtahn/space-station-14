@@ -42,16 +42,9 @@ public sealed partial class AFKSystem : EntitySystem
         _afkManager.PlayerDidActionEvent += OnPlayerAction;
         Subs.CVar(_cfg, CCVars.AfkTime, OnAfkTimeChanged, true);
         Subs.CVar(_cfg, CCVars.AdminAfkTime, OnAdminAfkTimeChanged, true);
-
-        SubscribeNetworkEvent<FullInputCmdMessage>(HandleInputCmd);
-        // Temporary until instruments use BUIs like normal.
-        SubscribeNetworkEvent<InstrumentStartMidiEvent>(HandleMidiStart);
-        SubscribeNetworkEvent<InstrumentStopMidiEvent>(HandleMidiStop);
-        SubscribeNetworkEvent<InstrumentMidiEventEvent>(HandleMidiEvent);
-        SubscribeNetworkEvent<InstrumentSetChannelsEvent>(HandleMidiSetChannels);
-        SubscribeLocalEvent<BoundUserInterfaceMessageReceivedEvent>(OnBoundUiMessageReceived);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleInputCmd(FullInputCmdMessage msg, EntitySessionEventArgs args)
     {
         if (!_playerManager.KeyMap.TryGetKeyFunction(msg.InputFunctionId, out _))
@@ -63,26 +56,31 @@ public sealed partial class AFKSystem : EntitySystem
         _afkManager.PlayerDidAction(args.SenderSession);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleMidiStart(InstrumentStartMidiEvent msg, EntitySessionEventArgs args)
     {
         _afkManager.PlayerDidAction(args.SenderSession);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleMidiStop(InstrumentStopMidiEvent msg, EntitySessionEventArgs args)
     {
         _afkManager.PlayerDidAction(args.SenderSession);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleMidiEvent(InstrumentMidiEventEvent msg, EntitySessionEventArgs args)
     {
         _afkManager.PlayerDidAction(args.SenderSession);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleMidiSetChannels(InstrumentSetChannelsEvent msg, EntitySessionEventArgs args)
     {
         _afkManager.PlayerDidAction(args.SenderSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUiMessageReceived(ref BoundUserInterfaceMessageReceivedEvent args)
     {
         if (!TryComp<ActorComponent>(args.Actor, out var actor))

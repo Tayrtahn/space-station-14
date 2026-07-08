@@ -14,9 +14,9 @@ namespace Content.Server.Damage.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<DamageOnLandComponent, LandEvent>(DamageOnLand);
         }
 
+        [SubscribeLocalEvent]
         private void DamageOnLand(EntityUid uid, DamageOnLandComponent component, ref LandEvent args)
         {
             _damageableSystem.TryChangeDamage(uid, component.Damage, component.IgnoreResistances);

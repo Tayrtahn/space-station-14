@@ -19,18 +19,16 @@ public abstract partial class SharedCombatModeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CombatModeComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<CombatModeComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<CombatModeComponent, ToggleCombatActionEvent>(OnActionPerform);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, CombatModeComponent component, MapInitEvent args)
     {
         _actionsSystem.AddAction(uid, ref component.CombatToggleActionEntity, component.CombatToggleAction);
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, CombatModeComponent component, ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(uid, component.CombatToggleActionEntity);
@@ -38,6 +36,7 @@ public abstract partial class SharedCombatModeSystem : EntitySystem
         SetMouseRotatorComponents(uid, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionPerform(EntityUid uid, CombatModeComponent component, ToggleCombatActionEvent args)
     {
         if (args.Handled)

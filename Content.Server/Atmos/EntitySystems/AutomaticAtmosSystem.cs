@@ -16,9 +16,9 @@ public sealed partial class AutomaticAtmosSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MapGridComponent, MassDataChangedEvent>(OnMassDataChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnMassDataChanged(Entity<MapGridComponent> ent, ref MassDataChangedEvent ev)
     {
         if (_atmosphereSystem.HasAtmosphere(ent))

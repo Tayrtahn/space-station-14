@@ -23,16 +23,9 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HandLabelerComponent, AfterInteractEvent>(AfterInteractOn);
-        SubscribeLocalEvent<HandLabelerComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
-        SubscribeLocalEvent<HandLabelerComponent, ExaminedEvent>(OnExamined);
-        // Bound UI subscriptions
-        SubscribeLocalEvent<HandLabelerComponent, HandLabelerLabelChangedMessage>(OnHandLabelerLabelChanged);
-        SubscribeLocalEvent<HandLabelerComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<HandLabelerComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(Entity<HandLabelerComponent> ent, ref ComponentGetState args)
     {
         args.State = new HandLabelerComponentState(ent.Comp.AssignedLabel)
@@ -41,6 +34,7 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<HandLabelerComponent> ent, ref ComponentHandleState args)
     {
         if (args.Current is not HandLabelerComponentState state)
@@ -89,6 +83,7 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
             $"{ToPrettyString(user):user} removed label from {ToPrettyString(target):target} with {ToPrettyString(uid):labeler}");
     }
 
+    [SubscribeLocalEvent]
     private void OnUtilityVerb(Entity<HandLabelerComponent> ent, ref GetVerbsEvent<UtilityVerb> args)
     {
         if (args.Target is not { Valid: true } target || !_whitelistSystem.CheckBoth(target, ent.Comp.Blacklist, ent.Comp.Whitelist) || !args.CanAccess)
@@ -129,6 +124,7 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AfterInteractOn(Entity<HandLabelerComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Target is not { Valid: true } target || !_whitelistSystem.CheckBoth(target, ent.Comp.Blacklist, ent.Comp.Whitelist) || !args.CanReach)
@@ -137,6 +133,7 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
         AddLabelTo(ent, args.User, target);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandLabelerLabelChanged(EntityUid uid, HandLabelerComponent handLabeler, HandLabelerLabelChangedMessage args)
     {
         var label = args.Label.Trim();
@@ -149,6 +146,7 @@ public abstract partial class SharedHandLabelerSystem : EntitySystem
             $"{ToPrettyString(args.Actor):user} set {ToPrettyString(uid):labeler} to apply label \"{handLabeler.AssignedLabel}\"");
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<HandLabelerComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

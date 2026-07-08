@@ -16,11 +16,10 @@ public sealed partial class RandomMetadataSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomMetadataComponent, MapInitEvent>(OnMapInit);
     }
 
     // This is done on map init so that map-placed entities have it randomized each time the map loads, for fun.
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RandomMetadataComponent component, MapInitEvent args)
     {
         var meta = MetaData(uid);

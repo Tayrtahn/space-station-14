@@ -11,10 +11,9 @@ public sealed partial class TippyOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TippyOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<TippyOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

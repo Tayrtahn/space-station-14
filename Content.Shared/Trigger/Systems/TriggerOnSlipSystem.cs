@@ -8,10 +8,9 @@ public sealed partial class TriggerOnSlipSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnSlipComponent, SlipEvent>(OnSlip);
     }
 
+    [SubscribeLocalEvent]
     private void OnSlip(Entity<TriggerOnSlipComponent> ent, ref SlipEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Slipped, ent.Comp.KeyOut);

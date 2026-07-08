@@ -19,12 +19,6 @@ public sealed partial class DiskConsoleSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<DiskConsoleComponent, DiskConsolePrintDiskMessage>(OnPrintDisk);
-        SubscribeLocalEvent<DiskConsoleComponent, ResearchServerPointsChangedEvent>(OnPointsChanged);
-        SubscribeLocalEvent<DiskConsoleComponent, ResearchRegistrationChangedEvent>(OnRegistrationChanged);
-        SubscribeLocalEvent<DiskConsoleComponent, BeforeActivatableUIOpenEvent>(OnBeforeUiOpen);
-
-        SubscribeLocalEvent<DiskConsolePrintingComponent, ComponentShutdown>(OnShutdown);
     }
 
     public override void Update(float frameTime)
@@ -42,6 +36,7 @@ public sealed partial class DiskConsoleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPrintDisk(EntityUid uid, DiskConsoleComponent component, DiskConsolePrintDiskMessage args)
     {
         if (HasComp<DiskConsolePrintingComponent>(uid))
@@ -61,16 +56,19 @@ public sealed partial class DiskConsoleSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPointsChanged(EntityUid uid, DiskConsoleComponent component, ref ResearchServerPointsChangedEvent args)
     {
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnRegistrationChanged(EntityUid uid, DiskConsoleComponent component, ref ResearchRegistrationChangedEvent args)
     {
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeUiOpen(EntityUid uid, DiskConsoleComponent component, BeforeActivatableUIOpenEvent args)
     {
         UpdateUserInterface(uid, component);
@@ -94,6 +92,7 @@ public sealed partial class DiskConsoleSystem : EntitySystem
         _ui.SetUiState(uid, DiskConsoleUiKey.Key, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, DiskConsolePrintingComponent component, ComponentShutdown args)
     {
         UpdateUserInterface(uid);

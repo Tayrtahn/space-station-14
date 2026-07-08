@@ -15,9 +15,9 @@ public sealed partial class GenericCounterAlertSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GenericCounterAlertComponent, UpdateAlertSpriteEvent>(OnUpdateAlertSprite);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateAlertSprite(Entity<GenericCounterAlertComponent> ent, ref UpdateAlertSpriteEvent args)
     {
         var sprite = args.SpriteViewEnt.Comp;

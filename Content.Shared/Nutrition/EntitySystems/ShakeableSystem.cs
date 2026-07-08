@@ -19,11 +19,9 @@ public sealed partial class ShakeableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ShakeableComponent, GetVerbsEvent<Verb>>(AddShakeVerb);
-        SubscribeLocalEvent<ShakeableComponent, ShakeDoAfterEvent>(OnShakeDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void AddShakeVerb(EntityUid uid, ShakeableComponent component, GetVerbsEvent<Verb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract)
@@ -40,6 +38,7 @@ public sealed partial class ShakeableSystem : EntitySystem
         args.Verbs.Add(shakeVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnShakeDoAfter(Entity<ShakeableComponent> entity, ref ShakeDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)

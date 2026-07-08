@@ -32,8 +32,6 @@ public sealed partial class OptionsVisualizerSystem : EntitySystem
         }
 
         UpdateActiveOptions();
-
-        SubscribeLocalEvent<OptionsVisualizerComponent, ComponentStartup>(OnComponentStartup);
     }
 
     private void CVarChanged()
@@ -62,6 +60,7 @@ public sealed partial class OptionsVisualizerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(EntityUid uid, OptionsVisualizerComponent component, ComponentStartup args)
     {
         if (!TryComp(uid, out SpriteComponent? sprite))

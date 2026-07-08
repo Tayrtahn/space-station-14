@@ -16,18 +16,14 @@ public sealed partial class BarSignSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<BarSignComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BarSignComponent, AfterAutoHandleStateEvent>(OnAfterAutoHandleState);
         Subs.BuiEvents<BarSignComponent>(BarSignUiKey.Key,
             subs =>
         {
             subs.Event<SetBarSignMessage>(OnSetBarSignMessage);
         });
-
-        SubscribeLocalEvent<BarSignComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<BarSignComponent, BoundUserInterfaceMessageAttempt>(OnBoundUIAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<BarSignComponent> ent, ref MapInitEvent args)
     {
         BarSignPrototype? newPrototype;
@@ -39,6 +35,7 @@ public sealed partial class BarSignSystem : EntitySystem
         SetBarSign(ent, newPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAutoHandleState(Entity<BarSignComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         // Update the UI if the component was changed.
@@ -57,6 +54,7 @@ public sealed partial class BarSignSystem : EntitySystem
         SetBarSign(ent, signPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(Entity<BarSignComponent> ent, ref EmpPulseEvent args)
     {
         if (!ProtoMan.Resolve(ent.Comp.Emped, out var empedPrototype))
@@ -67,6 +65,7 @@ public sealed partial class BarSignSystem : EntitySystem
         args.Disabled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIAttempt(Entity<BarSignComponent> ent, ref BoundUserInterfaceMessageAttempt args)
     {
         if (HasComp<EmpDisabledComponent>(ent))

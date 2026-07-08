@@ -17,11 +17,10 @@ public sealed partial class AtmosPipeAppearanceSystem : SharedAtmosPipeAppearanc
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PipeAppearanceComponent, ComponentInit>(OnInit);
         SubscribeLocalEvent<PipeAppearanceComponent, AppearanceChangeEvent>(OnAppearanceChanged, after: [typeof(SubFloorHideSystem)]);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, PipeAppearanceComponent component, ComponentInit args)
     {
         if (!TryComp(uid, out SpriteComponent? sprite))

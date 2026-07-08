@@ -15,10 +15,9 @@ public sealed partial class PlacementLoggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PlacementEntityEvent>(OnEntityPlacement);
-        SubscribeLocalEvent<PlacementTileEvent>(OnTilePlacement);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityPlacement(PlacementEntityEvent ev)
     {
         _player.TryGetSessionById(ev.PlacerNetUserId, out var actor);
@@ -42,6 +41,7 @@ public sealed partial class PlacementLoggerSystem : EntitySystem
                 $"Placement system {ev.PlacementEventAction.ToString().ToLower()}ed {ToPrettyString(ev.EditedEntity):subject} at {ev.Coordinates}");
     }
 
+    [SubscribeLocalEvent]
     private void OnTilePlacement(PlacementTileEvent ev)
     {
         _player.TryGetSessionById(ev.PlacerNetUserId, out var actor);

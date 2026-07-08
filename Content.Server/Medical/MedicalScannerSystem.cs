@@ -35,18 +35,9 @@ namespace Content.Server.Medical
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<MedicalScannerComponent, ComponentInit>(OnComponentInit);
-            SubscribeLocalEvent<MedicalScannerComponent, ContainerRelayMovementEntityEvent>(OnRelayMovement);
-            SubscribeLocalEvent<MedicalScannerComponent, GetVerbsEvent<InteractionVerb>>(AddInsertOtherVerb);
-            SubscribeLocalEvent<MedicalScannerComponent, GetVerbsEvent<AlternativeVerb>>(AddAlternativeVerbs);
-            SubscribeLocalEvent<MedicalScannerComponent, DestructionEventArgs>(OnDestroyed);
-            SubscribeLocalEvent<MedicalScannerComponent, DragDropTargetEvent>(OnDragDropOn);
-            SubscribeLocalEvent<MedicalScannerComponent, PortDisconnectedEvent>(OnPortDisconnected);
-            SubscribeLocalEvent<MedicalScannerComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-            SubscribeLocalEvent<MedicalScannerComponent, CanDropTargetEvent>(OnCanDragDropOn);
         }
 
+        [SubscribeLocalEvent]
         private void OnCanDragDropOn(EntityUid uid, MedicalScannerComponent component, ref CanDropTargetEvent args)
         {
             args.Handled = true;
@@ -61,6 +52,7 @@ namespace Content.Server.Medical
             return HasComp<BodyComponent>(target);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentInit(EntityUid uid, MedicalScannerComponent scannerComponent, ComponentInit args)
         {
             base.Initialize();
@@ -68,6 +60,7 @@ namespace Content.Server.Medical
             _signalSystem.EnsureSinkPorts(uid, MedicalScannerComponent.ScannerPort);
         }
 
+        [SubscribeLocalEvent]
         private void OnRelayMovement(EntityUid uid, MedicalScannerComponent scannerComponent, ref ContainerRelayMovementEntityEvent args)
         {
             if (!_blocker.CanInteract(args.Entity, uid))
@@ -76,6 +69,7 @@ namespace Content.Server.Medical
             EjectBody(uid, scannerComponent);
         }
 
+        [SubscribeLocalEvent]
         private void AddInsertOtherVerb(EntityUid uid, MedicalScannerComponent component, GetVerbsEvent<InteractionVerb> args)
         {
             if (args.Using == null ||
@@ -98,6 +92,7 @@ namespace Content.Server.Medical
             args.Verbs.Add(verb);
         }
 
+        [SubscribeLocalEvent]
         private void AddAlternativeVerbs(EntityUid uid, MedicalScannerComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
             if (!args.CanAccess || !args.CanInteract)
@@ -130,21 +125,25 @@ namespace Content.Server.Medical
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnDestroyed(EntityUid uid, MedicalScannerComponent scannerComponent, DestructionEventArgs args)
         {
             EjectBody(uid, scannerComponent);
         }
 
+        [SubscribeLocalEvent]
         private void OnDragDropOn(EntityUid uid, MedicalScannerComponent scannerComponent, ref DragDropTargetEvent args)
         {
             InsertBody(uid, args.Dragged, scannerComponent);
         }
 
+        [SubscribeLocalEvent]
         private void OnPortDisconnected(EntityUid uid, MedicalScannerComponent component, PortDisconnectedEvent args)
         {
             component.ConnectedConsole = null;
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, MedicalScannerComponent component, ref AnchorStateChangedEvent args)
         {
             if (component.ConnectedConsole == null || !TryComp<CloningConsoleComponent>(component.ConnectedConsole, out var console))

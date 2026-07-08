@@ -11,11 +11,9 @@ public sealed partial class SupercriticalAnomaliesConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalyShutdownEvent>(OnAnomalySupercrit);
-        SubscribeLocalEvent<SupercriticalAnomaliesConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalySupercrit(ref AnomalyShutdownEvent args)
     {
         if (!args.Supercritical)
@@ -28,6 +26,7 @@ public sealed partial class SupercriticalAnomaliesConditionSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<SupercriticalAnomaliesConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         var target = _numberObjective.GetTarget(ent);

@@ -21,13 +21,12 @@ public sealed partial class RadioVocalizationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RadioVocalizerComponent, VocalizeEvent>(OnVocalize);
     }
 
     /// <summary>
     /// Called whenever an entity with a VocalizerComponent tries to speak
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnVocalize(Entity<RadioVocalizerComponent> entity, ref VocalizeEvent args)
     {
         if (args.Handled)

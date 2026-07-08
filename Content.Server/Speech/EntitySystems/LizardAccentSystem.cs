@@ -4,7 +4,7 @@ using Content.Shared.Speech;
 
 namespace Content.Server.Speech.EntitySystems;
 
-public sealed class LizardAccentSystem : EntitySystem
+public sealed partial class LizardAccentSystem : EntitySystem
 {
     private static readonly Regex RegexLowerS = new("s+");
     private static readonly Regex RegexUpperS = new("S+");
@@ -15,9 +15,9 @@ public sealed class LizardAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LizardAccentComponent, AccentGetEvent>(OnAccent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccent(EntityUid uid, LizardAccentComponent component, AccentGetEvent args)
     {
         var message = args.Message;

@@ -16,14 +16,13 @@ public abstract partial class SharedResearchStealerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ResearchStealerComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
     }
 
     /// <summary>
     /// Start do after for downloading techs from a r&d server.
     /// Will only try if there is at least 1 tech researched.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(EntityUid uid, ResearchStealerComponent comp, BeforeInteractHandEvent args)
     {
         // TODO: generic event

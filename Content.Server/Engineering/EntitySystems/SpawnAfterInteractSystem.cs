@@ -23,10 +23,9 @@ namespace Content.Server.Engineering.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<SpawnAfterInteractComponent, AfterInteractEvent>(HandleAfterInteract);
         }
 
+        [SubscribeLocalEvent]
         private async void HandleAfterInteract(EntityUid uid, SpawnAfterInteractComponent component, AfterInteractEvent args)
         {
             if (!args.CanReach && !component.IgnoreDistance)

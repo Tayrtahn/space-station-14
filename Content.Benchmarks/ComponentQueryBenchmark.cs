@@ -259,14 +259,14 @@ public struct QueryBenchEvent
     public int HashCode;
 }
 
-public sealed class QueryBenchSystem : EntitySystem
+public sealed partial class QueryBenchSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ClothingComponent, QueryBenchEvent>(OnEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEvent(EntityUid uid, ClothingComponent component, ref QueryBenchEvent args)
     {
         args.HashCode = HashCode.Combine(args.HashCode, component.GetHashCode());

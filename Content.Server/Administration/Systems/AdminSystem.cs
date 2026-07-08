@@ -79,17 +79,9 @@ public sealed partial class AdminSystem : EntitySystem
         Subs.CVar(_config, CCVars.PanicBunkerShowReason, OnPanicBunkerShowReasonChanged, true);
         Subs.CVar(_config, CCVars.PanicBunkerMinAccountAge, OnPanicBunkerMinAccountAgeChanged, true);
         Subs.CVar(_config, CCVars.PanicBunkerMinOverallMinutes, OnPanicBunkerMinOverallMinutesChanged, true);
-
-        SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<PlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<RoleAddedEvent>(OnRoleEvent);
-        SubscribeLocalEvent<RoleRemovedEvent>(OnRoleEvent);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestartCleanup);
-
-        SubscribeLocalEvent<ActorComponent, EntityRenamedEvent>(OnPlayerRenamed);
-        SubscribeLocalEvent<ActorComponent, IdentityChangedEvent>(OnIdentityChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestartCleanup(RoundRestartCleanupEvent ev)
     {
         _roundActivePlayers.Clear();
@@ -114,6 +106,7 @@ public sealed partial class AdminSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerRenamed(Entity<ActorComponent> ent, ref EntityRenamedEvent args)
     {
         UpdatePlayerList(ent.Comp.PlayerSession);
@@ -143,11 +136,13 @@ public sealed partial class AdminSystem : EntitySystem
         return value ?? null;
     }
 
+    [SubscribeLocalEvent]
     private void OnIdentityChanged(Entity<ActorComponent> ent, ref IdentityChangedEvent ev)
     {
         UpdatePlayerList(ent.Comp.PlayerSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleEvent(RoleEvent ev)
     {
         if (!ev.RoleTypeUpdate || !_playerManager.TryGetSessionById(ev.Mind.UserId, out var session))
@@ -169,6 +164,7 @@ public sealed partial class AdminSystem : EntitySystem
         SendFullPlayerList(obj.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(PlayerDetachedEvent ev)
     {
         // If disconnected then the player won't have a connected entity to get character name from.
@@ -179,6 +175,7 @@ public sealed partial class AdminSystem : EntitySystem
         UpdatePlayerList(ev.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(PlayerAttachedEvent ev)
     {
         if (ev.Player.Status == SessionStatus.Disconnected)

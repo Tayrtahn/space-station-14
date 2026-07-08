@@ -24,16 +24,9 @@ public sealed partial class ReformSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ReformComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ReformComponent, ComponentShutdown>(OnCompRemove);
-
-        SubscribeLocalEvent<ReformComponent, ReformEvent>(OnReform);
-        SubscribeLocalEvent<ReformComponent, ReformDoAfterEvent>(OnDoAfter);
-
-        SubscribeLocalEvent<ReformComponent, EntityZombifiedEvent>(OnZombified);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ReformComponent comp, MapInitEvent args)
     {
         // When the map is initialized, give them the action
@@ -52,11 +45,13 @@ public sealed partial class ReformSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCompRemove(EntityUid uid, ReformComponent comp, ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(uid, comp.ActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnReform(EntityUid uid, ReformComponent comp, ReformEvent args)
     {
         // Stun them when they use the action for the amount of reform time.
@@ -78,6 +73,7 @@ public sealed partial class ReformSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, ReformComponent comp, ReformDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || comp.Deleted)
@@ -98,6 +94,7 @@ public sealed partial class ReformSystem : EntitySystem
         QueueDel(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnZombified(EntityUid uid, ReformComponent comp, ref EntityZombifiedEvent args)
     {
         _actionsSystem.RemoveAction(uid, comp.ActionEntity); // Zombies can't reform

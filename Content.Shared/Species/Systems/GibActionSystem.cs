@@ -18,11 +18,9 @@ public sealed partial class GibActionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GibActionComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<GibActionComponent, GibActionEvent>(OnGibAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, GibActionComponent comp, MobStateChangedEvent args)
     {
         // When the mob changes state, check if they're dead and give them the action if so.
@@ -46,6 +44,7 @@ public sealed partial class GibActionSystem : EntitySystem
         _actionsSystem.RemoveAction(uid, comp.ActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnGibAction(EntityUid uid, GibActionComponent comp, GibActionEvent args)
     {
         // When they use the action, gib them.

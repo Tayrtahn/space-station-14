@@ -19,10 +19,9 @@ public sealed partial class SlowAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SlowAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(Entity<SlowAccentComponent> ent, ref AccentGetEvent args)
     {
         args.Message = Accentuate(ent, args.Message);

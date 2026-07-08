@@ -14,10 +14,9 @@ public sealed partial class SalvageSystem : SharedSalvageSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PlayAmbientMusicEvent>(OnPlayAmbientMusic);
-        SubscribeLocalEvent<SalvageExpeditionComponent, ComponentHandleState>(OnExpeditionHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnExpeditionHandleState(EntityUid uid, SalvageExpeditionComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not SalvageExpeditionComponentState state)
@@ -31,6 +30,7 @@ public sealed partial class SalvageSystem : SharedSalvageSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayAmbientMusic(ref PlayAmbientMusicEvent ev)
     {
         if (ev.Cancelled)

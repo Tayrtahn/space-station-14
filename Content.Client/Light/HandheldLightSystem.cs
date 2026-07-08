@@ -18,7 +18,6 @@ public sealed partial class HandheldLightSystem : SharedHandheldLightSystem
         base.Initialize();
 
         Subs.ItemStatus<HandheldLightComponent>(ent => new HandheldLightStatus(ent));
-        SubscribeLocalEvent<HandheldLightComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
     /// <remarks>
@@ -37,6 +36,7 @@ public sealed partial class HandheldLightSystem : SharedHandheldLightSystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, HandheldLightComponent? component, ref AppearanceChangeEvent args)
     {
         if (!Resolve(uid, ref component))

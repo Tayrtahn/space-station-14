@@ -13,9 +13,9 @@ public sealed partial class ChangeNameInContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ChangeVoiceInContainerComponent, TransformSpeakerNameEvent>(OnTransformSpeakerName);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransformSpeakerName(Entity<ChangeVoiceInContainerComponent> ent, ref TransformSpeakerNameEvent args)
     {
         if (!_container.TryGetContainingContainer((ent, null, null), out var container)

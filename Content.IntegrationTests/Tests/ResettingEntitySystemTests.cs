@@ -10,17 +10,16 @@ namespace Content.IntegrationTests.Tests
     [TestOf(typeof(RoundRestartCleanupEvent))]
     public sealed class ResettingEntitySystemTests : GameTest
     {
-        public sealed class TestRoundRestartCleanupEvent : EntitySystem
+        public sealed partial class TestRoundRestartCleanupEvent : EntitySystem
         {
             public bool HasBeenReset { get; set; }
 
             public override void Initialize()
             {
                 base.Initialize();
-
-                SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
             }
 
+            [SubscribeLocalEvent]
             public void Reset(RoundRestartCleanupEvent ev)
             {
                 HasBeenReset = true;

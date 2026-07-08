@@ -13,7 +13,6 @@ public sealed partial class FirelockSystem : SharedFirelockSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FirelockComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
     protected override void OnComponentStartup(Entity<FirelockComponent> ent, ref ComponentStartup args)
@@ -40,6 +39,7 @@ public sealed partial class FirelockSystem : SharedFirelockSystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, FirelockComponent comp, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

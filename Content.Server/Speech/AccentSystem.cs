@@ -4,15 +4,15 @@ using Content.Shared.Speech;
 
 namespace Content.Server.Speech;
 
-public sealed class AccentSystem : EntitySystem
+public sealed partial class AccentSystem : EntitySystem
 {
     public static readonly Regex SentenceRegex = new(@"(?<=[\.!\?‽])(?![\.!\?‽])", RegexOptions.Compiled);
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<TransformSpeechEvent>(AccentHandler);
     }
 
+    [SubscribeLocalEvent]
     private void AccentHandler(TransformSpeechEvent args)
     {
         if (args.Cancelled)

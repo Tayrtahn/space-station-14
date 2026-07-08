@@ -64,9 +64,6 @@ public abstract partial class SharedMobCollisionSystem : EntitySystem
             }, true);
         Subs.CVar(CfgManager, CCVars.MovementPushMassCap, val => _massDiffCap = val, true);
 
-        SubscribeAllEvent<MobCollisionMessage>(OnCollision);
-        SubscribeLocalEvent<MobCollisionComponent, RefreshMovementSpeedModifiersEvent>(OnMoveModifier);
-
         UpdatesBefore.Add(typeof(SharedPhysicsSystem));
     }
 
@@ -113,6 +110,7 @@ public abstract partial class SharedMobCollisionSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMoveModifier(Entity<MobCollisionComponent> ent, ref RefreshMovementSpeedModifiersEvent args)
     {
         if (!ent.Comp.Colliding)
@@ -147,6 +145,7 @@ public abstract partial class SharedMobCollisionSystem : EntitySystem
         }
     }
 
+    [SubscribeAllEvent]
     private void OnCollision(MobCollisionMessage msg, EntitySessionEventArgs args)
     {
         var player = args.SenderSession.AttachedEntity;

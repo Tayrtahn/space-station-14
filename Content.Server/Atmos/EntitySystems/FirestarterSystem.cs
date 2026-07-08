@@ -24,12 +24,12 @@ public sealed partial class FirestarterSystem : SharedFirestarterSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FirestarterComponent, FireStarterActionEvent>(OnStartFire);
     }
 
     /// <summary>
     /// Checks Radius for igniting nearby flammable objects
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnStartFire(EntityUid uid, FirestarterComponent component, FireStarterActionEvent args)
     {
         if (_container.IsEntityOrParentInContainer(uid))

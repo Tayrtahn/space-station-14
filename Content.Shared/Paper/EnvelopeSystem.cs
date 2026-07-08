@@ -15,14 +15,9 @@ public sealed partial class EnvelopeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EnvelopeComponent, ItemSlotInsertAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<EnvelopeComponent, ItemSlotEjectAttemptEvent>(OnEjectAttempt);
-        SubscribeLocalEvent<EnvelopeComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerbs);
-        SubscribeLocalEvent<EnvelopeComponent, EnvelopeDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<EnvelopeComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<EnvelopeComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed)
@@ -35,6 +30,7 @@ public sealed partial class EnvelopeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAltVerbs(Entity<EnvelopeComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null)
@@ -55,11 +51,13 @@ public sealed partial class EnvelopeSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<EnvelopeComponent> ent, ref ItemSlotInsertAttemptEvent args)
     {
         args.Cancelled |= ent.Comp.State != EnvelopeComponent.EnvelopeState.Open;
     }
 
+    [SubscribeLocalEvent]
     private void OnEjectAttempt(Entity<EnvelopeComponent> ent, ref ItemSlotEjectAttemptEvent args)
     {
         args.Cancelled |= ent.Comp.State == EnvelopeComponent.EnvelopeState.Sealed;
@@ -82,6 +80,8 @@ public sealed partial class EnvelopeSystem : EntitySystem
         if (_doAfterSystem.TryStartDoAfter(doAfterEventArgs, out var doAfterId))
             ent.Comp.EnvelopeDoAfter = doAfterId;
     }
+
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<EnvelopeComponent> ent, ref EnvelopeDoAfterEvent args)
     {
         ent.Comp.EnvelopeDoAfter = null;

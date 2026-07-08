@@ -21,14 +21,11 @@ namespace Content.Shared.Ghost
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<GhostComponent, UseAttemptEvent>(OnAttempt);
-            SubscribeLocalEvent<GhostComponent, InteractionAttemptEvent>(OnAttemptInteract);
-            SubscribeLocalEvent<GhostComponent, EmoteAttemptEvent>(OnAttempt);
             SubscribeLocalEvent<GhostComponent, DropAttemptEvent>(OnAttempt);
             SubscribeLocalEvent<GhostComponent, PickupAttemptEvent>(OnAttempt);
-            SubscribeLocalEvent<GhostComponent, ExaminedEvent>(OnGhostExamine);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostExamine(EntityUid uid, GhostComponent component, ExaminedEvent args)
         {
             var timeSinceDeath = _gameTiming.RealTime.Subtract(component.TimeOfDeath);
@@ -39,12 +36,14 @@ namespace Content.Shared.Ghost
             args.PushMarkup(deathTimeInfo);
         }
 
+        [SubscribeLocalEvent]
         private void OnAttemptInteract(Entity<GhostComponent> ent, ref InteractionAttemptEvent args)
         {
             if (!ent.Comp.CanGhostInteract)
                 args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnAttempt(EntityUid uid, GhostComponent component, CancellableEntityEventArgs args)
         {
             if (!component.CanGhostInteract)

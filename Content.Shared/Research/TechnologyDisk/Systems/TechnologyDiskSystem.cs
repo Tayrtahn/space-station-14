@@ -27,14 +27,9 @@ public sealed partial class TechnologyDiskSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TechnologyDiskComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<TechnologyDiskComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<TechnologyDiskComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<TechnologyDiskComponent, PriceCalculationEvent>(OnPriceCalculation);
-        SubscribeLocalEvent<TechnologyDiskComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<TechnologyDiskComponent> ent, ref MapInitEvent args)
     {
         TryPickAndSetRecipe(ent);
@@ -123,6 +118,7 @@ public sealed partial class TechnologyDiskSystem : EntitySystem
         _appearance.SetData(ent.Owner, TechDiskVisuals.Discipline, discipline.ID);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<TechnologyDiskComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not { } target)
@@ -143,6 +139,7 @@ public sealed partial class TechnologyDiskSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<TechnologyDiskComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp is { Tier: not null, Discipline: not null }
@@ -172,6 +169,7 @@ public sealed partial class TechnologyDiskSystem : EntitySystem
         args.PushMarkup(message);
     }
 
+    [SubscribeLocalEvent]
     private void OnPriceCalculation(Entity<TechnologyDiskComponent> ent, ref PriceCalculationEvent args)
     {
         if (ent.Comp.Tier is not { } tier)
@@ -184,6 +182,7 @@ public sealed partial class TechnologyDiskSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<TechnologyDiskComponent> entity, ref RefreshNameModifiersEvent args)
     {
         if (entity.Comp.Recipes != null)

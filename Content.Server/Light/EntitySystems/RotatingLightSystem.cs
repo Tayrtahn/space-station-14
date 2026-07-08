@@ -4,15 +4,14 @@ using Robust.Shared.GameObjects;
 
 namespace Content.Server.Light.EntitySystems;
 
-public sealed class RotatingLightSystem : SharedRotatingLightSystem
+public sealed partial class RotatingLightSystem : SharedRotatingLightSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RotatingLightComponent, PointLightToggleEvent>(OnLightToggle);
     }
 
+    [SubscribeLocalEvent]
     private void OnLightToggle(EntityUid uid, RotatingLightComponent comp, PointLightToggleEvent args)
     {
         if (comp.Enabled == args.Enabled)

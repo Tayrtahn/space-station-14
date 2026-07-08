@@ -10,16 +10,15 @@ public sealed partial class MedTekCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MedTekCartridgeComponent, CartridgeAddedEvent>(OnCartridgeAdded);
-        SubscribeLocalEvent<MedTekCartridgeComponent, CartridgeRemovedEvent>(OnCartridgeRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnCartridgeAdded(Entity<MedTekCartridgeComponent> ent, ref CartridgeAddedEvent args)
     {
         EnsureComp<HealthAnalyzerComponent>(args.Loader);
     }
 
+    [SubscribeLocalEvent]
     private void OnCartridgeRemoved(Entity<MedTekCartridgeComponent> ent, ref CartridgeRemovedEvent args)
     {
         // only remove when the program itself is removed

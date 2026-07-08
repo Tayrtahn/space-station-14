@@ -10,16 +10,15 @@ public abstract partial class SharedScaleVisualsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScaleVisualsComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ScaleVisualsComponent, ComponentShutdown>(OnComponentShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ScaleVisualsComponent> ent, ref MapInitEvent args)
     {
         SetSpriteScale(ent.Owner, ent.Comp.Scale);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<ScaleVisualsComponent> ent, ref ComponentShutdown args)
     {
         ResetScale(ent);

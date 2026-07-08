@@ -10,10 +10,9 @@ public abstract partial class SharedSunShadowSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SunShadowCycleComponent, MapInitEvent>(OnCycleMapInit);
-        SubscribeLocalEvent<SunShadowCycleComponent, LightCycleOffsetEvent>(OnCycleOffset);
     }
 
+    [SubscribeLocalEvent]
     private void OnCycleOffset(Entity<SunShadowCycleComponent> ent, ref LightCycleOffsetEvent args)
     {
         // Okay so we synchronise with LightCycleComponent.
@@ -22,6 +21,7 @@ public abstract partial class SharedSunShadowSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCycleMapInit(Entity<SunShadowCycleComponent> ent, ref MapInitEvent args)
     {
         if (TryComp(ent.Owner, out LightCycleComponent? lightCycle))

@@ -10,9 +10,9 @@ public sealed partial class ConfigurationSystem : SharedConfigurationSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ConfigurationComponent, AfterAutoHandleStateEvent>(OnConfigurationState);
     }
 
+    [SubscribeLocalEvent]
     private void OnConfigurationState(Entity<ConfigurationComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (_uiSystem.TryGetOpenUi<ConfigurationBoundUserInterface>(ent.Owner,

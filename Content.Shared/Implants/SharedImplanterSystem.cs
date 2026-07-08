@@ -42,21 +42,9 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         base.Initialize();
 
         InitializeImplanted();
-
-        SubscribeLocalEvent<ImplanterComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<ImplanterComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ImplanterComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-        SubscribeLocalEvent<ImplanterComponent, ExaminedEvent>(OnExamine);
-
-        SubscribeLocalEvent<ImplanterComponent, AfterInteractEvent>(OnImplanterAfterInteract);
-        SubscribeLocalEvent<ImplanterComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ImplanterComponent, GetVerbsEvent<InteractionVerb>>(OnVerb);
-        SubscribeLocalEvent<ImplanterComponent, DeimplantChangeVerbMessage>(OnSelected);
-
-        SubscribeLocalEvent<ImplanterComponent, ImplantEvent>(OnImplant);
-        SubscribeLocalEvent<ImplanterComponent, DrawEvent>(OnDraw);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<ImplanterComponent> ent, ref ComponentInit args)
     {
         if (ent.Comp.Implant != null)
@@ -65,12 +53,14 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         _itemSlots.AddItemSlot(ent, ImplanterComponent.ImplanterSlotId, ent.Comp.ImplanterSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ImplanterComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.DeimplantChosen ??= ent.Comp.DeimplantWhitelist.FirstOrNull();
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(Entity<ImplanterComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -84,6 +74,7 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ImplanterComponent> ent, ref ExaminedEvent args)
     {
         if (!ent.Comp.ImplanterSlot.HasItem || !args.IsInDetailsRange)
@@ -92,6 +83,7 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         args.PushMarkup(Loc.GetString("implanter-contained-implant-text", ("desc", ent.Comp.ImplantData.Item2)));
     }
 
+    [SubscribeLocalEvent]
     private void OnImplanterAfterInteract(Entity<ImplanterComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Target == null || !args.CanReach || args.Handled)
@@ -133,6 +125,7 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnVerb(Entity<ImplanterComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -149,12 +142,14 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<ImplanterComponent> ent, ref UseInHandEvent args)
     {
         if (ent.Comp.CurrentMode == ImplanterToggleMode.Draw)
             TryOpenUi(ent.AsNullable(), args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelected(Entity<ImplanterComponent> ent, ref DeimplantChangeVerbMessage args)
     {
         ent.Comp.DeimplantChosen = args.Implant;
@@ -233,6 +228,7 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnImplant(Entity<ImplanterComponent> ent, ref ImplantEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target == null || args.Used == null)
@@ -243,6 +239,7 @@ public abstract partial class SharedImplanterSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDraw(Entity<ImplanterComponent> ent, ref DrawEvent args)
     {
         if (args.Cancelled || args.Handled || args.Used == null || args.Target == null)

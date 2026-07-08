@@ -3,15 +3,14 @@ using Content.Shared.Traits.Assorted;
 
 namespace Content.Server.Traits.Assorted;
 
-public sealed class UnrevivableSystem : EntitySystem
+public sealed partial class UnrevivableSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<UnrevivableComponent, CloningAttemptEvent>(OnCloningAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloningAttempt(Entity<UnrevivableComponent> ent, ref CloningAttemptEvent args)
     {
         if (!ent.Comp.Cloneable)

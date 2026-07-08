@@ -9,10 +9,9 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NavMapComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, NavMapComponent component, ref ComponentHandleState args)
     {
         Dictionary<Vector2i, int[]> modifiedChunks;

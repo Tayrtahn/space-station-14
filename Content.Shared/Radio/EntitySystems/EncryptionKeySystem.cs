@@ -31,16 +31,9 @@ public sealed partial class EncryptionKeySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<EncryptionKeyComponent, ExaminedEvent>(OnKeyExamined);
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, ExaminedEvent>(OnHolderExamined);
-
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, EntInsertedIntoContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, EntRemovedFromContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<EncryptionKeyHolderComponent, EncryptionRemovalFinishedEvent>(OnKeyRemoval);
     }
 
+    [SubscribeLocalEvent]
     private void OnKeyRemoval(EntityUid uid, EncryptionKeyHolderComponent component, EncryptionRemovalFinishedEvent args)
     {
         if (args.Cancelled)
@@ -77,12 +70,14 @@ public sealed partial class EncryptionKeySystem : EntitySystem
         RaiseLocalEvent(uid, new EncryptionChannelsChangedEvent(component));
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerModified(EntityUid uid, EncryptionKeyHolderComponent component, ContainerModifiedMessage args)
     {
         if (args.Container.ID == EncryptionKeyHolderComponent.KeyContainerName)
             UpdateChannels(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, EncryptionKeyHolderComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -155,12 +150,14 @@ public sealed partial class EncryptionKeySystem : EntitySystem
         _tool.UseTool(args.Used, args.User, uid, 1f, component.KeysExtractionMethod, new EncryptionRemovalFinishedEvent(), toolComponent: tool);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, EncryptionKeyHolderComponent component, ComponentStartup args)
     {
         component.KeyContainer = _container.EnsureContainer<Container>(uid, EncryptionKeyHolderComponent.KeyContainerName);
         UpdateChannels(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnHolderExamined(EntityUid uid, EncryptionKeyHolderComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -186,6 +183,7 @@ public sealed partial class EncryptionKeySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnKeyExamined(EntityUid uid, EncryptionKeyComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

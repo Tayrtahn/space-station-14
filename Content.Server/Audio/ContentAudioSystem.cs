@@ -48,25 +48,22 @@ public sealed partial class ContentAudioSystem : SharedContentAudioSystem
                 _lobbyPlaylist = ShuffleLobbyPlaylist();
             },
             true);
-
-        SubscribeLocalEvent<RoundEndMessageEvent>(OnRoundEnd);
-        SubscribeLocalEvent<PlayerJoinedLobbyEvent>(OnPlayerJoinedLobby);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundCleanup);
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStart);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnProtoReload);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundCleanup(RoundRestartCleanupEvent ev)
     {
         SilenceAudio();
     }
 
+    [SubscribeLocalEvent]
     private void OnProtoReload(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<AudioPresetPrototype>())
             _serverAudio.ReloadPresets();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStart(RoundStartingEvent ev)
     {
         // On cleanup all entities get purged so need to ensure audio presets are still loaded
@@ -74,6 +71,7 @@ public sealed partial class ContentAudioSystem : SharedContentAudioSystem
         _serverAudio.ReloadPresets();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerJoinedLobby(PlayerJoinedLobbyEvent ev)
     {
         if (_lobbyPlaylist != null)
@@ -83,6 +81,7 @@ public sealed partial class ContentAudioSystem : SharedContentAudioSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEnd(RoundEndMessageEvent ev)
     {
         // The lobby song is set here instead of in RestartRound,

@@ -102,16 +102,6 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         base.Initialize();
 
         Log.Level = LogLevel.Debug;
-
-        SubscribeLocalEvent<GhostRoleAntagSpawnerComponent, TakeGhostRoleEvent>(OnTakeGhostRole);
-
-        SubscribeLocalEvent<AntagSelectionComponent, ObjectivesTextGetInfoEvent>(OnObjectivesTextGetInfo);
-
-        // In order of how these occur.
-        SubscribeLocalEvent<RulePlayerSpawningEvent>(OnPlayerSpawning);
-        SubscribeLocalEvent<NoJobsAvailableSpawningEvent>(OnJobNotAssigned);
-        SubscribeLocalEvent<RulePlayerJobsAssignedEvent>(OnJobsAssigned);
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnSpawnComplete);
     }
 
     protected override void Started(EntityUid uid, AntagSelectionComponent component, GameRuleComponent gameRule, GameRuleStartedEvent args)
@@ -141,6 +131,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
             SpawnGhostRoles((uid, component), players.Length);
     }
 
+    [SubscribeLocalEvent]
     private void OnTakeGhostRole(Entity<GhostRoleAntagSpawnerComponent> ent, ref TakeGhostRoleEvent args)
     {
         if (args.TookRole)
@@ -176,6 +167,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         _ghostRole.UnregisterGhostRole((ent, Comp<GhostRoleComponent>(ent)));
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnComplete(PlayerSpawnCompleteEvent args)
     {
         if (!args.LateJoin)
@@ -185,6 +177,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
     }
 
     // This is called when the round starts, before jobs are selected
+    [SubscribeLocalEvent]
     private void OnPlayerSpawning(RulePlayerSpawningEvent args)
     {
         var pool = args.PlayerPool;
@@ -219,6 +212,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         _preSpawnRules = null; // Clear the list, we don't want it anymore
     }
 
+    [SubscribeLocalEvent]
     private void OnJobsAssigned(RulePlayerJobsAssignedEvent args)
     {
         if (_postSpawnRules == null)
@@ -248,6 +242,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         _delayedAntags.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnJobNotAssigned(NoJobsAvailableSpawningEvent args)
     {
         // If someone fails to spawn in due to there being no jobs, they should be removed from any preselected antags.
@@ -821,6 +816,7 @@ public sealed partial class AntagSelectionSystem : GameRuleSystem<AntagSelection
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnObjectivesTextGetInfo(Entity<AntagSelectionComponent> ent, ref ObjectivesTextGetInfoEvent args)
     {
         if (ent.Comp.AgentName is not { } name)

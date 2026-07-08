@@ -80,7 +80,6 @@ namespace Content.Server.NPC.Pathfinding
             base.Initialize();
             _playerManager.PlayerStatusChanged += OnPlayerChange;
             InitializeGrid();
-            SubscribeNetworkEvent<RequestPathfindingDebugMessage>(OnBreadcrumbs);
         }
 
         public override void Shutdown()
@@ -540,6 +539,7 @@ namespace Content.Server.NPC.Pathfinding
             }
         }
 
+        [SubscribeNetworkEvent]
         private void OnBreadcrumbs(RequestPathfindingDebugMessage msg, EntitySessionEventArgs args)
         {
             var pSession = args.SenderSession;

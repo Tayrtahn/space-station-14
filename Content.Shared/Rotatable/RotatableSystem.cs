@@ -24,8 +24,6 @@ public sealed partial class RotatableSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<FlippableComponent, GetVerbsEvent<Verb>>(AddFlipVerb);
-        SubscribeLocalEvent<RotatableComponent, GetVerbsEvent<Verb>>(AddRotateVerbs);
 
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.RotateObjectClockwise, new PointerInputCmdHandler(HandleRotateObjectClockwise))
@@ -34,6 +32,7 @@ public sealed partial class RotatableSystem : EntitySystem
             .Register<RotatableSystem>();
     }
 
+    [SubscribeLocalEvent]
     private void AddFlipVerb(EntityUid uid, FlippableComponent component, GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess
@@ -57,6 +56,7 @@ public sealed partial class RotatableSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void AddRotateVerbs(EntityUid uid, RotatableComponent component, GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess

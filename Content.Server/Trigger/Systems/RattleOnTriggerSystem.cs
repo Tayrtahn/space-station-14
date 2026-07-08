@@ -16,10 +16,9 @@ public sealed partial class RattleOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RattleOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<RattleOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

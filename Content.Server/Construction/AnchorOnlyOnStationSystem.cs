@@ -13,10 +13,9 @@ public sealed partial class AnchorOnlyOnStationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         var allGrids = args.NewGrids.ToList();

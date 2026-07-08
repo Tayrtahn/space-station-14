@@ -19,10 +19,9 @@ public sealed partial class PointSystem : SharedPointSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PointManagerComponent, ComponentStartup>(OnStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, PointManagerComponent component, ComponentStartup args)
     {
         _pvsOverride.AddGlobalOverride(uid);

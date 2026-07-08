@@ -10,8 +10,6 @@ namespace Content.Shared.Electrocution
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<InsulatedComponent, ElectrocutionAttemptEvent>(OnInsulatedElectrocutionAttempt);
             // as long as legally distinct electric-mice are never added, this should be fine (otherwise a mouse-hat will transfer it's power to the wearer).
             SubscribeLocalEvent<InsulatedComponent, InventoryRelayedEvent<ElectrocutionAttemptEvent>>((e, c, ev) => OnInsulatedElectrocutionAttempt(e, c, ev.Args));
         }
@@ -79,6 +77,7 @@ namespace Content.Shared.Electrocution
             return false;
         }
 
+        [SubscribeLocalEvent]
         private void OnInsulatedElectrocutionAttempt(EntityUid uid, InsulatedComponent insulated, ElectrocutionAttemptEvent args)
         {
             args.SiemensCoefficient *= insulated.Coefficient;

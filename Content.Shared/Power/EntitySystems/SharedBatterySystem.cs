@@ -18,22 +18,9 @@ public abstract partial class SharedBatterySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BatteryComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<BatteryComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BatteryComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<BatteryComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<BatteryComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<BatteryComponent, PriceCalculationEvent>(CalculateBatteryPrice);
-        SubscribeLocalEvent<BatteryComponent, ChangeChargeEvent>(OnChangeCharge);
-        SubscribeLocalEvent<BatteryComponent, GetChargeEvent>(OnGetCharge);
-        SubscribeLocalEvent<BatterySelfRechargerComponent, RefreshChargeRateEvent>(OnRefreshChargeRate);
-        SubscribeLocalEvent<BatterySelfRechargerComponent, ComponentStartup>(OnRechargerStartup);
-        SubscribeLocalEvent<BatterySelfRechargerComponent, ComponentRemove>(OnRechargerRemove);
-        SubscribeLocalEvent<BatteryVisualsComponent, ChargeChangedEvent>(OnVisualsChargeChanged);
-        SubscribeLocalEvent<BatteryVisualsComponent, BatteryStateChangedEvent>(OnVisualsStateChanged);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnStartup(Entity<BatteryComponent> ent, ref ComponentStartup args)
     {
         // In case a recharging component was added before the battery component itself.
@@ -44,23 +31,27 @@ public abstract partial class SharedBatterySystem : EntitySystem
             RefreshChargeRate(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<BatteryComponent> ent, ref MapInitEvent args)
     {
         SetCharge(ent.AsNullable(), ent.Comp.StartingCharge);
         RefreshChargeRate(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<BatteryComponent> ent, ref RejuvenateEvent args)
     {
         SetCharge(ent.AsNullable(), ent.Comp.MaxCharge);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(Entity<BatteryComponent> ent, ref EmpPulseEvent args)
     {
         args.Affected = true;
         UseCharge(ent.AsNullable(), args.EnergyConsumption);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<BatteryComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -85,11 +76,13 @@ public abstract partial class SharedBatterySystem : EntitySystem
     /// <summary>
     /// Gets the price for the power contained in an entity's battery.
     /// </summary>
+    [SubscribeLocalEvent]
     private void CalculateBatteryPrice(Entity<BatteryComponent> ent, ref PriceCalculationEvent args)
     {
         args.Price += GetCharge(ent.AsNullable()) * ent.Comp.PricePerJoule;
     }
 
+    [SubscribeLocalEvent]
     private void OnChangeCharge(Entity<BatteryComponent> ent, ref ChangeChargeEvent args)
     {
         if (args.ResidualValue == 0)
@@ -98,12 +91,14 @@ public abstract partial class SharedBatterySystem : EntitySystem
         args.ResidualValue -= ChangeCharge(ent.AsNullable(), args.ResidualValue);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetCharge(Entity<BatteryComponent> ent, ref GetChargeEvent args)
     {
         args.CurrentCharge += GetCharge(ent.AsNullable());
         args.MaxCharge += ent.Comp.MaxCharge;
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshChargeRate(Entity<BatterySelfRechargerComponent> ent, ref RefreshChargeRateEvent args)
     {
         if (_timing.CurTime < ent.Comp.NextAutoRecharge)
@@ -141,6 +136,7 @@ public abstract partial class SharedBatterySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRechargerStartup(Entity<BatterySelfRechargerComponent> ent, ref ComponentStartup args)
     {
         // In case this component is added after the battery component.
@@ -149,12 +145,14 @@ public abstract partial class SharedBatterySystem : EntitySystem
             RefreshChargeRate(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnRechargerRemove(Entity<BatterySelfRechargerComponent> ent, ref ComponentRemove args)
     {
         // We use ComponentRemove to make sure this component no longer subscribes to the refresh event.
         RefreshChargeRate(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnVisualsChargeChanged(Entity<BatteryVisualsComponent> ent, ref ChargeChangedEvent args)
     {
         // Update the appearance data for the charge rate.
@@ -168,6 +166,7 @@ public abstract partial class SharedBatterySystem : EntitySystem
         _appearance.SetData(ent.Owner, BatteryVisuals.Charging, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnVisualsStateChanged(Entity<BatteryVisualsComponent> ent, ref BatteryStateChangedEvent args)
     {
         // Update the appearance data for the fill level (empty, full, in-between).

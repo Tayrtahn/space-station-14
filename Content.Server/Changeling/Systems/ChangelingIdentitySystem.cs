@@ -4,15 +4,14 @@ using Robust.Shared.GameStates;
 
 namespace Content.Server.Changeling.Systems;
 
-public sealed class ChangelingIdentitySystem : SharedChangelingIdentitySystem
+public sealed partial class ChangelingIdentitySystem : SharedChangelingIdentitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingIdentityComponent, ComponentGetState>(OnGetState);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(Entity<ChangelingIdentityComponent> entity, ref ComponentGetState args)
     {
         List<ChangelingNetworkedIdentityData> sentIdentities = new();

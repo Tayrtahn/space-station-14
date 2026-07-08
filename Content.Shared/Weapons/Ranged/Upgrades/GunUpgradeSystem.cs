@@ -28,18 +28,9 @@ public sealed partial class GunUpgradeSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<UpgradeableGunComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<UpgradeableGunComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-        SubscribeLocalEvent<UpgradeableGunComponent, ExaminedEvent>(OnExamine);
-
-        SubscribeLocalEvent<UpgradeableGunComponent, GunRefreshModifiersEvent>(RelayEvent);
-        SubscribeLocalEvent<UpgradeableGunComponent, GunShotEvent>(RelayEvent);
-
-        SubscribeLocalEvent<GunUpgradeFireRateComponent, GunRefreshModifiersEvent>(OnFireRateRefresh);
-        SubscribeLocalEvent<GunUpgradeSpeedComponent, GunRefreshModifiersEvent>(OnSpeedRefresh);
-        SubscribeLocalEvent<GunUpgradeDamageComponent, GunShotEvent>(OnDamageGunShot);
     }
 
+    [SubscribeLocalEvent]
     private void RelayEvent<T>(Entity<UpgradeableGunComponent> ent, ref T args) where T : notnull
     {
         foreach (var upgrade in GetCurrentUpgrades(ent))
@@ -48,6 +39,7 @@ public sealed partial class GunUpgradeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<UpgradeableGunComponent> ent, ref ExaminedEvent args)
     {
         using (args.PushGroup(nameof(UpgradeableGunComponent)))
@@ -59,11 +51,13 @@ public sealed partial class GunUpgradeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<UpgradeableGunComponent> ent, ref ComponentInit args)
     {
         _container.EnsureContainer<Container>(ent, ent.Comp.UpgradesContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteractUsing(Entity<UpgradeableGunComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (args.Handled || !args.CanReach || !TryComp<GunUpgradeComponent>(args.Used, out var upgradeComponent))
@@ -92,16 +86,19 @@ public sealed partial class GunUpgradeSystem : EntitySystem
         _adminLog.Add(LogType.Action, LogImpact.Low, $"{ToPrettyString(args.User):player} inserted gun upgrade {ToPrettyString(args.Used)} into {ToPrettyString(ent.Owner)}.");
     }
 
+    [SubscribeLocalEvent]
     private void OnFireRateRefresh(Entity<GunUpgradeFireRateComponent> ent, ref GunRefreshModifiersEvent args)
     {
         args.FireRate *= ent.Comp.Coefficient;
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeedRefresh(Entity<GunUpgradeSpeedComponent> ent, ref GunRefreshModifiersEvent args)
     {
         args.ProjectileSpeed *= ent.Comp.Coefficient;
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageGunShot(Entity<GunUpgradeDamageComponent> ent, ref GunShotEvent args)
     {
         foreach (var (ammo, _) in args.Ammo)

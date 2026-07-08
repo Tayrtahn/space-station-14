@@ -19,12 +19,9 @@ public sealed partial class NanoTaskCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NanoTaskCartridgeComponent, CartridgeMessageEvent>(OnUiMessage);
-        SubscribeLocalEvent<NanoTaskCartridgeComponent, CartridgeUiReadyEvent>(OnUiReady);
-        SubscribeLocalEvent<NanoTaskCartridgeComponent, CartridgeRelayedEvent<InteractUsingEvent>>(OnInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<NanoTaskCartridgeComponent> ent, ref CartridgeRelayedEvent<InteractUsingEvent> args)
     {
         if (!TryComp<NanoTaskPrintedComponent>(args.Args.Used, out var printed))
@@ -43,6 +40,7 @@ public sealed partial class NanoTaskCartridgeSystem : EntitySystem
     /// <summary>
     /// This gets called when the ui fragment needs to be updated for the first time after activating
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiReady(Entity<NanoTaskCartridgeComponent> ent, ref CartridgeUiReadyEvent args)
     {
         UpdateUiState(ent, args.Loader);
@@ -77,6 +75,7 @@ public sealed partial class NanoTaskCartridgeSystem : EntitySystem
     /// <remarks>
     /// The cartridge specific ui message event needs to inherit from the CartridgeMessageEvent
     /// </remarks>
+    [SubscribeLocalEvent]
     private void OnUiMessage(Entity<NanoTaskCartridgeComponent> ent, ref CartridgeMessageEvent args)
     {
         if (args is not NanoTaskUiMessageEvent message)

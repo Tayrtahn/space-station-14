@@ -23,18 +23,16 @@ public abstract partial class SharedHotPotatoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HotPotatoComponent, ContainerGettingRemovedAttemptEvent>(OnRemoveAttempt);
-        SubscribeLocalEvent<HotPotatoComponent, ActiveTimerTriggerEvent>(OnActiveTimer);
-        SubscribeLocalEvent<HotPotatoComponent, MeleeHitEvent>(OnMeleeHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveAttempt(Entity<HotPotatoComponent> ent, ref ContainerGettingRemovedAttemptEvent args)
     {
         if (!_timing.ApplyingState && !ent.Comp.CanTransfer)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnActiveTimer(Entity<HotPotatoComponent> ent, ref ActiveTimerTriggerEvent args)
     {
         EnsureComp<ActiveHotPotatoComponent>(ent);
@@ -44,6 +42,7 @@ public abstract partial class SharedHotPotatoSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMeleeHit(Entity<HotPotatoComponent> ent, ref MeleeHitEvent args)
     {
         if (!HasComp<ActiveHotPotatoComponent>(ent))

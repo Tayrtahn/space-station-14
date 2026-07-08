@@ -39,18 +39,6 @@ namespace Content.Server.Shuttles.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<DockingComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<DockingComponent, ComponentShutdown>(OnShutdown);
-            SubscribeLocalEvent<DockingComponent, AnchorStateChangedEvent>(OnAnchorChange);
-            SubscribeLocalEvent<DockingComponent, ReAnchorEvent>(OnDockingReAnchor);
-
-            SubscribeLocalEvent<DockingComponent, BeforeDoorAutoCloseEvent>(OnAutoClose);
-
-            // Yes this isn't in shuttle console; it may be used by other systems technically.
-            // in which case I would also add their subs here.
-            SubscribeLocalEvent<ShuttleConsoleComponent, DockRequestMessage>(OnRequestDock);
-            SubscribeLocalEvent<ShuttleConsoleComponent, UndockRequestMessage>(OnRequestUndock);
         }
 
         public void UndockDocks(EntityUid gridUid)
@@ -76,6 +64,7 @@ namespace Content.Server.Shuttles.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAutoClose(EntityUid uid, DockingComponent component, BeforeDoorAutoCloseEvent args)
         {
             // We'll just pin the door open when docked.
@@ -83,6 +72,7 @@ namespace Content.Server.Shuttles.Systems
                 args.Cancel();
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, DockingComponent component, ComponentShutdown args)
         {
             if (component.DockedWith == null ||
@@ -145,6 +135,7 @@ namespace Content.Server.Shuttles.Systems
             RaiseLocalEvent(msg);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(Entity<DockingComponent> entity, ref ComponentStartup args)
         {
             var uid = entity.Owner;
@@ -169,6 +160,7 @@ namespace Content.Server.Shuttles.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChange(Entity<DockingComponent> entity, ref AnchorStateChangedEvent args)
         {
             if (!args.Anchored)
@@ -177,6 +169,7 @@ namespace Content.Server.Shuttles.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnDockingReAnchor(Entity<DockingComponent> entity, ref ReAnchorEvent args)
         {
             var uid = entity.Owner;
@@ -348,6 +341,7 @@ namespace Content.Server.Shuttles.Systems
                 door.ChangeAirtight = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnRequestUndock(EntityUid uid, ShuttleConsoleComponent component, UndockRequestMessage args)
         {
             if (!TryGetEntity(args.DockEntity, out var dockEnt) ||
@@ -368,6 +362,7 @@ namespace Content.Server.Shuttles.Systems
             Undock(dock);
         }
 
+        [SubscribeLocalEvent]
         private void OnRequestDock(EntityUid uid, ShuttleConsoleComponent component, DockRequestMessage args)
         {
             var console = _console.GetDroneConsole(uid);

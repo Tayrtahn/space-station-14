@@ -35,17 +35,16 @@ public sealed partial class MetabolizerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MetabolizerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<MetabolizerComponent, BodyRelayedEvent<ApplyMetabolicMultiplierEvent>>(OnApplyMetabolicMultiplier);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<MetabolizerComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextUpdate = _gameTiming.CurTime + ent.Comp.AdjustedUpdateInterval;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnApplyMetabolicMultiplier(Entity<MetabolizerComponent> ent, ref BodyRelayedEvent<ApplyMetabolicMultiplierEvent> args)
     {
         ent.Comp.UpdateIntervalMultiplier = args.Args.Multiplier;

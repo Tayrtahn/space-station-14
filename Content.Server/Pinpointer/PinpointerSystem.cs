@@ -15,9 +15,6 @@ public sealed partial class PinpointerSystem : SharedPinpointerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PinpointerComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<FTLCompletedEvent>(OnLocateTarget);
     }
 
     public override bool TogglePinpointer(Entity<PinpointerComponent?> ent)
@@ -40,6 +37,7 @@ public sealed partial class PinpointerSystem : SharedPinpointerSystem
         _appearance.SetData(ent, PinpointerVisuals.TargetDistance, ent.Comp1.DistanceToTarget, ent.Comp2);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<PinpointerComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -53,6 +51,7 @@ public sealed partial class PinpointerSystem : SharedPinpointerSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnLocateTarget(ref FTLCompletedEvent ev)
     {
         // This feels kind of expensive, but it only happens once per hyperspace jump

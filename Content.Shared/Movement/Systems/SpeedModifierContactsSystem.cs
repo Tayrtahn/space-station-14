@@ -24,10 +24,6 @@ public sealed partial class SpeedModifierContactsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SpeedModifierContactsComponent, StartCollideEvent>(OnEntityEnter);
-        SubscribeLocalEvent<SpeedModifierContactsComponent, EndCollideEvent>(OnEntityExit);
-        SubscribeLocalEvent<SpeedModifiedByContactComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifiers);
-        SubscribeLocalEvent<SpeedModifierContactsComponent, ComponentShutdown>(OnShutdown);
 
         UpdatesAfter.Add(typeof(SharedPhysicsSystem));
     }
@@ -67,6 +63,7 @@ public sealed partial class SpeedModifierContactsSystem : EntitySystem
         _toUpdate.UnionWith(_physics.GetContactingEntities(uid));
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, SpeedModifierContactsComponent component, ComponentShutdown args)
     {
         if (!TryComp(uid, out PhysicsComponent? phys))
@@ -76,6 +73,7 @@ public sealed partial class SpeedModifierContactsSystem : EntitySystem
         _toUpdate.UnionWith(_physics.GetContactingEntities(uid, phys));
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovementSpeedModifiers(EntityUid uid, SpeedModifiedByContactComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         if (!TryComp<PhysicsComponent>(uid, out var physicsComponent))
@@ -147,12 +145,14 @@ public sealed partial class SpeedModifierContactsSystem : EntitySystem
             _toRemove.Add(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityExit(EntityUid uid, SpeedModifierContactsComponent component, ref EndCollideEvent args)
     {
         var otherUid = args.OtherEntity;
         _toUpdate.Add(otherUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityEnter(EntityUid uid, SpeedModifierContactsComponent component, ref StartCollideEvent args)
     {
         AddModifiedEntity(args.OtherEntity);

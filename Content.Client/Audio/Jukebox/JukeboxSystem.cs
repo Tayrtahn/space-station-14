@@ -16,9 +16,6 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<JukeboxComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<JukeboxComponent, AnimationCompletedEvent>(OnAnimationCompleted);
-        SubscribeLocalEvent<JukeboxComponent, AfterAutoHandleStateEvent>(OnJukeboxAfterState);
 
         ProtoMan.PrototypesReloaded += OnProtoReload;
     }
@@ -45,6 +42,7 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxAfterState(Entity<JukeboxComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (!_uiSystem.TryGetOpenUi<JukeboxBoundUserInterface>(ent.Owner, JukeboxUiKey.Key, out var bui))
@@ -53,6 +51,7 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         bui.Reload();
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(EntityUid uid, JukeboxComponent component, AnimationCompletedEvent args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))
@@ -67,6 +66,7 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         UpdateAppearance((uid, sprite), visualState, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, JukeboxComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

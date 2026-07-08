@@ -22,8 +22,6 @@ public sealed partial class MobsterAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MobsterAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
     public string Accentuate(string message, MobsterAccentComponent component)
@@ -91,6 +89,7 @@ public sealed partial class MobsterAccentSystem : EntitySystem
         return msg;
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(EntityUid uid, MobsterAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message, component);

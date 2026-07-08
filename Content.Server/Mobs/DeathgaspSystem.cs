@@ -14,10 +14,9 @@ public sealed partial class DeathgaspSystem: EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeathgaspComponent, MobStateChangedEvent>(OnMobStateChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, DeathgaspComponent component, MobStateChangedEvent args)
     {
         // don't deathgasp if they arent going straight from crit to dead

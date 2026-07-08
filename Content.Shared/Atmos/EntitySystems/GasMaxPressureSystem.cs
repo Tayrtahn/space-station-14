@@ -30,11 +30,10 @@ public abstract partial class GasMaxPressureSystem<T> : EntitySystem where T : I
     {
         base.Initialize();
 
-        SubscribeLocalEvent<T, AtmosDeviceUpdateEvent>(OnDeviceUpdated);
-
         Subs.CVar(_cfg, CCVars.AtmosTankFragment, value => _maxExplosivePower = value, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceUpdated(Entity<T> entity, ref AtmosDeviceUpdateEvent args)
     {
         // We don't update our atmos device if it's in the process of being deleted.

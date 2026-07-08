@@ -61,24 +61,9 @@ public abstract partial class SharedDoorSystem : EntitySystem
         base.Initialize();
 
         InitializeBolts();
-
-        SubscribeLocalEvent<DoorComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<DoorComponent, ComponentRemove>(OnRemove);
-
-        SubscribeLocalEvent<DoorComponent, AfterAutoHandleStateEvent>(OnHandleState);
-
-        SubscribeLocalEvent<DoorComponent, ActivateInWorldEvent>(OnActivate);
-
-        SubscribeLocalEvent<DoorComponent, StartCollideEvent>(HandleCollide);
-        SubscribeLocalEvent<DoorComponent, PreventCollideEvent>(PreventCollision);
-        SubscribeLocalEvent<DoorComponent, BeforePryEvent>(OnBeforePry);
-        SubscribeLocalEvent<DoorComponent, PriedEvent>(OnAfterPry);
-        SubscribeLocalEvent<DoorComponent, WeldableAttemptEvent>(OnWeldAttempt);
-        SubscribeLocalEvent<DoorComponent, WeldableChangedEvent>(OnWeldChanged);
-        SubscribeLocalEvent<DoorComponent, GetPryTimeModifierEvent>(OnPryTimeModifier);
-        SubscribeLocalEvent<DoorComponent, GotEmaggedEvent>(OnEmagged);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnComponentInit(Entity<DoorComponent> ent, ref ComponentInit args)
     {
         var door = ent.Comp;
@@ -110,11 +95,13 @@ public abstract partial class SharedDoorSystem : EntitySystem
         AppearanceSystem.SetData(ent, DoorVisuals.State, door.State);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<DoorComponent> door, ref ComponentRemove args)
     {
         _activeDoors.Remove(door);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, DoorComponent door, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Access))
@@ -137,6 +124,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
     }
 
     #region StateManagement
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<DoorComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         var door = ent.Comp;
@@ -201,6 +189,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
     #endregion
 
     #region Interactions
+    [SubscribeLocalEvent]
     protected void OnActivate(EntityUid uid, DoorComponent door, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex || !door.ClickOpen)
@@ -212,11 +201,13 @@ public abstract partial class SharedDoorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPryTimeModifier(EntityUid uid, DoorComponent door, ref GetPryTimeModifierEvent args)
     {
         args.BaseTime = door.PryTime;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforePry(EntityUid uid, DoorComponent door, ref BeforePryEvent args)
     {
         if (door.State == DoorState.Welded || !door.CanPry)
@@ -226,6 +217,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
     /// <summary>
     ///     Open or close a door after it has been successfully pried.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAfterPry(EntityUid uid, DoorComponent door, ref PriedEvent args)
     {
         if (door.State == DoorState.Closed)
@@ -240,6 +232,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWeldAttempt(EntityUid uid, DoorComponent component, WeldableAttemptEvent args)
     {
         if (component.CurrentlyCrushing.Count > 0)
@@ -253,6 +246,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWeldChanged(EntityUid uid, DoorComponent component, ref WeldableChangedEvent args)
     {
         if (component.State == DoorState.Closed)
@@ -600,6 +594,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void PreventCollision(EntityUid uid, DoorComponent component, ref PreventCollideEvent args)
     {
         if (component.CurrentlyCrushing.Contains(args.OtherEntity))
@@ -612,6 +607,7 @@ public abstract partial class SharedDoorSystem : EntitySystem
     ///     Open a door if a player or door-bumper (PDA, ID-card) collide with the door. Sadly, bullets no longer
     ///     generate "access denied" sounds as you fire at a door.
     /// </summary>
+    [SubscribeLocalEvent]
     private void HandleCollide(EntityUid uid, DoorComponent door, ref StartCollideEvent args)
     {
         if (!door.BumpOpen)

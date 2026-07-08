@@ -14,12 +14,9 @@ public abstract partial class SharedGasThermoMachineSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasThermoMachineComponent, ExaminedEvent>(OnExamined);
-
-        SubscribeLocalEvent<GasThermoMachineComponent, GasThermomachineToggleMessage>(OnToggleMessage);
-        SubscribeLocalEvent<GasThermoMachineComponent, GasThermomachineChangeTemperatureMessage>(OnChangeTemperature);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, GasThermoMachineComponent thermoMachine, ExaminedEvent args)
     {
         if (Loc.TryGetString("gas-thermomachine-system-examined",
@@ -38,6 +35,7 @@ public abstract partial class SharedGasThermoMachineSystem : EntitySystem
         return comp.Cp >= 0;
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleMessage(EntityUid uid, GasThermoMachineComponent thermoMachine, GasThermomachineToggleMessage args)
     {
         var powerState = _receiver.TogglePower(uid, user: args.Actor);
@@ -45,6 +43,7 @@ public abstract partial class SharedGasThermoMachineSystem : EntitySystem
         DirtyUI(uid, thermoMachine);
     }
 
+    [SubscribeLocalEvent]
     private void OnChangeTemperature(EntityUid uid, GasThermoMachineComponent thermoMachine, GasThermomachineChangeTemperatureMessage args)
     {
         if (IsHeater(thermoMachine))

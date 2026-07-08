@@ -10,10 +10,9 @@ public sealed partial class AntagMultipleRoleSpawnerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AntagMultipleRoleSpawnerComponent, AntagSelectEntityEvent>(OnSelectEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectEntity(Entity<AntagMultipleRoleSpawnerComponent> ent, ref AntagSelectEntityEvent args)
     {
         var entProtos = ent.Comp.AntagRoleToPrototypes[args.Antag];

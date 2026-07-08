@@ -13,11 +13,9 @@ public sealed partial class RequireProjectileTargetSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<RequireProjectileTargetComponent, PreventCollideEvent>(PreventCollide);
-        SubscribeLocalEvent<RequireProjectileTargetComponent, StoodEvent>(StandingBulletHit);
-        SubscribeLocalEvent<RequireProjectileTargetComponent, DownedEvent>(LayingBulletPass);
     }
 
+    [SubscribeLocalEvent]
     private void PreventCollide(Entity<RequireProjectileTargetComponent> ent, ref PreventCollideEvent args)
     {
         if (args.Cancelled)
@@ -54,11 +52,13 @@ public sealed partial class RequireProjectileTargetSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void StandingBulletHit(Entity<RequireProjectileTargetComponent> ent, ref StoodEvent args)
     {
         SetActive(ent, false);
     }
 
+    [SubscribeLocalEvent]
     private void LayingBulletPass(Entity<RequireProjectileTargetComponent> ent, ref DownedEvent args)
     {
         SetActive(ent, true);

@@ -16,10 +16,9 @@ namespace Content.Shared.Verbs
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeAllEvent<ExecuteVerbEvent>(HandleExecuteVerb);
         }
 
+        [SubscribeAllEvent]
         private void HandleExecuteVerb(ExecuteVerbEvent args, EntitySessionEventArgs eventArgs)
         {
             var user = eventArgs.SenderSession.AttachedEntity;

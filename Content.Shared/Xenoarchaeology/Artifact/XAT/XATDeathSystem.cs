@@ -17,10 +17,9 @@ public sealed partial class XATDeathSystem : BaseXATSystem<XATDeathComponent>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MobStateChangedEvent>(OnMobStateChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(MobStateChangedEvent args)
     {
         if (args.NewMobState != MobState.Dead)

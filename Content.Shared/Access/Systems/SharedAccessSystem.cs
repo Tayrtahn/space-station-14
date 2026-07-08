@@ -9,11 +9,9 @@ namespace Content.Shared.Access.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<AccessComponent, MapInitEvent>(OnAccessInit);
-            SubscribeLocalEvent<AccessComponent, GetAccessTagsEvent>(OnGetAccessTags);
         }
 
+        [SubscribeLocalEvent]
         private void OnAccessInit(EntityUid uid, AccessComponent component, MapInitEvent args)
         {
             // Add all tags in groups to the list of tags.
@@ -27,6 +25,7 @@ namespace Content.Shared.Access.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGetAccessTags(EntityUid uid, AccessComponent component, ref GetAccessTagsEvent args)
         {
             if (!component.Enabled)

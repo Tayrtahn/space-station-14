@@ -20,12 +20,9 @@ namespace Content.Shared.Decals
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GridInitializeEvent>(OnGridInitialize);
-            SubscribeLocalEvent<DecalGridComponent, ComponentStartup>(OnCompStartup);
-            SubscribeLocalEvent<DecalGridComponent, ComponentGetState>(OnGetState);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetState(EntityUid uid, DecalGridComponent component, ref ComponentGetState args)
         {
             if (PvsEnabled && !args.ReplayState)
@@ -48,11 +45,13 @@ namespace Content.Shared.Decals
             args.State = new DecalGridDeltaState(data, new(component.ChunkCollection.ChunkCollection.Keys));
         }
 
+        [SubscribeLocalEvent]
         private void OnGridInitialize(GridInitializeEvent msg)
         {
             EnsureComp<DecalGridComponent>(msg.EntityUid);
         }
 
+        [SubscribeLocalEvent]
         private void OnCompStartup(EntityUid uid, DecalGridComponent component, ComponentStartup args)
         {
             foreach (var (indices, decals) in component.ChunkCollection.ChunkCollection)

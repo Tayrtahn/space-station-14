@@ -28,18 +28,15 @@ public sealed partial class UdderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<UdderComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<UdderComponent, GetVerbsEvent<AlternativeVerb>>(AddMilkVerb);
-        SubscribeLocalEvent<UdderComponent, MilkingDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<UdderComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, UdderComponent component, MapInitEvent args)
     {
         component.NextGrowth = _timing.CurTime + component.GrowthDelay;
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<UdderComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity was our contained solution
@@ -100,6 +97,7 @@ public sealed partial class UdderSystem : EntitySystem
         _doAfterSystem.TryStartDoAfter(doargs);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<UdderComponent> entity, ref MilkingDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Args.Used == null)
@@ -129,6 +127,7 @@ public sealed partial class UdderSystem : EntitySystem
             args.Args.User, PopupType.Medium);
     }
 
+    [SubscribeLocalEvent]
     private void AddMilkVerb(Entity<UdderComponent> entity, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (args.Using == null ||

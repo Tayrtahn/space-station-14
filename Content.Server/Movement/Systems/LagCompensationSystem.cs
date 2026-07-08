@@ -22,7 +22,6 @@ public sealed partial class LagCompensationSystem : EntitySystem
     {
         base.Initialize();
         Log.Level = LogLevel.Info;
-        SubscribeLocalEvent<LagCompensationComponent, MoveEvent>(OnLagMove);
     }
 
     public override void Update(float frameTime)
@@ -51,6 +50,7 @@ public sealed partial class LagCompensationSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnLagMove(EntityUid uid, LagCompensationComponent component, ref MoveEvent args)
     {
         if (!args.NewPosition.EntityId.IsValid())

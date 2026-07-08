@@ -11,12 +11,9 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CryoPodComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<InsideCryoPodComponent, ComponentStartup>(OnCryoPodInsertion);
-        SubscribeLocalEvent<InsideCryoPodComponent, ComponentRemove>(OnCryoPodRemoval);
     }
 
+    [SubscribeLocalEvent]
     private void OnCryoPodInsertion(EntityUid uid, InsideCryoPodComponent component, ComponentStartup args)
     {
         if (!TryComp<SpriteComponent>(uid, out var spriteComponent))
@@ -28,6 +25,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
         _sprite.SetOffset((uid, spriteComponent), new Vector2(0, 1));
     }
 
+    [SubscribeLocalEvent]
     private void OnCryoPodRemoval(EntityUid uid, InsideCryoPodComponent component, ComponentRemove args)
     {
         if (!TryComp<SpriteComponent>(uid, out var spriteComponent))
@@ -38,6 +36,7 @@ public sealed partial class CryoPodSystem : SharedCryoPodSystem
         _sprite.SetOffset((uid, spriteComponent), component.PreviousOffset);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, CryoPodComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

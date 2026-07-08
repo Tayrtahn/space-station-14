@@ -17,11 +17,9 @@ public sealed partial class ItemPlacerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemPlacerComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<ItemPlacerComponent, EndCollideEvent>(OnEndCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(EntityUid uid, ItemPlacerComponent comp, ref StartCollideEvent args)
     {
         if (_whitelistSystem.IsWhitelistFail(comp.Whitelist, args.OtherEntity))
@@ -46,6 +44,7 @@ public sealed partial class ItemPlacerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(EntityUid uid, ItemPlacerComponent comp, ref EndCollideEvent args)
     {
         if (TryComp<CollisionWakeComponent>(args.OtherEntity, out var wakeComp))

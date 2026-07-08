@@ -27,11 +27,9 @@ public sealed partial class MindSystem : SharedMindSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MindContainerComponent, EntityTerminatingEvent>(OnMindContainerTerminating);
-        SubscribeLocalEvent<MindComponent, ComponentShutdown>(OnMindShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindShutdown(EntityUid uid, MindComponent mind, ComponentShutdown args)
     {
         if (mind.UserId is {} user)
@@ -48,6 +46,7 @@ public sealed partial class MindSystem : SharedMindSystem
         mind.OwnedEntity = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnMindContainerTerminating(EntityUid uid, MindContainerComponent component, ref EntityTerminatingEvent args)
     {
         if (!TryGetMind(uid, out var mindId, out var mind, component))

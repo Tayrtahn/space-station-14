@@ -14,10 +14,9 @@ public abstract partial class SharedPneumaticCannonSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PneumaticCannonComponent, AttemptShootEvent>(OnAttemptShoot);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptShoot(EntityUid uid, PneumaticCannonComponent component, ref AttemptShootEvent args)
     {
         // if the cannon doesn't need gas then it will always predict firing

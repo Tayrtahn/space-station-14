@@ -26,9 +26,6 @@ public sealed partial class GasCanisterSystem : SharedGasCanisterSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasCanisterComponent, PriceCalculationEvent>(CalculateCanisterPrice);
-        SubscribeLocalEvent<GasCanisterComponent, GasAnalyzerScanEvent>(OnAnalyzed);
     }
 
     /// <summary>
@@ -167,6 +164,7 @@ public sealed partial class GasCanisterSystem : SharedGasCanisterSystem
         containerAir.Multiply(containerAir.Volume / buffer.Volume);
     }
 
+    [SubscribeLocalEvent]
     private void CalculateCanisterPrice(EntityUid uid, GasCanisterComponent component, ref PriceCalculationEvent args)
     {
         args.Price += _atmos.GetPrice(component.Air);
@@ -175,6 +173,7 @@ public sealed partial class GasCanisterSystem : SharedGasCanisterSystem
     /// <summary>
     /// Returns the gas mixture for the gas analyzer
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnalyzed(EntityUid uid, GasCanisterComponent canisterComponent, GasAnalyzerScanEvent args)
     {
         args.GasMixtures ??= new List<(string, GasMixture?)>();

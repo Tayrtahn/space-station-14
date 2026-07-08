@@ -27,7 +27,6 @@ public sealed partial class ContrabandSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ContrabandComponent, GetVerbsEvent<ExamineVerb>>(OnDetailedExamine);
 
         Subs.CVar(_configuration, CCVars.ContrabandExamine, SetContrabandExamine, true);
         Subs.CVar(_configuration, CCVars.ContrabandExamineOnlyInHUD, SetContrabandExamineOnlyInHUD, true);
@@ -44,6 +43,7 @@ public sealed partial class ContrabandSystem : EntitySystem
         Dirty(uid, contraband);
     }
 
+    [SubscribeLocalEvent]
     private void OnDetailedExamine(EntityUid ent, ContrabandComponent component, ref GetVerbsEvent<ExamineVerb> args)
     {
 

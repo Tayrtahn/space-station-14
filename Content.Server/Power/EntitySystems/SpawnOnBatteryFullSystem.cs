@@ -15,10 +15,9 @@ public sealed partial class SpawnOnBatteryFullSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpawnOnBatteryFullComponent, BatteryStateChangedEvent>(OnBatteryStateChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnBatteryStateChange(Entity<SpawnOnBatteryFullComponent> entity, ref BatteryStateChangedEvent args)
     {
         if (args.NewState != BatteryState.Full)

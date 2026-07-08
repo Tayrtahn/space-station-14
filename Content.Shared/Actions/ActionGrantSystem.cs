@@ -12,11 +12,9 @@ public sealed partial class ActionGrantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ActionGrantComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ActionGrantComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ItemActionGrantComponent, GetItemActionsEvent>(OnItemGet);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemGet(Entity<ItemActionGrantComponent> ent, ref GetItemActionsEvent args)
     {
 
@@ -32,6 +30,7 @@ public sealed partial class ActionGrantSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ActionGrantComponent> ent, ref MapInitEvent args)
     {
         foreach (var action in ent.Comp.Actions)
@@ -44,6 +43,7 @@ public sealed partial class ActionGrantSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ActionGrantComponent> ent, ref ComponentShutdown args)
     {
         foreach (var actionEnt in ent.Comp.ActionEntities)

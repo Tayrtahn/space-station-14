@@ -121,15 +121,15 @@ public sealed class FailAndStartPresetTest : GameTest
     }
 }
 
-public sealed class TestRuleSystem : EntitySystem
+public sealed partial class TestRuleSystem : EntitySystem
 {
     public bool Run;
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<RoundStartAttemptEvent>(OnRoundStartAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStartAttempt(RoundStartAttemptEvent args)
     {
         if (!Run)

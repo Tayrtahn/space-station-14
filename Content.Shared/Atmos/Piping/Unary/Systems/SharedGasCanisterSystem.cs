@@ -20,19 +20,9 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasCanisterComponent, EntInsertedIntoContainerMessage>(OnCanisterContainerModified);
-        SubscribeLocalEvent<GasCanisterComponent, EntRemovedFromContainerMessage>(OnCanisterContainerModified);
-        SubscribeLocalEvent<GasCanisterComponent, ItemSlotInsertAttemptEvent>(OnCanisterInsertAttempt);
-        SubscribeLocalEvent<GasCanisterComponent, ComponentStartup>(OnCanisterStartup);
-        SubscribeLocalEvent<GasCanisterComponent, MapInitEvent>(OnCanisterMapInit);
-        SubscribeLocalEvent<GasCanisterComponent, BoundUIOpenedEvent>(OnCanisterUIOpened);
-
-        // Bound UI subscriptions
-        SubscribeLocalEvent<GasCanisterComponent, GasCanisterHoldingTankEjectMessage>(OnHoldingTankEjectMessage);
-        SubscribeLocalEvent<GasCanisterComponent, GasCanisterChangeReleasePressureMessage>(OnCanisterChangeReleasePressure);
-        SubscribeLocalEvent<GasCanisterComponent, GasCanisterChangeReleaseValveMessage>(OnCanisterChangeReleaseValve);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterUIOpened(Entity<GasCanisterComponent> ent, ref BoundUIOpenedEvent args)
     {
         // Fixes all canisters not populating UI elements before MapInit. Mappers rejoice
@@ -40,18 +30,21 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
         DirtyUI(ent.Owner, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterMapInit(Entity<GasCanisterComponent> ent, ref MapInitEvent args)
     {
         // Fixes empty canisters not populating UI elements
         DirtyUI(ent.Owner, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterStartup(Entity<GasCanisterComponent> ent, ref ComponentStartup args)
     {
         // Ensure container
         _slots.AddItemSlot(ent.Owner, ent.Comp.ContainerName, ent.Comp.GasTankSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterContainerModified(EntityUid uid, GasCanisterComponent component, ContainerModifiedMessage args)
     {
         if (args.Container.ID != component.ContainerName)
@@ -66,6 +59,7 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
         return string.Join(", ", canister.Comp.Air);
     }
 
+    [SubscribeLocalEvent]
     private void OnHoldingTankEjectMessage(EntityUid uid, GasCanisterComponent canister, GasCanisterHoldingTankEjectMessage args)
     {
         if (canister.GasTankSlot.Item == null)
@@ -93,6 +87,7 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
         DirtyUI(uid, canister);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterChangeReleasePressure(EntityUid uid, GasCanisterComponent canister, GasCanisterChangeReleasePressureMessage args)
     {
         var pressure = Math.Clamp(args.Pressure, canister.MinReleasePressure, canister.MaxReleasePressure);
@@ -104,6 +99,7 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
         DirtyUI(uid, canister);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterChangeReleaseValve(Entity<GasCanisterComponent> entity, ref GasCanisterChangeReleaseValveMessage args)
     {
         // filling a jetpack with plasma is less important than filling a room with it
@@ -135,6 +131,7 @@ public abstract partial class SharedGasCanisterSystem : GasMaxPressureSystem<Gas
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanisterInsertAttempt(EntityUid uid, GasCanisterComponent component, ref ItemSlotInsertAttemptEvent args)
     {
         if (args.Slot.ID != component.ContainerName || args.User == null)

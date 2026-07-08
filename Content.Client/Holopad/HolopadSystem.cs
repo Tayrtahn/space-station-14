@@ -17,17 +17,15 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HolopadHologramComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<HolopadHologramComponent, BeforePostShaderRenderEvent>(OnShaderRender);
-        SubscribeAllEvent<TypingChangedEvent>(OnTypingChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<HolopadHologramComponent> entity, ref ComponentStartup ev)
     {
         UpdateHologramSprite(entity, entity.Comp.LinkedEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnShaderRender(Entity<HolopadHologramComponent> entity, ref BeforePostShaderRenderEvent ev)
     {
         if (ev.Sprite.PostShader == null)
@@ -36,6 +34,7 @@ public sealed partial class HolopadSystem : SharedHolopadSystem
         UpdateHologramSprite(entity, entity.Comp.LinkedEntity);
     }
 
+    [SubscribeAllEvent]
     private void OnTypingChanged(TypingChangedEvent ev, EntitySessionEventArgs args)
     {
         var uid = args.SenderSession.AttachedEntity;

@@ -14,10 +14,9 @@ public sealed partial class ToggleClothingPrefixSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToggleClothingPrefixComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<ToggleClothingPrefixComponent> ent, ref ItemToggledEvent args)
     {
         _clothing.SetEquippedPrefix(ent, args.Activated ? ent.Comp.PrefixOn : ent.Comp.PrefixOff);

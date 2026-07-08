@@ -16,8 +16,6 @@ public abstract partial class VariationPassSystem<T> : GameRuleSystem<T>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<T, StationVariationPassEvent>(ApplyVariation);
     }
 
     protected bool IsMemberOfStation(Entity<TransformComponent> ent, ref StationVariationPassEvent args)
@@ -25,5 +23,6 @@ public abstract partial class VariationPassSystem<T> : GameRuleSystem<T>
         return Stations.GetOwningStation(ent, ent.Comp) == args.Station.Owner;
     }
 
+    [SubscribeLocalEvent]
     protected abstract void ApplyVariation(Entity<T> ent, ref StationVariationPassEvent args);
 }

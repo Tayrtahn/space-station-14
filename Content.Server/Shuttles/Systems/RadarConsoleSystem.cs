@@ -18,9 +18,9 @@ public sealed partial class RadarConsoleSystem : SharedRadarConsoleSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadarConsoleComponent, ComponentStartup>(OnRadarStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnRadarStartup(EntityUid uid, RadarConsoleComponent component, ComponentStartup args)
     {
         UpdateState(uid, component);

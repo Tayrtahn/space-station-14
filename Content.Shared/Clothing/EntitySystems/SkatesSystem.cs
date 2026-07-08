@@ -16,15 +16,12 @@ public sealed partial class SkatesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SkatesComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<SkatesComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<SkatesComponent, InventoryRelayedEvent<RefreshFrictionModifiersEvent>>(OnRefreshFrictionModifiers);
     }
 
     /// <summary>
     /// When item is unequipped from the shoe slot, friction, aceleration and collide on impact return to default settings.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<SkatesComponent> entity, ref ClothingGotUnequippedEvent args)
     {
         _move.RefreshFrictionModifiers(args.Wearer);
@@ -34,12 +31,14 @@ public sealed partial class SkatesSystem : EntitySystem
     /// <summary>
     /// When item is equipped into the shoe slot, friction, acceleration and collide on impact are adjusted.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<SkatesComponent> entity, ref ClothingGotEquippedEvent args)
     {
         _move.RefreshFrictionModifiers(args.Wearer);
         _impact.ChangeCollide(args.Wearer, entity.Comp.MinimumSpeed, entity.Comp.StunSeconds, entity.Comp.DamageCooldown, entity.Comp.SpeedDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshFrictionModifiers(Entity<SkatesComponent> ent,
         ref InventoryRelayedEvent<RefreshFrictionModifiersEvent> args)
     {

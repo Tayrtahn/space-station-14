@@ -13,8 +13,6 @@ public abstract partial class SharedMouseRotatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeAllEvent<RequestMouseRotatorRotationEvent>(OnRequestRotation);
     }
 
     public override void Update(float frameTime)
@@ -45,6 +43,7 @@ public abstract partial class SharedMouseRotatorSystem : EntitySystem
         }
     }
 
+    [SubscribeAllEvent]
     private void OnRequestRotation(RequestMouseRotatorRotationEvent msg, EntitySessionEventArgs args)
     {
         // Ignore the request if the requested entity is not the user's attached entity.

@@ -24,9 +24,6 @@ public sealed partial class DumpableSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<DumpableComponent, AfterInteractEvent>(OnAfterInteract, after: new[]{ typeof(SharedEntityStorageSystem) });
-        SubscribeLocalEvent<DumpableComponent, GetVerbsEvent<AlternativeVerb>>(AddDumpVerb);
-        SubscribeLocalEvent<DumpableComponent, GetVerbsEvent<UtilityVerb>>(AddUtilityVerbs);
-        SubscribeLocalEvent<DumpableComponent, DumpableDoAfterEvent>(OnDoAfter);
     }
 
     private void OnAfterInteract(EntityUid uid, DumpableComponent component, AfterInteractEvent args)
@@ -49,6 +46,7 @@ public sealed partial class DumpableSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void AddDumpVerb(EntityUid uid, DumpableComponent dumpable, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -69,6 +67,7 @@ public sealed partial class DumpableSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void AddUtilityVerbs(EntityUid uid, DumpableComponent dumpable, GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -122,6 +121,7 @@ public sealed partial class DumpableSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, DumpableComponent component, DumpableDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || !TryComp<StorageComponent>(uid, out var storage) || storage.Container.ContainedEntities.Count == 0 || args.Args.Target is not { } target)

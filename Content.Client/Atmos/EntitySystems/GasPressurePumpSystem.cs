@@ -4,14 +4,14 @@ using Content.Shared.Atmos.Piping.Binary.Components;
 
 namespace Content.Client.Atmos.EntitySystems;
 
-public sealed class GasPressurePumpSystem : SharedGasPressurePumpSystem
+public sealed partial class GasPressurePumpSystem : SharedGasPressurePumpSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasPressurePumpComponent, AfterAutoHandleStateEvent>(OnPumpUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnPumpUpdate(Entity<GasPressurePumpComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateUi(ent);

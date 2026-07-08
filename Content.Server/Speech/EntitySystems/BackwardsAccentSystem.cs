@@ -3,11 +3,10 @@ using Content.Shared.Speech;
 
 namespace Content.Server.Speech.EntitySystems
 {
-    public sealed class BackwardsAccentSystem : EntitySystem
+    public sealed partial class BackwardsAccentSystem : EntitySystem
     {
         public override void Initialize()
         {
-            SubscribeLocalEvent<BackwardsAccentComponent, AccentGetEvent>(OnAccent);
         }
 
         public string Accentuate(string message)
@@ -17,6 +16,7 @@ namespace Content.Server.Speech.EntitySystems
             return new string(arr);
         }
 
+        [SubscribeLocalEvent]
         private void OnAccent(EntityUid uid, BackwardsAccentComponent component, AccentGetEvent args)
         {
             args.Message = Accentuate(args.Message);

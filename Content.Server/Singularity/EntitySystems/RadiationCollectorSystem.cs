@@ -31,14 +31,6 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadiationCollectorComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<RadiationCollectorComponent, OnIrradiatedEvent>(OnRadiation);
-        SubscribeLocalEvent<RadiationCollectorComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<RadiationCollectorComponent, GasAnalyzerScanEvent>(OnAnalyzed);
-        SubscribeLocalEvent<RadiationCollectorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<RadiationCollectorComponent, EntInsertedIntoContainerMessage>(OnTankChanged);
-        SubscribeLocalEvent<RadiationCollectorComponent, EntRemovedFromContainerMessage>(OnTankChanged);
-        SubscribeLocalEvent<NetworkBatteryPostSync>(PostSync);
     }
 
     private bool TryGetLoadedGasTank(EntityUid uid, [NotNullWhen(true)] out GasTankComponent? gasTankComponent)
@@ -54,18 +46,21 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RadiationCollectorComponent component, MapInitEvent args)
     {
         TryGetLoadedGasTank(uid, out var gasTank);
         UpdateTankAppearance(uid, component, gasTank);
     }
 
+    [SubscribeLocalEvent]
     private void OnTankChanged(EntityUid uid, RadiationCollectorComponent component, ContainerModifiedMessage args)
     {
         TryGetLoadedGasTank(uid, out var gasTank);
         UpdateTankAppearance(uid, component, gasTank);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, RadiationCollectorComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)
@@ -77,6 +72,7 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
         ToggleCollector(uid, args.User, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnRadiation(EntityUid uid, RadiationCollectorComponent component, OnIrradiatedEvent args)
     {
         if (!component.Enabled || component.RadiationReactiveGases == null)
@@ -122,6 +118,7 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
         UpdatePressureIndicatorAppearance(uid, component, gasTankComponent);
     }
 
+    [SubscribeLocalEvent]
     private void PostSync(NetworkBatteryPostSync ev)
     {
         // This is run every power tick. Used to decrement the PowerTicksLeft counter.
@@ -139,6 +136,7 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, RadiationCollectorComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(RadiationCollectorComponent)))
@@ -159,6 +157,7 @@ public sealed partial class RadiationCollectorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnalyzed(EntityUid uid, RadiationCollectorComponent component, GasAnalyzerScanEvent args)
     {
         if (!TryGetLoadedGasTank(uid, out var gasTankComponent))

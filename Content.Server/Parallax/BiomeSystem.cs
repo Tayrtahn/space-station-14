@@ -79,14 +79,11 @@ public sealed partial class BiomeSystem : SharedBiomeSystem
     {
         base.Initialize();
         Log.Level = LogLevel.Debug;
-        SubscribeLocalEvent<BiomeComponent, MapInitEvent>(OnBiomeMapInit);
-        SubscribeLocalEvent<FTLStartedEvent>(OnFTLStarted);
-        SubscribeLocalEvent<ShuttleFlattenEvent>(OnShuttleFlatten);
         Subs.CVar(_configManager, CVars.NetMaxUpdateRange, SetLoadRange, true);
         InitializeCommands();
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(ProtoReload);
     }
 
+    [SubscribeLocalEvent]
     private void ProtoReload(PrototypesReloadedEventArgs obj)
     {
         if (!obj.ByType.TryGetValue(typeof(BiomeTemplatePrototype), out var reloads))
@@ -110,6 +107,7 @@ public sealed partial class BiomeSystem : SharedBiomeSystem
         _loadArea = new Box2(-_loadRange, -_loadRange, _loadRange, _loadRange);
     }
 
+    [SubscribeLocalEvent]
     private void OnBiomeMapInit(EntityUid uid, BiomeComponent component, MapInitEvent args)
     {
         if (component.Seed == -1)
@@ -244,6 +242,7 @@ public sealed partial class BiomeSystem : SharedBiomeSystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnFTLStarted(ref FTLStartedEvent ev)
     {
         var targetMap = _transform.ToMapCoordinates(ev.TargetCoordinates);
@@ -257,6 +256,7 @@ public sealed partial class BiomeSystem : SharedBiomeSystem
         Preload(targetMapUid, biome, targetArea);
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleFlatten(ref ShuttleFlattenEvent ev)
     {
         if (!TryComp<BiomeComponent>(ev.MapUid, out var biome) ||

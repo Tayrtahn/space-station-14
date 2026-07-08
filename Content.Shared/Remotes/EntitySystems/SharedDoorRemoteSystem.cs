@@ -32,16 +32,16 @@ public abstract partial class SharedDoorRemoteSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<DoorRemoteComponent, DoorRemoteModeChangeMessage>(OnDoorRemoteModeChange);
-        SubscribeLocalEvent<DoorRemoteComponent, BeforeRangedInteractEvent>(OnBeforeInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoorRemoteModeChange(Entity<DoorRemoteComponent> ent, ref DoorRemoteModeChangeMessage args)
     {
         ent.Comp.Mode = args.Mode;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeInteract(Entity<DoorRemoteComponent> entity, ref BeforeRangedInteractEvent args)
     {
         if (!Timing.IsFirstTimePredicted)

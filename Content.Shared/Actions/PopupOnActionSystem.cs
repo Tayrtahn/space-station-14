@@ -16,10 +16,9 @@ public sealed partial class PopupOnActionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PopupOnActionComponent, ActionPerformedEvent>(OnActionPerformed);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionPerformed(Entity<PopupOnActionComponent> ent, ref ActionPerformedEvent args)
     {
         EntityUid? target = null;

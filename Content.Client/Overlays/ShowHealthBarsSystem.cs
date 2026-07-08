@@ -17,11 +17,10 @@ public sealed partial class ShowHealthBarsSystem : EquipmentHudSystem<ShowHealth
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ShowHealthBarsComponent, AfterAutoHandleStateEvent>(OnHandleState);
-
         _overlay = new(EntityManager, ProtoMan);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<ShowHealthBarsComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         RefreshOverlay();

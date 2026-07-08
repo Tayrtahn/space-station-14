@@ -17,10 +17,9 @@ public sealed partial class SurplusBundleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SurplusBundleComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SurplusBundleComponent component, MapInitEvent args)
     {
         if (!TryComp<StoreComponent>(uid, out var store))

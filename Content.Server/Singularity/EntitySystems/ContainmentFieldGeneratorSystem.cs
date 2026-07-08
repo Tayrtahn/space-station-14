@@ -29,16 +29,6 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, StartCollideEvent>(HandleGeneratorCollide);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, ReAnchorEvent>(OnReanchorEvent);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, ComponentRemove>(OnComponentRemoved);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, EventHorizonAttemptConsumeEntityEvent>(PreventBreach);
-        SubscribeLocalEvent<ContainmentFieldGeneratorComponent, MapInitEvent>(OnMapInit);
     }
 
     public override void Update(float frameTime)
@@ -63,6 +53,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
 
     #region Events
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ContainmentFieldGeneratorComponent> generator, ref MapInitEvent args)
     {
         if (generator.Comp.Enabled)
@@ -72,6 +63,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
     /// <summary>
     /// A generator receives power from a source colliding with it.
     /// </summary>
+    [SubscribeLocalEvent]
     private void HandleGeneratorCollide(Entity<ContainmentFieldGeneratorComponent> generator, ref StartCollideEvent args)
     {
         if (args.OtherFixtureId == generator.Comp.SourceFixtureId &&
@@ -82,6 +74,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, ContainmentFieldGeneratorComponent component, ExaminedEvent args)
     {
         if (component.Enabled)
@@ -91,6 +84,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
             args.PushMarkup(Loc.GetString("comp-containment-off"));
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<ContainmentFieldGeneratorComponent> generator, ref ActivateInWorldEvent args)
     {
         if (args.Handled)
@@ -111,17 +105,20 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(Entity<ContainmentFieldGeneratorComponent> generator, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)
             RemoveConnections(generator);
     }
 
+    [SubscribeLocalEvent]
     private void OnReanchorEvent(Entity<ContainmentFieldGeneratorComponent> generator, ref ReAnchorEvent args)
     {
         GridCheck(generator);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(EntityUid uid, ContainmentFieldGeneratorComponent component,
         UnanchorAttemptEvent args)
     {
@@ -146,6 +143,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
         _popupSystem.PopupEntity(Loc.GetString("comp-containment-turned-off"), generator);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemoved(Entity<ContainmentFieldGeneratorComponent> generator, ref ComponentRemove args)
     {
         RemoveConnections(generator);
@@ -442,6 +440,7 @@ public sealed partial class ContainmentFieldGeneratorSystem : EntitySystem
     /// <param name="uid">The entity the singularity is trying to eat.</param>
     /// <param name="comp">The containment field generator the singularity is trying to eat.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void PreventBreach(EntityUid uid, ContainmentFieldGeneratorComponent comp, ref EventHorizonAttemptConsumeEntityEvent args)
     {
         if (args.Cancelled)

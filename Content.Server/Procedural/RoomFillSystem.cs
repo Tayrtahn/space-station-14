@@ -12,9 +12,9 @@ public sealed partial class RoomFillSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RoomFillComponent, MapInitEvent>(OnRoomFillMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoomFillMapInit(EntityUid uid, RoomFillComponent component, MapInitEvent args)
     {
         var xform = Transform(uid);

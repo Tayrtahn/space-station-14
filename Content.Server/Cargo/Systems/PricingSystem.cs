@@ -31,9 +31,6 @@ public sealed partial class PricingSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MobPriceComponent, PriceCalculationEvent>(CalculateMobPrice);
-        SubscribeLocalEvent<RandomPriceComponent, MapInitEvent>(SetRandomPrice);
-        SubscribeLocalEvent<RandomPriceComponent, PriceCalculationEvent>(CalculateRandomPrice);
 
         _consoleHost.RegisterCommand("appraisegrid",
             "Calculates the total value of the given grids.",
@@ -82,6 +79,7 @@ public sealed partial class PricingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void CalculateMobPrice(EntityUid uid, MobPriceComponent component, ref PriceCalculationEvent args)
     {
         // TODO: Estimated pricing.
@@ -97,6 +95,7 @@ public sealed partial class PricingSystem : EntitySystem
         args.Price += component.Price * (_mobStateSystem.IsAlive(uid, state) ? 1.0 : component.DeathPenalty);
     }
 
+    [SubscribeLocalEvent]
     private void SetRandomPrice(Entity<RandomPriceComponent> entity, ref MapInitEvent args)
     {
         if (entity.Comp.RandomPrice == null)
@@ -119,6 +118,7 @@ public sealed partial class PricingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void CalculateRandomPrice(Entity<RandomPriceComponent> entity, ref PriceCalculationEvent args)
     {
         // TODO: Estimated pricing.

@@ -60,12 +60,6 @@ public sealed partial class RevolutionaryRuleSystem : GameRuleSystem<Revolutiona
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CommandStaffComponent, MobStateChangedEvent>(OnCommandMobStateChanged);
-
-        SubscribeLocalEvent<HeadRevolutionaryComponent, AfterFlashedEvent>(OnPostFlash);
-        SubscribeLocalEvent<HeadRevolutionaryComponent, MobStateChangedEvent>(OnHeadRevMobStateChanged);
-
-        SubscribeLocalEvent<RevolutionaryRoleComponent, GetBriefingEvent>(OnGetBriefing);
 
     }
 
@@ -121,6 +115,7 @@ public sealed partial class RevolutionaryRuleSystem : GameRuleSystem<Revolutiona
         args.AddLine("");
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBriefing(EntityUid uid, RevolutionaryRoleComponent comp, ref GetBriefingEvent args)
     {
         var ent = args.Mind.Comp.OwnedEntity;
@@ -131,6 +126,7 @@ public sealed partial class RevolutionaryRuleSystem : GameRuleSystem<Revolutiona
     /// <summary>
     /// Called when a Head Rev uses a flash in melee to convert somebody else.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPostFlash(EntityUid uid, HeadRevolutionaryComponent comp, ref AfterFlashedEvent ev)
     {
         if (uid != ev.User || !ev.Melee)
@@ -184,6 +180,7 @@ public sealed partial class RevolutionaryRuleSystem : GameRuleSystem<Revolutiona
     }
 
     //TODO: Enemies of the revolution
+    [SubscribeLocalEvent]
     private void OnCommandMobStateChanged(EntityUid uid, CommandStaffComponent comp, MobStateChangedEvent ev)
     {
         if (ev.NewMobState == MobState.Dead || ev.NewMobState == MobState.Invalid)
@@ -206,6 +203,7 @@ public sealed partial class RevolutionaryRuleSystem : GameRuleSystem<Revolutiona
         return IsGroupDetainedOrDead(commandList, true, true, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnHeadRevMobStateChanged(EntityUid uid, HeadRevolutionaryComponent comp, MobStateChangedEvent ev)
     {
         if (ev.NewMobState == MobState.Dead || ev.NewMobState == MobState.Invalid)

@@ -23,16 +23,6 @@ public sealed partial class VisualBodySystem : SharedVisualBodySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<VisualOrganComponent, OrganGotInsertedEvent>(OnOrganGotInserted);
-        SubscribeLocalEvent<VisualOrganComponent, OrganGotRemovedEvent>(OnOrganGotRemoved);
-        SubscribeLocalEvent<VisualOrganComponent, AfterAutoHandleStateEvent>(OnOrganState);
-
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, OrganGotInsertedEvent>(OnMarkingsGotInserted);
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, OrganGotRemovedEvent>(OnMarkingsGotRemoved);
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, AfterAutoHandleStateEvent>(OnMarkingsState);
-
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, BodyRelayedEvent<HumanoidLayerVisibilityChangedEvent>>(OnMarkingsChangedVisibility);
-
         Subs.CVar(_cfg, CCVars.AccessibilityClientCensorNudity, OnCensorshipChanged, true);
         Subs.CVar(_cfg, CCVars.AccessibilityServerCensorNudity, OnCensorshipChanged, true);
     }
@@ -50,16 +40,19 @@ public sealed partial class VisualBodySystem : SharedVisualBodySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnOrganGotInserted(Entity<VisualOrganComponent> ent, ref OrganGotInsertedEvent args)
     {
         ApplyVisual(ent, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnOrganGotRemoved(Entity<VisualOrganComponent> ent, ref OrganGotRemovedEvent args)
     {
         RemoveVisual(ent, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnOrganState(Entity<VisualOrganComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (Comp<OrganComponent>(ent).Body is not { } body)
@@ -96,16 +89,19 @@ public sealed partial class VisualBodySystem : SharedVisualBodySystem
         _displacement.EnsureDisplacementIsNotOnSprite((target, Comp<SpriteComponent>(target)), ent.Comp.Layer);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsGotInserted(Entity<VisualOrganMarkingsComponent> ent, ref OrganGotInsertedEvent args)
     {
         ApplyMarkings(ent, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsGotRemoved(Entity<VisualOrganMarkingsComponent> ent, ref OrganGotRemovedEvent args)
     {
         RemoveMarkings(ent, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsState(Entity<VisualOrganMarkingsComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (Comp<OrganComponent>(ent).Body is not { } body)
@@ -261,6 +257,7 @@ public sealed partial class VisualBodySystem : SharedVisualBodySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsChangedVisibility(Entity<VisualOrganMarkingsComponent> ent, ref BodyRelayedEvent<HumanoidLayerVisibilityChangedEvent> args)
     {
         if (!ent.Comp.HideableLayers.Contains(args.Args.Layer))

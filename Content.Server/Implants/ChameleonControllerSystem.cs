@@ -26,12 +26,9 @@ public sealed partial class ChameleonControllerSystem : SharedChameleonControlle
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChameleonControllerImplantComponent, ChameleonControllerSelectedOutfitMessage>(OnSelected);
-
-        SubscribeLocalEvent<ChameleonClothingComponent, InventoryRelayedEvent<ChameleonControllerOutfitSelectedEvent>>(ChameleonControllerOutfitItemSelected);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelected(Entity<ChameleonControllerImplantComponent> ent, ref ChameleonControllerSelectedOutfitMessage args)
     {
         if (!TryComp<SubdermalImplantComponent>(ent, out var implantComp) || implantComp.ImplantedEntity == null || !_delay.TryResetDelay(ent.Owner, true))
@@ -101,6 +98,7 @@ public sealed partial class ChameleonControllerSystem : SharedChameleonControlle
         defaultRoleLoadout.SetDefault(profile, null, ProtoMan); // only sets the default if the player has no loadout
     }
 
+    [SubscribeLocalEvent]
     private void ChameleonControllerOutfitItemSelected(Entity<ChameleonClothingComponent> ent, ref InventoryRelayedEvent<ChameleonControllerOutfitSelectedEvent> args)
     {
         if (!ent.Comp.CanBeSetByController || !_inventory.TryGetContainingSlot(ent.Owner, out var slot))

@@ -11,14 +11,12 @@ public sealed partial class NotekeeperCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NotekeeperCartridgeComponent, CartridgeMessageEvent>(OnUiMessage);
-        SubscribeLocalEvent<NotekeeperCartridgeComponent, CartridgeUiReadyEvent>(OnUiReady);
     }
 
     /// <summary>
     /// This gets called when the ui fragment needs to be updated for the first time after activating
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiReady(EntityUid uid, NotekeeperCartridgeComponent component, CartridgeUiReadyEvent args)
     {
         UpdateUiState(uid, args.Loader, component);
@@ -30,6 +28,7 @@ public sealed partial class NotekeeperCartridgeSystem : EntitySystem
     /// <remarks>
     /// The cartridge specific ui message event needs to inherit from the CartridgeMessageEvent
     /// </remarks>
+    [SubscribeLocalEvent]
     private void OnUiMessage(EntityUid uid, NotekeeperCartridgeComponent component, CartridgeMessageEvent args)
     {
         if (args is not NotekeeperUiMessageEvent message)

@@ -32,12 +32,7 @@ public sealed partial class AccessOverriderSystem : SharedAccessOverriderSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AccessOverriderComponent, ComponentStartup>(UpdateUserInterface);
-        SubscribeLocalEvent<AccessOverriderComponent, EntInsertedIntoContainerMessage>(UpdateUserInterface);
         SubscribeLocalEvent<AccessOverriderComponent, EntRemovedFromContainerMessage>(UpdateUserInterface);
-        SubscribeLocalEvent<AccessOverriderComponent, AfterInteractEvent>(AfterInteractOn);
-        SubscribeLocalEvent<AccessOverriderComponent, AccessOverriderDoAfterEvent>(OnDoAfter);
 
         Subs.BuiEvents<AccessOverriderComponent>(AccessOverriderUiKey.Key, subs =>
         {
@@ -47,6 +42,7 @@ public sealed partial class AccessOverriderSystem : SharedAccessOverriderSystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void AfterInteractOn(EntityUid uid, AccessOverriderComponent component, AfterInteractEvent args)
     {
         if (args.Target == null || !TryComp(args.Target, out AccessReaderComponent? accessReader))
@@ -65,6 +61,7 @@ public sealed partial class AccessOverriderSystem : SharedAccessOverriderSystem
         _doAfterSystem.TryStartDoAfter(doAfterEventArgs);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, AccessOverriderComponent component, AccessOverriderDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -98,6 +95,7 @@ public sealed partial class AccessOverriderSystem : SharedAccessOverriderSystem
         UpdateUserInterface(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void UpdateUserInterface(EntityUid uid, AccessOverriderComponent component, EntityEventArgs args)
     {
         if (!component.Initialized)

@@ -19,12 +19,9 @@ public sealed partial class BatteryWeaponFireModesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BatteryWeaponFireModesComponent, UseInHandEvent>(OnUseInHandEvent);
-        SubscribeLocalEvent<BatteryWeaponFireModesComponent, GetVerbsEvent<Verb>>(OnGetVerb);
-        SubscribeLocalEvent<BatteryWeaponFireModesComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<BatteryWeaponFireModesComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp.FireModes.Count < 2)
@@ -43,6 +40,7 @@ public sealed partial class BatteryWeaponFireModesSystem : EntitySystem
         return component.FireModes[component.CurrentFireMode];
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(EntityUid uid, BatteryWeaponFireModesComponent component, GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract)
@@ -78,6 +76,7 @@ public sealed partial class BatteryWeaponFireModesSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHandEvent(Entity<BatteryWeaponFireModesComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)

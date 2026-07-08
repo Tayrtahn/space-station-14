@@ -13,10 +13,9 @@ public sealed partial class AlertLevelChangeOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AlertLevelChangeOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<AlertLevelChangeOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

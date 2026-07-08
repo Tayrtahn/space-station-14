@@ -23,16 +23,9 @@ public abstract partial class SharedGasPressurePumpSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasPressurePumpComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<GasPressurePumpComponent, PowerChangedEvent>(OnPowerChanged);
-
-        SubscribeLocalEvent<GasPressurePumpComponent, GasPressurePumpChangeOutputPressureMessage>(OnOutputPressureChangeMessage);
-        SubscribeLocalEvent<GasPressurePumpComponent, GasPressurePumpToggleStatusMessage>(OnToggleStatusMessage);
-
-        SubscribeLocalEvent<GasPressurePumpComponent, AtmosDeviceDisabledEvent>(OnPumpLeaveAtmosphere);
-        SubscribeLocalEvent<GasPressurePumpComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<GasPressurePumpComponent> ent, ref ExaminedEvent args)
     {
         if (!Transform(ent).Anchored)
@@ -48,11 +41,13 @@ public abstract partial class SharedGasPressurePumpSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<GasPressurePumpComponent> ent, ref ComponentInit args)
     {
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<GasPressurePumpComponent> ent, ref PowerChangedEvent args)
     {
         UpdateAppearance(ent);
@@ -67,6 +62,7 @@ public abstract partial class SharedGasPressurePumpSystem : EntitySystem
         _appearance.SetData(ent, PumpVisuals.Enabled, pumpOn, ent.Comp2);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleStatusMessage(Entity<GasPressurePumpComponent> ent, ref GasPressurePumpToggleStatusMessage args)
     {
         ent.Comp.Enabled = args.Enabled;
@@ -78,6 +74,7 @@ public abstract partial class SharedGasPressurePumpSystem : EntitySystem
         UpdateUi(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnOutputPressureChangeMessage(Entity<GasPressurePumpComponent> ent, ref GasPressurePumpChangeOutputPressureMessage args)
     {
         ent.Comp.TargetPressure = Math.Clamp(args.Pressure, 0f, Atmospherics.MaxOutputPressure);
@@ -88,6 +85,7 @@ public abstract partial class SharedGasPressurePumpSystem : EntitySystem
         UpdateUi(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPumpLeaveAtmosphere(Entity<GasPressurePumpComponent> ent, ref AtmosDeviceDisabledEvent args)
     {
         ent.Comp.Enabled = false;

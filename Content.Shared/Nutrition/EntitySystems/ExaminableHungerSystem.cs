@@ -14,14 +14,13 @@ public sealed partial class ExaminableHungerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExaminableHungerComponent, ExaminedEvent>(OnExamine);
     }
 
     /// <summary>
     ///     Defines the text provided on examine.
     ///     Changes depending on the amount of hunger the target has.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ExaminableHungerComponent> entity, ref ExaminedEvent args)
     {
         var identity = Identity.Entity(entity, EntityManager);

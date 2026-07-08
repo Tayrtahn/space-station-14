@@ -24,10 +24,9 @@ public sealed partial class SmokeOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SmokeOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<SmokeOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

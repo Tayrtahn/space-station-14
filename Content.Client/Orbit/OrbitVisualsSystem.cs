@@ -20,11 +20,9 @@ public sealed partial class OrbitVisualsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<OrbitVisualsComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<OrbitVisualsComponent, ComponentRemove>(OnComponentRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, OrbitVisualsComponent component, ComponentInit args)
     {
         _robustRandom.SetSeed((int)_timing.CurTime.TotalMilliseconds);
@@ -46,6 +44,7 @@ public sealed partial class OrbitVisualsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, OrbitVisualsComponent component, ComponentRemove args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

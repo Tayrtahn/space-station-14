@@ -30,8 +30,6 @@ namespace Content.Server.Research.Systems
             InitializeConsole();
             InitializeSource();
             InitializeServer();
-
-            SubscribeLocalEvent<TechnologyDatabaseComponent, ResearchRegistrationChangedEvent>(OnDatabaseRegistrationChanged);
         }
 
         /// <summary>

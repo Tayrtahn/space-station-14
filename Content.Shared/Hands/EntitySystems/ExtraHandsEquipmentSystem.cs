@@ -10,11 +10,9 @@ public sealed partial class ExtraHandsEquipmentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExtraHandsEquipmentComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<ExtraHandsEquipmentComponent, GotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<ExtraHandsEquipmentComponent> ent, ref GotEquippedEvent args)
     {
         if (!TryComp<HandsComponent>(args.EquipTarget, out var handsComp))
@@ -28,6 +26,7 @@ public sealed partial class ExtraHandsEquipmentSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<ExtraHandsEquipmentComponent> ent, ref GotUnequippedEvent args)
     {
         if (!TryComp<HandsComponent>(args.EquipTarget, out var handsComp))

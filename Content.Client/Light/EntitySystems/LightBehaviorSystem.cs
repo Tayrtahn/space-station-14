@@ -17,10 +17,9 @@ public sealed partial class LightBehaviorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LightBehaviourComponent, ComponentStartup>(OnLightStartup);
-        SubscribeLocalEvent<LightBehaviourComponent, AnimationCompletedEvent>(OnBehaviorAnimationCompleted);
     }
 
+    [SubscribeLocalEvent]
     private void OnBehaviorAnimationCompleted(EntityUid uid, LightBehaviourComponent component, AnimationCompletedEvent args)
     {
         if (!args.Finished)
@@ -44,6 +43,7 @@ public sealed partial class LightBehaviorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnLightStartup(Entity<LightBehaviourComponent> entity, ref ComponentStartup args)
     {
         // TODO: Do NOT ensure component here. And use eventbus events instead...

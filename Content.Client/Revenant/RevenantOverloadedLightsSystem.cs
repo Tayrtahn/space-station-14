@@ -11,9 +11,6 @@ public sealed partial class RevenantOverloadedLightsSystem : SharedRevenantOverl
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RevenantOverloadedLightsComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<RevenantOverloadedLightsComponent, ComponentShutdown>(OnShutdown);
     }
 
     public override void Update(float frameTime)
@@ -29,6 +26,7 @@ public sealed partial class RevenantOverloadedLightsSystem : SharedRevenantOverl
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, RevenantOverloadedLightsComponent component, ComponentStartup args)
     {
         var light = _lights.EnsureLight(uid);
@@ -39,6 +37,7 @@ public sealed partial class RevenantOverloadedLightsSystem : SharedRevenantOverl
         Dirty(uid, light);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, RevenantOverloadedLightsComponent component, ComponentShutdown args)
     {
         if (!_lights.TryGetLight(uid, out var light))

@@ -27,10 +27,9 @@ public abstract partial class SharedSolutionContainerMixerSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<SolutionContainerMixerComponent, ActivateInWorldEvent>(OnActivateInWorld);
-        SubscribeLocalEvent<SolutionContainerMixerComponent, ContainerIsRemovingAttemptEvent>(OnRemoveAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(Entity<SolutionContainerMixerComponent> entity, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -40,6 +39,7 @@ public abstract partial class SharedSolutionContainerMixerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveAttempt(Entity<SolutionContainerMixerComponent> ent, ref ContainerIsRemovingAttemptEvent args)
     {
         if (args.Container.ID == ent.Comp.ContainerId && ent.Comp.Mixing)

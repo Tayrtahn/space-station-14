@@ -69,11 +69,6 @@ namespace Content.Client.NPC
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeNetworkEvent<PathBreadcrumbsMessage>(OnBreadcrumbs);
-            SubscribeNetworkEvent<PathBreadcrumbsRefreshMessage>(OnBreadcrumbsRefresh);
-            SubscribeNetworkEvent<PathPolysMessage>(OnPolys);
-            SubscribeNetworkEvent<PathPolysRefreshMessage>(OnPolysRefresh);
-            SubscribeNetworkEvent<PathRouteMessage>(OnRoute);
         }
 
         public override void Update(float frameTime)
@@ -94,16 +89,19 @@ namespace Content.Client.NPC
             }
         }
 
+        [SubscribeNetworkEvent]
         private void OnRoute(PathRouteMessage ev)
         {
             Routes.Add((_timing.RealTime + TimeSpan.FromSeconds(0.5), ev));
         }
 
+        [SubscribeNetworkEvent]
         private void OnPolys(PathPolysMessage ev)
         {
             Polys = ev.Polys;
         }
 
+        [SubscribeNetworkEvent]
         private void OnPolysRefresh(PathPolysRefreshMessage ev)
         {
             var chunks = Polys.GetOrNew(ev.GridUid);
@@ -117,11 +115,13 @@ namespace Content.Client.NPC
             _modes = PathfindingDebugMode.None;
         }
 
+        [SubscribeNetworkEvent]
         private void OnBreadcrumbs(PathBreadcrumbsMessage ev)
         {
             Breadcrumbs = ev.Breadcrumbs;
         }
 
+        [SubscribeNetworkEvent]
         private void OnBreadcrumbsRefresh(PathBreadcrumbsRefreshMessage ev)
         {
             if (!Breadcrumbs.TryGetValue(ev.GridUid, out var chunks))

@@ -20,17 +20,16 @@ public sealed partial class SharedAnomalyCoreSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AnomalyCoreComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<CorePoweredThrowerComponent, AttemptMeleeThrowOnHitEvent>(OnAttemptMeleeThrowOnHit);
-        SubscribeLocalEvent<CorePoweredThrowerComponent, ExaminedEvent>(OnCorePoweredExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<AnomalyCoreComponent> core, ref MapInitEvent args)
     {
         core.Comp.DecayMoment = _gameTiming.CurTime + TimeSpan.FromSeconds(core.Comp.TimeToDecay);
         Dirty(core, core.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptMeleeThrowOnHit(Entity<CorePoweredThrowerComponent> ent, ref AttemptMeleeThrowOnHitEvent args)
     {
         var (uid, comp) = ent;
@@ -64,6 +63,7 @@ public sealed partial class SharedAnomalyCoreSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCorePoweredExamined(Entity<CorePoweredThrowerComponent> ent, ref ExaminedEvent args)
     {
         var (uid, comp) = ent;

@@ -23,12 +23,6 @@ public sealed partial class PacificationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PacifiedComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<PacifiedComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<PacifiedComponent, BeforeThrowEvent>(OnBeforeThrow);
-        SubscribeLocalEvent<PacifiedComponent, AttackAttemptEvent>(OnAttackAttempt);
-        SubscribeLocalEvent<PacifiedComponent, ShotAttemptedEvent>(OnShootAttempt);
-        SubscribeLocalEvent<PacifismDangerousAttackComponent, AttemptPacifiedAttackEvent>(OnPacifiedDangerousAttack);
     }
 
     private bool PacifiedCanAttack(EntityUid user, EntityUid target, [NotNullWhen(false)] out string? reason)
@@ -61,6 +55,7 @@ public sealed partial class PacificationSystem : EntitySystem
         user.Comp.LastAttackedEntity = target;
     }
 
+    [SubscribeLocalEvent]
     private void OnShootAttempt(Entity<PacifiedComponent> ent, ref ShotAttemptedEvent args)
     {
         if (HasComp<PacifismAllowedGunComponent>(args.Used))
@@ -75,6 +70,7 @@ public sealed partial class PacificationSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnAttackAttempt(EntityUid uid, PacifiedComponent component, AttackAttemptEvent args)
     {
         if (component.DisallowAllCombat || args.Disarm && component.DisallowDisarm)
@@ -103,6 +99,7 @@ public sealed partial class PacificationSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, PacifiedComponent component, ComponentStartup args)
     {
         if (!TryComp<CombatModeComponent>(uid, out var combatMode))
@@ -120,6 +117,7 @@ public sealed partial class PacificationSystem : EntitySystem
         _alertsSystem.ShowAlert(uid, component.PacifiedAlert);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, PacifiedComponent component, ComponentShutdown args)
     {
         if (!TryComp<CombatModeComponent>(uid, out var combatMode))
@@ -132,6 +130,7 @@ public sealed partial class PacificationSystem : EntitySystem
         _alertsSystem.ClearAlert(uid, component.PacifiedAlert);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeThrow(Entity<PacifiedComponent> ent, ref BeforeThrowEvent args)
     {
         var thrownItem = args.ItemUid;
@@ -151,6 +150,7 @@ public sealed partial class PacificationSystem : EntitySystem
         _popup.PopupEntity(Loc.GetString(cannotThrowMessage, ("projectile", itemName)), ent, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPacifiedDangerousAttack(Entity<PacifismDangerousAttackComponent> ent, ref AttemptPacifiedAttackEvent args)
     {
         args.Cancelled = true;

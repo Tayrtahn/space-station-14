@@ -10,10 +10,9 @@ public sealed partial class DiceSystem : SharedDiceSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DiceComponent, AfterAutoHandleStateEvent>(OnDiceAfterHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnDiceAfterHandleState(Entity<DiceComponent> entity, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<SpriteComponent>(entity, out var sprite))

@@ -15,29 +15,28 @@ public sealed partial class CreamPieSystem : SharedCreamPieSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CreamPiedComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<CreamPiedComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<CreamPiedComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<CreamPiedComponent, AfterAutoHandleStateEvent>(OnAfterAutoHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<CreamPiedComponent> ent, ref ComponentInit args)
     {
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<CreamPiedComponent> ent, ref ComponentShutdown args)
     {
         _sprite.RemoveLayer(ent.Owner, CreamPiedVisualLayer.Key);
         _displacement.EnsureDisplacementIsNotOnSprite((ent, Comp<SpriteComponent>(ent)), CreamPiedVisualLayer.Key);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<CreamPiedComponent> ent, ref AppearanceChangeEvent args)
     {
         UpdateAppearance((ent.Owner, ent.Comp, args.Sprite, args.Component));
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAutoHandleState(Entity<CreamPiedComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         // Update when the sprite datafield is changed so that changelings can transform properly.

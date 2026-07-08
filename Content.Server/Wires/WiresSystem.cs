@@ -43,19 +43,6 @@ public sealed partial class WiresSystem : SharedWiresSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
-
-        // this is a broadcast event
-        SubscribeLocalEvent<WiresComponent, PanelChangedEvent>(OnPanelChanged);
-        SubscribeLocalEvent<WiresComponent, WiresActionMessage>(OnWiresActionMessage);
-        SubscribeLocalEvent<WiresComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<WiresComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<WiresComponent, TimedWireEvent>(OnTimedWire);
-        SubscribeLocalEvent<WiresComponent, PowerChangedEvent>(OnWiresPowered);
-        SubscribeLocalEvent<WiresComponent, WireDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<WiresComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<WiresPanelSecurityComponent, WiresPanelSecurityEvent>(SetWiresPanelSecurity);
     }
 
     private void SetOrCreateWireLayout(EntityUid uid, WiresComponent? wires = null)
@@ -237,6 +224,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
     #endregion
 
     #region DoAfters
+    [SubscribeLocalEvent]
     private void OnTimedWire(EntityUid uid, WiresComponent component, TimedWireEvent args)
     {
         args.Delegate(args.Wire);
@@ -382,6 +370,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
     #endregion
 
     #region Event Handling
+    [SubscribeLocalEvent]
     private void OnWiresPowered(EntityUid uid, WiresComponent component, ref PowerChangedEvent args)
     {
         UpdateUserInterface(uid);
@@ -391,6 +380,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnWiresActionMessage(EntityUid uid, WiresComponent component, WiresActionMessage args)
     {
         var player = args.Actor;
@@ -416,6 +406,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         TryDoWireAction(uid, player, heldEntity.Value, args.Id, args.Action, component, tool);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, WiresComponent component, WireDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -432,6 +423,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, WiresComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -454,6 +446,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPanelChanged(Entity<WiresComponent> ent, ref PanelChangedEvent args)
     {
         if (args.Open)
@@ -462,6 +455,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         UI.CloseUi(ent.Owner, WiresUiKey.Key);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, WiresComponent component, MapInitEvent args)
     {
         if (!string.IsNullOrEmpty(component.LayoutId))
@@ -484,6 +478,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         UpdateUserInterface(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<WiresComponent> ent, ref RejuvenateEvent args)
     {
         foreach (var wire in ent.Comp.WiresList)
@@ -603,6 +598,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         }
     }
 
+    [SubscribeLocalEvent]
     public void SetWiresPanelSecurity(EntityUid uid, WiresPanelSecurityComponent component, WiresPanelSecurityEvent args)
     {
         component.Examine = args.Examine;
@@ -864,6 +860,7 @@ public sealed partial class WiresSystem : SharedWiresSystem
         _layouts.Add(id, layout);
     }
 
+    [SubscribeLocalEvent]
     private void Reset(RoundRestartCleanupEvent args)
     {
         _layouts.Clear();

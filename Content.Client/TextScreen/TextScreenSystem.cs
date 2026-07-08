@@ -60,12 +60,10 @@ public sealed partial class TextScreenSystem : VisualizerSystem<TextScreenVisual
     {
         base.Initialize();
 
-        SubscribeLocalEvent<TextScreenVisualsComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<TextScreenTimerComponent, ComponentInit>(OnTimerInit);
-
         UpdatesOutsidePrediction = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, TextScreenVisualsComponent component, ComponentInit args)
     {
         if (!TryComp(uid, out SpriteComponent? sprite))
@@ -82,6 +80,7 @@ public sealed partial class TextScreenSystem : VisualizerSystem<TextScreenVisual
     /// <summary>
     ///     Instantiates <see cref="SpriteComponent.Layers"/> with {<see cref="TimerMapKey"/> + int : <see cref="DefaultState"/>} pairs.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTimerInit(EntityUid uid, TextScreenTimerComponent timer, ComponentInit args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite) || !TryComp<TextScreenVisualsComponent>(uid, out var screen))

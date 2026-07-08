@@ -30,22 +30,21 @@ public sealed partial class SolutionInjectOnCollideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SolutionInjectOnProjectileHitComponent, ProjectileHitEvent>(HandleProjectileHit);
-        SubscribeLocalEvent<SolutionInjectOnEmbedComponent, EmbedEvent>(HandleEmbed);
-        SubscribeLocalEvent<MeleeChemicalInjectorComponent, MeleeHitEvent>(HandleMeleeHit);
-        SubscribeLocalEvent<SolutionInjectWhileEmbeddedComponent, InjectOverTimeEvent>(OnInjectOverTime);
     }
 
+    [SubscribeLocalEvent]
     private void HandleProjectileHit(Entity<SolutionInjectOnProjectileHitComponent> entity, ref ProjectileHitEvent args)
     {
         DoInjection((entity.Owner, entity.Comp), args.Target, args.Shooter);
     }
 
+    [SubscribeLocalEvent]
     private void HandleEmbed(Entity<SolutionInjectOnEmbedComponent> entity, ref EmbedEvent args)
     {
         DoInjection((entity.Owner, entity.Comp), args.Embedded, args.Shooter);
     }
 
+    [SubscribeLocalEvent]
     private void HandleMeleeHit(Entity<MeleeChemicalInjectorComponent> entity, ref MeleeHitEvent args)
     {
         // MeleeHitEvent is weird, so we have to filter to make sure we actually
@@ -54,6 +53,7 @@ public sealed partial class SolutionInjectOnCollideSystem : EntitySystem
             TryInjectTargets((entity.Owner, entity.Comp), args.HitEntities, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnInjectOverTime(Entity<SolutionInjectWhileEmbeddedComponent> entity, ref InjectOverTimeEvent args)
     {
         DoInjection((entity.Owner, entity.Comp), args.EmbeddedIntoUid);

@@ -31,30 +31,15 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToggleableClothingComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ToggleableClothingComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ToggleableClothingComponent, ToggleClothingEvent>(OnToggleClothing);
-        SubscribeLocalEvent<ToggleableClothingComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<ToggleableClothingComponent, ComponentRemove>(OnRemoveToggleable);
-        SubscribeLocalEvent<ToggleableClothingComponent, GotUnequippedEvent>(OnToggleableUnequip);
-
-        SubscribeLocalEvent<AttachedClothingComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<AttachedClothingComponent, GotUnequippedEvent>(OnAttachedUnequip);
-        SubscribeLocalEvent<AttachedClothingComponent, ComponentRemove>(OnRemoveAttached);
-        SubscribeLocalEvent<AttachedClothingComponent, BeingUnequippedAttemptEvent>(OnAttachedUnequipAttempt);
-
-        SubscribeLocalEvent<ToggleableClothingComponent, InventoryRelayedEvent<GetVerbsEvent<EquipmentVerb>>>(GetRelayedVerbs);
-        SubscribeLocalEvent<ToggleableClothingComponent, GetVerbsEvent<EquipmentVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<AttachedClothingComponent, GetVerbsEvent<EquipmentVerb>>(OnGetAttachedStripVerbsEvent);
-        SubscribeLocalEvent<ToggleableClothingComponent, ToggleClothingDoAfterEvent>(OnDoAfterComplete);
     }
 
+    [SubscribeLocalEvent]
     private void GetRelayedVerbs(EntityUid uid, ToggleableClothingComponent component, InventoryRelayedEvent<GetVerbsEvent<EquipmentVerb>> args)
     {
         OnGetVerbs(uid, component, args.Args);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(EntityUid uid, ToggleableClothingComponent component, GetVerbsEvent<EquipmentVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null || component.ClothingUid == null || component.Container == null)
@@ -113,12 +98,14 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAttachedStripVerbsEvent(EntityUid uid, AttachedClothingComponent component, GetVerbsEvent<EquipmentVerb> args)
     {
         // redirect to the attached entity.
         OnGetVerbs(component.AttachedUid, Comp<ToggleableClothingComponent>(component.AttachedUid), args);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterComplete(EntityUid uid, ToggleableClothingComponent component, ToggleClothingDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -127,6 +114,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
         ToggleClothing(args.User, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(EntityUid uid, AttachedClothingComponent component, InteractHandEvent args)
     {
         if (args.Handled)
@@ -146,6 +134,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
     /// <summary>
     ///     Called when the suit is unequipped, to ensure that the helmet also gets unequipped.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnToggleableUnequip(EntityUid uid, ToggleableClothingComponent component, GotUnequippedEvent args)
     {
         // If it's a part of PVS departure then don't handle it.
@@ -159,6 +148,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
             _inventorySystem.TryUnequip(args.EquipTarget, component.Slot, force: true, triggerHandContact: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveToggleable(EntityUid uid, ToggleableClothingComponent component, ComponentRemove args)
     {
         // If the parent/owner component of the attached clothing is being removed (entity getting deleted?) we will
@@ -172,11 +162,13 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
             QueueDel(component.ClothingUid.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttachedUnequipAttempt(EntityUid uid, AttachedClothingComponent component, BeingUnequippedAttemptEvent args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveAttached(EntityUid uid, AttachedClothingComponent component, ComponentRemove args)
     {
         // if the attached component is being removed (maybe entity is being deleted?) we will just remove the
@@ -197,6 +189,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
     /// <summary>
     ///     Called if the helmet was unequipped, to ensure that it gets moved into the suit's container.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAttachedUnequip(EntityUid uid, AttachedClothingComponent component, GotUnequippedEvent args)
     {
         // Let containers worry about it.
@@ -221,6 +214,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
     /// <summary>
     ///     Equip or unequip the toggleable clothing.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnToggleClothing(EntityUid uid, ToggleableClothingComponent component, ToggleClothingEvent args)
     {
         if (args.Handled)
@@ -248,6 +242,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
             _inventorySystem.TryEquip(user, parent, component.ClothingUid.Value, component.Slot, triggerHandContact: true);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, ToggleableClothingComponent component, GetItemActionsEvent args)
     {
         if (component.ClothingUid != null
@@ -258,6 +253,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, ToggleableClothingComponent component, ComponentInit args)
     {
         component.Container = _containerSystem.EnsureContainer<ContainerSlot>(uid, component.ContainerId);
@@ -267,6 +263,7 @@ public sealed partial class ToggleableClothingSystem : EntitySystem
     ///     On map init, either spawn the appropriate entity into the suit slot, or if it already exists, perform some
     ///     sanity checks. Also updates the action icon to show the toggled-entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ToggleableClothingComponent component, MapInitEvent args)
     {
         if (component.Container!.ContainedEntity is {} ent)

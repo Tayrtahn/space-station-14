@@ -19,10 +19,9 @@ public sealed partial class SpeakOnActionSystem : SharedSpeakOnActionSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpeakOnActionComponent, ActionPerformedEvent>(OnActionPerformed);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionPerformed(Entity<SpeakOnActionComponent> ent, ref ActionPerformedEvent args)
     {
         var user = args.Performer;

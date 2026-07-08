@@ -35,12 +35,9 @@ public sealed partial class HealingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HealingComponent, UseInHandEvent>(OnHealingUse);
-        SubscribeLocalEvent<HealingComponent, AfterInteractEvent>(OnHealingAfterInteract);
-        SubscribeLocalEvent<DamageableComponent, HealingDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<DamageableComponent> target, ref HealingDoAfterEvent args)
     {
 
@@ -159,6 +156,7 @@ public sealed partial class HealingSystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnHealingUse(Entity<HealingComponent> healing, ref UseInHandEvent args)
     {
         if (args.Handled)
@@ -168,6 +166,7 @@ public sealed partial class HealingSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnHealingAfterInteract(Entity<HealingComponent> healing, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target == null)

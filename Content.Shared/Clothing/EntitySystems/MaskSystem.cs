@@ -19,13 +19,9 @@ public sealed partial class MaskSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MaskComponent, ToggleMaskEvent>(OnToggleMask);
-        SubscribeLocalEvent<MaskComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<MaskComponent, GotUnequippedEvent>(OnGotUnequipped);
-        SubscribeLocalEvent<MaskComponent, FoldedEvent>(OnFolded);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, MaskComponent component, GetItemActionsEvent args)
     {
         if (_inventorySystem.InSlotWithFlags(uid, SlotFlags.MASK))
@@ -35,6 +31,7 @@ public sealed partial class MaskSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleMask(Entity<MaskComponent> ent, ref ToggleMaskEvent args)
     {
         var (uid, mask) = ent;
@@ -60,11 +57,13 @@ public sealed partial class MaskSystem : EntitySystem
         _popupSystem.PopupClient(Loc.GetString(msg, ("mask", uid)), args.Performer, args.Performer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(EntityUid uid, MaskComponent mask, GotUnequippedEvent args)
     {
         SetToggled(uid, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnFolded(Entity<MaskComponent> ent, ref FoldedEvent args)
     {
         // See FoldableClothingComponent

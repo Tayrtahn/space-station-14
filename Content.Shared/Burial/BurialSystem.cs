@@ -22,20 +22,10 @@ public sealed partial class BurialSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GraveComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<GraveComponent, ActivateInWorldEvent>(OnActivate);
         SubscribeLocalEvent<GraveComponent, AfterInteractUsingEvent>(OnAfterInteractUsing, before: new[] { typeof(PlaceableSurfaceSystem) });
-        SubscribeLocalEvent<GraveComponent, GraveDiggingDoAfterEvent>(OnGraveDigging);
-
-        SubscribeLocalEvent<GraveComponent, StorageOpenAttemptEvent>(OnOpenAttempt);
-        SubscribeLocalEvent<GraveComponent, StorageCloseAttemptEvent>(OnCloseAttempt);
-        SubscribeLocalEvent<GraveComponent, StorageAfterOpenEvent>(OnAfterOpen);
-        SubscribeLocalEvent<GraveComponent, StorageAfterCloseEvent>(OnAfterClose);
-
-        SubscribeLocalEvent<GraveComponent, ContainerRelayMovementEntityEvent>(OnRelayMovement);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, GraveComponent component, InteractUsingEvent args)
     {
         if (args.Handled || component.ActiveShovelDigging)
@@ -80,6 +70,7 @@ public sealed partial class BurialSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(EntityUid uid, GraveComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -89,6 +80,7 @@ public sealed partial class BurialSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGraveDigging(EntityUid uid, GraveComponent component, GraveDiggingDoAfterEvent args)
     {
         if (args.Used != null)
@@ -128,6 +120,7 @@ public sealed partial class BurialSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnOpenAttempt(EntityUid uid, GraveComponent component, ref StorageOpenAttemptEvent args)
     {
         if (component.DiggingComplete)
@@ -136,6 +129,7 @@ public sealed partial class BurialSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCloseAttempt(EntityUid uid, GraveComponent component, ref StorageCloseAttemptEvent args)
     {
         if (component.DiggingComplete)
@@ -144,16 +138,19 @@ public sealed partial class BurialSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterOpen(EntityUid uid, GraveComponent component, ref StorageAfterOpenEvent args)
     {
         component.DiggingComplete = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterClose(EntityUid uid, GraveComponent component, ref StorageAfterCloseEvent args)
     {
         component.DiggingComplete = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayMovement(EntityUid uid, GraveComponent component, ref ContainerRelayMovementEntityEvent args)
     {
         // We track a separate doAfter here, as we want someone with a shovel to

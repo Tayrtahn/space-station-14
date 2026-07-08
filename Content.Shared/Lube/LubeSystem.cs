@@ -27,7 +27,6 @@ public sealed partial class LubeSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<LubeComponent, AfterInteractEvent>(OnInteract, after: new[] { typeof(OpenableSystem) });
-        SubscribeLocalEvent<LubeComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
     }
 
     private void OnInteract(Entity<LubeComponent> entity, ref AfterInteractEvent args)
@@ -42,6 +41,7 @@ public sealed partial class LubeSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUtilityVerb(Entity<LubeComponent> entity, ref GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Target is not { Valid: true } target ||

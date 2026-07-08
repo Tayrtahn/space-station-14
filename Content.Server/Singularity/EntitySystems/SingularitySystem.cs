@@ -36,18 +36,6 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SingularityDistortionComponent, ComponentStartup>(OnDistortionStartup);
-        SubscribeLocalEvent<SingularityComponent, ComponentShutdown>(OnSingularityShutdown);
-        SubscribeLocalEvent<SingularityComponent, EventHorizonConsumedEntityEvent>(OnConsumed);
-        SubscribeLocalEvent<SinguloFoodComponent, EventHorizonConsumedEntityEvent>(OnConsumed);
-        SubscribeLocalEvent<SingularityComponent, EntityConsumedByEventHorizonEvent>(OnConsumedEntity);
-        SubscribeLocalEvent<SingularityComponent, TilesConsumedByEventHorizonEvent>(OnConsumedTiles);
-        SubscribeLocalEvent<SingularityComponent, SingularityLevelChangedEvent>(UpdateEnergyDrain);
-        SubscribeLocalEvent<SingularityComponent, ComponentGetState>(HandleSingularityState);
-
-        // TODO: Figure out where all this coupling should be handled.
-        SubscribeLocalEvent<RandomWalkComponent, SingularityLevelChangedEvent>(UpdateRandomWalk);
-        SubscribeLocalEvent<GravityWellComponent, SingularityLevelChangedEvent>(UpdateGravityWell);
 
         var vvHandle = Vvm.GetTypeHandler<SingularityComponent>();
         vvHandle.AddPath(nameof(SingularityComponent.Energy), (_, comp) => comp.Energy, SetEnergy);
@@ -158,6 +146,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the entity that is gaining the shader.</param>
     /// <param name="comp">The component of the shader that the entity is gaining.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void OnDistortionStartup(EntityUid uid, SingularityDistortionComponent comp, ComponentStartup args)
     {
         _pvs.AddGlobalOverride(uid);
@@ -171,6 +160,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity that is dissipating.</param>
     /// <param name="comp">The component of the singularity that is dissipating.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void OnSingularityShutdown(EntityUid uid, SingularityComponent comp, ComponentShutdown args)
     {
         comp.AmbientSoundStream = _audio.Stop(comp.AmbientSoundStream);
@@ -193,6 +183,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The uid of the singularity that is being synced.</param>
     /// <param name="comp">The state of the singularity that is being synced.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void HandleSingularityState(EntityUid uid, SingularityComponent comp, ref ComponentGetState args)
     {
         args.State = new SingularityComponentState(comp);
@@ -204,6 +195,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity that is consuming the entity.</param>
     /// <param name="comp">The component of the singularity that is consuming the entity.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void OnConsumedEntity(EntityUid uid, SingularityComponent comp, ref EntityConsumedByEventHorizonEvent args)
     {
         // Don't double count singulo food
@@ -219,6 +211,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity that is consuming the tiles.</param>
     /// <param name="comp">The component of the singularity that is consuming the tiles.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void OnConsumedTiles(EntityUid uid, SingularityComponent comp, ref TilesConsumedByEventHorizonEvent args)
     {
         AdjustEnergy(uid, args.Tiles.Count * BaseTileEnergy, singularity: comp);
@@ -230,6 +223,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity that is being consumed.</param>
     /// <param name="comp">The component of the singularity that is being consumed.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void OnConsumed(EntityUid uid, SingularityComponent comp, ref EventHorizonConsumedEntityEvent args)
     {
         // Should be slightly more efficient than checking literally everything we consume for a singularity component and doing the reverse.
@@ -246,6 +240,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity food that is being consumed.</param>
     /// <param name="comp">The component of the singularity food that is being consumed.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void OnConsumed(EntityUid uid, SinguloFoodComponent comp, ref EventHorizonConsumedEntityEvent args)
     {
         if (TryComp<SingularityComponent>(args.EventHorizonUid, out var singulo))
@@ -263,6 +258,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity that changed in level.</param>
     /// <param name="comp">The component of the singularity that changed in level.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     public void UpdateEnergyDrain(EntityUid uid, SingularityComponent comp, SingularityLevelChangedEvent args)
     {
         comp.EnergyDrain = args.NewValue switch
@@ -283,6 +279,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity.</param>
     /// <param name="comp">The random walk component component sharing the entity with the singulo component.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void UpdateRandomWalk(EntityUid uid, RandomWalkComponent comp, SingularityLevelChangedEvent args)
     {
         var scale = MathF.Max(args.NewValue, 4);
@@ -296,6 +293,7 @@ public sealed partial class SingularitySystem : SharedSingularitySystem
     /// <param name="uid">The entity UID of the singularity.</param>
     /// <param name="comp">The gravity well component sharing the entity with the singulo component.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void UpdateGravityWell(EntityUid uid, GravityWellComponent comp, SingularityLevelChangedEvent args)
     {
         var singulos = args.Singularity;

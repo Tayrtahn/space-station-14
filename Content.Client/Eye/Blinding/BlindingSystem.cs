@@ -19,34 +19,30 @@ public sealed partial class BlindingSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BlindableComponent, ComponentInit>(OnBlindInit);
-        SubscribeLocalEvent<BlindableComponent, ComponentShutdown>(OnBlindShutdown);
-
-        SubscribeLocalEvent<BlindableComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<BlindableComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
-
-        SubscribeNetworkEvent<RoundRestartCleanupEvent>(RoundRestartCleanup);
-
         _overlay = new();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(EntityUid uid, BlindableComponent component, LocalPlayerAttachedEvent args)
     {
         _overlayMan.AddOverlay(_overlay);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(EntityUid uid, BlindableComponent component, LocalPlayerDetachedEvent args)
     {
         _overlayMan.RemoveOverlay(_overlay);
         _lightManager.Enabled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBlindInit(EntityUid uid, BlindableComponent component, ComponentInit args)
     {
         if (_player.LocalEntity == uid)
             _overlayMan.AddOverlay(_overlay);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlindShutdown(EntityUid uid, BlindableComponent component, ComponentShutdown args)
     {
         if (_player.LocalEntity == uid)
@@ -55,6 +51,7 @@ public sealed partial class BlindingSystem : EntitySystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void RoundRestartCleanup(RoundRestartCleanupEvent ev)
     {
         _lightManager.Enabled = true;

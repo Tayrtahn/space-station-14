@@ -22,14 +22,9 @@ public sealed partial class LightReplacerSystem : SharedLightReplacerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LightReplacerComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<LightReplacerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<LightReplacerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<LightReplacerComponent, InteractUsingEvent>(HandleInteract);
-        SubscribeLocalEvent<LightReplacerComponent, AfterInteractEvent>(HandleAfterInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, LightReplacerComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(LightReplacerComponent)))
@@ -55,6 +50,7 @@ public sealed partial class LightReplacerSystem : SharedLightReplacerSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, LightReplacerComponent component, MapInitEvent args)
     {
         var xform = Transform(uid);
@@ -65,11 +61,13 @@ public sealed partial class LightReplacerSystem : SharedLightReplacerSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, LightReplacerComponent replacer, ComponentInit args)
     {
         replacer.InsertedBulbs = _container.EnsureContainer<Container>(uid, "light_replacer_storage");
     }
 
+    [SubscribeLocalEvent]
     private void HandleAfterInteract(EntityUid uid, LightReplacerComponent component, AfterInteractEvent eventArgs)
     {
         if (eventArgs.Handled)
@@ -93,6 +91,7 @@ public sealed partial class LightReplacerSystem : SharedLightReplacerSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleInteract(EntityUid uid, LightReplacerComponent component, InteractUsingEvent eventArgs)
     {
         if (eventArgs.Handled)

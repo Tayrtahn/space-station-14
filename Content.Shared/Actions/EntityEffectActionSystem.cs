@@ -13,9 +13,9 @@ public sealed partial class EntityEffectActionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<EntityEffectActionComponent, EntityEffectActionEvent>(OnEntityEffectAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityEffectAction(Entity<EntityEffectActionComponent> ent, ref EntityEffectActionEvent args)
     {
         foreach (var effect in ent.Comp.Effects)

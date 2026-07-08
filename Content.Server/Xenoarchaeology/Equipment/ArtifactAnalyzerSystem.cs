@@ -19,10 +19,9 @@ public sealed partial class ArtifactAnalyzerSystem : SharedArtifactAnalyzerSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnalysisConsoleComponent, AnalysisConsoleExtractButtonPressedMessage>(OnExtractButtonPressed);
     }
 
+    [SubscribeLocalEvent]
     private void OnExtractButtonPressed(Entity<AnalysisConsoleComponent> ent, ref AnalysisConsoleExtractButtonPressedMessage args)
     {
         if (!TryGetArtifactFromConsole(ent, out var artifact))

@@ -9,16 +9,15 @@ public sealed partial class MovementIgnoreGravitySystem : EntitySystem
     [Dependency] SharedGravitySystem _gravity = default!;
     public override void Initialize()
     {
-        SubscribeLocalEvent<MovementAlwaysTouchingComponent, CanWeightlessMoveEvent>(OnWeightless);
-        SubscribeLocalEvent<MovementIgnoreGravityComponent, IsWeightlessEvent>(OnIsWeightless);
-        SubscribeLocalEvent<MovementIgnoreGravityComponent, ComponentStartup>(OnComponentStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnWeightless(Entity<MovementAlwaysTouchingComponent> entity, ref CanWeightlessMoveEvent args)
     {
         args.CanMove = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnIsWeightless(Entity<MovementIgnoreGravityComponent> entity, ref IsWeightlessEvent args)
     {
         // We don't check if the event has been handled as this component takes precedent over other things.
@@ -27,6 +26,7 @@ public sealed partial class MovementIgnoreGravitySystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<MovementIgnoreGravityComponent> entity, ref ComponentStartup args)
     {
         EnsureComp<GravityAffectedComponent>(entity);

@@ -15,10 +15,9 @@ public sealed partial class HugBotSystem : SharedHugBotSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HugBotComponent, HTNRaisedEvent>(OnHtnRaisedEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnHtnRaisedEvent(Entity<HugBotComponent> entity, ref HTNRaisedEvent args)
     {
         if (args.Args is not HugBotDidHugEvent ||

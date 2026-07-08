@@ -25,8 +25,6 @@ public sealed partial class SingularityAttractorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SingularityAttractorComponent, MapInitEvent>(OnMapInit);
     }
 
     /// <summary>
@@ -91,6 +89,7 @@ public sealed partial class SingularityAttractorSystem : EntitySystem
     /// <param name="uid">The uid of the attractor to start up.</param>
     /// <param name="comp">The state of the attractor to start up.</param>
     /// <param name="args">The startup prompt arguments.</param>
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SingularityAttractorComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.LastPulseTime = _timing.CurTime;

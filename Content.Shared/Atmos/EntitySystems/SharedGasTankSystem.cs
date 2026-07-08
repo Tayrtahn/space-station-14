@@ -24,26 +24,21 @@ public abstract partial class SharedGasTankSystem : GasMaxPressureSystem<GasTank
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasTankComponent, ComponentShutdown>(OnGasShutdown);
-        SubscribeLocalEvent<GasTankComponent, BeforeActivatableUIOpenEvent>(BeforeUiOpen);
-        SubscribeLocalEvent<GasTankComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<GasTankComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<GasTankComponent, ToggleActionEvent>(OnActionToggle);
-        SubscribeLocalEvent<GasTankComponent, GasTankSetPressureMessage>(OnGasTankSetPressure);
-        SubscribeLocalEvent<GasTankComponent, GasTankToggleInternalsMessage>(OnGasTankToggleInternals);
-        SubscribeLocalEvent<GasTankComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAlternativeVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnGasShutdown(Entity<GasTankComponent> gasTank, ref ComponentShutdown args)
     {
         DisconnectFromInternals(gasTank);
     }
 
+    [SubscribeLocalEvent]
     private void OnGasTankToggleInternals(Entity<GasTankComponent> ent, ref GasTankToggleInternalsMessage args)
     {
         ToggleInternals(ent, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnGasTankSetPressure(Entity<GasTankComponent> ent, ref GasTankSetPressureMessage args)
     {
         var pressure = Math.Clamp(args.Pressure, 0f, ent.Comp.MaxReleasePressure);
@@ -58,17 +53,20 @@ public abstract partial class SharedGasTankSystem : GasMaxPressureSystem<GasTank
 
     }
 
+    [SubscribeLocalEvent]
     private void BeforeUiOpen(Entity<GasTankComponent> ent, ref BeforeActivatableUIOpenEvent args)
     {
         UpdateUserInterface(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, GasTankComponent component, GetItemActionsEvent args)
     {
         args.AddAction(ref component.ToggleActionEntity, component.ToggleAction);
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, GasTankComponent component, ExaminedEvent args)
     {
         using var _ = args.PushGroup(nameof(GasTankComponent));
@@ -82,6 +80,7 @@ public abstract partial class SharedGasTankSystem : GasMaxPressureSystem<GasTank
         args.PushMarkup(Loc.GetString(component.ReleaseValveOpen ? "comp-gas-tank-examine-open-valve" : "comp-gas-tank-examine-closed-valve"));
     }
 
+    [SubscribeLocalEvent]
     private void OnActionToggle(Entity<GasTankComponent> gasTank, ref ToggleActionEvent args)
     {
         if (args.Handled)
@@ -91,6 +90,7 @@ public abstract partial class SharedGasTankSystem : GasMaxPressureSystem<GasTank
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAlternativeVerb(Entity<GasTankComponent> entity, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null)

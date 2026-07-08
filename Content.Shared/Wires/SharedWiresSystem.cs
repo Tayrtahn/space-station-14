@@ -23,22 +23,15 @@ public abstract partial class SharedWiresSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WiresPanelComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<WiresPanelComponent, WirePanelDoAfterEvent>(OnPanelDoAfter);
-        SubscribeLocalEvent<WiresPanelComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<WiresPanelComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<WiresPanelComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerbs);
-
-        SubscribeLocalEvent<ActivatableUIRequiresPanelComponent, ActivatableUIOpenAttemptEvent>(OnAttemptOpenActivatableUI);
-        SubscribeLocalEvent<ActivatableUIRequiresPanelComponent, PanelChangedEvent>(OnActivatableUIPanelChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<WiresPanelComponent> ent, ref ComponentStartup args)
     {
         UpdateAppearance(ent, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPanelDoAfter(EntityUid uid, WiresPanelComponent panel, WirePanelDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -54,6 +47,7 @@ public abstract partial class SharedWiresSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<WiresPanelComponent> ent, ref InteractUsingEvent args)
     {
         if (!Tool.HasQuality(args.Used, ent.Comp.OpeningTool))
@@ -78,6 +72,7 @@ public abstract partial class SharedWiresSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, WiresPanelComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(WiresPanelComponent)))
@@ -101,6 +96,7 @@ public abstract partial class SharedWiresSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<WiresPanelComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!IsPanelOpen(ent.Owner))
@@ -184,6 +180,7 @@ public abstract partial class SharedWiresSystem : EntitySystem
         return entity.Comp.Open;
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptOpenActivatableUI(EntityUid uid, ActivatableUIRequiresPanelComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled || !TryComp<WiresPanelComponent>(uid, out var wires))
@@ -193,6 +190,7 @@ public abstract partial class SharedWiresSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnActivatableUIPanelChanged(EntityUid uid, ActivatableUIRequiresPanelComponent component, ref PanelChangedEvent args)
     {
         if (args.Open == component.RequireOpen)

@@ -33,23 +33,15 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
         {
             base.Initialize();
 
-            SubscribeLocalEvent<GasFilterComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<GasFilterComponent, AtmosDeviceUpdateEvent>(OnFilterUpdated);
-            SubscribeLocalEvent<GasFilterComponent, AtmosDeviceDisabledEvent>(OnFilterLeaveAtmosphere);
-            SubscribeLocalEvent<GasFilterComponent, ActivateInWorldEvent>(OnFilterActivate);
-            SubscribeLocalEvent<GasFilterComponent, GasAnalyzerScanEvent>(OnFilterAnalyzed);
-            // Bound UI subscriptions
-            SubscribeLocalEvent<GasFilterComponent, GasFilterChangeRateMessage>(OnTransferRateChangeMessage);
-            SubscribeLocalEvent<GasFilterComponent, GasFilterSelectGasMessage>(OnSelectGasMessage);
-            SubscribeLocalEvent<GasFilterComponent, GasFilterToggleStatusMessage>(OnToggleStatusMessage);
-
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, GasFilterComponent filter, ComponentInit args)
         {
             UpdateAppearance(uid, filter);
         }
 
+        [SubscribeLocalEvent]
         private void OnFilterUpdated(EntityUid uid, GasFilterComponent filter, ref AtmosDeviceUpdateEvent args)
         {
             if (!filter.Enabled
@@ -100,6 +92,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             _atmosphereSystem.Merge(inletNode.Air, removed);
         }
 
+        [SubscribeLocalEvent]
         private void OnFilterLeaveAtmosphere(EntityUid uid, GasFilterComponent filter, ref AtmosDeviceDisabledEvent args)
         {
             filter.Enabled = false;
@@ -111,6 +104,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             _userInterfaceSystem.CloseUi(uid, GasFilterUiKey.Key);
         }
 
+        [SubscribeLocalEvent]
         private void OnFilterActivate(EntityUid uid, GasFilterComponent filter, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -149,6 +143,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             _appearanceSystem.SetData(uid, FilterVisuals.Enabled, filter.Enabled);
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleStatusMessage(EntityUid uid, GasFilterComponent filter, GasFilterToggleStatusMessage args)
         {
             filter.Enabled = args.Enabled;
@@ -158,6 +153,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
             UpdateAppearance(uid, filter);
         }
 
+        [SubscribeLocalEvent]
         private void OnTransferRateChangeMessage(EntityUid uid, GasFilterComponent filter, GasFilterChangeRateMessage args)
         {
             filter.TransferRate = Math.Clamp(args.Rate, 0f, filter.MaxTransferRate);
@@ -167,6 +163,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
 
         }
 
+        [SubscribeLocalEvent]
         private void OnSelectGasMessage(EntityUid uid, GasFilterComponent filter, GasFilterSelectGasMessage args)
         {
             if (args.Gas.HasValue)
@@ -195,6 +192,7 @@ namespace Content.Server.Atmos.Piping.Trinary.EntitySystems
         /// <summary>
         /// Returns the gas mixture for the gas analyzer
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnFilterAnalyzed(EntityUid uid, GasFilterComponent component, GasAnalyzerScanEvent args)
         {
             args.GasMixtures ??= new List<(string, GasMixture?)>();

@@ -26,13 +26,9 @@ public sealed partial class EmergencyLightSystem : SharedEmergencyLightSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmergencyLightComponent, EmergencyLightEvent>(OnEmergencyLightEvent);
-        SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertLevelChanged);
-        SubscribeLocalEvent<EmergencyLightComponent, ExaminedEvent>(OnEmergencyExamine);
-        SubscribeLocalEvent<EmergencyLightComponent, PowerChangedEvent>(OnEmergencyPower);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmergencyPower(Entity<EmergencyLightComponent> entity, ref PowerChangedEvent args)
     {
         var meta = MetaData(entity.Owner);
@@ -47,6 +43,7 @@ public sealed partial class EmergencyLightSystem : SharedEmergencyLightSystem
         UpdateState(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmergencyExamine(EntityUid uid, EmergencyLightComponent component, ExaminedEvent args)
     {
         using (args.PushGroup(nameof(EmergencyLightComponent)))
@@ -76,6 +73,7 @@ public sealed partial class EmergencyLightSystem : SharedEmergencyLightSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEmergencyLightEvent(EntityUid uid, EmergencyLightComponent component, EmergencyLightEvent args)
     {
         switch (args.State)
@@ -93,6 +91,7 @@ public sealed partial class EmergencyLightSystem : SharedEmergencyLightSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAlertLevelChanged(AlertLevelChangedEvent ev)
     {
         if (!TryComp<AlertLevelComponent>(ev.Station, out var alert))

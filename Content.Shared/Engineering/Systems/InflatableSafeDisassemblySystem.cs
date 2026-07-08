@@ -16,10 +16,9 @@ public sealed partial class InflatableSafeDisassemblySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InflatableSafeDisassemblyComponent, InteractUsingEvent>(InteractHandler);
     }
 
+    [SubscribeLocalEvent]
     private void InteractHandler(Entity<InflatableSafeDisassemblyComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)

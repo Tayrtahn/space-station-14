@@ -15,11 +15,9 @@ public sealed partial class PresetIdCardSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PresetIdCardComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<RulePlayerJobsAssignedEvent>(PlayerJobsAssigned);
     }
 
+    [SubscribeLocalEvent]
     private void PlayerJobsAssigned(RulePlayerJobsAssignedEvent ev)
     {
         // Go over all ID cards and make sure they're correctly configured for extended access.
@@ -38,6 +36,7 @@ public sealed partial class PresetIdCardSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, PresetIdCardComponent id, MapInitEvent args)
     {
         // If a preset ID card is spawned on a station at setup time,

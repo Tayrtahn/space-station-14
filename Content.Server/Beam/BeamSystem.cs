@@ -26,28 +26,27 @@ public sealed partial class BeamSystem : SharedBeamSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BeamComponent, CreateBeamSuccessEvent>(OnBeamCreationSuccess);
-        SubscribeLocalEvent<BeamComponent, BeamControllerCreatedEvent>(OnControllerCreated);
-        SubscribeLocalEvent<BeamComponent, BeamFiredEvent>(OnBeamFired);
-        SubscribeLocalEvent<BeamComponent, ComponentRemove>(OnRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeamCreationSuccess(EntityUid uid, BeamComponent component, CreateBeamSuccessEvent args)
     {
         component.BeamShooter = args.User;
     }
 
+    [SubscribeLocalEvent]
     private void OnControllerCreated(EntityUid uid, BeamComponent component, BeamControllerCreatedEvent args)
     {
         component.OriginBeam = args.OriginBeam;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeamFired(EntityUid uid, BeamComponent component, BeamFiredEvent args)
     {
         component.CreatedBeams.Add(args.CreatedBeam);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, BeamComponent component, ComponentRemove args)
     {
         if (component.VirtualBeamController == null)

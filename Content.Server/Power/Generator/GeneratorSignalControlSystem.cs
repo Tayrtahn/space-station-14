@@ -11,12 +11,12 @@ public sealed partial class GeneratorSignalControlSystem: EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GeneratorSignalControlComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
     /// <summary>
     /// Change the state of the generator depending on what signal is sent.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, GeneratorSignalControlComponent component, SignalReceivedEvent args)
     {
         if (!TryComp<FuelGeneratorComponent>(uid, out var generator))

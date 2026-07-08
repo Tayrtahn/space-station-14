@@ -19,10 +19,10 @@ public abstract partial class SharedJobSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnProtoReload);
         SetupTrackerLookup();
     }
 
+    [SubscribeLocalEvent]
     private void OnProtoReload(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<JobPrototype>())

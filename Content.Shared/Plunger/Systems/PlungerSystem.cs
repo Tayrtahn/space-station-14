@@ -22,10 +22,9 @@ public sealed partial class PlungerSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PlungerComponent, AfterInteractEvent>(OnInteract);
-        SubscribeLocalEvent<PlungerComponent, PlungerDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(EntityUid uid, PlungerComponent component, AfterInteractEvent args)
     {
         if (args.Handled)
@@ -49,6 +48,7 @@ public sealed partial class PlungerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, PlungerComponent component, DoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Args.Target == null)

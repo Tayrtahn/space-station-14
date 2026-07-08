@@ -39,29 +39,9 @@ public sealed partial class GuardianSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GuardianCreatorComponent, UseInHandEvent>(OnCreatorUse);
-        SubscribeLocalEvent<GuardianCreatorComponent, AfterInteractEvent>(OnCreatorInteract);
-        SubscribeLocalEvent<GuardianCreatorComponent, ExaminedEvent>(OnCreatorExamine);
-        SubscribeLocalEvent<GuardianCreatorComponent, GuardianCreatorDoAfterEvent>(OnDoAfter);
-
-        SubscribeLocalEvent<GuardianComponent, ComponentShutdown>(OnGuardianShutdown);
-        SubscribeLocalEvent<GuardianComponent, MoveEvent>(OnGuardianMove);
-        SubscribeLocalEvent<GuardianComponent, DamageDealtEvent>(OnGuardianDamaged);
-        SubscribeLocalEvent<GuardianComponent, PlayerAttachedEvent>(OnGuardianPlayerAttached);
-        SubscribeLocalEvent<GuardianComponent, PlayerDetachedEvent>(OnGuardianPlayerDetached);
-
-        SubscribeLocalEvent<GuardianHostComponent, ComponentInit>(OnHostInit);
-        SubscribeLocalEvent<GuardianHostComponent, MoveEvent>(OnHostMove);
-        SubscribeLocalEvent<GuardianHostComponent, MobStateChangedEvent>(OnHostStateChange);
-        SubscribeLocalEvent<GuardianHostComponent, ComponentShutdown>(OnHostShutdown);
-
-        SubscribeLocalEvent<GuardianHostComponent, GuardianToggleActionEvent>(OnPerformAction);
-
-        SubscribeLocalEvent<GuardianComponent, AttackAttemptEvent>(OnGuardianAttackAttempt);
-
-        SubscribeLocalEvent<GuardianHostComponent, MechPilotRelayedEvent<GettingAttackedAttemptEvent>>(OnPilotAttackAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnGuardianShutdown(Entity<GuardianComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<GuardianHostComponent>(ent, out var hostComponent))
@@ -77,6 +57,7 @@ public sealed partial class GuardianSystem : EntitySystem
         Dirty(ent, hostComponent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPerformAction(Entity<GuardianHostComponent> ent, ref GuardianToggleActionEvent args)
     {
         if (args.Handled)
@@ -94,6 +75,7 @@ public sealed partial class GuardianSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGuardianPlayerDetached(Entity<GuardianComponent> ent, ref PlayerDetachedEvent args)
     {
         if (!TryComp<GuardianHostComponent>(ent.Comp.Host, out var hostComponent) ||
@@ -108,6 +90,7 @@ public sealed partial class GuardianSystem : EntitySystem
         RetractGuardian((ent.Comp.Host.Value, hostComponent), (ent.Owner, ent.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnGuardianPlayerAttached(Entity<GuardianComponent> ent, ref PlayerAttachedEvent args)
     {
         var host = ent.Comp.Host;
@@ -122,12 +105,14 @@ public sealed partial class GuardianSystem : EntitySystem
         _popup.PopupPredicted(Loc.GetString("guardian-available"), host.Value, host.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnHostInit(Entity<GuardianHostComponent> ent, ref ComponentInit args)
     {
         ent.Comp.GuardianContainer = _container.EnsureContainer<ContainerSlot>(ent.Owner, "GuardianContainer");
         _action.AddAction(ent.Owner, ref ent.Comp.ActionEntity, ent.Comp.Action);
     }
 
+    [SubscribeLocalEvent]
     private void OnHostShutdown(Entity<GuardianHostComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.HostedGuardian is not { } guardian)
@@ -144,6 +129,7 @@ public sealed partial class GuardianSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGuardianAttackAttempt(Entity<GuardianComponent> ent, ref AttackAttemptEvent args)
     {
         if (args.Cancelled || args.Target != ent.Comp.Host)
@@ -153,6 +139,7 @@ public sealed partial class GuardianSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnPilotAttackAttempt(Entity<GuardianHostComponent> ent,
         ref MechPilotRelayedEvent<GettingAttackedAttemptEvent> args)
     {
@@ -179,6 +166,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Adds the guardian host component to the user and spawns the guardian inside said component.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnCreatorUse(Entity<GuardianCreatorComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)
@@ -188,6 +176,7 @@ public sealed partial class GuardianSystem : EntitySystem
         UseCreator(args.User, args.User, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCreatorInteract(Entity<GuardianCreatorComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || args.Target == null || !args.CanReach)
@@ -236,6 +225,7 @@ public sealed partial class GuardianSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<GuardianCreatorComponent> ent, ref GuardianCreatorDoAfterEvent args)
     {
         if (args.Handled || args.Args.Target == null || args.Cancelled || ent.Comp.Deleted || ent.Comp.Used)
@@ -278,6 +268,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Triggers when the host receives damage which puts the host in either critical or killed state.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnHostStateChange(Entity<GuardianHostComponent> ent, ref MobStateChangedEvent args)
     {
         if (ent.Comp.HostedGuardian == null ||
@@ -301,6 +292,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Handles guardian receiving damage and splitting it with the host according to his defense percent.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGuardianDamaged(Entity<GuardianComponent> ent, ref DamageDealtEvent args)
     {
         if (_timing.ApplyingState)
@@ -321,6 +313,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Triggers while trying to examine an activator to see if it's used.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnCreatorExamine(Entity<GuardianCreatorComponent> ent, ref ExaminedEvent args)
     {
         if (!ent.Comp.Used)
@@ -332,6 +325,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Called every time the host moves, to make sure the host and the guardian are not too far away from each other.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnHostMove(Entity<GuardianHostComponent> ent, ref MoveEvent args)
     {
         if (!TryComp<GuardianComponent>(ent.Comp.HostedGuardian, out var guardianComponent) ||
@@ -346,6 +340,7 @@ public sealed partial class GuardianSystem : EntitySystem
     /// <summary>
     /// Called every time the guardian moves: makes sure it's not out of it's allowed distance.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGuardianMove(Entity<GuardianComponent> ent, ref MoveEvent args)
     {
         if (!ent.Comp.GuardianLoose)

@@ -21,12 +21,6 @@ public sealed partial class VocalSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VocalComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<VocalComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<VocalComponent, VoiceChangedEvent>(OnVoiceChanged);
-        SubscribeLocalEvent<VocalComponent, EmoteEvent>(OnEmote);
-        SubscribeLocalEvent<VocalComponent, EmoteActionEvent>(OnEmoteAction);
     }
 
     /// <summary>
@@ -47,12 +41,14 @@ public sealed partial class VocalSystem : EntitySystem
         Dirty(target, targetComp);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, VocalComponent component, MapInitEvent args)
     {
         // try to add scream action when vocal comp added
         _actions.AddAction(uid, ref component.EmoteActionEntity, component.EmoteAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, VocalComponent component, ComponentShutdown args)
     {
         // remove scream action when component removed
@@ -62,11 +58,13 @@ public sealed partial class VocalSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnVoiceChanged(EntityUid uid, VocalComponent component, VoiceChangedEvent args)
     {
         LoadSounds(uid, component, args.NewVoice);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmote(EntityUid uid, VocalComponent component, ref EmoteEvent args)
     {
         if (args.Handled || !args.Emote.Category.HasFlag(EmoteCategory.Vocal))
@@ -86,6 +84,7 @@ public sealed partial class VocalSystem : EntitySystem
         args.Handled = _chat.TryPlayEmoteSound(uid, ProtoMan.Index(sounds), args.Emote);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmoteAction(EntityUid uid, VocalComponent component, EmoteActionEvent args)
     {
         if (args.Handled)

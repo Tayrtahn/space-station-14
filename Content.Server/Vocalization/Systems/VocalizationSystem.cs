@@ -23,16 +23,15 @@ public sealed partial class VocalizationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VocalizerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<VocalizerRequiresPowerComponent, TryVocalizeEvent>(OnRequiresPowerTryVocalize);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<VocalizerComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextVocalizeInterval = _random.Next(ent.Comp.MinVocalizeInterval, ent.Comp.MaxVocalizeInterval);
     }
 
+    [SubscribeLocalEvent]
     private void OnRequiresPowerTryVocalize(Entity<VocalizerRequiresPowerComponent> ent, ref TryVocalizeEvent args)
     {
         if (!TryComp<ApcPowerReceiverComponent>(ent, out var receiver))

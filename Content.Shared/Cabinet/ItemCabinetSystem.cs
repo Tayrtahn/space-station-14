@@ -20,20 +20,15 @@ public sealed partial class ItemCabinetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemCabinetComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ItemCabinetComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ItemCabinetComponent, EntInsertedIntoContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<ItemCabinetComponent, EntRemovedFromContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<ItemCabinetComponent, OpenableOpenedEvent>(OnOpened);
-        SubscribeLocalEvent<ItemCabinetComponent, OpenableClosedEvent>(OnClosed);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<ItemCabinetComponent> ent, ref ComponentStartup args)
     {
         UpdateAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ItemCabinetComponent> ent, ref MapInitEvent args)
     {
         // update at mapinit to avoid copy pasting locked: true and locked: false for each closed/open prototype
@@ -45,17 +40,20 @@ public sealed partial class ItemCabinetSystem : EntitySystem
         _appearance.SetData(ent, ItemCabinetVisuals.ContainsItem, HasItem(ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerModified(EntityUid uid, ItemCabinetComponent component, ContainerModifiedMessage args)
     {
         if (args.Container.ID == component.Slot)
             UpdateAppearance((uid, component));
     }
 
+    [SubscribeLocalEvent]
     private void OnOpened(Entity<ItemCabinetComponent> ent, ref OpenableOpenedEvent args)
     {
         SetSlotLock(ent, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnClosed(Entity<ItemCabinetComponent> ent, ref OpenableClosedEvent args)
     {
         SetSlotLock(ent, true);

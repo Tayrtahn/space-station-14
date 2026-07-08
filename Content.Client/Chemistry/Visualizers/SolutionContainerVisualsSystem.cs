@@ -18,11 +18,9 @@ public sealed partial class SolutionContainerVisualsSystem : VisualizerSystem<So
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SolutionContainerVisualsComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<SolutionContainerVisualsComponent, GetInhandVisualsEvent>(OnGetHeldVisuals);
-        SubscribeLocalEvent<SolutionContainerVisualsComponent, GetEquipmentVisualsEvent>(OnGetClothingVisuals);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SolutionContainerVisualsComponent component, MapInitEvent args)
     {
         component.InitialDescription = MetaData(uid).EntityDescription;
@@ -149,6 +147,7 @@ public sealed partial class SolutionContainerVisualsSystem : VisualizerSystem<So
         return reagentProto;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetHeldVisuals(Entity<SolutionContainerVisualsComponent> ent, ref GetInhandVisualsEvent args)
     {
         if (ent.Comp.InHandsFillBaseName == null)
@@ -164,6 +163,7 @@ public sealed partial class SolutionContainerVisualsSystem : VisualizerSystem<So
             args.Layers.Add(layer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetClothingVisuals(Entity<SolutionContainerVisualsComponent> ent, ref GetEquipmentVisualsEvent args)
     {
         if (ent.Comp.EquippedFillBaseName == null)

@@ -15,9 +15,9 @@ public sealed partial class RequiresTileSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TileChangedEvent>(OnTileChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnTileChange(ref TileChangedEvent ev)
     {
         if (!TryComp<MapGridComponent>(ev.Entity, out var grid))

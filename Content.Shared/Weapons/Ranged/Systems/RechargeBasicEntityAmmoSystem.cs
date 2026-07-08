@@ -17,9 +17,6 @@ public sealed partial class RechargeBasicEntityAmmoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RechargeBasicEntityAmmoComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<RechargeBasicEntityAmmoComponent, ExaminedEvent>(OnExamined);
     }
 
     public override void Update(float frameTime)
@@ -55,12 +52,14 @@ public sealed partial class RechargeBasicEntityAmmoSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<RechargeBasicEntityAmmoComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextCharge = _timing.CurTime;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<RechargeBasicEntityAmmoComponent> ent, ref ExaminedEvent args)
     {
         if (!ent.Comp.ShowExamineText)

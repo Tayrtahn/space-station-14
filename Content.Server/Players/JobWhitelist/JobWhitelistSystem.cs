@@ -20,20 +20,18 @@ public sealed partial class JobWhitelistSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-        SubscribeLocalEvent<StationJobsGetCandidatesEvent>(OnStationJobsGetCandidates);
-        SubscribeLocalEvent<IsRoleAllowedEvent>(OnIsRoleAllowed);
-        SubscribeLocalEvent<GetDisallowedJobsEvent>(OnGetDisallowedJobs);
 
         CacheJobs();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs ev)
     {
         if (ev.WasModified<JobPrototype>())
             CacheJobs();
     }
 
+    [SubscribeLocalEvent]
     private void OnStationJobsGetCandidates(ref StationJobsGetCandidatesEvent ev)
     {
         if (!_config.GetCVar(CCVars.GameRoleWhitelist))
@@ -50,6 +48,7 @@ public sealed partial class JobWhitelistSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnIsRoleAllowed(ref IsRoleAllowedEvent ev)
     {
         if (ev.Jobs is null)
@@ -61,8 +60,10 @@ public sealed partial class JobWhitelistSystem : EntitySystem
                 ev.Cancelled = true;
         }
     }
+
     //TODO: Antagonist role whitelists?
 
+    [SubscribeLocalEvent]
     private void OnGetDisallowedJobs(ref GetDisallowedJobsEvent ev)
     {
         if (!_config.GetCVar(CCVars.GameRoleWhitelist))

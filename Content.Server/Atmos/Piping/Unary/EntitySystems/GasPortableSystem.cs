@@ -19,12 +19,9 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasPortableComponent, AnchorAttemptEvent>(OnPortableAnchorAttempt);
-            // Shouldn't need re-anchored event.
-            SubscribeLocalEvent<GasPortableComponent, AnchorStateChangedEvent>(OnAnchorChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnPortableAnchorAttempt(EntityUid uid, GasPortableComponent component, AnchorAttemptEvent args)
         {
             if (!TryComp(uid, out TransformComponent? transform))
@@ -35,6 +32,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
                 args.Cancel();
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, GasPortableComponent portable, ref AnchorStateChangedEvent args)
         {
             if (!_nodeContainer.TryGetNode(uid, portable.PortName, out PipeNode? portableNode))

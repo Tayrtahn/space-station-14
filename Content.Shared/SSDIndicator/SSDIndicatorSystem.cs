@@ -23,14 +23,12 @@ public sealed partial class SSDIndicatorSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<SSDIndicatorComponent, PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<SSDIndicatorComponent, PlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<SSDIndicatorComponent, MapInitEvent>(OnMapInit);
 
         _cfg.OnValueChanged(CCVars.ICSSDSleep, obj => _icSsdSleep = obj, true);
         _cfg.OnValueChanged(CCVars.ICSSDSleepTime, obj => _icSsdSleepTime = obj, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(EntityUid uid, SSDIndicatorComponent component, PlayerAttachedEvent args)
     {
         component.IsSSD = false;
@@ -45,6 +43,7 @@ public sealed partial class SSDIndicatorSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(EntityUid uid, SSDIndicatorComponent component, PlayerDetachedEvent args)
     {
         component.IsSSD = true;
@@ -59,6 +58,7 @@ public sealed partial class SSDIndicatorSystem : EntitySystem
     }
 
     // Prevents mapped mobs to go to sleep immediately
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SSDIndicatorComponent component, MapInitEvent args)
     {
         if (!_icSsdSleep || !component.IsSSD)

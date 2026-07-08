@@ -16,13 +16,12 @@ namespace Content.Client.Stack
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<StackComponent, AppearanceChangeEvent>(OnAppearanceChange);
             Subs.ItemStatus<StackComponent>(ent => new StackStatusControl(ent));
         }
 
         #region Appearance
 
+        [SubscribeLocalEvent]
         private void OnAppearanceChange(Entity<StackComponent> ent, ref AppearanceChangeEvent args)
         {
             var (uid, comp) = ent;

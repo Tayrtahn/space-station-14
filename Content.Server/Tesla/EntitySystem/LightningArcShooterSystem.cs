@@ -17,9 +17,9 @@ public sealed partial class LightningArcShooterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LightningArcShooterComponent, MapInitEvent>(OnShooterMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnShooterMapInit(EntityUid uid, LightningArcShooterComponent component, ref MapInitEvent args)
     {
         if (component.Instant)

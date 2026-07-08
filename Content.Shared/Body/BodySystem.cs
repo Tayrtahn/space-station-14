@@ -25,29 +25,24 @@ public sealed partial class BodySystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<BodyComponent, ComponentInit>(OnBodyInit);
-        SubscribeLocalEvent<BodyComponent, ComponentShutdown>(OnBodyShutdown);
-
-        SubscribeLocalEvent<BodyComponent, CanDragEvent>(OnCanDrag);
-
-        SubscribeLocalEvent<BodyComponent, EntInsertedIntoContainerMessage>(OnBodyEntInserted);
-        SubscribeLocalEvent<BodyComponent, EntRemovedFromContainerMessage>(OnBodyEntRemoved);
-
         InitializeRelay();
     }
 
+    [SubscribeLocalEvent]
     private void OnBodyInit(Entity<BodyComponent> ent, ref ComponentInit args)
     {
         ent.Comp.Organs =
             _container.EnsureContainer<Container>(ent, BodyComponent.ContainerID);
     }
 
+    [SubscribeLocalEvent]
     private void OnBodyShutdown(Entity<BodyComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.Organs is { } organs)
             _container.ShutdownContainer(organs);
     }
 
+    [SubscribeLocalEvent]
     private void OnBodyEntInserted(Entity<BodyComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != BodyComponent.ContainerID)
@@ -69,6 +64,7 @@ public sealed partial class BodySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBodyEntRemoved(Entity<BodyComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != BodyComponent.ContainerID)
@@ -90,6 +86,7 @@ public sealed partial class BodySystem : EntitySystem
         Dirty(args.Entity, organ);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDrag(Entity<BodyComponent> ent, ref CanDragEvent args)
     {
         args.Handled = true;

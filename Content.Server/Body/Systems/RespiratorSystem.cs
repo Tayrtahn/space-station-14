@@ -50,8 +50,6 @@ public sealed partial class RespiratorSystem : EntitySystem
 
         // We want to process lung reagents before we inhale new reagents.
         UpdatesAfter.Add(typeof(MetabolizerSystem));
-        SubscribeLocalEvent<RespiratorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<RespiratorComponent, ApplyMetabolicMultiplierEvent>(OnApplyMetabolicMultiplier);
 
         // BodyComp stuff
         SubscribeLocalEvent<BodyComponent, InhaledGasEvent>(_body.RelayEvent);
@@ -59,14 +57,9 @@ public sealed partial class RespiratorSystem : EntitySystem
         SubscribeLocalEvent<BodyComponent, CanMetabolizeGasEvent>(_body.RelayEvent);
         SubscribeLocalEvent<BodyComponent, SuffocationEvent>(_body.RelayEvent);
         SubscribeLocalEvent<BodyComponent, StopSuffocatingEvent>(_body.RelayEvent);
-
-        SubscribeLocalEvent<LungComponent, BodyRelayedEvent<InhaledGasEvent>>(OnGasInhaled);
-        SubscribeLocalEvent<LungComponent, BodyRelayedEvent<ExhaledGasEvent>>(OnGasExhaled);
-        SubscribeLocalEvent<LungComponent, BodyRelayedEvent<CanMetabolizeGasEvent>>(CanBodyMetabolizeGas);
-        SubscribeLocalEvent<LungComponent, BodyRelayedEvent<SuffocationEvent>>(OnSuffocation);
-        SubscribeLocalEvent<LungComponent, BodyRelayedEvent<StopSuffocatingEvent>>(OnStopSuffocating);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<RespiratorComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextUpdate = _gameTiming.CurTime + ent.Comp.AdjustedUpdateInterval;
@@ -242,6 +235,7 @@ public sealed partial class RespiratorSystem : EntitySystem
     /// <summary>
     /// Tries to safely metabolize the current solutions in a body's lungs.
     /// </summary>
+    [SubscribeLocalEvent]
     private void CanBodyMetabolizeGas(Entity<LungComponent> ent, ref BodyRelayedEvent<CanMetabolizeGasEvent> args)
     {
         if (args.Args.Handled)
@@ -343,11 +337,13 @@ public sealed partial class RespiratorSystem : EntitySystem
         RaiseLocalEvent(ent, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnSuffocation(Entity<LungComponent> ent, ref BodyRelayedEvent<SuffocationEvent> args)
     {
         _alertsSystem.ShowAlert(args.Body.Owner, ent.Comp.Alert);
     }
 
+    [SubscribeLocalEvent]
     private void OnStopSuffocating(Entity<LungComponent> ent, ref BodyRelayedEvent<StopSuffocatingEvent> args)
     {
         _alertsSystem.ClearAlert(args.Body.Owner, ent.Comp.Alert);
@@ -363,11 +359,13 @@ public sealed partial class RespiratorSystem : EntitySystem
             Math.Clamp(respirator.Saturation, respirator.MinSaturation, respirator.MaxSaturation);
     }
 
+    [SubscribeLocalEvent]
     private void OnApplyMetabolicMultiplier(Entity<RespiratorComponent> ent, ref ApplyMetabolicMultiplierEvent args)
     {
         ent.Comp.UpdateIntervalMultiplier = args.Multiplier;
     }
 
+    [SubscribeLocalEvent]
     private void OnGasInhaled(Entity<LungComponent> ent, ref BodyRelayedEvent<InhaledGasEvent> args)
     {
         if (args.Args.Handled)
@@ -383,6 +381,7 @@ public sealed partial class RespiratorSystem : EntitySystem
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnGasExhaled(Entity<LungComponent> ent, ref BodyRelayedEvent<ExhaledGasEvent> args)
     {
         _atmosSys.Merge(args.Args.Gas, ent.Comp.Air);

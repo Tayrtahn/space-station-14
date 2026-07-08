@@ -12,9 +12,9 @@ public sealed partial class LightBulbSystem : SharedLightBulbSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LightBulbComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, LightBulbComponent comp, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

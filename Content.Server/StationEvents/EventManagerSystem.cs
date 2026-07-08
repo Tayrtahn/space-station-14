@@ -30,11 +30,10 @@ public sealed partial class EventManagerSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-
         Subs.CVar(_configurationManager, CCVars.EventsEnabled, SetEnabled, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
     {
         if (args.WasModified<EntityPrototype>())

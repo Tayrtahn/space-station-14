@@ -31,15 +31,11 @@ public sealed partial class ClumsySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ClumsyComponent, SelfBeforeInjectEvent>(BeforeHyposprayEvent);
-        SubscribeLocalEvent<ClumsyComponent, SelfBeforeDefibrillatorZapsEvent>(BeforeDefibrillatorZapsEvent);
-        SubscribeLocalEvent<ClumsyComponent, SelfBeforeGunShotEvent>(BeforeGunShotEvent);
-        SubscribeLocalEvent<ClumsyComponent, CatchAttemptEvent>(OnCatchAttempt);
-        SubscribeLocalEvent<ClumsyComponent, SelfBeforeClimbEvent>(OnBeforeClimbEvent);
     }
 
     // If you add more clumsy interactions add them in this section!
     #region Clumsy interaction events
+    [SubscribeLocalEvent]
     private void BeforeHyposprayEvent(Entity<ClumsyComponent> ent, ref SelfBeforeInjectEvent args)
     {
         // Clumsy people sometimes inject themselves! Apparently syringes are clumsy proof...
@@ -56,6 +52,7 @@ public sealed partial class ClumsySystem : EntitySystem
         _audio.PlayPredicted(ent.Comp.ClumsySound, ent, args.EntityUsingInjector);
     }
 
+    [SubscribeLocalEvent]
     private void BeforeDefibrillatorZapsEvent(Entity<ClumsyComponent> ent, ref SelfBeforeDefibrillatorZapsEvent args)
     {
         // Clumsy people sometimes defib themselves!
@@ -72,6 +69,7 @@ public sealed partial class ClumsySystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnCatchAttempt(Entity<ClumsyComponent> ent, ref CatchAttemptEvent args)
     {
         // Clumsy people sometimes fail to catch items!
@@ -100,6 +98,7 @@ public sealed partial class ClumsySystem : EntitySystem
         _audio.PlayPvs(ent.Comp.ClumsySound, ent);
     }
 
+    [SubscribeLocalEvent]
     private void BeforeGunShotEvent(Entity<ClumsyComponent> ent, ref SelfBeforeGunShotEvent args)
     {
         // Clumsy people sometimes can't shoot :(
@@ -127,6 +126,7 @@ public sealed partial class ClumsySystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeClimbEvent(Entity<ClumsyComponent> ent, ref SelfBeforeClimbEvent args)
     {
         // checks if ClumsyVaulting is false, if so, skips.

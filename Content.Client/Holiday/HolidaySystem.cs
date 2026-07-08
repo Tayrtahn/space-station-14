@@ -16,9 +16,9 @@ public sealed partial class HolidaySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<HolidayRsiSwapComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<HolidayRsiSwapComponent> ent, ref AppearanceChangeEvent args)
     {
         if (!_appearance.TryGetData<string>(ent, HolidayVisuals.Holiday, out var data, args.Component))

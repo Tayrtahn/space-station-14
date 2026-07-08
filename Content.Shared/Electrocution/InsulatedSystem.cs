@@ -12,10 +12,9 @@ public sealed partial class InsulatedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InsulatedComponent, GetVerbsEvent<ExamineVerb>>(OnDetailedExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnDetailedExamine(EntityUid ent, InsulatedComponent component, ref GetVerbsEvent<ExamineVerb> args)
     {
         if (!HasComp<ClothingComponent>(ent))

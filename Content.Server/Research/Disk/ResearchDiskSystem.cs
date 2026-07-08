@@ -14,10 +14,9 @@ namespace Content.Server.Research.Disk
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ResearchDiskComponent, AfterInteractEvent>(OnAfterInteract);
-            SubscribeLocalEvent<ResearchDiskComponent, MapInitEvent>(OnMapInit);
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteract(EntityUid uid, ResearchDiskComponent component, AfterInteractEvent args)
         {
             if (!args.CanReach)
@@ -32,6 +31,7 @@ namespace Content.Server.Research.Disk
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, ResearchDiskComponent component, MapInitEvent args)
         {
             if (!component.UnlockAllTech)

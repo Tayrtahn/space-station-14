@@ -78,11 +78,9 @@ namespace Content.Server.Atmos.EntitySystems
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
 
             InitializeCVars();
-
-            SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
-            SubscribeLocalEvent<GasTileOverlayComponent, ComponentStartup>(OnStartup);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, GasTileOverlayComponent component, ComponentStartup args)
         {
             // This **shouldn't** be required, but just in case we ever get entity prototypes that have gas overlays, we
@@ -357,6 +355,7 @@ namespace Content.Server.Atmos.EntitySystems
             _updateJob.LastSessionUpdate = _gameTiming.CurTick;
         }
 
+        [SubscribeLocalEvent]
         public void Reset(RoundRestartCleanupEvent ev)
         {
             foreach (var data in _lastSentChunks.Values)

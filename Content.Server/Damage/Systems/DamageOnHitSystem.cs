@@ -12,9 +12,10 @@ public sealed partial class DamageOnHitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageOnHitComponent, MeleeHitEvent>(DamageItem);
     }
+
     // Looks for a hit, then damages the held item an appropriate amount.
+    [SubscribeLocalEvent]
     private void DamageItem(EntityUid uid, DamageOnHitComponent component, MeleeHitEvent args)
     {
         if (args.HitEntities.Any()) {

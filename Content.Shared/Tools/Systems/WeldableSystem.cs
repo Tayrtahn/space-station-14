@@ -21,10 +21,6 @@ public sealed partial class WeldableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<WeldableComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<WeldableComponent, WeldFinishedEvent>(OnWeldFinished);
-        SubscribeLocalEvent<LayerChangeOnWeldComponent, WeldableChangedEvent>(OnWeldChanged);
-        SubscribeLocalEvent<WeldableComponent, ExaminedEvent>(OnExamine);
     }
 
     public bool IsWelded(EntityUid uid, WeldableComponent? component = null)
@@ -32,12 +28,14 @@ public sealed partial class WeldableSystem : EntitySystem
         return _query.Resolve(uid, ref component, false) && component.IsWelded;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, WeldableComponent component, ExaminedEvent args)
     {
         if (component.IsWelded && component.WeldedExamineMessage != null)
             args.PushText(Loc.GetString(component.WeldedExamineMessage));
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, WeldableComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -77,6 +75,7 @@ public sealed partial class WeldableSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnWeldFinished(EntityUid uid, WeldableComponent component, WeldFinishedEvent args)
     {
         if (args.Cancelled || args.Used == null)
@@ -92,6 +91,7 @@ public sealed partial class WeldableSystem : EntitySystem
         _adminLogger.Add(LogType.Action, LogImpact.Low, $"{ToPrettyString(args.User):user} {(!component.IsWelded ? "un" : "")}welded {ToPrettyString(uid):target}");
     }
 
+    [SubscribeLocalEvent]
     private void OnWeldChanged(EntityUid uid, LayerChangeOnWeldComponent component, ref WeldableChangedEvent args)
     {
         if (!TryComp<FixturesComponent>(uid, out var fixtures))

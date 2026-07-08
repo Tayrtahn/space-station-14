@@ -15,10 +15,9 @@ public sealed partial class HitscanBasicEffectsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HitscanBasicEffectsComponent, HitscanDamageDealtEvent>(OnHitscanDamageDealt);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitscanDamageDealt(Entity<HitscanBasicEffectsComponent> ent, ref HitscanDamageDealtEvent args)
     {
         if (Deleted(args.Target))

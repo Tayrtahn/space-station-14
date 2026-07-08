@@ -21,10 +21,6 @@ public sealed partial class FrictionContactsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FrictionContactsComponent, StartCollideEvent>(OnEntityEnter);
-        SubscribeLocalEvent<FrictionContactsComponent, EndCollideEvent>(OnEntityExit);
-        SubscribeLocalEvent<FrictionModifiedByContactComponent, RefreshFrictionModifiersEvent>(OnRefreshFrictionModifiers);
-        SubscribeLocalEvent<FrictionContactsComponent, ComponentShutdown>(OnShutdown);
 
         UpdatesAfter.Add(typeof(SharedPhysicsSystem));
     }
@@ -66,6 +62,7 @@ public sealed partial class FrictionContactsSystem : EntitySystem
         _toUpdate.UnionWith(_physics.GetContactingEntities(uid));
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, FrictionContactsComponent component, ComponentShutdown args)
     {
         if (!TryComp(uid, out PhysicsComponent? phys))
@@ -75,6 +72,7 @@ public sealed partial class FrictionContactsSystem : EntitySystem
         _toUpdate.UnionWith(_physics.GetContactingEntities(uid, phys));
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshFrictionModifiers(Entity<FrictionModifiedByContactComponent> entity, ref RefreshFrictionModifiersEvent args)
     {
         if (!TryComp<PhysicsComponent>(entity, out var physicsComponent))
@@ -125,12 +123,14 @@ public sealed partial class FrictionContactsSystem : EntitySystem
             _toRemove.Add(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityExit(EntityUid uid, FrictionContactsComponent component, ref EndCollideEvent args)
     {
         var otherUid = args.OtherEntity;
         _toUpdate.Add(otherUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityEnter(EntityUid uid, FrictionContactsComponent component, ref StartCollideEvent args)
     {
         AddModifiedEntity(args.OtherEntity);

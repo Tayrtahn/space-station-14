@@ -19,8 +19,6 @@ public sealed partial class GridDraggingSystem : SharedGridDraggingSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<GridDragRequestPosition>(OnRequestDrag);
-        SubscribeNetworkEvent<GridDragVelocityRequest>(OnRequestVelocity);
     }
 
     public bool IsEnabled(ICommonSession session) => _draggers.Contains(session);
@@ -48,6 +46,7 @@ public sealed partial class GridDraggingSystem : SharedGridDraggingSystem
         }, session.Channel);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestVelocity(GridDragVelocityRequest ev, EntitySessionEventArgs args)
     {
         var grid = GetEntity(ev.Grid);
@@ -65,6 +64,7 @@ public sealed partial class GridDraggingSystem : SharedGridDraggingSystem
         _physics.SetAngularVelocity(grid, 0f, body: gridBody);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestDrag(GridDragRequestPosition msg, EntitySessionEventArgs args)
     {
         var grid = GetEntity(msg.Grid);

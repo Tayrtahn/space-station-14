@@ -17,10 +17,9 @@ public sealed partial class RandomDecalSpawnerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomDecalSpawnerComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RandomDecalSpawnerComponent component, MapInitEvent args)
     {
         TrySpawn(uid);

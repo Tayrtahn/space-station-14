@@ -61,8 +61,6 @@ public sealed partial class ChatSystem : SharedChatSystem
         Subs.CVar(_configurationManager, CCVars.DeadLoocEnabled, OnDeadLoocEnabledChanged, true);
         Subs.CVar(_configurationManager, CCVars.CritLoocEnabled, OnCritLoocEnabledChanged, true);
         Subs.CVar(_configurationManager, CCVars.DeadChatEnabled, OnDeadChatEnabledChanged, true);
-
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(OnGameChange);
     }
 
     private void OnLoocEnabledChanged(bool val)
@@ -103,6 +101,7 @@ public sealed partial class ChatSystem : SharedChatSystem
             Loc.GetString(val ? "chat-manager-dead-chat-enabled-message" : "chat-manager-dead-chat-disabled-message"));
     }
 
+    [SubscribeLocalEvent]
     private void OnGameChange(GameRunLevelChangedEvent ev)
     {
         switch (ev.New)

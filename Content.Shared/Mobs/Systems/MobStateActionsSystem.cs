@@ -14,15 +14,15 @@ public sealed partial class MobStateActionsSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MobStateActionsComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<MobStateComponent, ComponentInit>(OnMobStateComponentInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, MobStateActionsComponent component, MobStateChangedEvent args)
     {
         ComposeActions(uid, component, args.NewMobState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateComponentInit(EntityUid uid, MobStateComponent component, ComponentInit args)
     {
         if (!TryComp<MobStateActionsComponent>(uid, out var mobStateActionsComp))

@@ -5,15 +5,14 @@ namespace Content.Shared.Item.ItemToggle;
 /// <summary>
 /// Handles <see cref="ComponentTogglerComponent"/> component manipulation.
 /// </summary>
-public sealed class ComponentTogglerSystem : EntitySystem
+public sealed partial class ComponentTogglerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ComponentTogglerComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<ComponentTogglerComponent> ent, ref ItemToggledEvent args)
     {
         if (args.Activated)

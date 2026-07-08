@@ -18,12 +18,9 @@ public abstract partial class SharedSubdermalImplantSystem : EntitySystem
     {
         base.Initialize();
         InitializeRelay();
-
-        SubscribeLocalEvent<SubdermalImplantComponent, EntGotInsertedIntoContainerMessage>(OnInsert);
-        SubscribeLocalEvent<SubdermalImplantComponent, ContainerGettingRemovedAttemptEvent>(OnRemoveAttempt);
-        SubscribeLocalEvent<SubdermalImplantComponent, EntGotRemovedFromContainerMessage>(OnRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsert(Entity<SubdermalImplantComponent> ent, ref EntGotInsertedIntoContainerMessage args)
     {
         // The results of the container change are already networked on their own
@@ -44,12 +41,14 @@ public abstract partial class SharedSubdermalImplantSystem : EntitySystem
         RaiseLocalEvent(ent.Owner, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveAttempt(Entity<SubdermalImplantComponent> ent, ref ContainerGettingRemovedAttemptEvent args)
     {
         if (ent.Comp.Permanent && ent.Comp.ImplantedEntity != null)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<SubdermalImplantComponent> ent, ref EntGotRemovedFromContainerMessage args)
     {
         // The results of the container change are already networked on their own

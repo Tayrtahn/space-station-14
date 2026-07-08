@@ -34,12 +34,9 @@ public abstract partial class SharedAbsorbentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AbsorbentComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<AbsorbentComponent, UserActivateInWorldEvent>(OnActivateInWorld);
-        SubscribeLocalEvent<AbsorbentComponent, SolutionChangedEvent>(OnAbsorbentSolutionChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(Entity<AbsorbentComponent> ent, ref UserActivateInWorldEvent args)
     {
         if (args.Handled)
@@ -49,6 +46,7 @@ public abstract partial class SharedAbsorbentSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<AbsorbentComponent> ent, ref AfterInteractEvent args)
     {
         if (!args.CanReach || args.Handled || args.Target is not { } target)
@@ -58,6 +56,7 @@ public abstract partial class SharedAbsorbentSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAbsorbentSolutionChange(Entity<AbsorbentComponent> ent, ref SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.

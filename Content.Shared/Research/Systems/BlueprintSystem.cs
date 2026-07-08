@@ -20,16 +20,15 @@ public sealed partial class BlueprintSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<BlueprintReceiverComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<BlueprintReceiverComponent, AfterInteractUsingEvent>(OnAfterInteract);
-        SubscribeLocalEvent<BlueprintReceiverComponent, LatheGetRecipesEvent>(OnGetRecipes);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<BlueprintReceiverComponent> ent, ref ComponentStartup args)
     {
         _container.EnsureContainer<Container>(ent, ent.Comp.ContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<BlueprintReceiverComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (args.Handled || !args.CanReach || !TryComp<BlueprintComponent>(args.Used, out var blueprintComponent))
@@ -37,6 +36,7 @@ public sealed partial class BlueprintSystem : EntitySystem
         args.Handled = TryInsertBlueprint(ent, (args.Used, blueprintComponent), args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetRecipes(Entity<BlueprintReceiverComponent> ent, ref LatheGetRecipesEvent args)
     {
         var recipes = GetBlueprintRecipes(ent);

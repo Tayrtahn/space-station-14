@@ -18,12 +18,12 @@ public sealed partial class TileGridSplitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
     }
 
     /// <summary>
     /// Transfer tile history from the old grid to the new grids.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent ev)
     {
         if (!TryComp<TileHistoryComponent>(ev.Grid, out var oldHistory))

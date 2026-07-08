@@ -12,10 +12,9 @@ public sealed partial class DamageMarkerSystem : SharedDamageMarkerSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageMarkerComponent, ComponentStartup>(OnMarkerStartup);
-        SubscribeLocalEvent<DamageMarkerComponent, ComponentShutdown>(OnMarkerShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkerStartup(EntityUid uid, DamageMarkerComponent component, ComponentStartup args)
     {
         if (!_timing.ApplyingState || component.Effect == null || !TryComp<SpriteComponent>(uid, out var sprite))
@@ -25,6 +24,7 @@ public sealed partial class DamageMarkerSystem : SharedDamageMarkerSystem
         _sprite.LayerSetRsi((uid, sprite), layer, component.Effect.RsiPath, component.Effect.RsiState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkerShutdown(EntityUid uid, DamageMarkerComponent component, ComponentShutdown args)
     {
         if (!_timing.ApplyingState || !TryComp<SpriteComponent>(uid, out var sprite) || !_sprite.LayerMapTryGet((uid, sprite), DamageMarkerKey.Key, out var weh, false))

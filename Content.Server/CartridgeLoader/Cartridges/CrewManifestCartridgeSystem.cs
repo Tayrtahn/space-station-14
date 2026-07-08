@@ -27,9 +27,6 @@ public sealed partial class CrewManifestCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CrewManifestCartridgeComponent, CartridgeMessageEvent>(OnUiMessage);
-        SubscribeLocalEvent<CrewManifestCartridgeComponent, CartridgeUiReadyEvent>(OnUiReady);
-        SubscribeLocalEvent<ProgramInstallationAttempt>(OnInstallationAttempt);
         Subs.CVar(_configManager, CCVars.CrewManifestUnsecure, OnCrewManifestUnsecureChanged, true);
     }
 
@@ -39,6 +36,7 @@ public sealed partial class CrewManifestCartridgeSystem : EntitySystem
     /// <remarks>
     /// The cartridge specific ui message event needs to inherit from the CartridgeMessageEvent
     /// </remarks>
+    [SubscribeLocalEvent]
     private void OnUiMessage(EntityUid uid, CrewManifestCartridgeComponent component, CartridgeMessageEvent args)
     {
         UpdateUiState(uid, GetEntity(args.LoaderUid), component);
@@ -47,6 +45,7 @@ public sealed partial class CrewManifestCartridgeSystem : EntitySystem
     /// <summary>
     /// This gets called when the ui fragment needs to be updated for the first time after activating
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiReady(EntityUid uid, CrewManifestCartridgeComponent component, CartridgeUiReadyEvent args)
     {
         UpdateUiState(uid, args.Loader, component);
@@ -74,6 +73,7 @@ public sealed partial class CrewManifestCartridgeSystem : EntitySystem
         _cartridgeLoader.UpdateCartridgeUiState(loaderUid, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnInstallationAttempt(ref ProgramInstallationAttempt args)
     {
         if (args.Prototype == CartridgePrototypeName && !_unsecureViewersAllowed)

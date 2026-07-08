@@ -16,7 +16,6 @@ public sealed partial class GermanAccentSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GermanAccentComponent, AccentGetEvent>(OnAccent);
     }
 
     public string Accentuate(string message)
@@ -79,6 +78,7 @@ public sealed partial class GermanAccentSystem : EntitySystem
         return msgBuilder.ToString();
     }
 
+    [SubscribeLocalEvent]
     private void OnAccent(Entity<GermanAccentComponent> ent, ref AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message);

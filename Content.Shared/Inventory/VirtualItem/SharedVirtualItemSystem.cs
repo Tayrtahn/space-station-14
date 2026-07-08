@@ -34,50 +34,47 @@ public abstract partial class SharedVirtualItemSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<VirtualItemComponent, AfterAutoHandleStateEvent>(OnAfterAutoHandleState);
-
-        SubscribeLocalEvent<VirtualItemComponent, BeingEquippedAttemptEvent>(OnBeingEquippedAttempt);
-        SubscribeLocalEvent<VirtualItemComponent, BeingUnequippedAttemptEvent>(OnBeingUnequippedAttempt);
-
-        SubscribeLocalEvent<VirtualItemComponent, BeforeRangedInteractEvent>(OnBeforeRangedInteract);
-        SubscribeLocalEvent<VirtualItemComponent, GettingInteractedWithAttemptEvent>(OnGettingInteractedWithAttemptEvent);
-
-        SubscribeLocalEvent<VirtualItemComponent, GetUsedEntityEvent>(OnGetUsedEntity);
     }
 
     /// <summary>
     /// Updates the GUI buttons with the new entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAfterAutoHandleState(Entity<VirtualItemComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (_containerSystem.IsEntityInContainer(ent))
             _itemSystem.VisualsChanged(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingEquippedAttempt(Entity<VirtualItemComponent> ent, ref BeingEquippedAttemptEvent args)
     {
         // No interactions with a virtual item, please.
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingUnequippedAttempt(Entity<VirtualItemComponent> ent, ref BeingUnequippedAttemptEvent args)
     {
         // No interactions with a virtual item, please.
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeRangedInteract(Entity<VirtualItemComponent> ent, ref BeforeRangedInteractEvent args)
     {
         // No interactions with a virtual item, please.
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGettingInteractedWithAttemptEvent(Entity<VirtualItemComponent> ent, ref GettingInteractedWithAttemptEvent args)
     {
         // No interactions with a virtual item, please.
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetUsedEntity(Entity<VirtualItemComponent> ent, ref GetUsedEntityEvent args)
     {
         if (args.Handled)

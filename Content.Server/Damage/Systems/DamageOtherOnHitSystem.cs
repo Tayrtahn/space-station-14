@@ -24,10 +24,9 @@ public sealed partial class DamageOtherOnHitSystem : SharedDamageOtherOnHitSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DamageOtherOnHitComponent, ThrowDoHitEvent>(OnDoHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoHit(EntityUid uid, DamageOtherOnHitComponent component, ThrowDoHitEvent args)
     {
         if (TerminatingOrDeleted(args.Target))

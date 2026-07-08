@@ -2,14 +2,14 @@
 
 namespace Content.Client.Mind;
 
-public sealed class MindSystem : SharedMindSystem
+public sealed partial class MindSystem : SharedMindSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MindComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, MindComponent component, ref AfterAutoHandleStateEvent args)
     {
         // Because minds are generally not networked, there might be weird situations were a client thinks multiple

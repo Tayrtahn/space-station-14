@@ -15,7 +15,6 @@ public sealed partial class PoweredLightVisualizerSystem : VisualizerSystem<Powe
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PoweredLightVisualsComponent, AnimationCompletedEvent>(OnAnimationCompleted);
     }
 
     protected override void OnAppearanceChange(EntityUid uid, PoweredLightVisualsComponent comp, ref AppearanceChangeEvent args)
@@ -50,6 +49,7 @@ public sealed partial class PoweredLightVisualizerSystem : VisualizerSystem<Powe
     /// <summary>
     /// Loops the blinking animation until the light should stop blinking.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(EntityUid uid, PoweredLightVisualsComponent comp, AnimationCompletedEvent args)
     {
         if (!TryComp<AnimationPlayerComponent>(uid, out var animationPlayer))

@@ -15,11 +15,9 @@ public sealed partial class LatheProducingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LatheProducingComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<LatheProducingComponent, ComponentShutdown>(OnComponentShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<LatheProducingComponent> ent, ref ComponentShutdown args)
     {
         // use the Try variant of this here
@@ -27,6 +25,7 @@ public sealed partial class LatheProducingSystem : EntitySystem
         _powerState.TrySetWorkingState(ent.Owner, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<LatheProducingComponent> ent, ref ComponentStartup args)
     {
         _powerState.TrySetWorkingState(ent.Owner, true);

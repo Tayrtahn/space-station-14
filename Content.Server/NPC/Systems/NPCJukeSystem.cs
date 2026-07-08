@@ -26,9 +26,9 @@ public sealed partial class NPCJukeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<NPCJukeComponent, NPCSteeringEvent>(OnJukeSteering);
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeSteering(EntityUid uid, NPCJukeComponent component, ref NPCSteeringEvent args)
     {
         if (component.JukeType == JukeType.AdjacentTile)

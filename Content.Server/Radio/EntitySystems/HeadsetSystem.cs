@@ -16,12 +16,9 @@ public sealed partial class HeadsetSystem : SharedHeadsetSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<HeadsetComponent, RadioReceiveEvent>(OnHeadsetReceive);
-        SubscribeLocalEvent<HeadsetComponent, EncryptionChannelsChangedEvent>(OnKeysChanged);
-
-        SubscribeLocalEvent<WearingHeadsetComponent, EntitySpokeEvent>(OnSpeak);
     }
 
+    [SubscribeLocalEvent]
     private void OnKeysChanged(EntityUid uid, HeadsetComponent component, EncryptionChannelsChangedEvent args)
     {
         UpdateRadioChannels(uid, component, args.Component);
@@ -42,6 +39,7 @@ public sealed partial class HeadsetSystem : SharedHeadsetSystem
             EnsureComp<ActiveRadioComponent>(uid).Channels = new(keyHolder.Channels);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeak(EntityUid uid, WearingHeadsetComponent component, EntitySpokeEvent args)
     {
         if (args.Channel != null
@@ -95,6 +93,7 @@ public sealed partial class HeadsetSystem : SharedHeadsetSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHeadsetReceive(EntityUid uid, HeadsetComponent component, ref RadioReceiveEvent args)
     {
         // TODO: change this when a code refactor is done

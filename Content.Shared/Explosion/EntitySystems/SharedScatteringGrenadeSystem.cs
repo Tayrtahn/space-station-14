@@ -14,12 +14,9 @@ public abstract partial class SharedScatteringGrenadeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScatteringGrenadeComponent, ComponentInit>(OnScatteringInit);
-        SubscribeLocalEvent<ScatteringGrenadeComponent, ComponentStartup>(OnScatteringStartup);
-        SubscribeLocalEvent<ScatteringGrenadeComponent, InteractUsingEvent>(OnScatteringInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnScatteringInit(Entity<ScatteringGrenadeComponent> entity, ref ComponentInit args)
     {
         entity.Comp.Container = _container.EnsureContainer<Container>(entity.Owner, "cluster-payload");
@@ -29,6 +26,7 @@ public abstract partial class SharedScatteringGrenadeSystem : EntitySystem
     /// Setting the unspawned count based on capacity, so we know how many new entities to spawn
     /// Update appearance based on initial fill amount
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnScatteringStartup(Entity<ScatteringGrenadeComponent> entity, ref ComponentStartup args)
     {
         if (entity.Comp.FillPrototype == null)
@@ -44,6 +42,7 @@ public abstract partial class SharedScatteringGrenadeSystem : EntitySystem
     /// There are some scattergrenades you can fill up with more grenades (like clusterbangs)
     /// This covers how you insert more into it
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnScatteringInteractUsing(Entity<ScatteringGrenadeComponent> entity, ref InteractUsingEvent args)
     {
         if (entity.Comp.Whitelist == null)

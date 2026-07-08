@@ -9,7 +9,7 @@ namespace Content.Shared.Explosion.EntitySystems;
 /// Lets code in shared trigger explosions and handles explosion resistance examining.
 /// All processing is still done clientside.
 /// </summary>
-public abstract class SharedExplosionSystem : EntitySystem
+public abstract partial class SharedExplosionSystem : EntitySystem
 {
     /// <summary>
     ///     The "default" explosion prototype.
@@ -24,9 +24,9 @@ public abstract class SharedExplosionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ExplosionResistanceComponent, ArmorExamineEvent>(OnArmorExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnArmorExamine(Entity<ExplosionResistanceComponent> ent, ref ArmorExamineEvent args)
     {
         var value = MathF.Round((1f - ent.Comp.DamageCoefficient) * 100, 1);

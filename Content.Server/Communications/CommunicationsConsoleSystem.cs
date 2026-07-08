@@ -41,20 +41,8 @@ namespace Content.Server.Communications
 
         public override void Initialize()
         {
-            // All events that refresh the BUI
-            SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertLevelChanged);
             SubscribeLocalEvent<RoundEndSystemChangedEvent>(_ => OnGenericBroadcastEvent());
             SubscribeLocalEvent<AlertLevelDelayFinishedEvent>(_ => OnGenericBroadcastEvent());
-
-            // Messages from the BUI
-            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleSelectAlertLevelMessage>(OnSelectAlertLevelMessage);
-            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleAnnounceMessage>(OnAnnounceMessage);
-            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleBroadcastMessage>(OnBroadcastMessage);
-            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleCallEmergencyShuttleMessage>(OnCallShuttleMessage);
-            SubscribeLocalEvent<CommunicationsConsoleComponent, CommunicationsConsoleRecallEmergencyShuttleMessage>(OnRecallShuttleMessage);
-
-            // On console init, set cooldown
-            SubscribeLocalEvent<CommunicationsConsoleComponent, MapInitEvent>(OnCommunicationsConsoleMapInit);
         }
 
         public override void Update(float frameTime)
@@ -82,6 +70,7 @@ namespace Content.Server.Communications
             base.Update(frameTime);
         }
 
+        [SubscribeLocalEvent]
         public void OnCommunicationsConsoleMapInit(EntityUid uid, CommunicationsConsoleComponent comp, MapInitEvent args)
         {
             comp.AnnouncementCooldownRemaining = comp.InitialDelay;
@@ -104,6 +93,7 @@ namespace Content.Server.Communications
         /// Updates all comms consoles belonging to the station that the alert level was set on
         /// </summary>
         /// <param name="args">Alert level changed event arguments</param>
+        [SubscribeLocalEvent]
         private void OnAlertLevelChanged(AlertLevelChangedEvent args)
         {
             var query = EntityQueryEnumerator<CommunicationsConsoleComponent>();
@@ -208,6 +198,7 @@ namespace Content.Server.Communications
             return !(left.TotalSeconds / expected.TotalSeconds < recallThreshold);
         }
 
+        [SubscribeLocalEvent]
         private void OnSelectAlertLevelMessage(EntityUid uid, CommunicationsConsoleComponent comp, CommunicationsConsoleSelectAlertLevelMessage message)
         {
             if (message.Actor is not { Valid: true } mob)
@@ -226,6 +217,7 @@ namespace Content.Server.Communications
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAnnounceMessage(EntityUid uid, CommunicationsConsoleComponent comp,
             CommunicationsConsoleAnnounceMessage message)
         {
@@ -275,6 +267,7 @@ namespace Content.Server.Communications
 
         }
 
+        [SubscribeLocalEvent]
         private void OnBroadcastMessage(EntityUid uid, CommunicationsConsoleComponent component, CommunicationsConsoleBroadcastMessage message)
         {
             if (!TryComp<DeviceNetworkComponent>(uid, out var net))
@@ -290,6 +283,7 @@ namespace Content.Server.Communications
             _adminLogger.Add(LogType.DeviceNetwork, LogImpact.Low, $"{ToPrettyString(message.Actor):player} has sent the following broadcast: {message.Message:msg}");
         }
 
+        [SubscribeLocalEvent]
         private void OnCallShuttleMessage(EntityUid uid, CommunicationsConsoleComponent comp, CommunicationsConsoleCallEmergencyShuttleMessage message)
         {
             if (!CanCallOrRecall(comp))
@@ -315,6 +309,7 @@ namespace Content.Server.Communications
             _adminLogger.Add(LogType.Action, LogImpact.High, $"{ToPrettyString(mob):player} has called the shuttle.");
         }
 
+        [SubscribeLocalEvent]
         private void OnRecallShuttleMessage(EntityUid uid, CommunicationsConsoleComponent comp, CommunicationsConsoleRecallEmergencyShuttleMessage message)
         {
             if (!CanCallOrRecall(comp))

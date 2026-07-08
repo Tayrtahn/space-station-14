@@ -3,13 +3,13 @@ using Content.Shared.Chat;
 
 namespace Content.Server.Speech.EntitySystems
 {
-    public sealed class UnblockableSpeechSystem : EntitySystem
+    public sealed partial class UnblockableSpeechSystem : EntitySystem
     {
         public override void Initialize()
         {
-            SubscribeLocalEvent<UnblockableSpeechComponent, CheckIgnoreSpeechBlockerEvent>(OnCheck);
         }
 
+        [SubscribeLocalEvent]
         private void OnCheck(EntityUid uid, UnblockableSpeechComponent component, CheckIgnoreSpeechBlockerEvent args)
         {
             args.IgnoreBlocker = true;

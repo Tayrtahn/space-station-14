@@ -10,16 +10,16 @@ namespace Content.IntegrationTests.Tests
     [TestFixture]
     public sealed class RoundEndTest : GameTest
     {
-        private sealed class RoundEndTestSystem : EntitySystem
+        private sealed partial class RoundEndTestSystem : EntitySystem
         {
             public int RoundCount;
 
             public override void Initialize()
             {
                 base.Initialize();
-                SubscribeLocalEvent<RoundEndSystemChangedEvent>(OnRoundEnd);
             }
 
+            [SubscribeLocalEvent]
             private void OnRoundEnd(RoundEndSystemChangedEvent ev)
             {
                 RoundCount += 1;

@@ -8,10 +8,9 @@ public sealed partial class TriggerOnThrowDoHitSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnThrowDoHitComponent, ThrowDoHitEvent>(OnHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnHit(Entity<TriggerOnThrowDoHitComponent> ent, ref ThrowDoHitEvent args)
     {
         Trigger.Trigger(ent.Owner, args.Target, ent.Comp.KeyOut);

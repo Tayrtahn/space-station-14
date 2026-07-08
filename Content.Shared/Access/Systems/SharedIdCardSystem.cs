@@ -34,15 +34,11 @@ public abstract partial class SharedIdCardSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<IdCardComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<IdCardComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeLocalEvent<TryGetIdentityShortInfoEvent>(OnTryGetIdentityShortInfo);
-        SubscribeLocalEvent<EntityRenamedEvent>(OnRename);
-
         Subs.CVar(_cfgManager, CCVars.MaxNameLength, value => _maxNameLength = value, true);
         Subs.CVar(_cfgManager, CCVars.MaxIdJobLength, value => _maxIdJobLength = value, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnRename(ref EntityRenamedEvent ev)
     {
         // When a player gets renamed their id card is renamed as well to match.
@@ -56,11 +52,13 @@ public abstract partial class SharedIdCardSystem : EntitySystem
             TryChangeFullName(idCard, ev.NewName, idCard);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, IdCardComponent id, MapInitEvent args)
     {
         UpdateEntityName(uid, id);
     }
 
+    [SubscribeLocalEvent]
     private void OnTryGetIdentityShortInfo(TryGetIdentityShortInfoEvent ev)
     {
         if (ev.Handled)
@@ -73,6 +71,7 @@ public abstract partial class SharedIdCardSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<IdCardComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         // Try to update the job status icon of the player owning the ID, if any.

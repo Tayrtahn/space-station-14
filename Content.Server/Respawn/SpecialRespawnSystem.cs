@@ -26,13 +26,9 @@ public sealed partial class SpecialRespawnSystem : SharedSpecialRespawnSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(OnRunLevelChanged);
-        SubscribeLocalEvent<SpecialRespawnSetupEvent>(OnSpecialRespawnSetup);
-        SubscribeLocalEvent<SpecialRespawnComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<SpecialRespawnComponent, EntityTerminatingEvent>(OnTermination);
     }
 
+    [SubscribeLocalEvent]
     private void OnRunLevelChanged(GameRunLevelChangedEvent ev)
     {
         //Try to compensate for restartroundnow command
@@ -47,6 +43,7 @@ public sealed partial class SpecialRespawnSystem : SharedSpecialRespawnSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSpecialRespawnSetup(SpecialRespawnSetupEvent ev)
     {
         if (!TryComp<SpecialRespawnComponent>(ev.Entity, out var comp))
@@ -69,12 +66,14 @@ public sealed partial class SpecialRespawnSystem : SharedSpecialRespawnSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, SpecialRespawnComponent component, ComponentStartup args)
     {
         var ev = new SpecialRespawnSetupEvent(uid);
         QueueLocalEvent(ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnTermination(EntityUid uid, SpecialRespawnComponent component, ref EntityTerminatingEvent args)
     {
         var entityMapUid = component.StationMap.Item1;

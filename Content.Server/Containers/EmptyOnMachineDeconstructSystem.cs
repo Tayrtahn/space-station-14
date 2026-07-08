@@ -16,12 +16,10 @@ namespace Content.Server.Containers
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<EmptyOnMachineDeconstructComponent, MachineDeconstructedEvent>(OnDeconstruct);
-            SubscribeLocalEvent<ItemSlotsComponent, MachineDeconstructedEvent>(OnSlotsDeconstruct);
         }
 
         // really this should be handled by ItemSlotsSystem, but for whatever reason MachineDeconstructedEvent is server-side? So eh.
+        [SubscribeLocalEvent]
         private void OnSlotsDeconstruct(EntityUid uid, ItemSlotsComponent component, MachineDeconstructedEvent args)
         {
             foreach (var slot in component.Slots.Values)
@@ -31,6 +29,7 @@ namespace Content.Server.Containers
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnDeconstruct(EntityUid uid, EmptyOnMachineDeconstructComponent component, MachineDeconstructedEvent ev)
         {
             if (!TryComp<ContainerManagerComponent>(uid, out var mComp))

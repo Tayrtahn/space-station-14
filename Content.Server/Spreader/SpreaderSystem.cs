@@ -46,14 +46,10 @@ public sealed partial class SpreaderSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<AirtightChanged>(OnAirtightChanged);
-        SubscribeLocalEvent<GridInitializeEvent>(OnGridInit);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypeReload);
-
-        SubscribeLocalEvent<EdgeSpreaderComponent, EntityTerminatingEvent>(OnTerminating);
         SetupPrototypes();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypeReload(PrototypesReloadedEventArgs obj)
     {
         if (obj.WasModified<EdgeSpreaderPrototype>())
@@ -69,16 +65,19 @@ public sealed partial class SpreaderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAirtightChanged(ref AirtightChanged ev)
     {
         ActivateSpreadableNeighbors(ev.Entity, ev.Position);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridInit(GridInitializeEvent ev)
     {
         EnsureComp<SpreaderGridComponent>(ev.EntityUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnTerminating(Entity<EdgeSpreaderComponent> entity, ref EntityTerminatingEvent args)
     {
         ActivateSpreadableNeighbors(entity);

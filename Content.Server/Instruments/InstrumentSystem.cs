@@ -50,13 +50,6 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
 
         InitializeCVars();
 
-        SubscribeNetworkEvent<InstrumentMidiEventEvent>(OnMidiEventRx);
-        SubscribeNetworkEvent<InstrumentStartMidiEvent>(OnMidiStart);
-        SubscribeNetworkEvent<InstrumentStopMidiEvent>(OnMidiStop);
-        SubscribeNetworkEvent<InstrumentSetMasterEvent>(OnMidiSetMaster);
-        SubscribeNetworkEvent<InstrumentSetFilteredChannelEvent>(OnMidiSetFilteredChannel);
-        SubscribeNetworkEvent<InstrumentSetChannelsEvent>(OnMidiSetChannels);
-
         Subs.BuiEvents<InstrumentComponent>(InstrumentUiKey.Key, subs =>
         {
             subs.Event<BoundUIClosedEvent>(OnBoundUIClosed);
@@ -64,11 +57,10 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
             subs.Event<InstrumentBandRequestBuiMessage>(OnBoundUIRequestBands);
         });
 
-        SubscribeLocalEvent<InstrumentComponent, ComponentGetState>(OnStrumentGetState);
-
         _conHost.RegisterCommand("addtoband", AddToBandCommand);
     }
 
+    [SubscribeLocalEvent]
     private void OnStrumentGetState(EntityUid uid, InstrumentComponent component, ref ComponentGetState args)
     {
         args.State = new InstrumentComponentState()
@@ -111,6 +103,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         Dirty(secondUid.Value, otherInstrument);
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiStart(InstrumentStartMidiEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);
@@ -125,6 +118,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         Dirty(uid, instrument);
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiStop(InstrumentStopMidiEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);
@@ -138,7 +132,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         Clean(uid, instrument);
     }
 
-
+    [SubscribeNetworkEvent]
     private void OnMidiSetChannels(InstrumentSetChannelsEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);
@@ -179,6 +173,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         Dirty(uid, activeInstrument);
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiSetMaster(InstrumentSetMasterEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);
@@ -215,6 +210,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiSetFilteredChannel(InstrumentSetFilteredChannelEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);
@@ -333,6 +329,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         Dirty(uid, instrument);
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiEventRx(InstrumentMidiEventEvent msg, EntitySessionEventArgs args)
     {
         var uid = GetEntity(msg.Uid);

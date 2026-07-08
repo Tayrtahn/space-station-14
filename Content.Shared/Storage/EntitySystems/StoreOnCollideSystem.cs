@@ -18,12 +18,11 @@ internal sealed partial class StoreOnCollideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StoreOnCollideComponent, StartCollideEvent>(OnCollide);
-        SubscribeLocalEvent<StoreOnCollideComponent, StorageAfterOpenEvent>(AfterOpen);
         // TODO: Add support to stop colliding after throw, wands will need a WandComp
     }
 
     // We use Collide instead of Projectile to support different types of interactions
+    [SubscribeLocalEvent]
     private void OnCollide(Entity<StoreOnCollideComponent> ent, ref StartCollideEvent args)
     {
         TryStoreTarget(ent, args.OtherEntity);
@@ -31,6 +30,7 @@ internal sealed partial class StoreOnCollideSystem : EntitySystem
         TryLockStorage(ent);
     }
 
+    [SubscribeLocalEvent]
     private void AfterOpen(Entity<StoreOnCollideComponent> ent, ref StorageAfterOpenEvent args)
     {
         var comp = ent.Comp;

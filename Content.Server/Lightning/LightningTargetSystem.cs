@@ -19,10 +19,9 @@ public sealed partial class LightningTargetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LightningTargetComponent, HitByLightningEvent>(OnHitByLightning);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitByLightning(Entity<LightningTargetComponent> uid, ref HitByLightningEvent args)
     {
         DamageSpecifier damage = new();

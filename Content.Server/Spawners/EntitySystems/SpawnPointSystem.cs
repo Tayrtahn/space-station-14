@@ -15,9 +15,9 @@ public sealed partial class SpawnPointSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PlayerSpawningEvent>(OnPlayerSpawning);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerSpawning(PlayerSpawningEvent args)
     {
         if (args.SpawnResult != null)

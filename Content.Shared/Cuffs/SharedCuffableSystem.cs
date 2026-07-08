@@ -60,44 +60,18 @@ namespace Content.Shared.Cuffs
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<CuffableComponent, HandCountChangedEvent>(OnHandCountChanged);
-            SubscribeLocalEvent<UncuffAttemptEvent>(OnUncuffAttempt);
-
-            SubscribeLocalEvent<CuffableComponent, EntRemovedFromContainerMessage>(OnCuffsRemovedFromContainer);
-            SubscribeLocalEvent<CuffableComponent, EntInsertedIntoContainerMessage>(OnCuffsInsertedIntoContainer);
-            SubscribeLocalEvent<CuffableComponent, RejuvenateEvent>(OnRejuvenate);
-            SubscribeLocalEvent<CuffableComponent, ComponentInit>(OnStartup);
-            SubscribeLocalEvent<CuffableComponent, AttemptStopPullingEvent>(HandleStopPull);
-            SubscribeLocalEvent<CuffableComponent, RemoveCuffsAlertEvent>(OnRemoveCuffsAlert);
-            SubscribeLocalEvent<CuffableComponent, UpdateCanMoveEvent>(HandleMoveAttempt);
-            SubscribeLocalEvent<CuffableComponent, IsEquippingAttemptEvent>(OnEquipAttempt);
-            SubscribeLocalEvent<CuffableComponent, IsUnequippingAttemptEvent>(OnUnequipAttempt);
-            SubscribeLocalEvent<CuffableComponent, BeingPulledAttemptEvent>(OnBeingPulledAttempt);
-            SubscribeLocalEvent<CuffableComponent, BuckleAttemptEvent>(OnBuckleAttemptEvent);
-            SubscribeLocalEvent<CuffableComponent, UnbuckleAttemptEvent>(OnUnbuckleAttemptEvent);
-            SubscribeLocalEvent<CuffableComponent, GetVerbsEvent<Verb>>(AddUncuffVerb);
-            SubscribeLocalEvent<CuffableComponent, UnCuffDoAfterEvent>(OnCuffableDoAfter);
-            SubscribeLocalEvent<CuffableComponent, PullStartedMessage>(OnPull);
-            SubscribeLocalEvent<CuffableComponent, PullStoppedMessage>(OnPull);
-            SubscribeLocalEvent<CuffableComponent, DropAttemptEvent>(CheckAct);
-            SubscribeLocalEvent<CuffableComponent, PickupAttemptEvent>(CheckAct);
             SubscribeLocalEvent<CuffableComponent, AttackAttemptEvent>(CheckAct);
             SubscribeLocalEvent<CuffableComponent, UseAttemptEvent>(CheckAct);
-            SubscribeLocalEvent<CuffableComponent, InteractionAttemptEvent>(CheckInteract);
-
-            SubscribeLocalEvent<HandcuffComponent, AfterInteractEvent>(OnCuffAfterInteract);
-            SubscribeLocalEvent<HandcuffComponent, MeleeHitEvent>(OnCuffMeleeHit);
-            SubscribeLocalEvent<HandcuffComponent, AddCuffDoAfterEvent>(OnAddCuffDoAfter);
-            SubscribeLocalEvent<HandcuffComponent, VirtualItemDeletedEvent>(OnCuffVirtualItemDeleted);
         }
 
+        [SubscribeLocalEvent]
         private void CheckInteract(Entity<CuffableComponent> ent, ref InteractionAttemptEvent args)
         {
             if (!ent.Comp.CanStillInteract)
                 args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnUncuffAttempt(ref UncuffAttemptEvent args)
         {
             if (args.Cancelled)
@@ -145,16 +119,19 @@ namespace Content.Shared.Cuffs
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, CuffableComponent component, ComponentInit args)
         {
             component.Container = _container.EnsureContainer<Container>(uid, Factory.GetComponentName(component.GetType()));
         }
 
+        [SubscribeLocalEvent]
         private void OnRejuvenate(EntityUid uid, CuffableComponent component, RejuvenateEvent args)
         {
             _container.EmptyContainer(component.Container, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffsRemovedFromContainer(EntityUid uid, CuffableComponent component, EntRemovedFromContainerMessage args)
         {
             // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
@@ -165,6 +142,7 @@ namespace Content.Shared.Cuffs
             UpdateCuffState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffsInsertedIntoContainer(EntityUid uid, CuffableComponent component, ContainerModifiedMessage args)
         {
             if (args.Container == component.Container)
@@ -191,6 +169,7 @@ namespace Content.Shared.Cuffs
             RaiseLocalEvent(uid, ref ev);
         }
 
+        [SubscribeLocalEvent]
         private void OnBeingPulledAttempt(EntityUid uid, CuffableComponent component, BeingPulledAttemptEvent args)
         {
             if (!TryComp<PullableComponent>(uid, out var pullable))
@@ -219,22 +198,26 @@ namespace Content.Shared.Cuffs
             _popup.PopupClient(message, ent, user);
         }
 
+        [SubscribeLocalEvent]
         private void OnBuckleAttemptEvent(Entity<CuffableComponent> ent, ref BuckleAttemptEvent args)
         {
             OnBuckleAttempt(ent, args.User, ref args.Cancelled, true, args.Popup);
         }
 
+        [SubscribeLocalEvent]
         private void OnUnbuckleAttemptEvent(Entity<CuffableComponent> ent, ref UnbuckleAttemptEvent args)
         {
             OnBuckleAttempt(ent, args.User, ref args.Cancelled, false, args.Popup);
         }
 
+        [SubscribeLocalEvent]
         private void OnPull(EntityUid uid, CuffableComponent component, PullMessage args)
         {
             if (!component.CanStillInteract)
                 _actionBlocker.UpdateCanMove(uid);
         }
 
+        [SubscribeLocalEvent]
         private void HandleMoveAttempt(EntityUid uid, CuffableComponent component, UpdateCanMoveEvent args)
         {
             if (component.CanStillInteract || !TryComp(uid, out PullableComponent? pullable) || !pullable.BeingPulled)
@@ -243,6 +226,7 @@ namespace Content.Shared.Cuffs
             args.Cancel();
         }
 
+        [SubscribeLocalEvent]
         private void HandleStopPull(EntityUid uid, CuffableComponent component, ref AttemptStopPullingEvent args)
         {
             if (args.User == null || !Exists(args.User.Value))
@@ -257,6 +241,7 @@ namespace Content.Shared.Cuffs
 
         }
 
+        [SubscribeLocalEvent]
         private void OnRemoveCuffsAlert(Entity<CuffableComponent> ent, ref RemoveCuffsAlertEvent args)
         {
             if (args.Handled)
@@ -265,6 +250,7 @@ namespace Content.Shared.Cuffs
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void AddUncuffVerb(EntityUid uid, CuffableComponent component, GetVerbsEvent<Verb> args)
         {
             // Can the user access the cuffs, and is there even anything to uncuff?
@@ -287,6 +273,7 @@ namespace Content.Shared.Cuffs
             args.Verbs.Add(verb);
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffableDoAfter(EntityUid uid, CuffableComponent component, UnCuffDoAfterEvent args)
         {
             if (args.Args.Target is not { } target || args.Args.Used is not { } used)
@@ -307,6 +294,7 @@ namespace Content.Shared.Cuffs
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffAfterInteract(EntityUid uid, HandcuffComponent component, AfterInteractEvent args)
         {
             if (args.Target is not { Valid: true } target)
@@ -322,6 +310,7 @@ namespace Content.Shared.Cuffs
             args.Handled = result;
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffMeleeHit(EntityUid uid, HandcuffComponent component, MeleeHitEvent args)
         {
             if (!args.HitEntities.Any())
@@ -331,6 +320,7 @@ namespace Content.Shared.Cuffs
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnAddCuffDoAfter(EntityUid uid, HandcuffComponent component, AddCuffDoAfterEvent args)
         {
             var user = args.Args.User;
@@ -393,6 +383,7 @@ namespace Content.Shared.Cuffs
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnCuffVirtualItemDeleted(EntityUid uid, HandcuffComponent component, VirtualItemDeletedEvent args)
         {
             Uncuff(args.User, null, uid, cuff: component);
@@ -401,6 +392,7 @@ namespace Content.Shared.Cuffs
         /// <summary>
         ///     Check the current amount of hands the owner has, and if there's less hands than active cuffs we remove some cuffs.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnHandCountChanged(Entity<CuffableComponent> ent, ref HandCountChangedEvent message)
         {
             // TODO: either don't store a container ref, or make it actually nullable.
@@ -789,12 +781,14 @@ namespace Content.Shared.Cuffs
 
         #region ActionBlocker
 
+        [SubscribeLocalEvent]
         private void CheckAct(EntityUid uid, CuffableComponent component, CancellableEntityEventArgs args)
         {
             if (!component.CanStillInteract)
                 args.Cancel();
         }
 
+        [SubscribeLocalEvent]
         private void OnEquipAttempt(EntityUid uid, CuffableComponent component, IsEquippingAttemptEvent args)
         {
             // is this a self-equip, or are they being stripped?
@@ -802,6 +796,7 @@ namespace Content.Shared.Cuffs
                 CheckAct(uid, component, args);
         }
 
+        [SubscribeLocalEvent]
         private void OnUnequipAttempt(EntityUid uid, CuffableComponent component, IsUnequippingAttemptEvent args)
         {
             // is this a self-equip, or are they being stripped?

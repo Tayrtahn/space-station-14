@@ -11,11 +11,9 @@ public sealed partial class SpamEmitSoundRequirePowerSystem : SharedSpamEmitSoun
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpamEmitSoundRequirePowerComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<SpamEmitSoundRequirePowerComponent, PowerNetBatterySupplyEvent>(OnPowerSupply);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<SpamEmitSoundRequirePowerComponent> entity, ref PowerChangedEvent args)
     {
         if (TryComp<SpamEmitSoundComponent>(entity.Owner, out var comp))
@@ -24,6 +22,7 @@ public sealed partial class SpamEmitSoundRequirePowerSystem : SharedSpamEmitSoun
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerSupply(Entity<SpamEmitSoundRequirePowerComponent> entity, ref PowerNetBatterySupplyEvent args)
     {
         if (TryComp<SpamEmitSoundComponent>(entity.Owner, out var comp))

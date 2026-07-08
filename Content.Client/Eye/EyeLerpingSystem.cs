@@ -26,25 +26,20 @@ public sealed partial class EyeLerpingSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<EyeComponent, ComponentStartup>(OnEyeStartup);
-        SubscribeLocalEvent<EyeComponent, ComponentShutdown>(OnEyeShutdown);
-        SubscribeLocalEvent<EyeAttachedEvent>(OnAttached);
-
-        SubscribeLocalEvent<LerpingEyeComponent, EntParentChangedMessage>(HandleMapChange);
-        SubscribeLocalEvent<LerpingEyeComponent, LocalPlayerDetachedEvent>(OnDetached);
-
         UpdatesAfter.Add(typeof(TransformSystem));
         UpdatesAfter.Add(typeof(Robust.Client.Physics.PhysicsSystem));
         UpdatesBefore.Add(typeof(SharedEyeSystem));
         UpdatesOutsidePrediction = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEyeStartup(EntityUid uid, EyeComponent component, ComponentStartup args)
     {
         if (_playerManager.LocalEntity == uid)
             AddEye(uid, component, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnEyeShutdown(EntityUid uid, EyeComponent component, ComponentShutdown args)
     {
         RemCompDeferred<LerpingEyeComponent>(uid);
@@ -83,6 +78,7 @@ public sealed partial class EyeLerpingSystem : EntitySystem
             RemComp(uid, lerp);
     }
 
+    [SubscribeLocalEvent]
     private void HandleMapChange(EntityUid uid, LerpingEyeComponent component, ref EntParentChangedMessage args)
     {
         // Is this actually a map change? If yes, stop any lerps
@@ -90,11 +86,13 @@ public sealed partial class EyeLerpingSystem : EntitySystem
             component.LastRotation = GetRotation(uid, args.Transform);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttached(ref EyeAttachedEvent ev)
     {
         AddEye(ev.Entity, ev.Component, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnDetached(EntityUid uid, LerpingEyeComponent component, LocalPlayerDetachedEvent args)
     {
         if (!component.ManuallyAdded)

@@ -25,11 +25,9 @@ public sealed partial class KudzuSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<KudzuComponent, ComponentStartup>(SetupKudzu);
-        SubscribeLocalEvent<KudzuComponent, SpreadNeighborsEvent>(OnKudzuSpread);
-        SubscribeLocalEvent<KudzuComponent, DamageChangedEvent>(OnDamageChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(EntityUid uid, KudzuComponent component, DamageChangedEvent args)
     {
         // Every time we take any damage, we reduce growth depending on all damage over the growth impact
@@ -48,6 +46,7 @@ public sealed partial class KudzuSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnKudzuSpread(EntityUid uid, KudzuComponent component, ref SpreadNeighborsEvent args)
     {
         if (component.GrowthLevel < 3)
@@ -82,6 +81,7 @@ public sealed partial class KudzuSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void SetupKudzu(EntityUid uid, KudzuComponent component, ComponentStartup args)
     {
         if (!TryComp<AppearanceComponent>(uid, out var appearance))

@@ -16,9 +16,9 @@ public sealed partial class RandomSpriteSystem : SharedRandomSpriteSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RandomSpriteComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, RandomSpriteComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not RandomSpriteColorComponentState state)

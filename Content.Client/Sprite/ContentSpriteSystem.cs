@@ -36,7 +36,6 @@ public sealed partial class ContentSpriteSystem : EntitySystem
 
         _resManager.UserData.CreateDir(Exports);
         _ui.RootControl.AddChild(_control);
-        SubscribeLocalEvent<GetVerbsEvent<Verb>>(GetVerbs);
     }
 
     public override void Shutdown()
@@ -109,6 +108,7 @@ public sealed partial class ContentSpriteSystem : EntitySystem
         await tcs.Task;
     }
 
+    [SubscribeLocalEvent]
     private void GetVerbs(GetVerbsEvent<Verb> ev)
     {
         if (!_adminManager.IsAdmin())

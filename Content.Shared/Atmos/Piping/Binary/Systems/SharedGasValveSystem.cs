@@ -14,12 +14,9 @@ public abstract partial class SharedGasValveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasValveComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<GasValveComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<GasValveComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<GasValveComponent> ent, ref ComponentStartup args)
     {
         // We call set in startup so it sets the appearance, node state, etc.
@@ -42,6 +39,7 @@ public abstract partial class SharedGasValveSystem : EntitySystem
         Set(uid, component, !component.Open);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<GasValveComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -52,6 +50,7 @@ public abstract partial class SharedGasValveSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<GasValveComponent> ent, ref ExaminedEvent args)
     {
         var valve = ent.Comp;

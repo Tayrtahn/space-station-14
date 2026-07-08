@@ -190,6 +190,7 @@ public sealed partial class ReplaySpectatorSystem
         return maxUid != null;
     }
 
+    [SubscribeLocalEvent]
     private void OnTerminating(EntityUid uid, ReplaySpectatorComponent component, ref EntityTerminatingEvent args)
     {
         if (uid != _player.LocalEntity)
@@ -202,6 +203,7 @@ public sealed partial class ReplaySpectatorSystem
         SpawnSpectatorGhost(new EntityCoordinates(xform.MapUid.Value, default), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnParentChanged(EntityUid uid, ReplaySpectatorComponent component, ref EntParentChangedMessage args)
     {
         if (uid != _player.LocalEntity)
@@ -223,6 +225,7 @@ public sealed partial class ReplaySpectatorSystem
         SetSpectatorPosition(default);
     }
 
+    [SubscribeLocalEvent]
     private void OnDetached(EntityUid uid, ReplaySpectatorComponent component, LocalPlayerDetachedEvent args)
     {
         if (IsClientSide(uid))

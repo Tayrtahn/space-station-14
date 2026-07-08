@@ -5,14 +5,14 @@ using Robust.Shared.Utility;
 
 namespace Content.Client.Botany;
 
-public sealed class PlantHolderVisualizerSystem : VisualizerSystem<PlantHolderVisualsComponent>
+public sealed partial class PlantHolderVisualizerSystem : VisualizerSystem<PlantHolderVisualsComponent>
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PlantHolderVisualsComponent, ComponentInit>(OnComponentInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, PlantHolderVisualsComponent component, ComponentInit args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

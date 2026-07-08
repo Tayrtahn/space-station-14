@@ -44,29 +44,22 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AtmosMonitorComponent, ComponentStartup>(OnAtmosMonitorStartup);
-        SubscribeLocalEvent<AtmosMonitorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AtmosMonitorComponent, AtmosDeviceUpdateEvent>(OnAtmosUpdate);
-        SubscribeLocalEvent<AtmosMonitorComponent, TileFireEvent>(OnFireEvent);
-        SubscribeLocalEvent<AtmosMonitorComponent, PowerChangedEvent>(OnPowerChangedEvent);
-        SubscribeLocalEvent<AtmosMonitorComponent, BeforePacketSentEvent>(BeforePacketRecv);
-        SubscribeLocalEvent<AtmosMonitorComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
-        SubscribeLocalEvent<AtmosMonitorComponent, AtmosDeviceDisabledEvent>(OnAtmosDeviceLeaveAtmosphere);
-        SubscribeLocalEvent<AtmosMonitorComponent, AtmosDeviceEnabledEvent>(OnAtmosDeviceEnterAtmosphere);
-        SubscribeLocalEvent<AtmosMonitorComponent, AtmosDeviceTileChangedEvent>(OnAtmosDeviceTileChangedEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosDeviceTileChangedEvent(Entity<AtmosMonitorComponent> ent, ref AtmosDeviceTileChangedEvent args)
     {
         if (!ent.Comp.MonitorsPipeNet)
             ent.Comp.TileGas = _atmosphereSystem.GetContainingMixture(ent.Owner, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosDeviceLeaveAtmosphere(EntityUid uid, AtmosMonitorComponent atmosMonitor, ref AtmosDeviceDisabledEvent args)
     {
         atmosMonitor.TileGas = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosDeviceEnterAtmosphere(EntityUid uid, AtmosMonitorComponent atmosMonitor, ref AtmosDeviceEnabledEvent args)
     {
         if (atmosMonitor.MonitorsPipeNet && _nodeContainerSystem.TryGetNode<PipeNode>(uid, atmosMonitor.NodeNameMonitoredPipe, out var pipeNode))
@@ -78,6 +71,7 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         atmosMonitor.TileGas = _atmosphereSystem.GetContainingMixture(uid, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, AtmosMonitorComponent component, MapInitEvent args)
     {
         if (component.TemperatureThresholdId != null)
@@ -103,6 +97,7 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosMonitorStartup(EntityUid uid, AtmosMonitorComponent component, ComponentStartup args)
     {
         if (!HasComp<ApcPowerReceiverComponent>(uid)
@@ -112,11 +107,13 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void BeforePacketRecv(EntityUid uid, AtmosMonitorComponent component, BeforePacketSentEvent args)
     {
         if (!component.NetEnabled) args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketRecv(EntityUid uid, AtmosMonitorComponent component, DeviceNetworkPacketEvent args)
     {
         // sync the internal 'last alarm state' from
@@ -182,6 +179,7 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChangedEvent(Entity<AtmosMonitorComponent> ent, ref PowerChangedEvent args)
     {
         if (TryComp<AtmosDeviceComponent>(ent, out var atmosDeviceComponent))
@@ -198,6 +196,7 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnFireEvent(EntityUid uid, AtmosMonitorComponent component, ref TileFireEvent args)
     {
         if (!this.IsPowered(uid, EntityManager))
@@ -226,6 +225,7 @@ public sealed partial class AtmosMonitorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosUpdate(EntityUid uid, AtmosMonitorComponent component, ref AtmosDeviceUpdateEvent args)
     {
         if (!this.IsPowered(uid, EntityManager))

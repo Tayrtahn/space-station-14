@@ -45,10 +45,9 @@ internal sealed partial class AdminQuickInfoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<QuickInfoShared.Response>(HandleInfoResponse);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleInfoResponse(QuickInfoShared.Response ev)
     {
         foreach (var singleEntityInfo in ev.Entities)

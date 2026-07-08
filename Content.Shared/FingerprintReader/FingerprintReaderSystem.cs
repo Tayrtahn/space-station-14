@@ -16,16 +16,15 @@ public sealed partial class FingerprintReaderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FingerprintReaderComponent, FindAvailableLocksEvent>(OnFindAvailableLocks);
-        SubscribeLocalEvent<FingerprintReaderComponent, CheckUserHasLockAccessEvent>(OnCheckLockAccess);
     }
 
+    [SubscribeLocalEvent]
     private void OnFindAvailableLocks(Entity<FingerprintReaderComponent> ent, ref FindAvailableLocksEvent args)
     {
         args.FoundReaders |= LockTypes.Fingerprint;
     }
 
+    [SubscribeLocalEvent]
     private void OnCheckLockAccess(Entity<FingerprintReaderComponent> ent, ref CheckUserHasLockAccessEvent args)
     {
         // Are we looking for a fingerprint lock?

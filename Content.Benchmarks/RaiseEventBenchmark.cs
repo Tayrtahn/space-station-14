@@ -77,7 +77,7 @@ public class RaiseEventBenchmark
         return _sys.CSharpEvent();
     }
 
-    public sealed class BenchSystem : EntitySystem
+    public sealed partial class BenchSystem : EntitySystem
     {
         public Entity<TransformComponent> Ent;
         public Entity<IComponent> Ent2;
@@ -91,7 +91,6 @@ public class RaiseEventBenchmark
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<TransformComponent, BenchEv>(OnEvent);
             OnCSharpEvent += OnEvent;
         }
 
@@ -134,6 +133,7 @@ public class RaiseEventBenchmark
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        [SubscribeLocalEvent]
         private void OnEvent(EntityUid uid, TransformComponent component, ref BenchEv args)
         {
             args.N += uid.Id;

@@ -4,6 +4,7 @@ namespace Content.Shared.CartridgeLoader;
 
 public sealed partial class CartridgeLoaderSystem
 {
+    [SubscribeLocalEvent]
     private void OnLoaderUiMessage(Entity<CartridgeLoaderComponent> ent, ref CartridgeLoaderUiMessage message)
     {
         var cartridge = GetEntity(message.CartridgeUid);
@@ -37,6 +38,7 @@ public sealed partial class CartridgeLoaderSystem
     /// <summary>
     /// Relays ui messages meant for cartridges to the currently active cartridge.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiMessage(Entity<CartridgeLoaderComponent> ent, ref CartridgeUiMessage args)
     {
         var cartridgeEvent = args.MessageEvent;

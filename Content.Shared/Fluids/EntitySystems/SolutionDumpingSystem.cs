@@ -32,19 +32,15 @@ public sealed partial class SolutionDumpingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DrainableSolutionComponent, CanDragEvent>(OnDrainableCanDrag);
-        SubscribeLocalEvent<DrainableSolutionComponent, CanDropDraggedEvent>(OnDrainableCanDragDropped);
-        SubscribeLocalEvent<DrainableSolutionComponent, DragDropDraggedEvent>(OnDrainableDragged);
-
-        SubscribeLocalEvent<DumpableSolutionComponent, DrainedTargetEvent>(OnDrainedToDumpableDragged);
     }
 
+    [SubscribeLocalEvent]
     private void OnDrainableCanDrag(Entity<DrainableSolutionComponent> ent, ref CanDragEvent args)
     {
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDrainableCanDragDropped(Entity<DrainableSolutionComponent> ent, ref CanDropDraggedEvent args)
     {
         // Easily drawn-from thing can be dragged onto easily refillable thing.
@@ -58,6 +54,7 @@ public sealed partial class SolutionDumpingSystem : EntitySystem
     /// <summary>
     /// For when you are pouring something out from the container.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDrainableDragged(Entity<DrainableSolutionComponent> sourceContainer, ref DragDropDraggedEvent args)
     {
         // Raising an event to be able to drain into various kind of fillable components.
@@ -69,6 +66,7 @@ public sealed partial class SolutionDumpingSystem : EntitySystem
     // and even then that should probably be refactored out (see to-do below).
     // It might be worth having the distinction if we want to separate "dump all" vs "pour some" functionalities,
     // but then we probably want to do a proper pass on how RefillableSolutionComponent is handled.
+    [SubscribeLocalEvent]
     private void OnDrainedToDumpableDragged(Entity<DumpableSolutionComponent> ent, ref DrainedTargetEvent args)
     {
         if (!_solContainer.TryGetDumpableSolution((ent, ent.Comp),

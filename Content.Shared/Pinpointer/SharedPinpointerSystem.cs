@@ -15,14 +15,12 @@ public abstract partial class SharedPinpointerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PinpointerComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<PinpointerComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<PinpointerComponent, ExaminedEvent>(OnExamined);
     }
 
     /// <summary>
     ///     Set the target if capable
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<PinpointerComponent> ent, ref AfterInteractEvent args)
     {
         if (!args.CanReach || args.Target is not { } target)
@@ -67,6 +65,7 @@ public abstract partial class SharedPinpointerSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<PinpointerComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || ent.Comp.TargetName == null)
@@ -139,6 +138,7 @@ public abstract partial class SharedPinpointerSystem : EntitySystem
         return isActive;
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(Entity<PinpointerComponent> ent, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))

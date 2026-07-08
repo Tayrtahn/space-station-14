@@ -23,17 +23,15 @@ public sealed partial class RiggableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RiggableComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<RiggableComponent, BeingMicrowavedEvent>(OnMicrowaved);
-        SubscribeLocalEvent<RiggableComponent, SolutionChangedEvent>(OnSolutionChanged);
-        SubscribeLocalEvent<RiggableComponent, ChargeChangedEvent>(OnChargeChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<RiggableComponent> entity, ref RejuvenateEvent args)
     {
         entity.Comp.IsRigged = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnMicrowaved(Entity<RiggableComponent> entity, ref BeingMicrowavedEvent args)
     {
         if (TryComp<BatteryComponent>(entity, out var batteryComponent))
@@ -47,6 +45,7 @@ public sealed partial class RiggableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionChanged(Entity<RiggableComponent> entity, ref SolutionChangedEvent args)
     {
         if (args.Solution.Comp.Id != entity.Comp.Solution)
@@ -71,6 +70,7 @@ public sealed partial class RiggableSystem : EntitySystem
         QueueDel(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnChargeChanged(Entity<RiggableComponent> ent, ref ChargeChangedEvent args)
     {
         if (!ent.Comp.IsRigged)

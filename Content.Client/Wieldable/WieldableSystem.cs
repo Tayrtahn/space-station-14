@@ -18,11 +18,9 @@ public sealed partial class WieldableSystem : SharedWieldableSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CursorOffsetRequiresWieldComponent, ItemUnwieldedEvent>(OnEyeOffsetUnwielded);
-        SubscribeLocalEvent<CursorOffsetRequiresWieldComponent, HeldRelayedEvent<GetEyeOffsetRelayedEvent>>(OnGetEyeOffset);
     }
 
+    [SubscribeLocalEvent]
     public void OnEyeOffsetUnwielded(Entity<CursorOffsetRequiresWieldComponent> entity, ref ItemUnwieldedEvent args)
     {
         if (!TryComp(entity.Owner, out EyeCursorOffsetComponent? cursorOffsetComp))
@@ -35,6 +33,7 @@ public sealed partial class WieldableSystem : SharedWieldableSystem
         }
     }
 
+    [SubscribeLocalEvent]
     public void OnGetEyeOffset(Entity<CursorOffsetRequiresWieldComponent> entity, ref HeldRelayedEvent<GetEyeOffsetRelayedEvent> args)
     {
         if (!TryComp(entity.Owner, out WieldableComponent? wieldableComp))

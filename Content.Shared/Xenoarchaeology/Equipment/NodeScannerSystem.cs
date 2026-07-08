@@ -18,8 +18,6 @@ public sealed partial class NodeScannerSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<NodeScannerComponent, BeforeRangedInteractEvent>(OnBeforeRangedInteract);
-        SubscribeLocalEvent<NodeScannerComponent, GetVerbsEvent<UtilityVerb>>(AddScanVerb);
     }
 
     /// <inheritdoc />
@@ -43,6 +41,7 @@ public sealed partial class NodeScannerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeRangedInteract(EntityUid uid, NodeScannerComponent component, BeforeRangedInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not { } target || !HasComp<XenoArtifactComponent>(target))
@@ -57,6 +56,7 @@ public sealed partial class NodeScannerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void AddScanVerb(EntityUid uid, NodeScannerComponent component, GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess)

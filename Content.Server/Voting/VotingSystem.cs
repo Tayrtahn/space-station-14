@@ -32,10 +32,9 @@ public sealed partial class VotingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<VotePlayerListRequestEvent>(OnVotePlayerListRequestEvent);
     }
 
+    [SubscribeNetworkEvent]
     private async void OnVotePlayerListRequestEvent(VotePlayerListRequestEvent msg, EntitySessionEventArgs args)
     {
         if (!await CheckVotekickInitEligibility(args.SenderSession))

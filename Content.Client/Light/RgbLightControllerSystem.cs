@@ -24,17 +24,9 @@ namespace Content.Client.Light
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<RgbLightControllerComponent, ComponentHandleState>(OnHandleState);
-            SubscribeLocalEvent<RgbLightControllerComponent, ComponentShutdown>(OnComponentShutdown);
-            SubscribeLocalEvent<RgbLightControllerComponent, ComponentStartup>(OnComponentStart);
-
-            SubscribeLocalEvent<RgbLightControllerComponent, GotUnequippedEvent>(OnGotUnequipped);
-
-            SubscribeLocalEvent<RgbLightControllerComponent, EquipmentVisualsUpdatedEvent>(OnEquipmentVisualsUpdated);
-            SubscribeLocalEvent<RgbLightControllerComponent, HeldVisualsUpdatedEvent>(OnHeldVisualsUpdated);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentStart(EntityUid uid, RgbLightControllerComponent rgb, ComponentStartup args)
         {
             GetOriginalColors(uid, rgb);
@@ -43,6 +35,7 @@ namespace Content.Client.Light
             _itemSystem.VisualsChanged(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentShutdown(EntityUid uid, RgbLightControllerComponent rgb, ComponentShutdown args)
         {
             if (LifeStage(uid) >= EntityLifeStage.Terminating)
@@ -54,12 +47,14 @@ namespace Content.Client.Light
             _itemSystem.VisualsChanged(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnGotUnequipped(EntityUid uid, RgbLightControllerComponent rgb, GotUnequippedEvent args)
         {
             rgb.Holder = null;
             rgb.HolderLayers = null;
         }
 
+        [SubscribeLocalEvent]
         private void OnHeldVisualsUpdated(EntityUid uid, RgbLightControllerComponent rgb, HeldVisualsUpdatedEvent args)
         {
             if (args.RevealedLayers.Count == 0)
@@ -85,6 +80,7 @@ namespace Content.Client.Light
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnEquipmentVisualsUpdated(EntityUid uid, RgbLightControllerComponent rgb, EquipmentVisualsUpdatedEvent args)
         {
             rgb.Holder = args.Equipee;
@@ -103,6 +99,7 @@ namespace Content.Client.Light
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnHandleState(EntityUid uid, RgbLightControllerComponent rgb, ref ComponentHandleState args)
         {
             if (args.Current is not RgbLightControllerState state)

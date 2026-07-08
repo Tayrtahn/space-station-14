@@ -8,20 +8,20 @@ using Robust.Shared.GameStates;
 
 namespace Content.Client.Power.EntitySystems;
 
-public sealed class PowerReceiverSystem : SharedPowerReceiverSystem
+public sealed partial class PowerReceiverSystem : SharedPowerReceiverSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ApcPowerReceiverComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<ApcPowerReceiverComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<ApcPowerReceiverComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(GetExamineText(ent.Comp.Powered));
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, ApcPowerReceiverComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not ApcPowerReceiverComponentState state)

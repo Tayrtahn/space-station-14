@@ -22,14 +22,12 @@ public sealed partial class CommsHackerSystem : SharedCommsHackerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CommsHackerComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
-        SubscribeLocalEvent<CommsHackerComponent, TerrorDoAfterEvent>(OnDoAfter);
     }
 
     /// <summary>
     /// Start the doafter to hack a comms console
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(EntityUid uid, CommsHackerComponent comp, BeforeInteractHandEvent args)
     {
         if (args.Handled || !HasComp<CommunicationsConsoleComponent>(args.Target))
@@ -54,6 +52,7 @@ public sealed partial class CommsHackerSystem : SharedCommsHackerSystem
     /// <summary>
     /// Call in a random threat and do cleanup.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, CommsHackerComponent comp, TerrorDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target == null)

@@ -15,11 +15,9 @@ public abstract partial class SharedEmitterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmitterComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<EmitterComponent, GetVerbsEvent<Verb>>(OnGetVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<EmitterComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract || args.Hands == null)
@@ -54,6 +52,7 @@ public abstract partial class SharedEmitterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<EmitterComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp.SelectableTypes.Count < 2)

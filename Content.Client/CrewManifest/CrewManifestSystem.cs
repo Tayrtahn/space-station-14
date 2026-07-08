@@ -16,7 +16,6 @@ public sealed partial class CrewManifestSystem : EntitySystem
         base.Initialize();
 
         BuildDepartmentLookup();
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReload);
     }
 
     /// <summary>
@@ -28,6 +27,7 @@ public sealed partial class CrewManifestSystem : EntitySystem
         RaiseNetworkEvent(new RequestCrewManifestMessage(netEntity));
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReload(PrototypesReloadedEventArgs args)
     {
         if (args.WasModified<DepartmentPrototype>())

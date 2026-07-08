@@ -15,20 +15,14 @@ public abstract partial class SharedOreSiloSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<OreSiloComponent, ToggleOreSiloClientMessage>(OnToggleOreSiloClient);
-        SubscribeLocalEvent<OreSiloComponent, ComponentShutdown>(OnSiloShutdown);
         Subs.BuiEvents<OreSiloComponent>(OreSiloUiKey.Key,
             subs =>
         {
             subs.Event<BoundUIOpenedEvent>(OnBoundUIOpened);
         });
-
-
-        SubscribeLocalEvent<OreSiloClientComponent, GetStoredMaterialsEvent>(OnGetStoredMaterials);
-        SubscribeLocalEvent<OreSiloClientComponent, ConsumeStoredMaterialsEvent>(OnConsumeStoredMaterials);
-        SubscribeLocalEvent<OreSiloClientComponent, ComponentShutdown>(OnClientShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleOreSiloClient(Entity<OreSiloComponent> ent, ref ToggleOreSiloClientMessage args)
     {
         var client = GetEntity(args.Client);
@@ -73,6 +67,7 @@ public abstract partial class SharedOreSiloSystem : EntitySystem
         UpdateOreSiloUi(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnSiloShutdown(Entity<OreSiloComponent> ent, ref ComponentShutdown args)
     {
         foreach (var client in ent.Comp.Clients)
@@ -90,6 +85,7 @@ public abstract partial class SharedOreSiloSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStoredMaterials(Entity<OreSiloClientComponent> ent, ref GetStoredMaterialsEvent args)
     {
         if (args.LocalOnly)
@@ -114,6 +110,7 @@ public abstract partial class SharedOreSiloSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnConsumeStoredMaterials(Entity<OreSiloClientComponent> ent, ref ConsumeStoredMaterialsEvent args)
     {
         if (args.LocalOnly)
@@ -133,6 +130,7 @@ public abstract partial class SharedOreSiloSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnClientShutdown(Entity<OreSiloClientComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<OreSiloComponent>(ent.Comp.Silo, out var silo))

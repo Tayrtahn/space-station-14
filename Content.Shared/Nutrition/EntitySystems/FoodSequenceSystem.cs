@@ -27,18 +27,16 @@ public sealed partial class FoodSequenceSystem : SharedFoodSequenceSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FoodSequenceStartPointComponent, InteractUsingEvent>(OnInteractUsing);
-
-        SubscribeLocalEvent<FoodMetamorphableByAddingComponent, FoodSequenceIngredientAddedEvent>(OnIngredientAdded);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<FoodSequenceStartPointComponent> ent, ref InteractUsingEvent args)
     {
         if (TryComp<FoodSequenceElementComponent>(args.Used, out var sequenceElement))
             args.Handled = TryAddFoodElement(ent, (args.Used, sequenceElement), args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnIngredientAdded(Entity<FoodMetamorphableByAddingComponent> ent, ref FoodSequenceIngredientAddedEvent args)
     {
         if (!TryComp<FoodSequenceStartPointComponent>(args.Start, out var start))

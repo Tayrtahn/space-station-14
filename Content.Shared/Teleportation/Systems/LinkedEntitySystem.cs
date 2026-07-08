@@ -17,10 +17,9 @@ public sealed partial class LinkedEntitySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LinkedEntityComponent, ComponentShutdown>(OnLinkShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnLinkShutdown(EntityUid uid, LinkedEntityComponent component, ComponentShutdown args)
     {
         // Remove any links to this entity when deleted.

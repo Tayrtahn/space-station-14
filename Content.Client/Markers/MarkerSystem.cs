@@ -22,10 +22,9 @@ public sealed partial class MarkerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MarkerComponent, ComponentStartup>(OnStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, MarkerComponent marker, ComponentStartup args)
     {
         UpdateVisibility(uid);

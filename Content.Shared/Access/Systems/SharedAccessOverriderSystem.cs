@@ -18,16 +18,15 @@ namespace Content.Shared.Access.Systems
         {
             base.Initialize();
             _sawmill = LogManager.GetSawmill(Sawmill);
-
-            SubscribeLocalEvent<AccessOverriderComponent, ComponentInit>(OnComponentInit);
-            SubscribeLocalEvent<AccessOverriderComponent, ComponentRemove>(OnComponentRemove);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentInit(EntityUid uid, AccessOverriderComponent component, ComponentInit args)
         {
             _itemSlotsSystem.AddItemSlot(uid, AccessOverriderComponent.PrivilegedIdCardSlotId, component.PrivilegedIdSlot);
         }
 
+        [SubscribeLocalEvent]
         private void OnComponentRemove(EntityUid uid, AccessOverriderComponent component, ComponentRemove args)
         {
             _itemSlotsSystem.RemoveItemSlot(uid, component.PrivilegedIdSlot);

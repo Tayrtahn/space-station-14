@@ -17,14 +17,12 @@ public sealed partial class StoreDamageTakenOnMindSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<StoreDamageTakenOnMindComponent, DestructionEventArgs>(SaveBodyOnGib);
-        SubscribeLocalEvent<StoreDamageTakenOnMindComponent, MobStateChangedEvent>(SaveBodyOnThreshold);
-        SubscribeLocalEvent<StoreDamageTakenOnMindComponent, BeforeExplodeEvent>(DeathByExplosion);
     }
 
     /// <summary>
     /// Saves the damage of a player body inside their MindComponent after a DestructionEventArgs
     /// </summary>
+    [SubscribeLocalEvent]
     private void SaveBodyOnGib(Entity<StoreDamageTakenOnMindComponent> ent, ref DestructionEventArgs args)
     {
         SaveBody(ent.Owner);
@@ -33,6 +31,7 @@ public sealed partial class StoreDamageTakenOnMindSystem : EntitySystem
     /// <summary>
     /// Saves the damage of a player body inside their MindComponent after a damage threshold event
     /// </summary>
+    [SubscribeLocalEvent]
     private void SaveBodyOnThreshold(Entity<StoreDamageTakenOnMindComponent> ent, ref MobStateChangedEvent args)
     {
         if (args.NewMobState != MobState.Dead)
@@ -41,6 +40,7 @@ public sealed partial class StoreDamageTakenOnMindSystem : EntitySystem
         SaveBody(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void DeathByExplosion(Entity<StoreDamageTakenOnMindComponent> ent, ref BeforeExplodeEvent args)
     {
         SaveSpecialCauseOfDeath(ent, "Explosion");

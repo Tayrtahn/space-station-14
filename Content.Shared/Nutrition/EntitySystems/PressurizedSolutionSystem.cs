@@ -27,11 +27,6 @@ public sealed partial class PressurizedSolutionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PressurizedSolutionComponent, ShakeEvent>(OnShake);
-        SubscribeLocalEvent<PressurizedSolutionComponent, OpenableOpenedEvent>(OnOpened);
-        SubscribeLocalEvent<PressurizedSolutionComponent, LandEvent>(OnLand);
-        SubscribeLocalEvent<PressurizedSolutionComponent, SolutionChangedEvent>(OnSolutionUpdate);
     }
 
     /// <summary>
@@ -240,6 +235,7 @@ public sealed partial class PressurizedSolutionSystem : EntitySystem
 
     #region Event Handlers
 
+    [SubscribeLocalEvent]
     private void OnOpened(Entity<PressurizedSolutionComponent> entity, ref OpenableOpenedEvent args)
     {
         // Make sure the opener is actually holding the drink
@@ -248,16 +244,19 @@ public sealed partial class PressurizedSolutionSystem : EntitySystem
         SprayOrAddFizziness(entity, entity.Comp.SprayChanceModOnOpened, -1, held ? args.User : null);
     }
 
+    [SubscribeLocalEvent]
     private void OnShake(Entity<PressurizedSolutionComponent> entity, ref ShakeEvent args)
     {
         SprayOrAddFizziness(entity, entity.Comp.SprayChanceModOnShake, entity.Comp.FizzinessAddedOnShake, args.Shaker);
     }
 
+    [SubscribeLocalEvent]
     private void OnLand(Entity<PressurizedSolutionComponent> entity, ref LandEvent args)
     {
         SprayOrAddFizziness(entity, entity.Comp.SprayChanceModOnLand, entity.Comp.FizzinessAddedOnLand);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionUpdate(Entity<PressurizedSolutionComponent> entity, ref SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.

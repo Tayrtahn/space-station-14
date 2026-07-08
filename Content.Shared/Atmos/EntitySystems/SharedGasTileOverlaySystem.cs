@@ -23,7 +23,6 @@ public abstract partial class SharedGasTileOverlaySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasTileOverlayComponent, ComponentGetState>(OnGetState);
 
         List<int> visibleGases = new();
 
@@ -36,6 +35,7 @@ public abstract partial class SharedGasTileOverlaySystem : EntitySystem
         VisibleGasId = visibleGases.ToArray();
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, GasTileOverlayComponent component, ref ComponentGetState args)
     {
         if (PvsEnabled && !args.ReplayState)

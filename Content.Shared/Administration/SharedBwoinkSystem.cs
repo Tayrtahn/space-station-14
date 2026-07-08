@@ -4,7 +4,7 @@ using Robust.Shared.Serialization;
 
 namespace Content.Shared.Administration
 {
-    public abstract class SharedBwoinkSystem : EntitySystem
+    public abstract partial class SharedBwoinkSystem : EntitySystem
     {
         // System users
         public static NetUserId SystemUserId { get; } = new NetUserId(Guid.Empty);
@@ -12,10 +12,9 @@ namespace Content.Shared.Administration
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeNetworkEvent<BwoinkTextMessage>(OnBwoinkTextMessage);
         }
 
+        [SubscribeNetworkEvent]
         protected virtual void OnBwoinkTextMessage(BwoinkTextMessage message, EntitySessionEventArgs eventArgs)
         {
             // Specific side code in target.

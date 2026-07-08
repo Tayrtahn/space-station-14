@@ -12,22 +12,21 @@ public abstract partial class SharedIgnitionSourceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<IgnitionSourceComponent, IsHotEvent>(OnIsHot);
-        SubscribeLocalEvent<ItemToggleHotComponent, ItemToggledEvent>(OnItemToggle);
-        SubscribeLocalEvent<IgnitionSourceComponent, IgnitionEvent>(OnIgnitionEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnIsHot(Entity<IgnitionSourceComponent> ent, ref IsHotEvent args)
     {
         args.IsHot |= ent.Comp.Ignited;
     }
 
+    [SubscribeLocalEvent]
     private void OnItemToggle(Entity<ItemToggleHotComponent> ent, ref ItemToggledEvent args)
     {
         SetIgnited(ent.Owner, args.Activated);
     }
 
+    [SubscribeLocalEvent]
     private void OnIgnitionEvent(Entity<IgnitionSourceComponent> ent, ref IgnitionEvent args)
     {
         SetIgnited((ent.Owner, ent.Comp), args.Ignite);

@@ -13,15 +13,13 @@ namespace Content.Server.DeviceNetwork.Systems.Devices
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ApcNetSwitchComponent, InteractHandEvent>(OnInteracted);
-            SubscribeLocalEvent<ApcNetSwitchComponent, DeviceNetworkPacketEvent>(OnPackedReceived);
         }
 
         /// <summary>
         /// Toggles the state of the switch and sents a <see cref="DeviceNetworkConstants.CmdSetState"/> command with the
         /// <see cref="DeviceNetworkConstants.StateEnabled"/> value set to state.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnInteracted(EntityUid uid, ApcNetSwitchComponent component, InteractHandEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? networkComponent)) return;
@@ -45,6 +43,7 @@ namespace Content.Server.DeviceNetwork.Systems.Devices
         /// <summary>
         /// Listens to the <see cref="DeviceNetworkConstants.CmdSetState"/> command of other switches to sync state
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnPackedReceived(EntityUid uid, ApcNetSwitchComponent component, DeviceNetworkPacketEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? networkComponent) || args.SenderAddress == networkComponent.Address) return;

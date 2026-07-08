@@ -77,31 +77,10 @@ namespace Content.Server.Ghost
         {
             base.Initialize();
 
-            SubscribeLocalEvent<GhostComponent, ComponentStartup>(OnGhostStartup);
-            SubscribeLocalEvent<GhostComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<GhostComponent, ComponentShutdown>(OnGhostShutdown);
-
-            SubscribeLocalEvent<GhostComponent, MindRemovedMessage>(OnMindRemovedMessage);
-            SubscribeLocalEvent<GhostComponent, MindUnvisitedMessage>(OnMindUnvisitedMessage);
-            SubscribeLocalEvent<GhostComponent, PlayerDetachedEvent>(OnPlayerDetached);
-
-            SubscribeLocalEvent<GhostOnMoveComponent, MoveInputEvent>(OnRelayMoveInput);
-
-            SubscribeNetworkEvent<GhostWarpsRequestEvent>(OnGhostWarpsRequest);
-            SubscribeNetworkEvent<GhostReturnToBodyRequest>(OnGhostReturnToBodyRequest);
-            SubscribeNetworkEvent<GhostWarpToTargetRequestEvent>(OnGhostWarpToTargetRequest);
-            SubscribeNetworkEvent<GhostnadoRequestEvent>(OnGhostnadoRequest);
-
-            SubscribeLocalEvent<GhostComponent, BooActionEvent>(OnActionPerform);
-            SubscribeLocalEvent<GhostComponent, ToggleGhostHearingActionEvent>(OnGhostHearingAction);
-            SubscribeLocalEvent<GhostComponent, InsertIntoEntityStorageAttemptEvent>(OnEntityStorageInsertAttempt);
-
             SubscribeLocalEvent<RoundEndTextAppendEvent>(_ => MakeVisible(true));
-            SubscribeLocalEvent<ToggleGhostVisibilityToAllEvent>(OnToggleGhostVisibilityToAll);
-
-            SubscribeLocalEvent<GhostComponent, GetVisMaskEvent>(OnGhostVis);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostVis(Entity<GhostComponent> ent, ref GetVisMaskEvent args)
         {
             // If component not deleting they can see ghosts.
@@ -111,6 +90,7 @@ namespace Content.Server.Ghost
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostHearingAction(EntityUid uid, GhostComponent component, ToggleGhostHearingActionEvent args)
         {
             args.Handled = true;
@@ -134,6 +114,7 @@ namespace Content.Server.Ghost
             Dirty(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnActionPerform(EntityUid uid, GhostComponent component, BooActionEvent args)
         {
             if (args.Handled)
@@ -161,6 +142,7 @@ namespace Content.Server.Ghost
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnRelayMoveInput(EntityUid uid, GhostOnMoveComponent component, ref MoveInputEvent args)
         {
             // If they haven't actually moved then ignore it.
@@ -183,6 +165,7 @@ namespace Content.Server.Ghost
             OnGhostAttempt(mindId, component.CanReturn, mind: mind);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostStartup(EntityUid uid, GhostComponent component, ComponentStartup args)
         {
             // Allow this entity to be seen by other ghosts.
@@ -202,6 +185,7 @@ namespace Content.Server.Ghost
             Dirty(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostShutdown(EntityUid uid, GhostComponent component, ComponentShutdown args)
         {
             // Perf: If the entity is deleting itself, no reason to change these back.
@@ -221,6 +205,7 @@ namespace Content.Server.Ghost
             _actions.RemoveAction(uid, component.BooActionEntity);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, GhostComponent component, MapInitEvent args)
         {
             _actions.AddAction(uid, ref component.BooActionEntity, component.BooAction);
@@ -232,16 +217,19 @@ namespace Content.Server.Ghost
 
         #region Ghost Deletion
 
+        [SubscribeLocalEvent]
         private void OnMindRemovedMessage(EntityUid uid, GhostComponent component, MindRemovedMessage args)
         {
             DeleteEntity(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnMindUnvisitedMessage(EntityUid uid, GhostComponent component, MindUnvisitedMessage args)
         {
             DeleteEntity(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnPlayerDetached(EntityUid uid, GhostComponent component, PlayerDetachedEvent args)
         {
             DeleteEntity(uid);
@@ -257,6 +245,7 @@ namespace Content.Server.Ghost
 
         #endregion
 
+        [SubscribeNetworkEvent]
         private void OnGhostReturnToBodyRequest(GhostReturnToBodyRequest msg, EntitySessionEventArgs args)
         {
             if (args.SenderSession.AttachedEntity is not {Valid: true} attached
@@ -286,6 +275,7 @@ namespace Content.Server.Ghost
             return true;
         }
 
+        [SubscribeNetworkEvent]
         private void OnGhostWarpsRequest(GhostWarpsRequestEvent msg, EntitySessionEventArgs args)
         {
             if (!CanGhostWarp(args.SenderSession, out var entity))
@@ -317,11 +307,13 @@ namespace Content.Server.Ghost
             WarpTo(attached, realTarget);
         }
 
+        [SubscribeNetworkEvent]
         private void OnGhostWarpToTargetRequest(GhostWarpToTargetRequestEvent msg, EntitySessionEventArgs args)
         {
             GhostWarpRequest(args.SenderSession, msg.Target);
         }
 
+        [SubscribeNetworkEvent]
         private void OnGhostnadoRequest(GhostnadoRequestEvent msg, EntitySessionEventArgs args)
         {
             if (!CanGhostWarp(args.SenderSession, out var uid))
@@ -385,11 +377,13 @@ namespace Content.Server.Ghost
 
         #endregion
 
+        [SubscribeLocalEvent]
         private void OnEntityStorageInsertAttempt(EntityUid uid, GhostComponent comp, ref InsertIntoEntityStorageAttemptEvent args)
         {
             args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleGhostVisibilityToAll(ToggleGhostVisibilityToAllEvent ev)
         {
             if (ev.Handled)

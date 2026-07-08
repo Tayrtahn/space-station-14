@@ -24,17 +24,15 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<GasRecyclerComponent, AtmosDeviceEnabledEvent>(OnEnabled);
-            SubscribeLocalEvent<GasRecyclerComponent, AtmosDeviceUpdateEvent>(OnUpdate);
-            SubscribeLocalEvent<GasRecyclerComponent, AtmosDeviceDisabledEvent>(OnDisabled);
-            SubscribeLocalEvent<GasRecyclerComponent, ExaminedEvent>(OnExamined);
         }
 
+        [SubscribeLocalEvent]
         private void OnEnabled(EntityUid uid, GasRecyclerComponent comp, ref AtmosDeviceEnabledEvent args)
         {
             UpdateAppearance(uid, comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnExamined(Entity<GasRecyclerComponent> ent, ref ExaminedEvent args)
         {
             var comp = ent.Comp;
@@ -65,6 +63,7 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnUpdate(Entity<GasRecyclerComponent> ent, ref AtmosDeviceUpdateEvent args)
         {
             var comp = ent.Comp;
@@ -103,6 +102,7 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
             return alpha * (float)Math.Sqrt(inlet.Pressure - outlet.Pressure);
         }
 
+        [SubscribeLocalEvent]
         private void OnDisabled(EntityUid uid, GasRecyclerComponent comp, ref AtmosDeviceDisabledEvent args)
         {
             comp.Reacting = false;

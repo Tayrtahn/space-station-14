@@ -22,19 +22,16 @@ public sealed partial class MachineFrameSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MachineFrameComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<MachineFrameComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<MachineFrameComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<MachineFrameComponent, ExaminedEvent>(OnMachineFrameExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, MachineFrameComponent component, ComponentInit args)
     {
         component.BoardContainer = _container.EnsureContainer<Container>(uid, MachineFrameComponent.BoardContainerName);
         component.PartContainer = _container.EnsureContainer<Container>(uid, MachineFrameComponent.PartContainerName);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, MachineFrameComponent component, ComponentStartup args)
     {
         RegenerateProgress(component);
@@ -46,6 +43,7 @@ public sealed partial class MachineFrameSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, MachineFrameComponent component, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -316,6 +314,8 @@ public sealed partial class MachineFrameSystem : EntitySystem
             }
         }
     }
+
+    [SubscribeLocalEvent]
     private void OnMachineFrameExamined(EntityUid uid, MachineFrameComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || !component.HasBoard)

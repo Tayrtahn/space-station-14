@@ -10,10 +10,9 @@ public sealed partial class ShowSyndicateIconsSystem : EquipmentHudSystem<ShowSy
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NukeOperativeComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(EntityUid uid, NukeOperativeComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)

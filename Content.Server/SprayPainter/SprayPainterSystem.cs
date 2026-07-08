@@ -36,17 +36,13 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SprayPainterComponent, SprayPainterPipeDoAfterEvent>(OnPipeDoAfter);
-        SubscribeLocalEvent<SprayPainterComponent, AfterInteractEvent>(OnFloorAfterInteract);
-        SubscribeLocalEvent<AtmosPipeColorComponent, InteractUsingEvent>(OnPipeInteract);
-        SubscribeLocalEvent<GasCanisterComponent, EntityPaintedEvent>(OnCanisterPainted);
     }
 
     /// <summary>
     /// Handles drawing decals when a spray painter is used to interact with the floor.
     /// Spray painter must have decal painting enabled and enough charges of paint to paint on the floor.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnFloorAfterInteract(Entity<SprayPainterComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || args.Target != null)
@@ -130,6 +126,7 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
     /// Event handler when gas canisters are painted.
     /// The canister's color should not change when it's destroyed.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnCanisterPainted(Entity<GasCanisterComponent> ent, ref EntityPaintedEvent args)
     {
         var dummy = Spawn(args.Prototype);
@@ -140,6 +137,7 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
         Del(dummy);
     }
 
+    [SubscribeLocalEvent]
     private void OnPipeDoAfter(Entity<SprayPainterComponent> ent, ref SprayPainterPipeDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -161,6 +159,7 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPipeInteract(Entity<AtmosPipeColorComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)

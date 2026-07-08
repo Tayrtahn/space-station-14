@@ -7,19 +7,17 @@ namespace Content.Shared.Ninja.Systems;
 /// <summary>
 /// Basic draining prediction and API, all real logic is handled serverside.
 /// </summary>
-public abstract class SharedBatteryDrainerSystem : EntitySystem
+public abstract partial class SharedBatteryDrainerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BatteryDrainerComponent, DoAfterAttemptEvent<DrainDoAfterEvent>>(OnDoAfterAttempt);
-        SubscribeLocalEvent<BatteryDrainerComponent, DrainDoAfterEvent>(OnDoAfter);
     }
 
     /// <summary>
     /// Cancel any drain doafters if the battery is removed or, on the server, gets filled.
     /// </summary>
+    [SubscribeLocalEvent]
     protected virtual void OnDoAfterAttempt(Entity<BatteryDrainerComponent> ent, ref DoAfterAttemptEvent<DrainDoAfterEvent> args)
     {
         if (ent.Comp.BatteryUid == null)
@@ -30,6 +28,7 @@ public abstract class SharedBatteryDrainerSystem : EntitySystem
     /// Drain power from a power source (on server) and repeat if it succeeded.
     /// Client will predict always succeeding since power is serverside.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<BatteryDrainerComponent> ent, ref DrainDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target is not {} target)

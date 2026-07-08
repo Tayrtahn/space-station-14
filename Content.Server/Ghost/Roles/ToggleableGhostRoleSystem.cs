@@ -20,13 +20,9 @@ public sealed partial class ToggleableGhostRoleSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ToggleableGhostRoleComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ToggleableGhostRoleComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<ToggleableGhostRoleComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<ToggleableGhostRoleComponent, MindRemovedMessage>(OnMindRemoved);
-        SubscribeLocalEvent<ToggleableGhostRoleComponent, GetVerbsEvent<ActivationVerb>>(AddWipeVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, ToggleableGhostRoleComponent component, UseInHandEvent args)
     {
         if (args.Handled)
@@ -68,6 +64,7 @@ public sealed partial class ToggleableGhostRoleSystem : EntitySystem
         ghostRole.MindRoles = ent.Comp.MindRoles;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, ToggleableGhostRoleComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -87,6 +84,7 @@ public sealed partial class ToggleableGhostRoleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, ToggleableGhostRoleComponent pai, MindAddedMessage args)
     {
         // Mind was added, shutdown the ghost role stuff so it won't get in the way
@@ -94,6 +92,7 @@ public sealed partial class ToggleableGhostRoleSystem : EntitySystem
         UpdateAppearance(uid, ToggleableGhostRoleStatus.On);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(EntityUid uid, ToggleableGhostRoleComponent component, MindRemovedMessage args)
     {
         // Mind was removed, prepare for re-toggle of the role
@@ -106,6 +105,7 @@ public sealed partial class ToggleableGhostRoleSystem : EntitySystem
         _appearance.SetData(uid, ToggleableGhostRoleVisuals.Status, status);
     }
 
+    [SubscribeLocalEvent]
     private void AddWipeVerb(EntityUid uid, ToggleableGhostRoleComponent component, GetVerbsEvent<ActivationVerb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract)

@@ -37,8 +37,6 @@ public sealed partial class CriminalRecordsConsoleSystem : SharedCriminalRecords
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<CriminalRecordsConsoleComponent, RecordModifiedEvent>(UpdateUserInterface);
-        SubscribeLocalEvent<CriminalRecordsConsoleComponent, AfterGeneralRecordCreatedEvent>(UpdateUserInterface);
 
         Subs.BuiEvents<CriminalRecordsConsoleComponent>(CriminalRecordsConsoleKey.Key, subs =>
         {
@@ -52,6 +50,7 @@ public sealed partial class CriminalRecordsConsoleSystem : SharedCriminalRecords
         });
     }
 
+    [SubscribeLocalEvent]
     private void UpdateUserInterface<T>(Entity<CriminalRecordsConsoleComponent> ent, ref T args)
     {
         // TODO: this is probably wasteful, maybe better to send a message to modify the exact state?

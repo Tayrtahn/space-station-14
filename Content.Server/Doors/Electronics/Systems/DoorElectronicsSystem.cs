@@ -20,9 +20,6 @@ public sealed partial class DoorElectronicsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DoorElectronicsComponent, DoorElectronicsUpdateConfigurationMessage>(OnChangeConfiguration);
-        SubscribeLocalEvent<DoorElectronicsComponent, AccessReaderConfigurationChangedEvent>(OnAccessReaderChanged);
-        SubscribeLocalEvent<DoorElectronicsComponent, BoundUIOpenedEvent>(OnBoundUIOpened);
     }
 
     public void UpdateUserInterface(EntityUid uid, DoorElectronicsComponent component)
@@ -42,6 +39,7 @@ public sealed partial class DoorElectronicsSystem : EntitySystem
         _uiSystem.SetUiState(uid, DoorElectronicsConfigurationUiKey.Key, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnChangeConfiguration(
         EntityUid uid,
         DoorElectronicsComponent component,
@@ -51,6 +49,7 @@ public sealed partial class DoorElectronicsSystem : EntitySystem
         _accessReader.TrySetAccesses((uid, accessReader), args.AccessList);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccessReaderChanged(
         EntityUid uid,
         DoorElectronicsComponent component,
@@ -59,6 +58,7 @@ public sealed partial class DoorElectronicsSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIOpened(
         EntityUid uid,
         DoorElectronicsComponent component,

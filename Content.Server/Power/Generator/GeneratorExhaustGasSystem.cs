@@ -13,9 +13,9 @@ public sealed partial class GeneratorExhaustGasSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GeneratorExhaustGasComponent, GeneratorUseFuel>(FuelUsed);
     }
 
+    [SubscribeLocalEvent]
     private void FuelUsed(EntityUid uid, GeneratorExhaustGasComponent component, GeneratorUseFuel args)
     {
         var exhaustMixture = new GasMixture();

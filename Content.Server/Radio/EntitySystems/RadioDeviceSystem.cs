@@ -33,21 +33,6 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadioMicrophoneComponent, ComponentInit>(OnMicrophoneInit);
-        SubscribeLocalEvent<RadioMicrophoneComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<RadioMicrophoneComponent, ActivateInWorldEvent>(OnActivateMicrophone);
-        SubscribeLocalEvent<RadioMicrophoneComponent, ListenEvent>(OnListen);
-        SubscribeLocalEvent<RadioMicrophoneComponent, ListenAttemptEvent>(OnAttemptListen);
-        SubscribeLocalEvent<RadioMicrophoneComponent, PowerChangedEvent>(OnPowerChanged);
-
-        SubscribeLocalEvent<RadioSpeakerComponent, ComponentInit>(OnSpeakerInit);
-        SubscribeLocalEvent<RadioSpeakerComponent, ActivateInWorldEvent>(OnActivateSpeaker);
-        SubscribeLocalEvent<RadioSpeakerComponent, RadioReceiveEvent>(OnReceiveRadio);
-
-        SubscribeLocalEvent<IntercomComponent, EncryptionChannelsChangedEvent>(OnIntercomEncryptionChannelsChanged);
-        SubscribeLocalEvent<IntercomComponent, ToggleIntercomMicMessage>(OnToggleIntercomMic);
-        SubscribeLocalEvent<IntercomComponent, ToggleIntercomSpeakerMessage>(OnToggleIntercomSpeaker);
-        SubscribeLocalEvent<IntercomComponent, SelectIntercomChannelMessage>(OnSelectIntercomChannel);
     }
 
     public override void Update(float frameTime)
@@ -58,6 +43,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
 
 
     #region Component Init
+    [SubscribeLocalEvent]
     private void OnMicrophoneInit(EntityUid uid, RadioMicrophoneComponent component, ComponentInit args)
     {
         if (component.Enabled)
@@ -66,6 +52,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
             RemCompDeferred<ActiveListenerComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeakerInit(EntityUid uid, RadioSpeakerComponent component, ComponentInit args)
     {
         if (component.Enabled)
@@ -76,6 +63,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
     #endregion
 
     #region Toggling
+    [SubscribeLocalEvent]
     private void OnActivateMicrophone(EntityUid uid, RadioMicrophoneComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)
@@ -88,6 +76,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateSpeaker(EntityUid uid, RadioSpeakerComponent component, ActivateInWorldEvent args)
     {
         if (!args.Complex)
@@ -99,6 +88,8 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         ToggleRadioSpeaker(uid, args.User, args.Handled, component);
         args.Handled = true;
     }
+
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, RadioMicrophoneComponent component, ref PowerChangedEvent args)
     {
         if (args.Powered)
@@ -133,6 +124,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
 
     #endregion
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, RadioMicrophoneComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -148,6 +140,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnListen(EntityUid uid, RadioMicrophoneComponent component, ListenEvent args)
     {
         if (HasComp<RadioSpeakerComponent>(args.Source))
@@ -158,6 +151,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
             _radio.SendRadioMessage(args.Source, args.Message, channel, uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptListen(EntityUid uid, RadioMicrophoneComponent component, ListenAttemptEvent args)
     {
         if (component.PowerRequired && !this.IsPowered(uid, EntityManager)
@@ -167,6 +161,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnReceiveRadio(EntityUid uid, RadioSpeakerComponent component, ref RadioReceiveEvent args)
     {
         if (uid == args.RadioSource)
@@ -183,6 +178,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         _chat.TrySendInGameICMessage(uid, args.Message, InGameICChatType.Whisper, ChatTransmitRange.GhostRangeLimit, nameOverride: name, checkRadioPrefix: false);
     }
 
+    [SubscribeLocalEvent]
     private void OnIntercomEncryptionChannelsChanged(Entity<IntercomComponent> ent, ref EncryptionChannelsChangedEvent args)
     {
         ent.Comp.SupportedChannels = args.Component.Channels.Select(p => new ProtoId<RadioChannelPrototype>(p)).ToList();
@@ -194,6 +190,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         SetIntercomChannel(ent, channel);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleIntercomMic(Entity<IntercomComponent> ent, ref ToggleIntercomMicMessage args)
     {
         if (ent.Comp.RequiresPower && !this.IsPowered(ent, EntityManager))
@@ -204,6 +201,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleIntercomSpeaker(Entity<IntercomComponent> ent, ref ToggleIntercomSpeakerMessage args)
     {
         if (ent.Comp.RequiresPower && !this.IsPowered(ent, EntityManager))
@@ -214,6 +212,7 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectIntercomChannel(Entity<IntercomComponent> ent, ref SelectIntercomChannelMessage args)
     {
         if (ent.Comp.RequiresPower && !this.IsPowered(ent, EntityManager))

@@ -66,11 +66,10 @@ namespace Content.Server.Solar.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<SolarPanelComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
             RandomizeSun();
         }
 
+        [SubscribeLocalEvent]
         public void Reset(RoundRestartCleanupEvent ev)
         {
             RandomizeSun();
@@ -86,6 +85,7 @@ namespace Content.Server.Solar.EntitySystems
             SunAngularVelocity = Angle.FromDegrees(0.1 + ((_robustRandom.NextDouble() - 0.5) * 0.05));
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, SolarPanelComponent component, MapInitEvent args)
         {
             UpdateSupply(uid, component);

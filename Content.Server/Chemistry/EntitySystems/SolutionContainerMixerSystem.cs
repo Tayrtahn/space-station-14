@@ -7,16 +7,15 @@ using Content.Shared.Power;
 namespace Content.Server.Chemistry.EntitySystems;
 
 /// <inheritdoc/>
-public sealed class SolutionContainerMixerSystem : SharedSolutionContainerMixerSystem
+public sealed partial class SolutionContainerMixerSystem : SharedSolutionContainerMixerSystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionContainerMixerComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<SolutionContainerMixerComponent> ent, ref PowerChangedEvent args)
     {
         if (!args.Powered)

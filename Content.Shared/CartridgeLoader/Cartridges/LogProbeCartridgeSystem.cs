@@ -27,15 +27,12 @@ public sealed partial class LogProbeCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LogProbeCartridgeComponent, CartridgeUiReadyEvent>(OnUiReady);
-        SubscribeLocalEvent<LogProbeCartridgeComponent, CartridgeRelayedEvent<AfterInteractEvent>>(AfterInteract);
-        SubscribeLocalEvent<LogProbeCartridgeComponent, CartridgeMessageEvent>(OnMessage);
     }
 
     /// <summary>
     /// Updates the program's list of logs with those from the device.
     /// </summary>
+    [SubscribeLocalEvent]
     private void AfterInteract(Entity<LogProbeCartridgeComponent> ent, ref CartridgeRelayedEvent<AfterInteractEvent> args)
     {
         if (args.Args.Handled || !args.Args.CanReach || args.Args.Target is not { } target)
@@ -71,11 +68,13 @@ public sealed partial class LogProbeCartridgeSystem : EntitySystem
     /// <summary>
     /// This gets called when the ui fragment needs to be updated for the first time after activating
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiReady(Entity<LogProbeCartridgeComponent> ent, ref CartridgeUiReadyEvent args)
     {
         UpdateUiState(ent, args.Loader);
     }
 
+    [SubscribeLocalEvent]
     private void OnMessage(Entity<LogProbeCartridgeComponent> ent, ref CartridgeMessageEvent args)
     {
         if (args is LogProbePrintMessage cast)

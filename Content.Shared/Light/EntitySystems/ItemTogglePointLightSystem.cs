@@ -16,9 +16,9 @@ public sealed partial class ItemTogglePointLightSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemTogglePointLightComponent, ItemToggledEvent>(OnLightToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnLightToggled(Entity<ItemTogglePointLightComponent> ent, ref ItemToggledEvent args)
     {
         if (!_light.TryGetLight(ent.Owner, out var light))

@@ -14,10 +14,9 @@ public sealed partial class MultipleTraitorsRequirementSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MultipleTraitorsRequirementComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(EntityUid uid, MultipleTraitorsRequirementComponent comp, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

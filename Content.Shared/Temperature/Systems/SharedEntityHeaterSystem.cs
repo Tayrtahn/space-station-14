@@ -23,12 +23,9 @@ public abstract partial class SharedEntityHeaterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EntityHeaterComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<EntityHeaterComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<EntityHeaterComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<EntityHeaterComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -37,6 +34,7 @@ public abstract partial class SharedEntityHeaterSystem : EntitySystem
         args.PushMarkup(Loc.GetString("entity-heater-examined", ("setting", ent.Comp.Setting)));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<EntityHeaterComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -56,6 +54,7 @@ public abstract partial class SharedEntityHeaterSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<EntityHeaterComponent> ent, ref PowerChangedEvent args)
     {
         // disable heating element glowing layer if theres no power

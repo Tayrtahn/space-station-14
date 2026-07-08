@@ -33,15 +33,9 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DoAfterComponent, DamageChangedEvent>(OnDamage);
-        SubscribeLocalEvent<DoAfterComponent, EntityUnpausedEvent>(OnUnpaused);
-        SubscribeLocalEvent<DoAfterComponent, ComponentGetState>(OnDoAfterGetState);
-        SubscribeLocalEvent<DoAfterComponent, ComponentHandleState>(OnDoAfterHandleState);
-        SubscribeLocalEvent<DoAfterComponent, EffectiveMoverChangedEvent>(OnEffectiveMoverChanged);
-        SubscribeLocalEvent<GetInteractingEntitiesEvent>(OnGetInteractingEntities);
     }
 
+    [SubscribeLocalEvent]
     private void OnEffectiveMoverChanged(EntityUid uid, DoAfterComponent comp, ref EffectiveMoverChangedEvent args)
     {
         // Effective mover changed, so move-sensitive do-afters cancel now
@@ -62,6 +56,7 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
             Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnpaused(EntityUid uid, DoAfterComponent component, ref EntityUnpausedEvent args)
     {
         foreach (var doAfter in component.DoAfters.Values)
@@ -77,6 +72,7 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
     /// <summary>
     /// Cancels DoAfter if it breaks on damage and it meets the threshold
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDamage(EntityUid uid, DoAfterComponent component, DamageChangedEvent args)
     {
         // If we're applying state then let the server state handle the do_after prediction.
@@ -116,11 +112,13 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
             tcs.SetResult(doAfter.Cancelled ? DoAfterStatus.Cancelled : DoAfterStatus.Finished);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterGetState(EntityUid uid, DoAfterComponent comp, ref ComponentGetState args)
     {
         args.State = new DoAfterComponentState(EntityManager, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterHandleState(EntityUid uid, DoAfterComponent comp, ref ComponentHandleState args)
     {
         if (args.Current is not DoAfterComponentState state)
@@ -160,6 +158,7 @@ public abstract partial class SharedDoAfterSystem : EntitySystem
     /// <summary>
     /// Adds entities which have an active DoAfter matching the target.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGetInteractingEntities(ref GetInteractingEntitiesEvent args)
     {
         var enumerator = EntityQueryEnumerator<ActiveDoAfterComponent, DoAfterComponent>();

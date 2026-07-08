@@ -4,19 +4,17 @@ using Content.Shared.Radio.Components;
 
 namespace Content.Server.Implants;
 
-public sealed class RadioImplantSystem : EntitySystem
+public sealed partial class RadioImplantSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RadioImplantComponent, ImplantImplantedEvent>(OnImplantImplanted);
-        SubscribeLocalEvent<RadioImplantComponent, ImplantRemovedEvent>(OnImplantRemoved);
     }
 
     /// <summary>
     /// If implanted with a radio implant, installs the necessary intrinsic radio components
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnImplantImplanted(Entity<RadioImplantComponent> ent, ref ImplantImplantedEvent args)
     {
         var activeRadio = EnsureComp<ActiveRadioComponent>(args.Implanted);
@@ -39,6 +37,7 @@ public sealed class RadioImplantSystem : EntitySystem
     /// <summary>
     /// Removes intrinsic radio components once the Radio Implant is removed
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnImplantRemoved(Entity<RadioImplantComponent> ent, ref ImplantRemovedEvent args)
     {
         if (TryComp<ActiveRadioComponent>(args.Implanted, out var activeRadioComponent))

@@ -32,10 +32,9 @@ public sealed partial class UplinkSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RemoteStoreComponent, ImplantImplantedEvent>(OnRemoteStoreImplanted);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoteStoreImplanted(Entity<RemoteStoreComponent> entity, ref ImplantImplantedEvent args)
     {
         if (_mind.GetMind(args.Implanted) is not { } mind )

@@ -12,10 +12,6 @@ public sealed partial class GravityGeneratorSystem : SharedGravityGeneratorSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GravityGeneratorComponent, EntParentChangedMessage>(OnParentChanged);
-        SubscribeLocalEvent<GravityGeneratorComponent, ChargedMachineActivatedEvent>(OnActivated);
-        SubscribeLocalEvent<GravityGeneratorComponent, ChargedMachineDeactivatedEvent>(OnDeactivated);
     }
 
     public override void Update(float frameTime)
@@ -33,6 +29,7 @@ public sealed partial class GravityGeneratorSystem : SharedGravityGeneratorSyste
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivated(Entity<GravityGeneratorComponent> ent, ref ChargedMachineActivatedEvent args)
     {
         ent.Comp.GravityActive = true;
@@ -46,6 +43,7 @@ public sealed partial class GravityGeneratorSystem : SharedGravityGeneratorSyste
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDeactivated(Entity<GravityGeneratorComponent> ent, ref ChargedMachineDeactivatedEvent args)
     {
         ent.Comp.GravityActive = false;
@@ -59,6 +57,7 @@ public sealed partial class GravityGeneratorSystem : SharedGravityGeneratorSyste
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnParentChanged(EntityUid uid, GravityGeneratorComponent component, ref EntParentChangedMessage args)
     {
         if (component.GravityActive && TryComp(args.OldParent, out GravityComponent? gravity))

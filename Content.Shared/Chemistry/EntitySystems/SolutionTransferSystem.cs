@@ -35,14 +35,9 @@ public sealed partial class SolutionTransferSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionTransferComponent, GetVerbsEvent<AlternativeVerb>>(AddSetTransferVerbs);
-        SubscribeLocalEvent<SolutionTransferComponent, TransferAmountSetValueMessage>(OnTransferAmountSetValueMessage);
-        SubscribeLocalEvent<SolutionTransferComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<SolutionTransferComponent, SolutionDrainTransferDoAfterEvent>(OnSolutionDrainTransferDoAfter);
-        SubscribeLocalEvent<SolutionTransferComponent, SolutionRefillTransferDoAfterEvent>(OnSolutionFillTransferDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void AddSetTransferVerbs(Entity<SolutionTransferComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !ent.Comp.CanChangeTransferAmount || args.Hands == null)
@@ -91,6 +86,7 @@ public sealed partial class SolutionTransferSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTransferAmountSetValueMessage(Entity<SolutionTransferComponent> ent, ref TransferAmountSetValueMessage message)
     {
         var newTransferAmount = FixedPoint2.Clamp(message.Value, ent.Comp.MinimumTransferAmount, ent.Comp.MaximumTransferAmount);
@@ -102,6 +98,7 @@ public sealed partial class SolutionTransferSystem : EntitySystem
         Dirty(ent.Owner, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<SolutionTransferComponent> ent, ref AfterInteractEvent args)
     {
         if (!args.CanReach || args.Target is not {} target)
@@ -192,6 +189,7 @@ public sealed partial class SolutionTransferSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionDrainTransferDoAfter(Entity<SolutionTransferComponent> ent, ref SolutionDrainTransferDoAfterEvent args)
     {
         if (args.Cancelled || args.Target is not { } target)
@@ -204,6 +202,7 @@ public sealed partial class SolutionTransferSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionFillTransferDoAfter(Entity<SolutionTransferComponent> ent, ref SolutionRefillTransferDoAfterEvent args)
     {
         if (args.Cancelled || args.Target is not { } target)

@@ -16,9 +16,9 @@ public sealed partial class FlippableClothingVisualizerSystem : VisualizerSystem
         base.Initialize();
 
         SubscribeLocalEvent<FlippableClothingVisualsComponent, GetEquipmentVisualsEvent>(OnGetVisuals, after: [typeof(ClothingSystem)]);
-        SubscribeLocalEvent<FlippableClothingVisualsComponent, FoldedEvent>(OnFolded);
     }
 
+    [SubscribeLocalEvent]
     private void OnFolded(Entity<FlippableClothingVisualsComponent> ent, ref FoldedEvent args)
     {
         _itemSys.VisualsChanged(ent);

@@ -72,14 +72,6 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         InitializeGridFills();
         InitializeIFF();
         InitializeImpact();
-
-        SubscribeLocalEvent<ShuttleComponent, ComponentStartup>(OnShuttleStartup);
-        SubscribeLocalEvent<ShuttleComponent, ComponentShutdown>(OnShuttleShutdown);
-        SubscribeLocalEvent<ShuttleComponent, TileFrictionEvent>(OnTileFriction);
-        SubscribeLocalEvent<ShuttleComponent, FTLStartedEvent>(OnFTLStarted);
-        SubscribeLocalEvent<ShuttleComponent, FTLCompletedEvent>(OnFTLCompleted);
-
-        SubscribeLocalEvent<GridInitializeEvent>(OnGridInit);
     }
 
     public override void Update(float frameTime)
@@ -88,6 +80,7 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         UpdateHyperspace();
     }
 
+    [SubscribeLocalEvent]
     private void OnGridInit(GridInitializeEvent ev)
     {
         if (HasComp<MapComponent>(ev.EntityUid))
@@ -102,6 +95,7 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
             EnsureComp<ImplicitRoofComponent>(ev.EntityUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleStartup(EntityUid uid, ShuttleComponent component, ComponentStartup args)
     {
         if (!HasComp<MapGridComponent>(uid))
@@ -159,6 +153,7 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         _physics.SetFixedRotation(uid, true, manager: manager, body: component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleShutdown(EntityUid uid, ShuttleComponent component, ComponentShutdown args)
     {
         // None of the below is necessary for any cleanup if we're just deleting.
@@ -168,16 +163,19 @@ public sealed partial class ShuttleSystem : SharedShuttleSystem
         Disable(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnTileFriction(Entity<ShuttleComponent> ent, ref TileFrictionEvent args)
     {
         args.Modifier *= ent.Comp.DampingModifier;
     }
 
+    [SubscribeLocalEvent]
     private void OnFTLStarted(Entity<ShuttleComponent> ent, ref FTLStartedEvent args)
     {
         ent.Comp.DampingModifier = 0f;
     }
 
+    [SubscribeLocalEvent]
     private void OnFTLCompleted(Entity<ShuttleComponent> ent, ref FTLCompletedEvent args)
     {
         ent.Comp.DampingModifier = ent.Comp.BodyModifier;

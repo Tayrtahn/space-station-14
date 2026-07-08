@@ -11,7 +11,6 @@ public sealed partial class MonkeyAccentSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<MonkeyAccentComponent, AccentGetEvent>(OnAccent);
     }
 
     public string Accentuate(string message)
@@ -59,6 +58,7 @@ public sealed partial class MonkeyAccentSystem : EntitySystem
         return accentedMessage.ToString();
     }
 
+    [SubscribeLocalEvent]
     private void OnAccent(EntityUid uid, MonkeyAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message);

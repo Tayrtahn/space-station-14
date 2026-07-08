@@ -13,13 +13,9 @@ public sealed partial class IgniteOnBuckleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<IgniteOnBuckleComponent, StrappedEvent>(OnStrapped);
-        SubscribeLocalEvent<IgniteOnBuckleComponent, UnstrappedEvent>(OnUnstrapped);
-
-        SubscribeLocalEvent<ActiveIgniteOnBuckleComponent, MapInitEvent>(ActiveOnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnStrapped(Entity<IgniteOnBuckleComponent> ent, ref StrappedEvent args)
     {
         // We cache the values here to the other component.
@@ -30,6 +26,7 @@ public sealed partial class IgniteOnBuckleSystem : EntitySystem
         comp.IgniteTime = ent.Comp.IgniteTime;
     }
 
+    [SubscribeLocalEvent]
     private void ActiveOnInit(Entity<ActiveIgniteOnBuckleComponent> ent, ref MapInitEvent args)
     {
         // Handle this via a separate MapInit so the component can be added by itself if need be.
@@ -37,6 +34,7 @@ public sealed partial class IgniteOnBuckleSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnstrapped(Entity<IgniteOnBuckleComponent> ent, ref UnstrappedEvent args)
     {
         RemCompDeferred<ActiveIgniteOnBuckleComponent>(args.Buckle);

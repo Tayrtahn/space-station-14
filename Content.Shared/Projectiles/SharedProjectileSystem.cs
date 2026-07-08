@@ -30,17 +30,9 @@ public abstract partial class SharedProjectileSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ProjectileComponent, PreventCollideEvent>(PreventCollision);
-        SubscribeLocalEvent<EmbeddableProjectileComponent, ProjectileHitEvent>(OnEmbedProjectileHit);
-        SubscribeLocalEvent<EmbeddableProjectileComponent, ThrowDoHitEvent>(OnEmbedThrowDoHit);
-        SubscribeLocalEvent<EmbeddableProjectileComponent, ActivateInWorldEvent>(OnEmbedActivate);
-        SubscribeLocalEvent<EmbeddableProjectileComponent, RemoveEmbeddedProjectileEvent>(OnEmbedRemove);
-        SubscribeLocalEvent<EmbeddableProjectileComponent, ComponentShutdown>(OnEmbeddableCompShutdown);
-
-        SubscribeLocalEvent<EmbeddedContainerComponent, EntityTerminatingEvent>(OnEmbeddableTermination);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbedActivate(Entity<EmbeddableProjectileComponent> embeddable, ref ActivateInWorldEvent args)
     {
         // Unremovable embeddables moment
@@ -61,6 +53,7 @@ public abstract partial class SharedProjectileSystem : EntitySystem
             target: embeddable));
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbedRemove(Entity<EmbeddableProjectileComponent> embeddable, ref RemoveEmbeddedProjectileEvent args)
     {
         if (args.Cancelled)
@@ -72,11 +65,13 @@ public abstract partial class SharedProjectileSystem : EntitySystem
         _hands.TryPickupAnyHand(args.User, embeddable);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbeddableCompShutdown(Entity<EmbeddableProjectileComponent> embeddable, ref ComponentShutdown arg)
     {
         EmbedDetach(embeddable, embeddable.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbedThrowDoHit(Entity<EmbeddableProjectileComponent> embeddable, ref ThrowDoHitEvent args)
     {
         if (!embeddable.Comp.EmbedOnThrow)
@@ -85,6 +80,7 @@ public abstract partial class SharedProjectileSystem : EntitySystem
         EmbedAttach(embeddable, args.Target, null, embeddable.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbedProjectileHit(Entity<EmbeddableProjectileComponent> embeddable, ref ProjectileHitEvent args)
     {
         EmbedAttach(embeddable, args.Target, args.Shooter, embeddable.Comp);
@@ -183,6 +179,7 @@ public abstract partial class SharedProjectileSystem : EntitySystem
         _physics.WakeBody(uid, body: physics);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmbeddableTermination(Entity<EmbeddedContainerComponent> container, ref EntityTerminatingEvent args)
     {
         DetachAllEmbedded(container);
@@ -199,6 +196,7 @@ public abstract partial class SharedProjectileSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void PreventCollision(EntityUid uid, ProjectileComponent component, ref PreventCollideEvent args)
     {
         if (component.IgnoreShooter && (args.OtherEntity == component.Shooter || args.OtherEntity == component.Weapon))

@@ -22,10 +22,9 @@ public sealed partial class KillCalloutRuleSystem : GameRuleSystem<KillCalloutRu
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<KillReportedEvent>(OnKillReported);
     }
 
+    [SubscribeLocalEvent]
     private void OnKillReported(ref KillReportedEvent ev)
     {
         var query = EntityQueryEnumerator<KillCalloutRuleComponent, GameRuleComponent>();

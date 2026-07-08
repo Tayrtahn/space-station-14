@@ -6,13 +6,11 @@ namespace Content.Shared.Speech.EntitySystems;
 /// <summary>
 /// Base system for accents that should apply both directly and when relayed through other entities.
 /// </summary>
-public abstract class RelayAccentSystem<T> : EntitySystem where T : Component
+public abstract partial class RelayAccentSystem<T> : EntitySystem where T : Component
 {
     /// <inheritdoc />
     public override void Initialize()
     {
-        SubscribeLocalEvent<T, AccentGetEvent>(OnAccent);
-        SubscribeLocalEvent<T, StatusEffectRelayedEvent<AccentGetEvent>>(OnAccentRelayed);
     }
 
     /// <summary>
@@ -25,11 +23,13 @@ public abstract class RelayAccentSystem<T> : EntitySystem where T : Component
 
     protected abstract string AccentuateInternal(EntityUid uid, T comp, string message);
 
+    [SubscribeLocalEvent]
     private void OnAccent(Entity<T> ent, ref AccentGetEvent args)
     {
         args.Message = Accentuate(args.Entity, ent.Comp, args.Message);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentRelayed(Entity<T> ent, ref StatusEffectRelayedEvent<AccentGetEvent> args)
     {
         args.Args.Message = Accentuate(args.Args.Entity, ent.Comp, args.Args.Message);

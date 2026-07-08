@@ -60,30 +60,9 @@ public sealed partial class NukeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NukeComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<NukeComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<NukeComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<NukeComponent, EntInsertedIntoContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<NukeComponent, EntRemovedFromContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<NukeComponent, ExaminedEvent>(OnExaminedEvent);
-
-        // Shouldn't need re-anchoring.
-        SubscribeLocalEvent<NukeComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-
-        // ui events
-        SubscribeLocalEvent<NukeComponent, NukeAnchorMessage>(OnAnchorButtonPressed);
-        SubscribeLocalEvent<NukeComponent, NukeArmedMessage>(OnArmButtonPressed);
-        SubscribeLocalEvent<NukeComponent, NukeKeypadMessage>(OnKeypadButtonPressed);
-        SubscribeLocalEvent<NukeComponent, NukeKeypadClearMessage>(OnClearButtonPressed);
-        SubscribeLocalEvent<NukeComponent, NukeKeypadEnterMessage>(OnEnterButtonPressed);
-
-        // Doafter events
-        SubscribeLocalEvent<NukeComponent, NukeDisarmDoAfterEvent>(OnDoAfter);
-
-        SubscribeLocalEvent<NukeDiskComponent, BeingMicrowavedEvent>(OnMicrowaved);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, NukeComponent component, ComponentInit args)
     {
         _itemSlots.AddItemSlot(uid, SharedNukeComponent.NukeDiskSlotId, component.DiskSlot);
@@ -111,6 +90,7 @@ public sealed partial class NukeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, NukeComponent nuke, MapInitEvent args)
     {
         nuke.RemainingTime = nuke.Timer;
@@ -132,6 +112,7 @@ public sealed partial class NukeSystem : EntitySystem
     /// <summary>
     /// Slightly randomize nuke countdown timer
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMicrowaved(Entity<NukeDiskComponent> ent, ref BeingMicrowavedEvent args)
     {
         if (ent.Comp.TimeModifier != null)
@@ -142,11 +123,13 @@ public sealed partial class NukeSystem : EntitySystem
         _popups.PopupEntity(Loc.GetString("nuke-disk-component-microwave"), ent.Owner, PopupType.Medium);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, NukeComponent component, ComponentRemove args)
     {
         _itemSlots.RemoveItemSlot(uid, component.DiskSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSlotChanged(EntityUid uid, NukeComponent component, ContainerModifiedMessage args)
     {
         if (!component.Initialized)
@@ -161,6 +144,7 @@ public sealed partial class NukeSystem : EntitySystem
 
     #region Anchor
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(EntityUid uid, NukeComponent component, ref AnchorStateChangedEvent args)
     {
         UpdateUserInterface(uid, component);
@@ -179,6 +163,7 @@ public sealed partial class NukeSystem : EntitySystem
 
     #region UI Events
 
+    [SubscribeLocalEvent]
     private async void OnAnchorButtonPressed(EntityUid uid, NukeComponent component, NukeAnchorMessage args)
     {
         // malicious client sanity check
@@ -227,6 +212,7 @@ public sealed partial class NukeSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEnterButtonPressed(EntityUid uid, NukeComponent component, NukeKeypadEnterMessage args)
     {
         if (component.Status != NukeStatus.AWAIT_CODE)
@@ -242,6 +228,7 @@ public sealed partial class NukeSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnKeypadButtonPressed(EntityUid uid, NukeComponent component, NukeKeypadMessage args)
     {
         PlayNukeKeypadSound(uid, args.Value, component);
@@ -256,6 +243,7 @@ public sealed partial class NukeSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnClearButtonPressed(EntityUid uid, NukeComponent component, NukeKeypadClearMessage args)
     {
         _audio.PlayPvs(component.KeypadPressSound, uid);
@@ -267,6 +255,7 @@ public sealed partial class NukeSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnArmButtonPressed(EntityUid uid, NukeComponent component, NukeArmedMessage args)
     {
         if (!component.DiskSlot.HasItem)
@@ -285,6 +274,7 @@ public sealed partial class NukeSystem : EntitySystem
 
     #region Doafter Events
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, NukeComponent component, DoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)
@@ -663,6 +653,7 @@ public sealed partial class NukeSystem : EntitySystem
         _appearance.SetData(uid, NukeVisuals.State, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnExaminedEvent(EntityUid uid, NukeComponent component, ExaminedEvent args)
     {
         if (component.PlayedAlertSound)

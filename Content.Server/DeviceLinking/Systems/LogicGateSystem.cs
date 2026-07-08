@@ -26,11 +26,6 @@ public sealed partial class LogicGateSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LogicGateComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<LogicGateComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<LogicGateComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<LogicGateComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
     public override void Update(float deltaTime)
@@ -53,12 +48,14 @@ public sealed partial class LogicGateSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, LogicGateComponent comp, ComponentInit args)
     {
         _deviceLink.EnsureSinkPorts(uid, comp.InputPortA, comp.InputPortB);
         _deviceLink.EnsureSourcePorts(uid, comp.OutputPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, LogicGateComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -67,6 +64,7 @@ public sealed partial class LogicGateSystem : EntitySystem
         args.PushMarkup(Loc.GetString("logic-gate-examine", ("gate", comp.Gate.ToString().ToUpper())));
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, LogicGateComponent comp, InteractUsingEvent args)
     {
         if (args.Handled || !_tool.HasQuality(args.Used, comp.CycleQuality))
@@ -92,6 +90,7 @@ public sealed partial class LogicGateSystem : EntitySystem
         _appearance.SetData(uid, LogicGateVisuals.Gate, comp.Gate);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, LogicGateComponent comp, ref SignalReceivedEvent args)
     {
         // default to momentary for compatibility with non-logic signals.

@@ -34,6 +34,7 @@ public sealed partial class ShuttleConsoleSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDronePilotConsoleOpen(EntityUid uid, DroneConsoleComponent component, AfterActivatableUIOpenEvent args)
     {
         component.Entity = GetShuttleConsole(uid);
@@ -46,6 +47,7 @@ public sealed partial class ShuttleConsoleSystem
             component.Entity = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnCargoGetConsole(EntityUid uid, DroneConsoleComponent component, ref ConsoleShuttleEvent args)
     {
         args.Console = GetShuttleConsole(uid, component);

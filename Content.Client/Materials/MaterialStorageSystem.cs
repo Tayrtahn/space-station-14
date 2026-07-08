@@ -12,10 +12,9 @@ public sealed partial class MaterialStorageSystem : SharedMaterialStorageSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MaterialStorageComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, MaterialStorageComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

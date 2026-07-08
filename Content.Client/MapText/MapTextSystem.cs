@@ -23,8 +23,6 @@ public sealed partial class MapTextSystem : SharedMapTextSystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MapTextComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<MapTextComponent, ComponentHandleState>(HandleCompState);
 
         _overlay = new MapTextOverlay(_configManager, EntityManager, _uiManager, _transform, _resourceCache, ProtoMan);
         _overlayManager.AddOverlay(_overlay);
@@ -33,6 +31,7 @@ public sealed partial class MapTextSystem : SharedMapTextSystem
         DebugTools.Assert(ProtoMan.HasIndex<FontPrototype>(SharedMapTextComponent.DefaultFont));
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<MapTextComponent> ent, ref ComponentStartup args)
     {
         CacheText(ent.Comp);
@@ -40,6 +39,7 @@ public sealed partial class MapTextSystem : SharedMapTextSystem
         DebugTools.Assert(ProtoMan.HasIndex<FontPrototype>(ent.Comp.FontId));
     }
 
+    [SubscribeLocalEvent]
     private void HandleCompState(Entity<MapTextComponent> ent, ref ComponentHandleState args)
     {
         if (args.Current is not MapTextComponentState state)

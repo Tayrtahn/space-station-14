@@ -24,14 +24,10 @@ public sealed partial class RetractableItemActionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RetractableItemActionComponent, MapInitEvent>(OnActionInit);
-        SubscribeLocalEvent<RetractableItemActionComponent, OnRetractableItemActionEvent>(OnRetractableItemAction);
-
-        SubscribeLocalEvent<ActionRetractableItemComponent, ComponentShutdown>(OnActionSummonedShutdown);
         Subs.SubscribeWithRelay<ActionRetractableItemComponent, HeldRelayedEvent<TargetHandcuffedEvent>>(OnItemHandcuffed, inventory: false);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionInit(Entity<RetractableItemActionComponent> ent, ref MapInitEvent args)
     {
         _containers.EnsureContainer<Container>(ent, RetractableItemActionComponent.ContainerId);
@@ -39,6 +35,7 @@ public sealed partial class RetractableItemActionSystem : EntitySystem
         PopulateActionItem(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnRetractableItemAction(Entity<RetractableItemActionComponent> ent, ref OnRetractableItemActionEvent args)
     {
         if (_hands.GetActiveHand(args.Performer) is not { } activeHand)
@@ -74,6 +71,7 @@ public sealed partial class RetractableItemActionSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnActionSummonedShutdown(Entity<ActionRetractableItemComponent> ent, ref ComponentShutdown args)
     {
         if (_actions.GetAction(ent.Comp.SummoningAction) is not { } action)

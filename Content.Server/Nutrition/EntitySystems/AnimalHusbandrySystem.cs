@@ -41,17 +41,17 @@ public sealed partial class AnimalHusbandrySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ReproductiveComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<InfantComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
     // we express EZ-pass terminate the pregnancy if a player takes the role
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, ReproductiveComponent component, MindAddedMessage args)
     {
         component.Gestating = false;
         component.GestationEndTime = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<InfantComponent> entity, ref RefreshNameModifiersEvent args)
     {
         // This check may seem redundant, but it makes sure that the prefix is removed before the component is removed

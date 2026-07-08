@@ -37,22 +37,9 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InnerBodyAnomalyInjectorComponent, StartCollideEvent>(OnStartCollideInjector);
-
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, ComponentShutdown>(OnCompShutdown);
-
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, AnomalyPulseEvent>(OnAnomalyPulse);
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, AnomalyShutdownEvent>(OnAnomalyShutdown);
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, AnomalySupercriticalEvent>(OnAnomalySupercritical);
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, AnomalySeverityChangedEvent>(OnSeverityChanged);
-
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, MobStateChangedEvent>(OnMobStateChanged);
-
-        SubscribeLocalEvent<AnomalyComponent, ActionAnomalyPulseEvent>(OnActionPulse);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionPulse(Entity<AnomalyComponent> ent, ref ActionAnomalyPulseEvent args)
     {
         if (args.Handled)
@@ -63,6 +50,7 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollideInjector(Entity<InnerBodyAnomalyInjectorComponent> ent, ref StartCollideEvent args)
     {
         if (ent.Comp.Whitelist is not null && !_whitelist.IsValid(ent.Comp.Whitelist, args.OtherEntity))
@@ -76,6 +64,7 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
         QueueDel(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<InnerBodyAnomalyComponent> ent, ref MapInitEvent args)
     {
         AddAnomalyToBody(ent);
@@ -120,17 +109,20 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyPulse(Entity<InnerBodyAnomalyComponent> ent, ref AnomalyPulseEvent args)
     {
         _stun.TryUpdateParalyzeDuration(ent, TimeSpan.FromSeconds(ent.Comp.StunDuration / 2 * args.Severity));
         _jitter.DoJitter(ent, TimeSpan.FromSeconds(ent.Comp.StunDuration / 2 * args.Severity), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalySupercritical(Entity<InnerBodyAnomalyComponent> ent, ref AnomalySupercriticalEvent args)
     {
         _gibbing.Gib(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnSeverityChanged(Entity<InnerBodyAnomalyComponent> ent, ref AnomalySeverityChangedEvent args)
     {
         if (!_mind.TryGetMind(ent, out _, out var mindComponent) ||
@@ -175,6 +167,7 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
         _popup.PopupEntity(message, ent, ent, PopupType.MediumCaution);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<InnerBodyAnomalyComponent> ent, ref MobStateChangedEvent args)
     {
         if (args.NewMobState != MobState.Dead)
@@ -188,12 +181,14 @@ public sealed partial class InnerBodyAnomalySystem : SharedInnerBodyAnomalySyste
         _anomaly.ChangeAnomalyHealth(ent, -2); //Shutdown it
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyShutdown(Entity<InnerBodyAnomalyComponent> ent, ref AnomalyShutdownEvent args)
     {
         RemoveAnomalyFromBody(ent);
         RemCompDeferred<InnerBodyAnomalyComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompShutdown(Entity<InnerBodyAnomalyComponent> ent, ref ComponentShutdown args)
     {
         RemoveAnomalyFromBody(ent);

@@ -18,21 +18,13 @@ public sealed partial class SlidingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SlidingComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<SlidingComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<SlidingComponent, StoodEvent>(OnStand);
-        SubscribeLocalEvent<SlidingComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<SlidingComponent, EndCollideEvent>(OnEndCollide);
-        SubscribeLocalEvent<SlidingComponent, RefreshFrictionModifiersEvent>(OnRefreshFrictionModifiers);
-        SubscribeLocalEvent<SlidingComponent, ThrowerImpulseEvent>(OnThrowerImpulse);
-        SubscribeLocalEvent<SlidingComponent, ShooterImpulseEvent>(ShooterImpulseEvent);
     }
 
     /// <summary>
     ///     When the component is first added, calculate the friction modifier we need.
     ///     Don't do this more than once to avoid mispredicts.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<SlidingComponent> entity, ref ComponentInit args)
     {
         if (CalculateSlidingModifier(entity))
@@ -42,6 +34,7 @@ public sealed partial class SlidingSystem : EntitySystem
     /// <summary>
     ///     When the component is removed, refresh friction modifiers and set ours to 1 to avoid causing issues.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<SlidingComponent> entity, ref ComponentShutdown args)
     {
         entity.Comp.FrictionModifier = 1;
@@ -51,6 +44,7 @@ public sealed partial class SlidingSystem : EntitySystem
     /// <summary>
     ///     Remove the component when the entity stands up again.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnStand(EntityUid uid, SlidingComponent component, ref StoodEvent args)
     {
         RemComp<SlidingComponent>(uid);
@@ -59,6 +53,7 @@ public sealed partial class SlidingSystem : EntitySystem
     /// <summary>
     ///     Updates friction when we collide with a slippery entity
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnStartCollide(Entity<SlidingComponent> entity, ref StartCollideEvent args)
     {
         if (!_slipperyQuery.TryComp(args.OtherEntity, out var slippery) || !slippery.AffectsSliding)
@@ -71,6 +66,7 @@ public sealed partial class SlidingSystem : EntitySystem
     /// <summary>
     ///     Update friction when we stop colliding with a slippery entity
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEndCollide(Entity<SlidingComponent> entity, ref EndCollideEvent args)
     {
         if (!_slipperyQuery.TryComp(args.OtherEntity, out var slippery) || !slippery.AffectsSliding)
@@ -119,17 +115,20 @@ public sealed partial class SlidingSystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshFrictionModifiers(Entity<SlidingComponent> entity, ref RefreshFrictionModifiersEvent args)
     {
         args.ModifyFriction(entity.Comp.FrictionModifier);
         args.ModifyAcceleration(entity.Comp.FrictionModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowerImpulse(Entity<SlidingComponent> entity, ref ThrowerImpulseEvent args)
     {
         args.Push = true;
     }
 
+    [SubscribeLocalEvent]
     private void ShooterImpulseEvent(Entity<SlidingComponent> entity, ref ShooterImpulseEvent args)
     {
         args.Push = true;

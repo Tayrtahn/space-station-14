@@ -3,14 +3,13 @@ using Robust.Client.GameObjects;
 
 namespace Content.Client.Administration.Systems;
 
-public sealed class HeadstandSystem : EntitySystem
+public sealed partial class HeadstandSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<HeadstandComponent, ComponentStartup>(OnHeadstandAdded);
-        SubscribeLocalEvent<HeadstandComponent, ComponentShutdown>(OnHeadstandRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnHeadstandAdded(EntityUid uid, HeadstandComponent component, ComponentStartup args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))
@@ -22,6 +21,7 @@ public sealed class HeadstandSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnHeadstandRemoved(EntityUid uid, HeadstandComponent component, ComponentShutdown args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

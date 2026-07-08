@@ -59,6 +59,7 @@ public sealed partial class ExplosionSystem
 
     private List<EntityUid> _anchored = new();
 
+    [SubscribeLocalEvent]
     private void OnMapRemoved(MapRemovedEvent ev)
     {
         // If a map was deleted, check the explosion currently being processed belongs to that map.

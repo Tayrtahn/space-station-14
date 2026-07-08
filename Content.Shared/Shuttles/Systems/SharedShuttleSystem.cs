@@ -33,10 +33,9 @@ public abstract partial class SharedShuttleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FixturesComponent, GridFixtureChangeEvent>(OnGridFixtureChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridFixtureChange(EntityUid uid, FixturesComponent manager, GridFixtureChangeEvent args)
     {
         foreach (var fixture in args.NewFixtures)

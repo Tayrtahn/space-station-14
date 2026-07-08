@@ -17,13 +17,9 @@ public sealed partial class SurveillanceCameraRouterSystem : EntitySystem
     [Dependency] private UserInterfaceSystem _userInterface = default!;
     public override void Initialize()
     {
-        SubscribeLocalEvent<SurveillanceCameraRouterComponent, ComponentInit>(OnInitialize);
-        SubscribeLocalEvent<SurveillanceCameraRouterComponent, DeviceNetworkPacketEvent>(OnPacketReceive);
-        SubscribeLocalEvent<SurveillanceCameraRouterComponent, SurveillanceCameraSetupSetNetwork>(OnSetNetwork);
-        SubscribeLocalEvent<SurveillanceCameraRouterComponent, GetVerbsEvent<AlternativeVerb>>(AddVerbs);
-        SubscribeLocalEvent<SurveillanceCameraRouterComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnInitialize(EntityUid uid, SurveillanceCameraRouterComponent router, ComponentInit args)
     {
         if (router.SubnetFrequencyId == null ||
@@ -36,6 +32,7 @@ public sealed partial class SurveillanceCameraRouterSystem : EntitySystem
         router.Active = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceive(EntityUid uid, SurveillanceCameraRouterComponent router, DeviceNetworkPacketEvent args)
     {
         if (!router.Active
@@ -82,12 +79,14 @@ public sealed partial class SurveillanceCameraRouterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, SurveillanceCameraRouterComponent component, ref PowerChangedEvent args)
     {
         component.MonitorRoutes.Clear();
         component.Active = args.Powered;
     }
 
+    [SubscribeLocalEvent]
     private void AddVerbs(EntityUid uid, SurveillanceCameraRouterComponent component, GetVerbsEvent<AlternativeVerb> verbs)
     {
         if (!_actionBlocker.CanInteract(verbs.User, uid) || !_actionBlocker.CanComplexInteract(verbs.User))
@@ -106,6 +105,7 @@ public sealed partial class SurveillanceCameraRouterSystem : EntitySystem
         verbs.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnSetNetwork(EntityUid uid, SurveillanceCameraRouterComponent component,
             SurveillanceCameraSetupSetNetwork args)
     {

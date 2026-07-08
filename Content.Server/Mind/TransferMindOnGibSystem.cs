@@ -21,9 +21,9 @@ public sealed partial class TransferMindOnGibSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<TransferMindOnGibComponent, GibbedBeforeDeletionEvent>(OnGib);
     }
 
+    [SubscribeLocalEvent]
     private void OnGib(Entity<TransferMindOnGibComponent> ent, ref GibbedBeforeDeletionEvent args)
     {
         if (!_mindSystem.TryGetMind(ent, out var mindId, out var mind))

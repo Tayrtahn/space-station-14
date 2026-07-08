@@ -15,10 +15,9 @@ public sealed partial class PuddleSystem : SharedPuddleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PuddleComponent, AppearanceChangeEvent>(OnPuddleAppearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnPuddleAppearance(EntityUid uid, PuddleComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

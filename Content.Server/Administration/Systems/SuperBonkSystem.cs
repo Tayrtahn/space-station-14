@@ -18,12 +18,9 @@ public sealed partial class SuperBonkSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SuperBonkComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SuperBonkComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<SuperBonkComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<SuperBonkComponent> ent, ref ComponentInit args)
     {
         var (_, component) = ent;
@@ -31,6 +28,7 @@ public sealed partial class SuperBonkSystem : EntitySystem
         component.NextBonk = _timing.CurTime + component.BonkCooldown;
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<SuperBonkComponent> ent, ref MobStateChangedEvent args)
     {
         var (uid, component) = ent;
@@ -39,6 +37,7 @@ public sealed partial class SuperBonkSystem : EntitySystem
             RemCompDeferred<SuperBonkComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<SuperBonkComponent> ent, ref ComponentShutdown args)
     {
         var (uid, component) = ent;

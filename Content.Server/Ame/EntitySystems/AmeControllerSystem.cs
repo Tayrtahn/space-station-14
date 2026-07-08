@@ -33,15 +33,9 @@ public sealed partial class AmeControllerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AmeControllerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<AmeControllerComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<AmeControllerComponent, EntInsertedIntoContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<AmeControllerComponent, EntRemovedFromContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<AmeControllerComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<AmeControllerComponent, UiButtonPressedMessage>(OnUiButtonPressed);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, AmeControllerComponent component, ComponentInit args)
     {
         _itemSlots.AddItemSlot(uid, SharedAmeControllerComponent.FuelSlotId, component.FuelSlot);
@@ -62,11 +56,13 @@ public sealed partial class AmeControllerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, AmeControllerComponent component, ComponentRemove args)
     {
         _itemSlots.RemoveItemSlot(uid, component.FuelSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSlotChanged(EntityUid uid, AmeControllerComponent component, ContainerModifiedMessage args)
     {
         if (!component.Initialized)
@@ -324,11 +320,13 @@ public sealed partial class AmeControllerSystem : EntitySystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, AmeControllerComponent comp, ref PowerChangedEvent args)
     {
         UpdateUi(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnUiButtonPressed(EntityUid uid, AmeControllerComponent comp, UiButtonPressedMessage msg)
     {
         var user = msg.Actor;

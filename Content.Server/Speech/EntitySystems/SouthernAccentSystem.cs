@@ -18,9 +18,9 @@ public sealed partial class SouthernAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SouthernAccentComponent, AccentGetEvent>(OnAccent);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccent(EntityUid uid, SouthernAccentComponent component, AccentGetEvent args)
     {
         var message = args.Message;

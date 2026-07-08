@@ -10,11 +10,9 @@ public abstract partial class SharedStunbatonSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StunbatonComponent, ItemToggleActivateAttemptEvent>(TryTurnOn);
-        SubscribeLocalEvent<StunbatonComponent, ItemToggleDeactivateAttemptEvent>(TryTurnOff);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void TryTurnOn(Entity<StunbatonComponent> entity, ref ItemToggleActivateAttemptEvent args)
     {
         if (args.User != null && !_actionBlocker.CanComplexInteract(args.User.Value)) {
@@ -23,6 +21,7 @@ public abstract partial class SharedStunbatonSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     protected virtual void TryTurnOff(Entity<StunbatonComponent> entity, ref ItemToggleDeactivateAttemptEvent args)
     {
         if (args.User != null && !_actionBlocker.CanComplexInteract(args.User.Value)) {

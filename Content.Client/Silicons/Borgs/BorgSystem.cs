@@ -31,9 +31,6 @@ public sealed partial class BorgSystem : SharedBorgSystem
         base.Initialize();
 
         InitializeBattery();
-
-        SubscribeLocalEvent<BorgChassisComponent, AppearanceChangeEvent>(OnBorgAppearanceChanged);
-        SubscribeLocalEvent<MMIComponent, AppearanceChangeEvent>(OnMMIAppearanceChanged);
     }
 
     public override void UpdateUI(Entity<BorgChassisComponent?> chassis)
@@ -42,6 +39,7 @@ public sealed partial class BorgSystem : SharedBorgSystem
             bui.Update();
     }
 
+    [SubscribeLocalEvent]
     private void OnBorgAppearanceChanged(Entity<BorgChassisComponent> chassis, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)
@@ -93,6 +91,7 @@ public sealed partial class BorgSystem : SharedBorgSystem
         _sprite.LayerSetRsiState((ent.Owner, ent.Comp3), BorgVisualLayers.Light, hasPlayer ? ent.Comp1.HasMindState : ent.Comp1.NoMindState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMMIAppearanceChanged(EntityUid uid, MMIComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

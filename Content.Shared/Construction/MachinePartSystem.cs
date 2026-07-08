@@ -17,9 +17,9 @@ namespace Content.Shared.Construction
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<MachineBoardComponent, ExaminedEvent>(OnMachineBoardExamined);
         }
 
+        [SubscribeLocalEvent]
         private void OnMachineBoardExamined(EntityUid uid, MachineBoardComponent component, ExaminedEvent args)
         {
             if (!args.IsInDetailsRange)

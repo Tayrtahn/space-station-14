@@ -11,10 +11,9 @@ public sealed partial class TwoStageTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TwoStageTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<TwoStageTriggerComponent> ent, ref TriggerEvent args)
     {
         if (ent.Comp.Triggered)

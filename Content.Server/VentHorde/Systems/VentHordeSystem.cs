@@ -20,31 +20,29 @@ public sealed partial class VentHordeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<VentHordeSpawnerComponent, MapInitEvent>(OnSpawnerInit);
-        SubscribeLocalEvent<VentHordeSpawnerComponent, ComponentShutdown>(OnSpawnerShutdown);
-
-        SubscribeLocalEvent<VentHordeSpawnerComponent, BreakageEventArgs>(OnSpawnerBreakage);
-        SubscribeLocalEvent<VentHordeSpawnerComponent, AnchorStateChangedEvent>(OnSpawnerAnchored);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnerInit(Entity<VentHordeSpawnerComponent> entity, ref MapInitEvent args)
     {
         _jitter.AddJitter(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnerShutdown(Entity<VentHordeSpawnerComponent> entity, ref ComponentShutdown args)
     {
         _audio.Stop(entity.Comp.AudioStream);
         RemCompDeferred<JitteringComponent>(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnerBreakage(Entity<VentHordeSpawnerComponent> entity, ref BreakageEventArgs args)
     {
         // There is no escape.
         EndHordeSpawn(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnerAnchored(Entity<VentHordeSpawnerComponent> entity, ref AnchorStateChangedEvent args)
     {
         // Anchor state changes when the entity is broken, to avoid double spawning we check if the entity is gonna be deleted.

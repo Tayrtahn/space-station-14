@@ -9,10 +9,9 @@ public sealed partial class RequiresGridSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RequiresGridComponent, EntParentChangedMessage>(OnEntParentChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntParentChanged(EntityUid owner, RequiresGridComponent component, EntParentChangedMessage args)
     {
         if (args.OldParent == null)

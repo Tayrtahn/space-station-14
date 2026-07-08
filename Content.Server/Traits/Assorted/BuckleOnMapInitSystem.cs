@@ -8,9 +8,9 @@ public sealed partial class BuckleOnMapInitSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<BuckleOnMapInitComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, BuckleOnMapInitComponent component, MapInitEvent args)
     {
         var buckle = Spawn(component.Prototype, Transform(uid).Coordinates);

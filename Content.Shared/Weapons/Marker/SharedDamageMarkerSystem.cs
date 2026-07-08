@@ -21,10 +21,9 @@ public abstract partial class SharedDamageMarkerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageMarkerOnCollideComponent, StartCollideEvent>(OnMarkerCollide);
-        SubscribeLocalEvent<DamageMarkerComponent, AttackedEvent>(OnMarkerAttacked);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkerAttacked(EntityUid uid, DamageMarkerComponent component, AttackedEvent args)
     {
         if (component.Marker != args.Used)
@@ -55,6 +54,7 @@ public abstract partial class SharedDamageMarkerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkerCollide(EntityUid uid, DamageMarkerOnCollideComponent component, ref StartCollideEvent args)
     {
         if (!args.OtherFixture.Hard ||

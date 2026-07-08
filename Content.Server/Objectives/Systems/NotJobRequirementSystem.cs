@@ -13,10 +13,9 @@ public sealed partial class NotJobRequirementSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NotJobRequirementComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(EntityUid uid, NotJobRequirementComponent comp, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

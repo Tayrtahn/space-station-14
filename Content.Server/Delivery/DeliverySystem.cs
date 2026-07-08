@@ -40,11 +40,10 @@ public sealed partial class DeliverySystem : SharedDeliverySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<DeliveryComponent, MapInitEvent>(OnMapInit);
-
         InitializeSpawning();
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<DeliveryComponent> ent, ref MapInitEvent args)
     {
         _container.EnsureContainer<Container>(ent, ent.Comp.Container);

@@ -37,14 +37,6 @@ namespace Content.Server.Forensics
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ForensicScannerComponent, AfterInteractEvent>(OnAfterInteract);
-            SubscribeLocalEvent<ForensicScannerComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-            SubscribeLocalEvent<ForensicScannerComponent, BeforeActivatableUIOpenEvent>(OnBeforeActivatableUIOpen);
-            SubscribeLocalEvent<ForensicScannerComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
-            SubscribeLocalEvent<ForensicScannerComponent, ForensicScannerPrintMessage>(OnPrint);
-            SubscribeLocalEvent<ForensicScannerComponent, ForensicScannerClearMessage>(OnClear);
-            SubscribeLocalEvent<ForensicScannerComponent, ForensicScannerDoAfterEvent>(OnDoAfter);
         }
 
         private void UpdateUserInterface(EntityUid uid, ForensicScannerComponent component)
@@ -62,6 +54,7 @@ namespace Content.Server.Forensics
             _uiSystem.SetUiState(uid, ForensicScannerUiKey.Key, state);
         }
 
+        [SubscribeLocalEvent]
         private void OnDoAfter(EntityUid uid, ForensicScannerComponent component, DoAfterEvent args)
         {
             if (args.Handled || args.Cancelled)
@@ -113,6 +106,7 @@ namespace Content.Server.Forensics
             });
         }
 
+        [SubscribeLocalEvent]
         private void OnUtilityVerb(EntityUid uid, ForensicScannerComponent component, GetVerbsEvent<UtilityVerb> args)
         {
             if (!args.CanInteract || !args.CanAccess || component.CancelToken != null)
@@ -131,6 +125,7 @@ namespace Content.Server.Forensics
             args.Verbs.Add(verb);
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteract(EntityUid uid, ForensicScannerComponent component, AfterInteractEvent args)
         {
             if (component.CancelToken != null || args.Target == null || !args.CanReach)
@@ -139,6 +134,7 @@ namespace Content.Server.Forensics
             StartScan(uid, component, args.User, args.Target.Value);
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteractUsing(EntityUid uid, ForensicScannerComponent component, AfterInteractUsingEvent args)
         {
             if (args.Handled || !args.CanReach)
@@ -171,6 +167,7 @@ namespace Content.Server.Forensics
             _popupSystem.PopupEntity(Loc.GetString("forensic-scanner-match-none"), uid, args.User);
         }
 
+        [SubscribeLocalEvent]
         private void OnBeforeActivatableUIOpen(EntityUid uid, ForensicScannerComponent component, BeforeActivatableUIOpenEvent args)
         {
             UpdateUserInterface(uid, component);
@@ -183,6 +180,7 @@ namespace Content.Server.Forensics
             _uiSystem.OpenUi(scanner.Owner, ForensicScannerUiKey.Key, user);
         }
 
+        [SubscribeLocalEvent]
         private void OnPrint(EntityUid uid, ForensicScannerComponent component, ForensicScannerPrintMessage args)
         {
             var user = args.Actor;
@@ -251,6 +249,7 @@ namespace Content.Server.Forensics
             component.PrintReadyAt = _gameTiming.CurTime + component.PrintCooldown;
         }
 
+        [SubscribeLocalEvent]
         private void OnClear(EntityUid uid, ForensicScannerComponent component, ForensicScannerClearMessage args)
         {
             component.Fingerprints = new();

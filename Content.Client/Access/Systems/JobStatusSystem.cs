@@ -17,11 +17,10 @@ public sealed partial class JobStatusSystem : SharedJobStatusSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<JobStatusComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
     }
 
     // show the status icons if the player has the correponding HUDs
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(Entity<JobStatusComponent> ent, ref GetStatusIconsEvent ev)
     {
         if (_showJobIcons.IsActive && ent.Comp.JobStatusIcon != null)

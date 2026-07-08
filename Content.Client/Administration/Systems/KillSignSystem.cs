@@ -12,21 +12,21 @@ public sealed partial class KillSignSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<KillSignComponent, ComponentStartup>(KillSignAdded);
-        SubscribeLocalEvent<KillSignComponent, ComponentShutdown>(KillSignRemoved);
-        SubscribeLocalEvent<KillSignComponent, AfterAutoHandleStateEvent>(AfterAutoHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void KillSignRemoved(Entity<KillSignComponent> ent, ref ComponentShutdown args)
     {
         RemoveKillsign(ent);
     }
 
+    [SubscribeLocalEvent]
     private void KillSignAdded(Entity<KillSignComponent> ent, ref ComponentStartup args)
     {
         AddKillsign(ent);
     }
 
+    [SubscribeLocalEvent]
     private void AfterAutoHandleState(Entity<KillSignComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         // After receiving a new state for the component, we remove the old killsign and build a new one.

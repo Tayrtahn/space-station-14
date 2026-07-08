@@ -10,10 +10,9 @@ public sealed partial class EmpSystem : SharedEmpSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmpDisabledComponent, ComponentStartup>(OnStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<EmpDisabledComponent> ent, ref ComponentStartup args)
     {
         // EmpPulseEvent.Affected will spawn the first visual effect directly when the emp is used

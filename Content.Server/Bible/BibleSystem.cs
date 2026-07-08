@@ -37,13 +37,6 @@ namespace Content.Server.Bible
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<BibleComponent, AfterInteractEvent>(OnAfterInteract);
-            SubscribeLocalEvent<SummonableComponent, GetVerbsEvent<AlternativeVerb>>(AddSummonVerb);
-            SubscribeLocalEvent<SummonableComponent, GetItemActionsEvent>(GetSummonAction);
-            SubscribeLocalEvent<SummonableComponent, SummonActionEvent>(OnSummon);
-            SubscribeLocalEvent<FamiliarComponent, MobStateChangedEvent>(OnFamiliarDeath);
-            SubscribeLocalEvent<FamiliarComponent, GhostRoleSpawnerUsedEvent>(OnSpawned);
         }
 
         private readonly Queue<EntityUid> _addQueue = new();
@@ -91,6 +84,7 @@ namespace Content.Server.Bible
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteract(EntityUid uid, BibleComponent component, AfterInteractEvent args)
         {
             if (!args.CanReach)
@@ -160,6 +154,7 @@ namespace Content.Server.Bible
             _popupSystem.PopupEntity(selfMessage, args.User, args.User, PopupType.Large);
         }
 
+        [SubscribeLocalEvent]
         private void AddSummonVerb(EntityUid uid, SummonableComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
             if (!args.CanInteract || !args.CanAccess || component.AlreadySummoned || component.SpecialItemPrototype == null)
@@ -183,6 +178,7 @@ namespace Content.Server.Bible
             args.Verbs.Add(verb);
         }
 
+        [SubscribeLocalEvent]
         private void GetSummonAction(EntityUid uid, SummonableComponent component, GetItemActionsEvent args)
         {
             if (component.AlreadySummoned)
@@ -191,6 +187,7 @@ namespace Content.Server.Bible
             args.AddAction(ref component.SummonActionEntity, component.SummonAction);
         }
 
+        [SubscribeLocalEvent]
         private void OnSummon(Entity<SummonableComponent> ent, ref SummonActionEvent args)
         {
             AttemptSummon(ent, args.Performer, Transform(args.Performer));
@@ -200,6 +197,7 @@ namespace Content.Server.Bible
         /// Starts up the respawn stuff when
         /// the chaplain's familiar dies.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnFamiliarDeath(EntityUid uid, FamiliarComponent component, MobStateChangedEvent args)
         {
             if (args.NewMobState != MobState.Dead || component.Source == null)
@@ -215,6 +213,7 @@ namespace Content.Server.Bible
         /// <summary>
         /// When the familiar spawns, set its source to the bible.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnSpawned(EntityUid uid, FamiliarComponent component, GhostRoleSpawnerUsedEvent args)
         {
             var parent = Transform(args.Spawner).ParentUid;

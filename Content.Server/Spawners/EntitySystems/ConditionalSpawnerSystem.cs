@@ -23,18 +23,15 @@ namespace Content.Server.Spawners.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GameRuleStartedEvent>(OnRuleStarted);
-            SubscribeLocalEvent<ConditionalSpawnerComponent, MapInitEvent>(OnCondSpawnMapInit);
-            SubscribeLocalEvent<RandomSpawnerComponent, MapInitEvent>(OnRandSpawnMapInit);
-            SubscribeLocalEvent<EntityTableSpawnerComponent, MapInitEvent>(OnEntityTableSpawnMapInit);
         }
 
+        [SubscribeLocalEvent]
         private void OnCondSpawnMapInit(EntityUid uid, ConditionalSpawnerComponent component, MapInitEvent args)
         {
             TrySpawn(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnRandSpawnMapInit(EntityUid uid, RandomSpawnerComponent component, MapInitEvent args)
         {
             Spawn(uid, component);
@@ -42,6 +39,7 @@ namespace Content.Server.Spawners.EntitySystems
                 QueueDel(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnEntityTableSpawnMapInit(Entity<EntityTableSpawnerComponent> ent, ref MapInitEvent args)
         {
             Spawn(ent);
@@ -49,6 +47,7 @@ namespace Content.Server.Spawners.EntitySystems
                 QueueDel(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnRuleStarted(ref GameRuleStartedEvent args)
         {
             var query = EntityQueryEnumerator<ConditionalSpawnerComponent>();

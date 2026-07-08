@@ -13,10 +13,9 @@ public sealed partial class EmitterSystem : SharedEmitterSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmitterComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, EmitterComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

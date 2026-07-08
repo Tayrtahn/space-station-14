@@ -20,10 +20,9 @@ public sealed partial class ThrowInsertContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThrowInsertContainerComponent, ThrowHitByEvent>(OnThrowCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowCollide(Entity<ThrowInsertContainerComponent> ent, ref ThrowHitByEvent args)
     {
         var container = _containerSystem.GetContainer(ent, ent.Comp.ContainerId);

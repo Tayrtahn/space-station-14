@@ -17,19 +17,15 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalyComponent, AppearanceChangeEvent>(OnAppearanceChanged);
-        SubscribeLocalEvent<AnomalyComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<AnomalyComponent, AnimationCompletedEvent>(OnAnimationComplete);
-
-        SubscribeLocalEvent<AnomalySupercriticalComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, AnomalyComponent component, ComponentStartup args)
     {
         _floating.FloatAnimation(uid, component.FloatingOffset, component.AnimationKey, component.AnimationTime);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationComplete(EntityUid uid, AnomalyComponent component, AnimationCompletedEvent args)
     {
         if (args.Key != component.AnimationKey)
@@ -37,6 +33,7 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
         _floating.FloatAnimation(uid, component.FloatingOffset, component.AnimationKey, component.AnimationTime);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChanged(EntityUid uid, AnomalyComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite is not { } sprite)
@@ -79,6 +76,7 @@ public sealed partial class AnomalySystem : SharedAnomalySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<AnomalySupercriticalComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<SpriteComponent>(ent, out var sprite))

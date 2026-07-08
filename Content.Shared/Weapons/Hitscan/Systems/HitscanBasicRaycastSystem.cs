@@ -26,10 +26,9 @@ public sealed partial class HitscanBasicRaycastSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HitscanBasicRaycastComponent, HitscanTraceEvent>(OnHitscanFired);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitscanFired(Entity<HitscanBasicRaycastComponent> ent, ref HitscanTraceEvent args)
     {
         var shooter = args.Shooter ?? args.Gun;

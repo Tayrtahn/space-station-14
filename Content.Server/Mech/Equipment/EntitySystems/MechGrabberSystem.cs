@@ -34,16 +34,9 @@ public sealed partial class MechGrabberSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MechGrabberComponent, MechEquipmentUiMessageRelayEvent>(OnGrabberMessage);
-        SubscribeLocalEvent<MechGrabberComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<MechGrabberComponent, MechEquipmentUiStateReadyEvent>(OnUiStateReady);
-        SubscribeLocalEvent<MechGrabberComponent, MechEquipmentRemovedEvent>(OnEquipmentRemoved);
-        SubscribeLocalEvent<MechGrabberComponent, AttemptRemoveMechEquipmentEvent>(OnAttemptRemove);
-
-        SubscribeLocalEvent<MechGrabberComponent, UserActivateInWorldEvent>(OnInteract);
-        SubscribeLocalEvent<MechGrabberComponent, GrabberDoAfterEvent>(OnMechGrab);
     }
 
+    [SubscribeLocalEvent]
     private void OnGrabberMessage(EntityUid uid, MechGrabberComponent component, MechEquipmentUiMessageRelayEvent args)
     {
         if (args.Message is not MechGrabberEjectMessage msg)
@@ -89,6 +82,7 @@ public sealed partial class MechGrabberSystem : EntitySystem
         _mech.UpdateUserInterface(mech);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipmentRemoved(EntityUid uid, MechGrabberComponent component, ref MechEquipmentRemovedEvent args)
     {
         if (!TryComp<MechEquipmentComponent>(uid, out var equipmentComponent) ||
@@ -103,16 +97,19 @@ public sealed partial class MechGrabberSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptRemove(EntityUid uid, MechGrabberComponent component, ref AttemptRemoveMechEquipmentEvent args)
     {
         args.Cancelled = component.ItemContainer.ContainedEntities.Any();
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, MechGrabberComponent component, ComponentStartup args)
     {
         component.ItemContainer = _container.EnsureContainer<Container>(uid, "item-container");
     }
 
+    [SubscribeLocalEvent]
     private void OnUiStateReady(EntityUid uid, MechGrabberComponent component, MechEquipmentUiStateReadyEvent args)
     {
         var state = new MechGrabberUiState
@@ -123,6 +120,7 @@ public sealed partial class MechGrabberSystem : EntitySystem
         args.States.Add(GetNetEntity(uid), state);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteract(EntityUid uid, MechGrabberComponent component, UserActivateInWorldEvent args)
     {
         if (args.Handled)
@@ -164,6 +162,7 @@ public sealed partial class MechGrabberSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfterArgs, out component.DoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnMechGrab(EntityUid uid, MechGrabberComponent component, DoAfterEvent args)
     {
         component.DoAfter = null;

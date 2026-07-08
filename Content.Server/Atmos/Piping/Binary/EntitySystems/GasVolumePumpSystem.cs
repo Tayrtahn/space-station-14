@@ -29,13 +29,9 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasVolumePumpComponent, AtmosDeviceUpdateEvent>(OnVolumePumpUpdated);
-            SubscribeLocalEvent<GasVolumePumpComponent, AtmosDeviceDisabledEvent>(OnVolumePumpLeaveAtmosphere);
-
-            SubscribeLocalEvent<GasVolumePumpComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
         }
 
+        [SubscribeLocalEvent]
         private void OnVolumePumpUpdated(EntityUid uid, GasVolumePumpComponent pump, ref AtmosDeviceUpdateEvent args)
         {
             if (!pump.Enabled ||
@@ -99,6 +95,7 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
             _ambientSoundSystem.SetAmbience(uid, removed.TotalMoles > 0f);
         }
 
+        [SubscribeLocalEvent]
         private void OnVolumePumpLeaveAtmosphere(EntityUid uid, GasVolumePumpComponent pump, ref AtmosDeviceDisabledEvent args)
         {
             pump.Enabled = false;
@@ -107,6 +104,7 @@ namespace Content.Server.Atmos.Piping.Binary.EntitySystems
             _userInterfaceSystem.CloseUi(uid, GasVolumePumpUiKey.Key);
         }
 
+        [SubscribeLocalEvent]
         private void OnPacketRecv(EntityUid uid, GasVolumePumpComponent component, DeviceNetworkPacketEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? netConn)

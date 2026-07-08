@@ -10,10 +10,9 @@ public sealed partial class SurveillanceCameraVisualsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SurveillanceCameraVisualsComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, SurveillanceCameraVisualsComponent component,
         ref AppearanceChangeEvent args)
     {

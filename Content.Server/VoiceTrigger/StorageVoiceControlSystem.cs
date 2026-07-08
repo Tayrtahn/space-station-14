@@ -25,9 +25,9 @@ public sealed partial class StorageVoiceControlSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StorageVoiceControlComponent, VoiceTriggeredEvent>(VoiceTriggered);
     }
 
+    [SubscribeLocalEvent]
     private void VoiceTriggered(Entity<StorageVoiceControlComponent> ent, ref VoiceTriggeredEvent args)
     {
         // If it has slot restrictions, check if the item is in a slot that is allowed

@@ -18,10 +18,9 @@ public sealed partial class AntagLoadProfileRuleSystem : GameRuleSystem<AntagLoa
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AntagLoadProfileRuleComponent, AntagSelectEntityEvent>(OnSelectEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectEntity(Entity<AntagLoadProfileRuleComponent> ent, ref AntagSelectEntityEvent args)
     {
         if (args.Handled)

@@ -11,6 +11,7 @@ namespace Content.Server.Storage.EntitySystems;
 
 public sealed partial class StorageSystem
 {
+    [SubscribeLocalEvent]
     private void OnStorageFillMapInit(EntityUid uid, StorageFillComponent component, MapInitEvent args)
     {
         if (component.Contents.Count == 0)

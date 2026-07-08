@@ -43,28 +43,6 @@ namespace Content.Server.Power.EntitySystems
             UpdatesAfter.Add(typeof(NodeGroupSystem));
             _solver = new(_cfg.GetCVar(CCVars.DebugPow3rDisableParallel));
 
-            SubscribeLocalEvent<ApcPowerReceiverComponent, MapInitEvent>(ApcPowerReceiverMapInit);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ComponentInit>(ApcPowerReceiverInit);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ComponentShutdown>(ApcPowerReceiverShutdown);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ComponentRemove>(ApcPowerReceiverRemove);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, EntityPausedEvent>(ApcPowerReceiverPaused);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, EntityUnpausedEvent>(ApcPowerReceiverUnpaused);
-
-            SubscribeLocalEvent<PowerNetworkBatteryComponent, ComponentInit>(BatteryInit);
-            SubscribeLocalEvent<PowerNetworkBatteryComponent, ComponentShutdown>(BatteryShutdown);
-            SubscribeLocalEvent<PowerNetworkBatteryComponent, EntityPausedEvent>(BatteryPaused);
-            SubscribeLocalEvent<PowerNetworkBatteryComponent, EntityUnpausedEvent>(BatteryUnpaused);
-
-            SubscribeLocalEvent<PowerConsumerComponent, ComponentInit>(PowerConsumerInit);
-            SubscribeLocalEvent<PowerConsumerComponent, ComponentShutdown>(PowerConsumerShutdown);
-            SubscribeLocalEvent<PowerConsumerComponent, EntityPausedEvent>(PowerConsumerPaused);
-            SubscribeLocalEvent<PowerConsumerComponent, EntityUnpausedEvent>(PowerConsumerUnpaused);
-
-            SubscribeLocalEvent<PowerSupplierComponent, ComponentInit>(PowerSupplierInit);
-            SubscribeLocalEvent<PowerSupplierComponent, ComponentShutdown>(PowerSupplierShutdown);
-            SubscribeLocalEvent<PowerSupplierComponent, EntityPausedEvent>(PowerSupplierPaused);
-            SubscribeLocalEvent<PowerSupplierComponent, EntityUnpausedEvent>(PowerSupplierUnpaused);
-
             Subs.CVar(_cfg, CCVars.DebugPow3rDisableParallel, DebugPow3rDisableParallelChanged);
         }
 
@@ -73,27 +51,32 @@ namespace Content.Server.Power.EntitySystems
             _solver = new(val);
         }
 
+        [SubscribeLocalEvent]
         private void ApcPowerReceiverMapInit(Entity<ApcPowerReceiverComponent> ent, ref MapInitEvent args)
         {
             _appearance.SetData(ent, PowerDeviceVisuals.Powered, ent.Comp.Powered);
         }
 
+        [SubscribeLocalEvent]
         private void ApcPowerReceiverInit(EntityUid uid, ApcPowerReceiverComponent component, ComponentInit args)
         {
             AllocLoad(component.NetworkLoad);
         }
 
+        [SubscribeLocalEvent]
         private void ApcPowerReceiverShutdown(EntityUid uid, ApcPowerReceiverComponent component,
             ComponentShutdown args)
         {
             _powerState.Loads.Free(component.NetworkLoad.Id);
         }
 
+        [SubscribeLocalEvent]
         private void ApcPowerReceiverRemove(EntityUid uid, ApcPowerReceiverComponent component, ComponentRemove args)
         {
             component.Provider?.RemoveReceiver(component);
         }
 
+        [SubscribeLocalEvent]
         private static void ApcPowerReceiverPaused(
             EntityUid uid,
             ApcPowerReceiverComponent component,
@@ -102,6 +85,7 @@ namespace Content.Server.Power.EntitySystems
             component.NetworkLoad.Paused = true;
         }
 
+        [SubscribeLocalEvent]
         private static void ApcPowerReceiverUnpaused(
             EntityUid uid,
             ApcPowerReceiverComponent component,
@@ -110,63 +94,75 @@ namespace Content.Server.Power.EntitySystems
             component.NetworkLoad.Paused = false;
         }
 
+        [SubscribeLocalEvent]
         private void BatteryInit(EntityUid uid, PowerNetworkBatteryComponent component, ComponentInit args)
         {
             AllocBattery(component.NetworkBattery);
         }
 
+        [SubscribeLocalEvent]
         private void BatteryShutdown(EntityUid uid, PowerNetworkBatteryComponent component, ComponentShutdown args)
         {
             _powerState.Batteries.Free(component.NetworkBattery.Id);
         }
 
+        [SubscribeLocalEvent]
         private static void BatteryPaused(EntityUid uid, PowerNetworkBatteryComponent component, ref EntityPausedEvent args)
         {
             component.NetworkBattery.Paused = true;
         }
 
+        [SubscribeLocalEvent]
         private static void BatteryUnpaused(EntityUid uid, PowerNetworkBatteryComponent component, ref EntityUnpausedEvent args)
         {
             component.NetworkBattery.Paused = false;
         }
 
+        [SubscribeLocalEvent]
         private void PowerConsumerInit(EntityUid uid, PowerConsumerComponent component, ComponentInit args)
         {
             _powerNetConnector.BaseNetConnectorInit(component);
             AllocLoad(component.NetworkLoad);
         }
 
+        [SubscribeLocalEvent]
         private void PowerConsumerShutdown(EntityUid uid, PowerConsumerComponent component, ComponentShutdown args)
         {
             _powerState.Loads.Free(component.NetworkLoad.Id);
         }
 
+        [SubscribeLocalEvent]
         private static void PowerConsumerPaused(EntityUid uid, PowerConsumerComponent component, ref EntityPausedEvent args)
         {
             component.NetworkLoad.Paused = true;
         }
 
+        [SubscribeLocalEvent]
         private static void PowerConsumerUnpaused(EntityUid uid, PowerConsumerComponent component, ref EntityUnpausedEvent args)
         {
             component.NetworkLoad.Paused = false;
         }
 
+        [SubscribeLocalEvent]
         private void PowerSupplierInit(EntityUid uid, PowerSupplierComponent component, ComponentInit args)
         {
             _powerNetConnector.BaseNetConnectorInit(component);
             AllocSupply(component.NetworkSupply);
         }
 
+        [SubscribeLocalEvent]
         private void PowerSupplierShutdown(EntityUid uid, PowerSupplierComponent component, ComponentShutdown args)
         {
             _powerState.Supplies.Free(component.NetworkSupply.Id);
         }
 
+        [SubscribeLocalEvent]
         private static void PowerSupplierPaused(EntityUid uid, PowerSupplierComponent component, ref EntityPausedEvent args)
         {
             component.NetworkSupply.Paused = true;
         }
 
+        [SubscribeLocalEvent]
         private static void PowerSupplierUnpaused(EntityUid uid, PowerSupplierComponent component, ref EntityUnpausedEvent args)
         {
             component.NetworkSupply.Paused = false;

@@ -28,10 +28,9 @@ public sealed partial class PrayerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PrayableComponent, GetVerbsEvent<ActivationVerb>>(AddPrayVerb);
     }
 
+    [SubscribeLocalEvent]
     private void AddPrayVerb(EntityUid uid, PrayableComponent comp, GetVerbsEvent<ActivationVerb> args)
     {
         // if it doesn't have an actor and we can't reach it then don't add the verb

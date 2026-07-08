@@ -19,15 +19,9 @@ public abstract partial class SharedItemSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemComponent, GetVerbsEvent<InteractionVerb>>(AddPickupVerb);
-        SubscribeLocalEvent<ItemComponent, InteractHandEvent>(OnHandInteract);
-        SubscribeLocalEvent<ItemComponent, AfterAutoHandleStateEvent>(OnItemAutoState);
-
-        SubscribeLocalEvent<ItemComponent, ExaminedEvent>(OnExamine);
-
-        SubscribeLocalEvent<ItemToggleSizeComponent, ItemToggledEvent>(OnItemToggle);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemAutoState(EntityUid uid, ItemComponent component, ref AfterAutoHandleStateEvent args)
     {
         SetHeldPrefix(uid, component.HeldPrefix, force: true, component);
@@ -102,6 +96,7 @@ public abstract partial class SharedItemSystem : EntitySystem
 
     #endregion
 
+    [SubscribeLocalEvent]
     private void OnHandInteract(EntityUid uid, ItemComponent component, InteractHandEvent args)
     {
         if (args.Handled)
@@ -110,6 +105,7 @@ public abstract partial class SharedItemSystem : EntitySystem
         args.Handled = _handsSystem.TryPickup(args.User, uid, null, animateUser: false);
     }
 
+    [SubscribeLocalEvent]
     private void AddPickupVerb(EntityUid uid, ItemComponent component, GetVerbsEvent<InteractionVerb> args)
     {
         if (args.Hands == null ||
@@ -135,6 +131,7 @@ public abstract partial class SharedItemSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, ItemComponent component, ExaminedEvent args)
     {
         // show at end of message generally
@@ -232,6 +229,7 @@ public abstract partial class SharedItemSystem : EntitySystem
     /// <summary>
     /// Used to update the Item component on item toggle (specifically size).
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnItemToggle(EntityUid uid, ItemToggleSizeComponent itemToggleSize, ItemToggledEvent args)
     {
         if (!TryComp(uid, out ItemComponent? item))

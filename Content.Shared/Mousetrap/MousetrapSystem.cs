@@ -5,19 +5,17 @@ using Robust.Shared.Physics.Components;
 
 namespace Content.Shared.Mousetrap;
 
-public sealed class MousetrapSystem : EntitySystem
+public sealed partial class MousetrapSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MousetrapComponent, BeforeDamageOnTriggerEvent>(BeforeDamageOnTrigger);
-        SubscribeLocalEvent<MousetrapComponent, StepTriggerAttemptEvent>(OnStepTriggerAttempt);
     }
 
     // only allow step triggers to trigger if the trap is armed
     // TODO: refactor Steptriggers to get rid of this
     // they should just use the new trigger conditions
+    [SubscribeLocalEvent]
     private void OnStepTriggerAttempt(Entity<MousetrapComponent> ent, ref StepTriggerAttemptEvent args)
     {
         if (!TryComp<ItemToggleComponent>(ent, out var toggle))
@@ -27,6 +25,7 @@ public sealed class MousetrapSystem : EntitySystem
     }
 
     // scale the damage according to mass
+    [SubscribeLocalEvent]
     private void BeforeDamageOnTrigger(Entity<MousetrapComponent> ent, ref BeforeDamageOnTriggerEvent args)
     {
         if (TryComp(args.Tripper, out PhysicsComponent? physics) && physics.Mass != 0)

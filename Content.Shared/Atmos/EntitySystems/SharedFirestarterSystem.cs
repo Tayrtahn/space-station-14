@@ -10,12 +10,12 @@ public abstract partial class SharedFirestarterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FirestarterComponent, ComponentInit>(OnComponentInit);
     }
 
     /// <summary>
     /// Adds the firestarter action.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, FirestarterComponent component, ComponentInit args)
     {
         _actionsSystem.AddAction(uid, ref component.FireStarterActionEntity, component.FireStarterAction, uid);

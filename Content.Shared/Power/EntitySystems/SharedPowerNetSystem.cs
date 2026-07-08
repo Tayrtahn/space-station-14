@@ -11,9 +11,9 @@ public abstract partial class SharedPowerNetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AppearanceComponent, PowerChangedEvent>(OnPowerAppearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerAppearance(Entity<AppearanceComponent> ent, ref PowerChangedEvent args)
     {
         _appearance.SetData(ent, PowerDeviceVisuals.Powered, args.Powered, ent.Comp);

@@ -19,20 +19,16 @@ public sealed partial class EyeClosingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EyeClosingComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<EyeClosingComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<EyeClosingComponent, ToggleEyesActionEvent>(OnToggleAction);
-        SubscribeLocalEvent<EyeClosingComponent, CanSeeAttemptEvent>(OnTrySee);
-        SubscribeLocalEvent<EyeClosingComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<EyeClosingComponent> eyelids, ref MapInitEvent args)
     {
         _actionsSystem.AddAction(eyelids, ref eyelids.Comp.EyeToggleActionEntity, eyelids.Comp.EyeToggleAction);
         Dirty(eyelids);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<EyeClosingComponent> eyelids, ref ComponentShutdown args)
     {
         _actionsSystem.RemoveAction(eyelids.Owner, eyelids.Comp.EyeToggleActionEntity);
@@ -40,6 +36,7 @@ public sealed partial class EyeClosingSystem : EntitySystem
         SetEyelids((eyelids.Owner, eyelids.Comp), false);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAction(Entity<EyeClosingComponent> eyelids, ref ToggleEyesActionEvent args)
     {
         if (args.Handled)
@@ -49,11 +46,13 @@ public sealed partial class EyeClosingSystem : EntitySystem
         SetEyelids((eyelids.Owner, eyelids.Comp), !eyelids.Comp.EyesClosed);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<EyeClosingComponent> eyelids, ref AfterAutoHandleStateEvent args)
     {
         DoAudioFeedback((eyelids.Owner, eyelids.Comp), eyelids.Comp.EyesClosed);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrySee(Entity<EyeClosingComponent> eyelids, ref CanSeeAttemptEvent args)
     {
         if (eyelids.Comp.EyesClosed)

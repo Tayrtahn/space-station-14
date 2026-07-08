@@ -23,11 +23,11 @@ public sealed partial class TagSystem : EntitySystem
         base.Initialize();
 
 #if DEBUG
-        SubscribeLocalEvent<TagComponent, ComponentInit>(OnTagInit);
 #endif
     }
 
 #if DEBUG
+    [SubscribeLocalEvent]
     private void OnTagInit(EntityUid uid, TagComponent component, ComponentInit args)
     {
         foreach (var tag in component.Tags)

@@ -33,21 +33,16 @@ public sealed partial class ChangelingClonerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingClonerComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<ChangelingClonerComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
-        SubscribeLocalEvent<ChangelingClonerComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<ChangelingClonerComponent, ClonerDrawDoAfterEvent>(OnDraw);
-        SubscribeLocalEvent<ChangelingClonerComponent, ClonerInjectDoAfterEvent>(OnInject);
-        SubscribeLocalEvent<ChangelingClonerComponent, ComponentShutdown>(OnShutDown);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutDown(Entity<ChangelingClonerComponent> ent, ref ComponentShutdown args)
     {
         // Delete the stored clone.
         PredictedQueueDel(ent.Comp.ClonedBackup);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ChangelingClonerComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -65,6 +60,7 @@ public sealed partial class ChangelingClonerSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<ChangelingClonerComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Hands == null)
@@ -83,6 +79,7 @@ public sealed partial class ChangelingClonerSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<ChangelingClonerComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target == null)
@@ -103,6 +100,7 @@ public sealed partial class ChangelingClonerSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnDraw(Entity<ChangelingClonerComponent> ent, ref ClonerDrawDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target == null)
@@ -112,6 +110,7 @@ public sealed partial class ChangelingClonerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnInject(Entity<ChangelingClonerComponent> ent, ref ClonerInjectDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target == null)

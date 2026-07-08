@@ -10,17 +10,16 @@ public sealed partial class JammerSystem : SharedJammerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RadioSendAttemptEvent>(OnRadioSendAttempt);
-        SubscribeLocalEvent<RadioReceiveAttemptEvent>(OnRadioReceiveAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnRadioSendAttempt(ref RadioSendAttemptEvent args)
     {
         if (ShouldCancel(args.RadioSource, args.Channel.Frequency))
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRadioReceiveAttempt(ref RadioReceiveAttemptEvent args)
     {
         if (ShouldCancel(args.RadioReceiver, args.Channel.Frequency))

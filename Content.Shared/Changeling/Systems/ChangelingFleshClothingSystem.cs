@@ -18,18 +18,15 @@ public sealed partial class ChangelingFleshClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingFleshClothingAbilityComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ChangelingFleshClothingAbilityComponent, ToggleFleshClothingEvent>(OnToggle);
-        SubscribeLocalEvent<ChangelingFleshClothingAbilityComponent, BeforeChangelingTransformEvent>(OnBeforeChangelingTransform);
-        SubscribeLocalEvent<ChangelingFleshClothingAbilityComponent, AfterChangelingTransformEvent>(OnAfterChangelingTransform);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ChangelingFleshClothingAbilityComponent> ent, ref MapInitEvent args)
     {
         _alerts.ShowAlert(ent.Owner, ent.Comp.AlertId, 1);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggle(Entity<ChangelingFleshClothingAbilityComponent> ent, ref ToggleFleshClothingEvent args)
     {
         if (args.Handled)
@@ -45,12 +42,14 @@ public sealed partial class ChangelingFleshClothingSystem : EntitySystem
     // If we transform into another species and loose an inventory item then it will get dropped as a result.
     // But we don't want fleeting clothing to do a sound and popup in that case,
     // so we have to delete any flesh clothing slots that would drop before transforming.
+    [SubscribeLocalEvent]
     private void OnBeforeChangelingTransform(Entity<ChangelingFleshClothingAbilityComponent> ent, ref BeforeChangelingTransformEvent args)
     {
         // We always remove slots that are no longer supported by the transformation, even if the component is disabled.
         RemoveRedundantFleshClothing(ent.Owner, args.StoredIdentity);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterChangelingTransform(Entity<ChangelingFleshClothingAbilityComponent> ent, ref AfterChangelingTransformEvent args)
     {
         if (ent.Comp.Enabled)

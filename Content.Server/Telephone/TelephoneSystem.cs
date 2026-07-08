@@ -41,27 +41,24 @@ public sealed partial class TelephoneSystem : SharedTelephoneSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TelephoneComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<TelephoneComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<TelephoneComponent, ListenAttemptEvent>(OnAttemptListen);
-        SubscribeLocalEvent<TelephoneComponent, ListenEvent>(OnListen);
-        SubscribeLocalEvent<TelephoneComponent, TelephoneMessageReceivedEvent>(OnTelephoneMessageReceived);
     }
 
     #region: Events
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<TelephoneComponent> entity, ref ComponentShutdown ev)
     {
         TerminateTelephoneCalls(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<TelephoneComponent> entity, ref PowerChangedEvent ev)
     {
         if (!ev.Powered)
             TerminateTelephoneCalls(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptListen(Entity<TelephoneComponent> entity, ref ListenAttemptEvent args)
     {
         if (!IsTelephonePowered(entity) ||
@@ -73,6 +70,7 @@ public sealed partial class TelephoneSystem : SharedTelephoneSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnListen(Entity<TelephoneComponent> entity, ref ListenEvent args)
     {
         if (args.Source == entity.Owner)
@@ -89,6 +87,7 @@ public sealed partial class TelephoneSystem : SharedTelephoneSystem
         SendTelephoneMessage(args.Source, args.Message, entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnTelephoneMessageReceived(Entity<TelephoneComponent> entity, ref TelephoneMessageReceivedEvent args)
     {
         // Prevent message feedback loops

@@ -41,15 +41,9 @@ public sealed partial class MaterialReclaimerSystem : SharedMaterialReclaimerSys
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MaterialReclaimerComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<MaterialReclaimerComponent, SuicideByEnvironmentEvent>(OnSuicideByEnvironment);
-        SubscribeLocalEvent<ActiveMaterialReclaimerComponent, PowerChangedEvent>(OnActivePowerChanged);
-
-        SubscribeLocalEvent<MaterialReclaimerComponent, BreakageEventArgs>(OnBreakage);
-        SubscribeLocalEvent<MaterialReclaimerComponent, RepairedEvent>(OnRepaired);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<MaterialReclaimerComponent> entity, ref PowerChangedEvent args)
     {
         AmbientSound.SetAmbience(entity.Owner, entity.Comp.Enabled && args.Powered);
@@ -57,6 +51,7 @@ public sealed partial class MaterialReclaimerSystem : SharedMaterialReclaimerSys
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnSuicideByEnvironment(Entity<MaterialReclaimerComponent> entity, ref SuicideByEnvironmentEvent args)
     {
         if (args.Handled)
@@ -84,12 +79,14 @@ public sealed partial class MaterialReclaimerSystem : SharedMaterialReclaimerSys
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnActivePowerChanged(Entity<ActiveMaterialReclaimerComponent> entity, ref PowerChangedEvent args)
     {
         if (!args.Powered)
             TryFinishProcessItem(entity, null, entity.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnBreakage(Entity<MaterialReclaimerComponent> ent, ref BreakageEventArgs args)
     {
         //un-emags itself when it breaks
@@ -97,6 +94,7 @@ public sealed partial class MaterialReclaimerSystem : SharedMaterialReclaimerSys
         SetBroken(ent, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnRepaired(Entity<MaterialReclaimerComponent> ent, ref RepairedEvent args)
     {
         SetBroken(ent, false);

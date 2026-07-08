@@ -17,9 +17,9 @@ public sealed partial class MovementSoundSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MovementSoundComponent, MoveInputEvent>(OnMoveInput);
     }
 
+    [SubscribeLocalEvent]
     private void OnMoveInput(Entity<MovementSoundComponent> ent, ref MoveInputEvent args)
     {
         if (!_timing.IsFirstTimePredicted)

@@ -29,14 +29,12 @@ public sealed partial class StunProviderSystem : SharedStunProviderSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StunProviderComponent, BeforeInteractHandEvent>(OnBeforeInteractHand);
-        SubscribeLocalEvent<StunProviderComponent, NinjaBatteryChangedEvent>(OnBatteryChanged);
     }
 
     /// <summary>
     /// Stun clicked mobs on the whitelist, if there is enough power.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeInteractHand(Entity<StunProviderComponent> ent, ref BeforeInteractHandEvent args)
     {
         // TODO: generic check
@@ -70,6 +68,7 @@ public sealed partial class StunProviderSystem : SharedStunProviderSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBatteryChanged(Entity<StunProviderComponent> ent, ref NinjaBatteryChangedEvent args)
     {
         SetBattery((ent, ent.Comp), args.Battery);

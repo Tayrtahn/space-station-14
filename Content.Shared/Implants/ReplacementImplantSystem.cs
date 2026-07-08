@@ -12,10 +12,9 @@ public sealed partial class ReplacementImplantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ReplacementImplantComponent, ImplantImplantedEvent>(OnImplantImplanted);
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantImplanted(Entity<ReplacementImplantComponent> ent, ref ImplantImplantedEvent args)
     {
         if (!_container.TryGetContainer(args.Implanted, ImplanterComponent.ImplantSlotId, out var implantContainer))

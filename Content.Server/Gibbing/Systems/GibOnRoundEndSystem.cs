@@ -14,11 +14,9 @@ public sealed partial class GibOnRoundEndSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // this is raised after RoundEndTextAppendEvent, so they can successfully greentext before we gib them
-        SubscribeLocalEvent<RoundEndMessageEvent>(OnRoundEnd);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEnd(RoundEndMessageEvent args)
     {
         var gibQuery = EntityQueryEnumerator<GibOnRoundEndComponent>();

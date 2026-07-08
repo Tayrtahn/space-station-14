@@ -16,10 +16,9 @@ public sealed partial class DeployableBarrierSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<DeployableBarrierComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<DeployableBarrierComponent, LockToggledEvent>(OnLockToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, DeployableBarrierComponent component, MapInitEvent args)
     {
         if (!TryComp(uid, out LockComponent? lockComponent))
@@ -28,6 +27,7 @@ public sealed partial class DeployableBarrierSystem : EntitySystem
         ToggleBarrierDeploy(uid, lockComponent.Locked, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggled(EntityUid uid, DeployableBarrierComponent component, ref LockToggledEvent args)
     {
         ToggleBarrierDeploy(uid, args.Locked, component);

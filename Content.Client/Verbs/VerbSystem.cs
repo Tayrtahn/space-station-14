@@ -50,8 +50,6 @@ namespace Content.Client.Verbs
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeNetworkEvent<VerbsResponseEvent>(HandleVerbResponse);
             Subs.CVar(_cfg, CCVars.GameEntityMenuLookup, OnLookupChanged, true);
         }
 
@@ -228,6 +226,7 @@ namespace Content.Client.Verbs
                 RaisePredictiveEvent(new ExecuteVerbEvent(target, verb));
         }
 
+        [SubscribeNetworkEvent]
         private void HandleVerbResponse(VerbsResponseEvent msg)
         {
             OnVerbsResponse?.Invoke(msg);

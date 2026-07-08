@@ -101,16 +101,9 @@ namespace Content.Server.Medical.BiomassReclaimer
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ActiveBiomassReclaimerComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<ActiveBiomassReclaimerComponent, ComponentShutdown>(OnShutdown);
-            SubscribeLocalEvent<ActiveBiomassReclaimerComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-            SubscribeLocalEvent<BiomassReclaimerComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-            SubscribeLocalEvent<BiomassReclaimerComponent, ClimbedOnEvent>(OnClimbedOn);
-            SubscribeLocalEvent<BiomassReclaimerComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<BiomassReclaimerComponent, SuicideByEnvironmentEvent>(OnSuicideByEnvironment);
-            SubscribeLocalEvent<BiomassReclaimerComponent, ReclaimerDoAfterEvent>(OnDoAfter);
         }
 
+        [SubscribeLocalEvent]
         private void OnSuicideByEnvironment(Entity<BiomassReclaimerComponent> ent, ref SuicideByEnvironmentEvent args)
         {
             if (args.Handled)
@@ -127,6 +120,7 @@ namespace Content.Server.Medical.BiomassReclaimer
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, ActiveBiomassReclaimerComponent component, ComponentInit args)
         {
             _jitteringSystem.AddJitter(uid, -10, 100);
@@ -134,12 +128,14 @@ namespace Content.Server.Medical.BiomassReclaimer
             _ambientSoundSystem.SetAmbience(uid, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, ActiveBiomassReclaimerComponent component, ComponentShutdown args)
         {
             RemComp<JitteringComponent>(uid);
             _ambientSoundSystem.SetAmbience(uid, false);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, BiomassReclaimerComponent component, ref PowerChangedEvent args)
         {
             if (args.Powered)
@@ -151,10 +147,13 @@ namespace Content.Server.Medical.BiomassReclaimer
                 RemComp<ActiveBiomassReclaimerComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnUnanchorAttempt(EntityUid uid, ActiveBiomassReclaimerComponent component, UnanchorAttemptEvent args)
         {
             args.Cancel();
         }
+
+        [SubscribeLocalEvent]
         private void OnAfterInteractUsing(Entity<BiomassReclaimerComponent> reclaimer, ref AfterInteractUsingEvent args)
         {
             if (!args.CanReach || args.Target == null)
@@ -174,6 +173,7 @@ namespace Content.Server.Medical.BiomassReclaimer
             });
         }
 
+        [SubscribeLocalEvent]
         private void OnClimbedOn(Entity<BiomassReclaimerComponent> reclaimer, ref ClimbedOnEvent args)
         {
             if (!CanGib(reclaimer, args.Climber))
@@ -187,6 +187,7 @@ namespace Content.Server.Medical.BiomassReclaimer
             StartProcessing(args.Climber, reclaimer);
         }
 
+        [SubscribeLocalEvent]
         private void OnDoAfter(Entity<BiomassReclaimerComponent> reclaimer, ref ReclaimerDoAfterEvent args)
         {
             if (args.Handled || args.Cancelled)

@@ -15,10 +15,10 @@ public sealed partial class PuddleCreateAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<PuddleCreateAnomalyComponent, AnomalyPulseEvent>(OnPulse);
         SubscribeLocalEvent<PuddleCreateAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical, before: new[] { typeof(InjectionAnomalySystem) });
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<PuddleCreateAnomalyComponent> entity, ref AnomalyPulseEvent args)
     {
         if (!_solutionContainer.TryGetSolution(entity.Owner, entity.Comp.Solution, out var sol, out _))

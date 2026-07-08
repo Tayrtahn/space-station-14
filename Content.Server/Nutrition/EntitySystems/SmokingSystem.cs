@@ -41,9 +41,6 @@ namespace Content.Server.Nutrition.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<SmokableComponent, IsHotEvent>(OnSmokableIsHotEvent);
-            SubscribeLocalEvent<SmokableComponent, ComponentShutdown>(OnSmokableShutdownEvent);
-            SubscribeLocalEvent<SmokableComponent, GotEquippedEvent>(OnSmokeableEquipEvent);
             Subs.SubscribeWithRelay<SmokableComponent, ExtinguishEvent>(OnExtinguishEvent);
 
             InitializeCigars();
@@ -92,16 +89,19 @@ namespace Content.Server.Nutrition.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnSmokableIsHotEvent(Entity<SmokableComponent> entity, ref IsHotEvent args)
         {
             args.IsHot = entity.Comp.State == SmokableState.Lit;
         }
 
+        [SubscribeLocalEvent]
         private void OnSmokableShutdownEvent(Entity<SmokableComponent> entity, ref ComponentShutdown args)
         {
             RemComp<BurningComponent>(entity);
         }
 
+        [SubscribeLocalEvent]
         private void OnSmokeableEquipEvent(Entity<SmokableComponent> entity, ref GotEquippedEvent args)
         {
             if (args.Slot == "mask")

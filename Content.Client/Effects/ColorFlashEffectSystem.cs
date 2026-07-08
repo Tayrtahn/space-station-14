@@ -25,9 +25,6 @@ public sealed partial class ColorFlashEffectSystem : SharedColorFlashEffectSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeAllEvent<ColorFlashEffectEvent>(OnColorFlashEffect);
-        SubscribeLocalEvent<ColorFlashEffectComponent, AnimationCompletedEvent>(OnEffectAnimationCompleted);
     }
 
     public override void RaiseEffect(Color color, List<EntityUid> entities, Filter filter)
@@ -38,6 +35,7 @@ public sealed partial class ColorFlashEffectSystem : SharedColorFlashEffectSyste
         OnColorFlashEffect(new ColorFlashEffectEvent(color, GetNetEntityList(entities)));
     }
 
+    [SubscribeLocalEvent]
     private void OnEffectAnimationCompleted(EntityUid uid, ColorFlashEffectComponent component, AnimationCompletedEvent args)
     {
         if (args.Key != AnimationKey)
@@ -97,6 +95,7 @@ public sealed partial class ColorFlashEffectSystem : SharedColorFlashEffectSyste
         };
     }
 
+    [SubscribeAllEvent]
     private void OnColorFlashEffect(ColorFlashEffectEvent ev)
     {
         var color = ev.Color;

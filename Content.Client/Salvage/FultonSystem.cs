@@ -57,10 +57,9 @@ public sealed partial class FultonSystem : SharedFultonSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FultonedComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeNetworkEvent<FultonAnimationMessage>(OnFultonMessage);
     }
 
+    [SubscribeNetworkEvent]
     private void OnFultonMessage(FultonAnimationMessage ev)
     {
         var entity = GetEntity(ev.Entity);
@@ -90,6 +89,7 @@ public sealed partial class FultonSystem : SharedFultonSystem
         _player.Play(animationEnt, FultonAnimation, "fulton-animation");
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, FultonedComponent component, ref AfterAutoHandleStateEvent args)
     {
         UpdateAppearance(uid, component);

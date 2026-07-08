@@ -55,12 +55,6 @@ public sealed partial class CryostorageSystem : SharedCryostorageSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<CryostorageComponent, BeforeActivatableUIOpenEvent>(OnBeforeUIOpened);
-        SubscribeLocalEvent<CryostorageComponent, CryostorageRemoveItemBuiMessage>(OnRemoveItemBuiMessage);
-
-        SubscribeLocalEvent<CryostorageContainedComponent, PlayerSpawnCompleteEvent>(OnPlayerSpawned);
-        SubscribeLocalEvent<CryostorageContainedComponent, MindRemovedMessage>(OnMindRemoved);
-
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
     }
 
@@ -71,11 +65,13 @@ public sealed partial class CryostorageSystem : SharedCryostorageSystem
         _playerManager.PlayerStatusChanged -= PlayerStatusChanged;
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeUIOpened(Entity<CryostorageComponent> ent, ref BeforeActivatableUIOpenEvent args)
     {
         UpdateCryostorageUIState(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveItemBuiMessage(Entity<CryostorageComponent> ent, ref CryostorageRemoveItemBuiMessage args)
     {
         var (_, comp) = ent;
@@ -124,12 +120,14 @@ public sealed partial class CryostorageSystem : SharedCryostorageSystem
         _ui.SetUiState(ent.Owner, CryostorageUIKey.Key, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerSpawned(Entity<CryostorageContainedComponent> ent, ref PlayerSpawnCompleteEvent args)
     {
         // if you spawned into cryostorage, we're not gonna round-remove you.
         ent.Comp.GracePeriodEndTime = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(Entity<CryostorageContainedComponent> ent, ref MindRemovedMessage args)
     {
         var comp = ent.Comp;

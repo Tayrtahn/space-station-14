@@ -10,14 +10,13 @@ namespace Content.Server.KillTracking;
 /// <summary>
 /// This handles <see cref="KillTrackerComponent"/> and recording who is damaging and killing entities.
 /// </summary>
-public sealed class KillTrackingSystem : EntitySystem
+public sealed partial class KillTrackingSystem : EntitySystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         // Add damage to LifetimeDamage before MobStateChangedEvent gets raised
         SubscribeLocalEvent<KillTrackerComponent, DamageChangedEvent>(OnDamageChanged, before: [typeof(MobThresholdSystem)]);
-        SubscribeLocalEvent<KillTrackerComponent, MobStateChangedEvent>(OnMobStateChanged);
     }
 
     private void OnDamageChanged(EntityUid uid, KillTrackerComponent component, DamageChangedEvent args)
@@ -40,6 +39,7 @@ public sealed class KillTrackingSystem : EntitySystem
         component.LifetimeDamage[source] = damage + args.DamageDelta.GetTotal();
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(EntityUid uid, KillTrackerComponent component, MobStateChangedEvent args)
     {
         if (args.NewMobState != component.KillState || args.OldMobState >= args.NewMobState)

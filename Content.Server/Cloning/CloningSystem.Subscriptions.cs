@@ -42,28 +42,9 @@ public sealed partial class CloningSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // These are used for <see cref="CopyItem"/>.
-        // Anything not copied over here gets reverted to the values the item had in its prototype.
-        // This method of copying items is of course not perfect as we cannot clone every single component, which would be pretty much impossible with our ECS.
-        // We only consider the most important components so the paradox clone gets similar equipment.
-        // This method of using subscriptions was chosen to make it easy for forks to add their own custom components that need to be copied.
-        SubscribeLocalEvent<StackComponent, CloningItemEvent>(OnCloneItemStack);
-        SubscribeLocalEvent<LabelComponent, CloningItemEvent>(OnCloneItemLabel);
-        SubscribeLocalEvent<PaperComponent, CloningItemEvent>(OnCloneItemPaper);
-        SubscribeLocalEvent<ForensicsComponent, CloningItemEvent>(OnCloneItemForensics);
-        SubscribeLocalEvent<StoreComponent, CloningItemEvent>(OnCloneItemStore);
-        SubscribeLocalEvent<ChameleonClothingComponent, CloningItemEvent>(OnCloneItemChameleon);
-
-        // These are for cloning components that cannot be cloned using CopyComp.
-        // Put them into CloningSettingsPrototype.EventComponents to have them be applied to the clone.
-        SubscribeLocalEvent<VocalComponent, CloningEvent>(OnCloneVocal);
-        SubscribeLocalEvent<StorageComponent, CloningEvent>(OnCloneStorage);
-        SubscribeLocalEvent<InventoryComponent, CloningEvent>(OnCloneInventory);
-        SubscribeLocalEvent<MovementSpeedModifierComponent, CloningEvent>(OnCloneMovementSpeedModifier);
-        SubscribeLocalEvent<PullerComponent, CloningEvent>(OnClonePuller);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemStack(Entity<StackComponent> ent, ref CloningItemEvent args)
     {
         // if the clone is a stack as well, adjust the count of the copy
@@ -71,12 +52,14 @@ public sealed partial class CloningSystem
             _stack.SetCount((args.CloneUid, cloneStackComp), ent.Comp.Count);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemLabel(Entity<LabelComponent> ent, ref CloningItemEvent args)
     {
         // copy the label
         _label.Label(args.CloneUid, ent.Comp.CurrentLabel);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemPaper(Entity<PaperComponent> ent, ref CloningItemEvent args)
     {
         // copy the text and any stamps
@@ -87,12 +70,14 @@ public sealed partial class CloningSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemForensics(Entity<ForensicsComponent> ent, ref CloningItemEvent args)
     {
         // copy any forensics to the cloned item
         _forensics.CopyForensicsFrom(ent.Comp, args.CloneUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemStore(Entity<StoreComponent> ent, ref CloningItemEvent args)
     {
         // copy the current amount of currency in the store
@@ -104,12 +89,14 @@ public sealed partial class CloningSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneItemChameleon(Entity<ChameleonClothingComponent> ent, ref CloningItemEvent args)
     {
         // copy the prototype the original is mimicing
         _chameleonClothing.SetSelectedPrototype(args.CloneUid, ent.Comp.Default);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneVocal(Entity<VocalComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
@@ -118,6 +105,7 @@ public sealed partial class CloningSystem
         _vocal.CopyComponent(ent.AsNullable(), args.CloneUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneStorage(Entity<StorageComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
@@ -126,6 +114,7 @@ public sealed partial class CloningSystem
         _storage.CopyComponent(ent.AsNullable(), args.CloneUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneInventory(Entity<InventoryComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
@@ -134,6 +123,7 @@ public sealed partial class CloningSystem
         _inventory.CopyComponent(ent.AsNullable(), args.CloneUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloneMovementSpeedModifier(Entity<MovementSpeedModifierComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
@@ -142,6 +132,7 @@ public sealed partial class CloningSystem
         _movementSpeedModifier.CopyComponent(ent.AsNullable(), args.CloneUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnClonePuller(Entity<PullerComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))

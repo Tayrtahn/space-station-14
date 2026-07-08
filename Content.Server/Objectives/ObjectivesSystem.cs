@@ -37,8 +37,6 @@ public sealed partial class ObjectivesSystem : SharedObjectivesSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<RoundEndTextAppendEvent>(OnRoundEndText);
-
         Subs.CVar(_cfg, CCVars.GameShowGreentext, value => _showGreentext = value, true);
 
         ProtoMan.PrototypesReloaded += CreateCompletions;
@@ -54,6 +52,7 @@ public sealed partial class ObjectivesSystem : SharedObjectivesSystem
     /// <summary>
     /// Adds objective text for each game rule's players on round end.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRoundEndText(RoundEndTextAppendEvent ev)
     {
         // go through each gamerule getting data for the roundend summary.

@@ -34,11 +34,9 @@ namespace Content.Server.Doors.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<FirelockComponent, AtmosAlarmEvent>(OnAtmosAlarm);
-            SubscribeLocalEvent<FirelockComponent, PowerChangedEvent>(PowerChanged);
         }
 
+        [SubscribeLocalEvent]
         private void PowerChanged(EntityUid uid, FirelockComponent component, ref PowerChangedEvent args)
         {
             component.Powered = args.Powered;
@@ -92,6 +90,7 @@ namespace Content.Server.Doors.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAtmosAlarm(EntityUid uid, FirelockComponent component, AtmosAlarmEvent args)
         {
             if (!this.IsPowered(uid, EntityManager))

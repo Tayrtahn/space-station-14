@@ -26,12 +26,9 @@ public sealed partial class DashAbilitySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DashAbilityComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<DashAbilityComponent, DashEvent>(OnDash);
-        SubscribeLocalEvent<DashAbilityComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<DashAbilityComponent> ent, ref MapInitEvent args)
     {
         var (uid, comp) = ent;
@@ -39,6 +36,7 @@ public sealed partial class DashAbilitySystem : EntitySystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(Entity<DashAbilityComponent> ent, ref GetItemActionsEvent args)
     {
         if (CheckDash(ent, args.User))
@@ -48,6 +46,7 @@ public sealed partial class DashAbilitySystem : EntitySystem
     /// <summary>
     /// Handle charges and teleport to a visible location.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDash(Entity<DashAbilityComponent> ent, ref DashEvent args)
     {
         var (uid, comp) = ent;

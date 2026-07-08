@@ -35,9 +35,6 @@ public sealed partial class AfkConfirmSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // Unafking does NOT clear it, require them to confirm via the window so they don't just random mash buttons.
-        SubscribeLocalEvent<AFKEvent>(OnAfk);
         _players.PlayerStatusChanged += OnPlayerStatusChanged;
         _cfg.OnValueChanged(CCVars.AfkTime, OnAfkTimeChanged);
     }
@@ -56,6 +53,7 @@ public sealed partial class AfkConfirmSystem : EntitySystem
         _cfg.UnsubValueChanged(CCVars.AfkTime, OnAfkTimeChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfk(ref AFKEvent ev)
     {
         TryStartConfirmation(ev.Session);

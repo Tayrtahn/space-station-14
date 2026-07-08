@@ -7,23 +7,23 @@ using Robust.Shared.Prototypes;
 namespace Content.Client.Clothing.Systems;
 
 // All valid items for chameleon are calculated on client startup and stored in dictionary.
-public sealed class ChameleonClothingSystem : SharedChameleonClothingSystem
+public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ChameleonClothingComponent, AfterAutoHandleStateEvent>(HandleState);
 
         PrepareAllVariants();
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnProtoReloaded);
     }
 
+    [SubscribeLocalEvent]
     private void OnProtoReloaded(PrototypesReloadedEventArgs args)
     {
         if (args.WasModified<EntityPrototype>())
             PrepareAllVariants();
     }
 
+    [SubscribeLocalEvent]
     private void HandleState(EntityUid uid, ChameleonClothingComponent component, ref AfterAutoHandleStateEvent args)
     {
         UpdateVisuals(uid, component);

@@ -13,24 +13,23 @@ public abstract partial class SharedLightBulbSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LightBulbComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<LightBulbComponent, LandEvent>(HandleLand);
-        SubscribeLocalEvent<LightBulbComponent, BreakageEventArgs>(OnBreak);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, LightBulbComponent bulb, ComponentInit args)
     {
         // update default state of bulbs
         UpdateAppearance(uid, bulb);
     }
 
+    [SubscribeLocalEvent]
     private void HandleLand(EntityUid uid, LightBulbComponent bulb, ref LandEvent args)
     {
         PlayBreakSound(uid, bulb);
         SetState(uid, LightBulbState.Broken, bulb);
     }
 
+    [SubscribeLocalEvent]
     private void OnBreak(EntityUid uid, LightBulbComponent component, BreakageEventArgs args)
     {
         SetState(uid, LightBulbState.Broken, component);

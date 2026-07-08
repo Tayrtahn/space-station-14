@@ -16,11 +16,9 @@ public sealed partial class ItemCreatorSystem : SharedItemCreatorSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemCreatorComponent, CreateItemEvent>(OnCreateItem);
-        SubscribeLocalEvent<ItemCreatorComponent, NinjaBatteryChangedEvent>(OnBatteryChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnCreateItem(Entity<ItemCreatorComponent> ent, ref CreateItemEvent args)
     {
         var (uid, comp) = ent;
@@ -46,6 +44,7 @@ public sealed partial class ItemCreatorSystem : SharedItemCreatorSystem
         _hands.TryPickupAnyHand(user, star);
     }
 
+    [SubscribeLocalEvent]
     private void OnBatteryChanged(Entity<ItemCreatorComponent> ent, ref NinjaBatteryChangedEvent args)
     {
         if (ent.Comp.Battery == args.Battery)

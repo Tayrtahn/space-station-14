@@ -15,11 +15,10 @@ public sealed partial class TeslaCoilSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TeslaCoilComponent, HitByLightningEvent>(OnHitByLightning);
     }
 
     //When struck by lightning, charge the internal battery
+    [SubscribeLocalEvent]
     private void OnHitByLightning(Entity<TeslaCoilComponent> coil, ref HitByLightningEvent args)
     {
         if (TryComp<BatteryComponent>(coil, out var batteryComponent))

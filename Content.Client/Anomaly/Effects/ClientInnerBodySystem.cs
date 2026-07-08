@@ -15,10 +15,9 @@ public sealed partial class ClientInnerBodyAnomalySystem : SharedInnerBodyAnomal
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, AfterAutoHandleStateEvent>(OnAfterHandleState);
-        SubscribeLocalEvent<InnerBodyAnomalyComponent, ComponentShutdown>(OnCompShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterHandleState(Entity<InnerBodyAnomalyComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<SpriteComponent>(ent, out var sprite))
@@ -59,6 +58,7 @@ public sealed partial class ClientInnerBodyAnomalySystem : SharedInnerBodyAnomal
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCompShutdown(Entity<InnerBodyAnomalyComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp<SpriteComponent>(ent, out var sprite))

@@ -14,19 +14,6 @@ namespace Content.Server.Power.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            //Lifecycle events
-            SubscribeLocalEvent<ExtensionCableProviderComponent, ComponentStartup>(OnProviderStarted);
-            SubscribeLocalEvent<ExtensionCableProviderComponent, ComponentShutdown>(OnProviderShutdown);
-            SubscribeLocalEvent<ExtensionCableReceiverComponent, ComponentStartup>(OnReceiverStarted);
-            SubscribeLocalEvent<ExtensionCableReceiverComponent, ComponentShutdown>(OnReceiverShutdown);
-
-            //Anchoring
-            SubscribeLocalEvent<ExtensionCableReceiverComponent, AnchorStateChangedEvent>(OnReceiverAnchorStateChanged);
-            SubscribeLocalEvent<ExtensionCableReceiverComponent, ReAnchorEvent>(OnReceiverReAnchor);
-
-            SubscribeLocalEvent<ExtensionCableProviderComponent, AnchorStateChangedEvent>(OnProviderAnchorStateChanged);
-            SubscribeLocalEvent<ExtensionCableProviderComponent, ReAnchorEvent>(OnProviderReAnchor);
         }
 
         #region Provider
@@ -40,11 +27,13 @@ namespace Content.Server.Power.EntitySystems
             ResetReceivers((uid, provider));
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderStarted(Entity<ExtensionCableProviderComponent> provider, ref ComponentStartup args)
         {
             Connect(provider);
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderShutdown(Entity<ExtensionCableProviderComponent> provider, ref ComponentShutdown args)
         {
             var xform = Transform(provider);
@@ -59,6 +48,7 @@ namespace Content.Server.Power.EntitySystems
             Disconnect(provider);
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderAnchorStateChanged(Entity<ExtensionCableProviderComponent> provider, ref AnchorStateChangedEvent args)
         {
             if (args.Anchored)
@@ -88,6 +78,7 @@ namespace Content.Server.Power.EntitySystems
             ResetReceivers(provider);
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderReAnchor(Entity<ExtensionCableProviderComponent> provider, ref ReAnchorEvent args)
         {
             Disconnect(provider);
@@ -173,6 +164,7 @@ namespace Content.Server.Power.EntitySystems
             TryFindAndSetProvider((uid, receiver));
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverStarted(Entity<ExtensionCableReceiverComponent> receiver, ref ComponentStartup args)
         {
             if (TryComp(receiver.Owner, out PhysicsComponent? physicsComponent))
@@ -186,11 +178,13 @@ namespace Content.Server.Power.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverShutdown(Entity<ExtensionCableReceiverComponent> receiver, ref ComponentShutdown args)
         {
             Disconnect(receiver);
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverAnchorStateChanged(Entity<ExtensionCableReceiverComponent> receiver, ref AnchorStateChangedEvent args)
         {
             if (args.Anchored)
@@ -203,6 +197,7 @@ namespace Content.Server.Power.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverReAnchor(Entity<ExtensionCableReceiverComponent> receiver, ref ReAnchorEvent args)
         {
             Disconnect(receiver);

@@ -87,11 +87,6 @@ public abstract partial class SharedMoverController : VirtualController
         UpdatesBefore.Add(typeof(TileFrictionController));
         base.Initialize();
 
-        SubscribeLocalEvent<MovementSpeedModifierComponent, TileFrictionEvent>(OnTileFriction);
-        SubscribeLocalEvent<InputMoverComponent, ComponentStartup>(OnMoverStartup);
-        SubscribeLocalEvent<InputMoverComponent, PhysicsBodyTypeChangedEvent>(OnPhysicsBodyChanged);
-        SubscribeLocalEvent<InputMoverComponent, UpdateCanMoveEvent>(OnCanMove);
-
         InitializeInput();
         InitializeRelay();
 
@@ -102,6 +97,7 @@ public abstract partial class SharedMoverController : VirtualController
         Subs.CVar(_configManager, CCVars.OffgridFriction, value => _offGridDamping = value, true);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnMoverStartup(Entity<InputMoverComponent> ent, ref ComponentStartup args)
     {
        _blocker.UpdateCanMove(ent, ent.Comp);
@@ -634,6 +630,7 @@ public abstract partial class SharedMoverController : VirtualController
         return wishDir;
     }
 
+    [SubscribeLocalEvent]
     private void OnTileFriction(Entity<MovementSpeedModifierComponent> ent, ref TileFrictionEvent args)
     {
         if (!PhysicsQuery.TryComp(ent, out var physicsComponent))
@@ -645,11 +642,13 @@ public abstract partial class SharedMoverController : VirtualController
             args.Modifier *= ent.Comp.BaseFriction;
     }
 
+    [SubscribeLocalEvent]
     private void OnPhysicsBodyChanged(Entity<InputMoverComponent> entity, ref PhysicsBodyTypeChangedEvent args)
     {
         _blocker.UpdateCanMove(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanMove(Entity<InputMoverComponent> entity, ref UpdateCanMoveEvent args)
     {
         // If we don't have a physics component, or have a static body type then we can't move.

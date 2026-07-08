@@ -53,19 +53,6 @@ public sealed partial class ClimbSystem : VirtualController
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ClimbingComponent, UpdateCanMoveEvent>(OnMoveAttempt);
-        SubscribeLocalEvent<ClimbingComponent, EntParentChangedMessage>(OnParentChange);
-        SubscribeLocalEvent<ClimbingComponent, ClimbDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<ClimbingComponent, EndCollideEvent>(OnClimbEndCollide);
-        SubscribeLocalEvent<ClimbingComponent, BuckledEvent>(OnBuckled);
-        SubscribeLocalEvent<ClimbingComponent, EntGotInsertedIntoContainerMessage>(OnStored);
-
-        SubscribeLocalEvent<ClimbableComponent, CanDropTargetEvent>(OnCanDragDropOn);
-        SubscribeLocalEvent<ClimbableComponent, GetVerbsEvent<AlternativeVerb>>(AddClimbableVerb);
-        SubscribeLocalEvent<ClimbableComponent, DragDropTargetEvent>(OnClimbableDragDrop);
-
-        SubscribeLocalEvent<GlassTableComponent, ClimbedOnEvent>(OnGlassClimbed);
     }
 
     public override void UpdateBeforeSolve(bool prediction, float frameTime)
@@ -129,6 +116,7 @@ public sealed partial class ClimbSystem : VirtualController
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnMoveAttempt(EntityUid uid, ClimbingComponent component, UpdateCanMoveEvent args)
     {
         // Can't move when transition.
@@ -136,6 +124,7 @@ public sealed partial class ClimbSystem : VirtualController
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnParentChange(EntityUid uid, ClimbingComponent component, ref EntParentChangedMessage args)
     {
         if (component.NextTransition != null)
@@ -144,6 +133,7 @@ public sealed partial class ClimbSystem : VirtualController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDragDropOn(EntityUid uid, ClimbableComponent component, ref CanDropTargetEvent args)
     {
         if (args.Handled || !component.Vaultable)
@@ -165,6 +155,7 @@ public sealed partial class ClimbSystem : VirtualController
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void AddClimbableVerb(EntityUid uid, ClimbableComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !_actionBlockerSystem.CanMove(args.User) || !component.Vaultable)
@@ -181,6 +172,7 @@ public sealed partial class ClimbSystem : VirtualController
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnClimbableDragDrop(EntityUid uid, ClimbableComponent component, ref DragDropTargetEvent args)
     {
         if (args.Handled)
@@ -241,6 +233,7 @@ public sealed partial class ClimbSystem : VirtualController
 
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, ClimbingComponent component, ClimbDoAfterEvent args)
     {
         component.DoAfter = null;
@@ -377,6 +370,7 @@ public sealed partial class ClimbSystem : VirtualController
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnClimbEndCollide(EntityUid uid, ClimbingComponent component, ref EndCollideEvent args)
     {
         if (args.OurFixtureId != ClimbingFixtureName
@@ -536,11 +530,13 @@ public sealed partial class ClimbSystem : VirtualController
         Climb(uid, uid, climbable, true, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnBuckled(EntityUid uid, ClimbingComponent component, ref BuckledEvent args)
     {
         StopOrCancelClimb(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnStored(EntityUid uid, ClimbingComponent component, ref EntGotInsertedIntoContainerMessage args)
     {
         StopOrCancelClimb(uid, component);
@@ -561,6 +557,7 @@ public sealed partial class ClimbSystem : VirtualController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGlassClimbed(EntityUid uid, GlassTableComponent component, ref ClimbedOnEvent args)
     {
         if (TryComp<PhysicsComponent>(args.Climber, out var physics) && physics.Mass <= component.MassLimit)

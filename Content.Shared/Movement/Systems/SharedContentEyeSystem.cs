@@ -30,10 +30,6 @@ public abstract partial class SharedContentEyeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ContentEyeComponent, ComponentStartup>(OnContentEyeStartup);
-        SubscribeAllEvent<RequestTargetZoomEvent>(OnContentZoomRequest);
-        SubscribeAllEvent<RequestPvsScaleEvent>(OnPvsScale);
-        SubscribeAllEvent<RequestEyeEvent>(OnRequestEye);
 
         CommandBinds.Builder
             .Bind(ContentKeyFunctions.ZoomIn, InputCmdHandler.FromDelegate(ZoomIn, handle:false))
@@ -86,6 +82,7 @@ public abstract partial class SharedContentEyeSystem : EntitySystem
         Dirty(uid, eye);
     }
 
+    [SubscribeAllEvent]
     private void OnContentZoomRequest(RequestTargetZoomEvent msg, EntitySessionEventArgs args)
     {
         var ignoreLimit = msg.IgnoreLimit && _admin.HasAdminFlag(args.SenderSession, EyeFlag);
@@ -94,12 +91,14 @@ public abstract partial class SharedContentEyeSystem : EntitySystem
             SetZoom(args.SenderSession.AttachedEntity.Value, msg.TargetZoom, ignoreLimit, eye: content);
     }
 
+    [SubscribeAllEvent]
     private void OnPvsScale(RequestPvsScaleEvent ev, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is {} uid && _admin.HasAdminFlag(args.SenderSession, EyeFlag))
             _eye.SetPvsScale(uid, ev.Scale);
     }
 
+    [SubscribeAllEvent]
     private void OnRequestEye(RequestEyeEvent msg, EntitySessionEventArgs args)
     {
         if (args.SenderSession.AttachedEntity is not { } player)
@@ -115,6 +114,7 @@ public abstract partial class SharedContentEyeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnContentEyeStartup(EntityUid uid, ContentEyeComponent component, ComponentStartup args)
     {
         if (!TryComp<EyeComponent>(uid, out var eyeComp))

@@ -6,6 +6,7 @@ namespace Content.Shared.Disposal.Unit;
 
 public abstract partial class SharedDisposalUnitSystem
 {
+    [SubscribeLocalEvent]
     private void OnUiButtonPressed(Entity<DisposalUnitComponent> ent, ref DisposalUnitUiButtonPressedMessage args)
     {
         if (args.Actor is not { Valid: true } player)

@@ -17,9 +17,9 @@ public sealed partial class RestrictedRangeSystem : SharedRestrictedRangeSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RestrictedRangeComponent, MapInitEvent>(OnRestrictedMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnRestrictedMapInit(EntityUid uid, RestrictedRangeComponent component, MapInitEvent args)
     {
         component.BoundaryEntity = CreateBoundary(new EntityCoordinates(uid, component.Origin), component.Range);

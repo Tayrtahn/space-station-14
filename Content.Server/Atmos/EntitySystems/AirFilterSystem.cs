@@ -16,11 +16,9 @@ public sealed partial class AirFilterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AirIntakeComponent, AtmosDeviceUpdateEvent>(OnIntakeUpdate);
-        SubscribeLocalEvent<AirFilterComponent, AtmosDeviceUpdateEvent>(OnFilterUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnIntakeUpdate(EntityUid uid, AirIntakeComponent intake, ref AtmosDeviceUpdateEvent args)
     {
         if (!GetAir(uid, out var air))
@@ -47,6 +45,7 @@ public sealed partial class AirFilterSystem : EntitySystem
         _atmosphere.Merge(air, environment.Remove(transferMoles));
     }
 
+    [SubscribeLocalEvent]
     private void OnFilterUpdate(EntityUid uid, AirFilterComponent filter, ref AtmosDeviceUpdateEvent args)
     {
         if (!GetAir(uid, out var air))

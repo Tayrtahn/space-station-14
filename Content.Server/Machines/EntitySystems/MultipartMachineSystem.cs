@@ -26,13 +26,6 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MultipartMachineComponent, ComponentStartup>(OnComponentStartup);
-
-        SubscribeLocalEvent<MultipartMachineComponent, AnchorStateChangedEvent>(OnMachineAnchorChanged);
-
-        SubscribeLocalEvent<MultipartMachinePartComponent, AfterConstructionChangeEntityEvent>(OnPartConstructionNodeChanged);
-        SubscribeLocalEvent<MultipartMachinePartComponent, AnchorStateChangedEvent>(OnPartAnchorChanged);
     }
 
     /// <summary>
@@ -205,6 +198,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Entity/Component that just started.</param>
     /// <param name="args">Args for the startup.</param>
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<MultipartMachineComponent> ent, ref ComponentStartup args)
     {
         // If anchored, perform a rescan of this machine when the component starts so we can immediately
@@ -220,6 +214,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Machine entity that has been anchored or unanchored.</param>
     /// <param name="args">Args for this event.</param>
+    [SubscribeLocalEvent]
     private void OnMachineAnchorChanged(Entity<MultipartMachineComponent> ent,
         ref AnchorStateChangedEvent args)
     {
@@ -236,6 +231,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Machine part entity that has moved in a graph.</param>
     /// <param name="args">Args for this event.</param>
+    [SubscribeLocalEvent]
     private void OnPartConstructionNodeChanged(Entity<MultipartMachinePartComponent> ent,
         ref AfterConstructionChangeEntityEvent args)
     {
@@ -265,6 +261,7 @@ public sealed partial class MultipartMachineSystem : SharedMultipartMachineSyste
     /// </summary>
     /// <param name="ent">Machine part entity that has been anchored or unanchored.</param>
     /// <param name="args">Args for this event, notably the anchor status.</param>
+    [SubscribeLocalEvent]
     private void OnPartAnchorChanged(Entity<MultipartMachinePartComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)

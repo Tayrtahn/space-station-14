@@ -32,10 +32,9 @@ public sealed partial class EmitSoundSystem : SharedEmitSoundSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpamEmitSoundComponent, MapInitEvent>(HandleSpamEmitSoundMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void HandleSpamEmitSoundMapInit(Entity<SpamEmitSoundComponent> entity, ref MapInitEvent args)
     {
         SpamEmitSoundReset(entity);

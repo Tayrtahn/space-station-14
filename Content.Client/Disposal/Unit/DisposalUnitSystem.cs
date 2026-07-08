@@ -18,9 +18,6 @@ public sealed partial class DisposalUnitSystem : SharedDisposalUnitSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DisposalUnitComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeLocalEvent<DisposalUnitComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
     protected override void OnComponentInit(Entity<DisposalUnitComponent> ent, ref ComponentInit args)
@@ -55,11 +52,13 @@ public sealed partial class DisposalUnitSystem : SharedDisposalUnitSystem
         ent.Comp.FlushingAnimation = anim;
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, DisposalUnitComponent component, ref AfterAutoHandleStateEvent args)
     {
         UpdateUI((uid, component));
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<DisposalUnitComponent> ent, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

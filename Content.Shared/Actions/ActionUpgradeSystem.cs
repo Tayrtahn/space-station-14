@@ -15,10 +15,9 @@ public sealed partial class ActionUpgradeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActionUpgradeComponent, ActionUpgradeEvent>(OnActionUpgradeEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionUpgradeEvent(EntityUid uid, ActionUpgradeComponent component, ActionUpgradeEvent args)
     {
         if (!CanUpgrade(args.NewLevel, component.EffectedLevels, out var newActionProto)

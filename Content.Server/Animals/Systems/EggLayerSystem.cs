@@ -30,9 +30,6 @@ public sealed partial class EggLayerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EggLayerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<EggLayerComponent, EggLayInstantActionEvent>(OnEggLayAction);
     }
 
     public override void Update(float frameTime)
@@ -61,12 +58,14 @@ public sealed partial class EggLayerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, EggLayerComponent component, MapInitEvent args)
     {
         _actions.AddAction(uid, ref component.Action, component.EggLayAction);
         component.NextGrowth = _timing.CurTime + TimeSpan.FromSeconds(_random.NextFloat(component.EggLayCooldownMin, component.EggLayCooldownMax));
     }
 
+    [SubscribeLocalEvent]
     private void OnEggLayAction(EntityUid uid, EggLayerComponent egglayer, EggLayInstantActionEvent args)
     {
         // Cooldown is handeled by ActionAnimalLayEgg in types.yml.

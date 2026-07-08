@@ -14,9 +14,6 @@ public sealed partial class RadiationSystem : SharedRadiationSystem
 
     public override void Initialize()
     {
-        SubscribeNetworkEvent<OnRadiationOverlayToggledEvent>(OnOverlayToggled);
-        SubscribeNetworkEvent<OnRadiationOverlayUpdateEvent>(OnOverlayUpdate);
-        SubscribeNetworkEvent<OnRadiationOverlayResistanceUpdateEvent>(OnResistanceUpdate);
     }
 
     public override void Shutdown()
@@ -25,6 +22,7 @@ public sealed partial class RadiationSystem : SharedRadiationSystem
         _overlayMan.RemoveOverlay<RadiationDebugOverlay>();
     }
 
+    [SubscribeNetworkEvent]
     private void OnOverlayToggled(OnRadiationOverlayToggledEvent ev)
     {
         if (ev.IsEnabled)
@@ -33,6 +31,7 @@ public sealed partial class RadiationSystem : SharedRadiationSystem
             _overlayMan.RemoveOverlay<RadiationDebugOverlay>();
     }
 
+    [SubscribeNetworkEvent]
     private void OnOverlayUpdate(OnRadiationOverlayUpdateEvent ev)
     {
         if (!_overlayMan.TryGetOverlay(out RadiationDebugOverlay? overlay))
@@ -45,6 +44,7 @@ public sealed partial class RadiationSystem : SharedRadiationSystem
         Rays = ev.Rays;
     }
 
+    [SubscribeNetworkEvent]
     private void OnResistanceUpdate(OnRadiationOverlayResistanceUpdateEvent ev)
     {
         ResistanceGrids = ev.Grids;

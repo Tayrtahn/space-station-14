@@ -17,10 +17,9 @@ public sealed partial class ProximityBeeperSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ProximityBeeperComponent, NewProximityTargetEvent>(OnNewProximityTarget);
-        SubscribeLocalEvent<ProximityBeeperComponent, ProximityTargetUpdatedEvent>(OnProximityTargetUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnProximityTargetUpdate(EntityUid owner, ProximityBeeperComponent proxBeeper, ref ProximityTargetUpdatedEvent args)
     {
         if (!TryComp<BeeperComponent>(owner, out var beeper))
@@ -29,6 +28,7 @@ public sealed partial class ProximityBeeperSystem : EntitySystem
         _beeper.SetIntervalScaling(owner, args.Distance / args.Detector.Comp.Range, beeper);
     }
 
+    [SubscribeLocalEvent]
     private void OnNewProximityTarget(EntityUid owner, ProximityBeeperComponent proxBeeper, ref NewProximityTargetEvent args)
     {
         _beeper.SetMute(owner, args.Target == null);

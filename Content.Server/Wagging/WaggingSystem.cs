@@ -21,14 +21,9 @@ public sealed partial class WaggingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<WaggingComponent, MapInitEvent>(OnWaggingMapInit);
-        SubscribeLocalEvent<WaggingComponent, ComponentShutdown>(OnWaggingShutdown);
-        SubscribeLocalEvent<WaggingComponent, ToggleActionEvent>(OnWaggingToggle);
-        SubscribeLocalEvent<WaggingComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<WaggingComponent, CloningEvent>(OnCloning);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloning(Entity<WaggingComponent> ent, ref CloningEvent args)
     {
         if (!args.Settings.EventComponents.Contains(Factory.GetRegistration(ent.Comp.GetType()).Name))
@@ -43,16 +38,19 @@ public sealed partial class WaggingSystem : EntitySystem
         AddComp(args.CloneUid, cloneComp, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnWaggingMapInit(Entity<WaggingComponent> ent, ref MapInitEvent args)
     {
         _actions.AddAction(ent, ref ent.Comp.ActionEntity, ent.Comp.Action, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnWaggingShutdown(Entity<WaggingComponent> ent, ref ComponentShutdown args)
     {
         _actions.RemoveAction(ent.Owner, ent.Comp.ActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnWaggingToggle(Entity<WaggingComponent> ent, ref ToggleActionEvent args)
     {
         if (args.Handled)
@@ -61,6 +59,7 @@ public sealed partial class WaggingSystem : EntitySystem
         TryToggleWagging(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<WaggingComponent> ent, ref MobStateChangedEvent args)
     {
         if (ent.Comp.Wagging)

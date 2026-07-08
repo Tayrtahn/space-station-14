@@ -23,11 +23,9 @@ public sealed partial class BluespaceAnomalySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<BluespaceAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<BluespaceAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
-        SubscribeLocalEvent<BluespaceAnomalyComponent, AnomalySeverityChangedEvent>(OnSeverityChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(EntityUid uid, BluespaceAnomalyComponent component, ref AnomalyPulseEvent args)
     {
         var xform = Transform(uid);
@@ -53,6 +51,7 @@ public sealed partial class BluespaceAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, BluespaceAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         var xform = Transform(uid);
@@ -76,6 +75,7 @@ public sealed partial class BluespaceAnomalySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSeverityChanged(EntityUid uid, BluespaceAnomalyComponent component, ref AnomalySeverityChangedEvent args)
     {
         if (!TryComp<PortalComponent>(uid, out var portal))

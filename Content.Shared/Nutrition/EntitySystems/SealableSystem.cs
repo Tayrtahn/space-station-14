@@ -12,7 +12,6 @@ public sealed partial class SealableSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<SealableComponent, ExaminedEvent>(OnExamined, after: new[] { typeof(OpenableSystem) });
-        SubscribeLocalEvent<SealableComponent, OpenableOpenedEvent>(OnOpened);
     }
 
     private void OnExamined(EntityUid uid, SealableComponent comp, ExaminedEvent args)
@@ -25,6 +24,7 @@ public sealed partial class SealableSystem : EntitySystem
         args.PushMarkup(sealedText);
     }
 
+    [SubscribeLocalEvent]
     private void OnOpened(EntityUid uid, SealableComponent comp, OpenableOpenedEvent args)
     {
         comp.Sealed = false;

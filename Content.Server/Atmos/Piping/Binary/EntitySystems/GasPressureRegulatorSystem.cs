@@ -29,12 +29,9 @@ public sealed partial class GasPressureRegulatorSystem : SharedGasPressureRegula
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasPressureRegulatorComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<GasPressureRegulatorComponent, AtmosDeviceUpdateEvent>(OnPressureRegulatorUpdated);
-        SubscribeLocalEvent<GasPressureRegulatorComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<GasPressureRegulatorComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextUiUpdate = _timing.CurTime + ent.Comp.UpdateInterval;
@@ -67,6 +64,7 @@ public sealed partial class GasPressureRegulatorSystem : SharedGasPressureRegula
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<GasPressureRegulatorComponent> ent, ref ComponentInit args)
     {
         UpdateAppearance(ent);
@@ -77,6 +75,7 @@ public sealed partial class GasPressureRegulatorSystem : SharedGasPressureRegula
     /// </summary>
     /// <param name="ent"> the <see cref="Entity{T}" /> of the pressure regulator</param>
     /// <param name="args"> Args provided to us via <see cref="AtmosDeviceUpdateEvent" /></param>
+    [SubscribeLocalEvent]
     private void OnPressureRegulatorUpdated(Entity<GasPressureRegulatorComponent> ent,
         ref AtmosDeviceUpdateEvent args)
     {

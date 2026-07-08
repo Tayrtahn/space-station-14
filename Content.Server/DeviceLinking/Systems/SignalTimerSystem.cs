@@ -27,16 +27,9 @@ public sealed partial class SignalTimerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SignalTimerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SignalTimerComponent, AfterActivatableUIOpenEvent>(OnAfterActivatableUIOpen);
-
-        SubscribeLocalEvent<SignalTimerComponent, SignalTimerTextChangedMessage>(OnTextChangedMessage);
-        SubscribeLocalEvent<SignalTimerComponent, SignalTimerDelayChangedMessage>(OnDelayChangedMessage);
-        SubscribeLocalEvent<SignalTimerComponent, SignalTimerStartMessage>(OnTimerStartMessage);
-        SubscribeLocalEvent<SignalTimerComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, SignalTimerComponent component, ComponentInit args)
     {
         _appearanceSystem.SetData(uid, TextScreenVisuals.DefaultText, component.Label);
@@ -44,6 +37,7 @@ public sealed partial class SignalTimerSystem : EntitySystem
         _signalSystem.EnsureSinkPorts(uid, component.Trigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterActivatableUIOpen(EntityUid uid, SignalTimerComponent component, AfterActivatableUIOpenEvent args)
     {
         var time = TryComp<ActiveSignalTimerComponent>(uid, out var active) ? active.TriggerTime : TimeSpan.Zero;
@@ -127,6 +121,7 @@ public sealed partial class SignalTimerSystem : EntitySystem
     ///     Called by <see cref="SignalTimerTextChangedMessage"/> to both
     ///     change the default component label, and propagate that change to the TextScreen.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTextChangedMessage(EntityUid uid, SignalTimerComponent component, SignalTimerTextChangedMessage args)
     {
         if (!IsMessageValid(uid, args))
@@ -147,6 +142,7 @@ public sealed partial class SignalTimerSystem : EntitySystem
     ///     Called by <see cref="SignalTimerDelayChangedMessage"/> to change the <see cref="SignalTimerComponent"/>
     ///     delay, and propagate that change to a textscreen.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDelayChangedMessage(EntityUid uid, SignalTimerComponent component, SignalTimerDelayChangedMessage args)
     {
         if (!IsMessageValid(uid, args))
@@ -160,6 +156,7 @@ public sealed partial class SignalTimerSystem : EntitySystem
     ///     Called by <see cref="SignalTimerStartMessage"/> to instantiate an <see cref="ActiveSignalTimerComponent"/>,
     ///     clear <see cref="TextScreenVisuals.ScreenText"/>, propagate those changes, and invoke the start port.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTimerStartMessage(EntityUid uid, SignalTimerComponent component, SignalTimerStartMessage args)
     {
         if (!IsMessageValid(uid, args))
@@ -175,6 +172,7 @@ public sealed partial class SignalTimerSystem : EntitySystem
             OnStartTimer(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, SignalTimerComponent component, ref SignalReceivedEvent args)
     {
         if (args.Port == component.Trigger)

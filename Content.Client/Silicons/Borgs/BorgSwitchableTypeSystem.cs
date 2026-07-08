@@ -19,16 +19,15 @@ public sealed partial class BorgSwitchableTypeSystem : SharedBorgSwitchableTypeS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BorgSwitchableTypeComponent, AfterAutoHandleStateEvent>(AfterStateHandler);
-        SubscribeLocalEvent<BorgSwitchableTypeComponent, ComponentStartup>(OnComponentStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<BorgSwitchableTypeComponent> ent, ref ComponentStartup args)
     {
         UpdateEntityAppearance(ent);
     }
 
+    [SubscribeLocalEvent]
     private void AfterStateHandler(Entity<BorgSwitchableTypeComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateEntityAppearance(ent);

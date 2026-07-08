@@ -20,10 +20,6 @@ public sealed partial class StaminaSystem : SharedStaminaSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StaminaComponent, AnimationCompletedEvent>(OnAnimationCompleted);
-        SubscribeLocalEvent<ActiveStaminaComponent, ComponentShutdown>(OnActiveStaminaShutdown);
-        SubscribeLocalEvent<StaminaComponent, MobStateChangedEvent>(OnMobStateChanged);
     }
 
     protected override void OnStamHandleState(Entity<StaminaComponent> entity, ref AfterAutoHandleStateEvent args)
@@ -33,6 +29,7 @@ public sealed partial class StaminaSystem : SharedStaminaSystem
         TryStartAnimation(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnActiveStaminaShutdown(Entity<ActiveStaminaComponent> entity, ref ComponentShutdown args)
     {
         // If we don't have active stamina, we shouldn't have stamina damage. If the update loop can trust it we can trust it.
@@ -49,6 +46,7 @@ public sealed partial class StaminaSystem : SharedStaminaSystem
         StopAnimation(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<StaminaComponent> ent, ref MobStateChangedEvent args)
     {
         if (args.NewMobState == MobState.Dead)
@@ -84,6 +82,7 @@ public sealed partial class StaminaSystem : SharedStaminaSystem
         entity.Comp1.StartOffset = entity.Comp2.Offset;
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(Entity<StaminaComponent> entity, ref AnimationCompletedEvent args)
     {
         if (args.Key != StaminaAnimationKey || !args.Finished || !TryComp<SpriteComponent>(entity, out var sprite))

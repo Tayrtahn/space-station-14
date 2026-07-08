@@ -24,16 +24,11 @@ public sealed partial class ConveyorController : SharedConveyorController
     public override void Initialize()
     {
         UpdatesAfter.Add(typeof(MoverController));
-        SubscribeLocalEvent<ConveyorComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ConveyorComponent, ComponentShutdown>(OnConveyorShutdown);
-        SubscribeLocalEvent<ConveyorComponent, BreakageEventArgs>(OnBreakage);
-
-        SubscribeLocalEvent<ConveyorComponent, SignalReceivedEvent>(OnSignalReceived);
-        SubscribeLocalEvent<ConveyorComponent, PowerChangedEvent>(OnPowerChanged);
 
         base.Initialize();
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, ConveyorComponent component, ComponentInit args)
     {
         _signalSystem.EnsureSinkPorts(uid, component.ReversePort, component.ForwardPort, component.OffPort);
@@ -50,6 +45,7 @@ public sealed partial class ConveyorController : SharedConveyorController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnConveyorShutdown(EntityUid uid, ConveyorComponent component, ComponentShutdown args)
     {
         if (MetaData(uid).EntityLifeStage >= EntityLifeStage.Terminating)
@@ -61,11 +57,13 @@ public sealed partial class ConveyorController : SharedConveyorController
         _fixtures.DestroyFixture(uid, ConveyorFixture, body: physics);
     }
 
+    [SubscribeLocalEvent]
     private void OnBreakage(Entity<ConveyorComponent> ent, ref BreakageEventArgs args)
     {
         SetState(ent, ConveyorState.Off, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, ConveyorComponent component, ref PowerChangedEvent args)
     {
         component.Powered = args.Powered;
@@ -78,6 +76,7 @@ public sealed partial class ConveyorController : SharedConveyorController
         _appearance.SetData(uid, ConveyorVisuals.State, component.Powered ? component.State : ConveyorState.Off);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(EntityUid uid, ConveyorComponent component, ref SignalReceivedEvent args)
     {
         if (args.Port == component.OffPort)

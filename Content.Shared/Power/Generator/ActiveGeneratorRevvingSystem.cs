@@ -1,16 +1,16 @@
 namespace Content.Shared.Power.Generator;
 
-public sealed class ActiveGeneratorRevvingSystem : EntitySystem
+public sealed partial class ActiveGeneratorRevvingSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ActiveGeneratorRevvingComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
     }
 
     /// <summary>
     /// Handles the AnchorStateChangedEvent to stop auto-revving when unanchored.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(EntityUid uid, ActiveGeneratorRevvingComponent component, AnchorStateChangedEvent args)
     {
         if (!args.Anchored)

@@ -100,9 +100,9 @@ public sealed partial class AmbientSoundSystem : SharedAmbientSoundSystem
         Subs.CVar(_cfg, CCVars.MaxAmbientSources, SetAmbientCount, true);
         Subs.CVar(_cfg, CCVars.AmbientRange, SetAmbientRange, true);
         Subs.CVar(_cfg, CCVars.AmbienceVolume, SetAmbienceGain, true);
-        SubscribeLocalEvent<AmbientSoundComponent, ComponentShutdown>(OnShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, AmbientSoundComponent component, ComponentShutdown args)
     {
         if (!_playingSounds.Remove((uid, component), out var sound))

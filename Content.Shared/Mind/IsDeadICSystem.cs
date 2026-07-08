@@ -7,13 +7,13 @@ namespace Content.Shared.Mind;
 /// for stuff like objectives & round-end
 /// used for nymphs & reformed diona.
 /// </summary>
-public sealed class IsDeadICSystem : EntitySystem
+public sealed partial class IsDeadICSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<IsDeadICComponent, GetCharactedDeadIcEvent>(OnGetDeadIC);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDeadIC(EntityUid uid, IsDeadICComponent component, ref GetCharactedDeadIcEvent args)
     {
         args.Dead = true;

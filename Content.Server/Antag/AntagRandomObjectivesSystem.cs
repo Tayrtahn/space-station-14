@@ -19,10 +19,9 @@ public sealed partial class AntagRandomObjectivesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AntagRandomObjectivesComponent, AfterAntagEntitySelectedEvent>(OnAntagSelected);
     }
 
+    [SubscribeLocalEvent]
     private void OnAntagSelected(Entity<AntagRandomObjectivesComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         if (!_mind.TryGetMind(args.Session, out var mindId, out var mind))

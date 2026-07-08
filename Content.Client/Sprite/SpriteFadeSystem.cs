@@ -43,10 +43,9 @@ public sealed partial class SpriteFadeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FadingSpriteComponent, ComponentShutdown>(OnFadingShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnFadingShutdown(EntityUid uid, FadingSpriteComponent component, ComponentShutdown args)
     {
         if (MetaData(uid).EntityLifeStage >= EntityLifeStage.Terminating || !TryComp<SpriteComponent>(uid, out var sprite))

@@ -40,10 +40,9 @@ public abstract partial class SharedToolSystem : EntitySystem
         InitializeMultipleTool();
         InitializeTile();
         InitializeWelder();
-        SubscribeLocalEvent<ToolComponent, ToolDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<ToolComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, ToolComponent tool, ToolDoAfterEvent args)
     {
         if (!args.Cancelled)
@@ -58,6 +57,7 @@ public abstract partial class SharedToolSystem : EntitySystem
             RaiseLocalEvent((object) ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ToolComponent> ent, ref ExaminedEvent args)
     {
         // If the tool has no qualities, exit early

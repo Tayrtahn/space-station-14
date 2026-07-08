@@ -28,12 +28,9 @@ public sealed partial class ThirstSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThirstComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
-        SubscribeLocalEvent<ThirstComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ThirstComponent, RejuvenateEvent>(OnRejuvenate);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ThirstComponent component, MapInitEvent args)
     {
         // Do not change behavior unless starting value is explicitly defined
@@ -57,6 +54,7 @@ public sealed partial class ThirstSystem : EntitySystem
             _movement.RefreshMovementSpeedModifiers(uid, moveMod);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovespeed(EntityUid uid, ThirstComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         // TODO: This should really be taken care of somewhere else
@@ -67,6 +65,7 @@ public sealed partial class ThirstSystem : EntitySystem
         args.ModifySpeed(mod, mod);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(EntityUid uid, ThirstComponent component, RejuvenateEvent args)
     {
         SetThirst(uid, component, component.ThirstThresholds[ThirstThreshold.Okay]);

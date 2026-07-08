@@ -17,10 +17,9 @@ public sealed partial class RandomCloneSpawnerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomCloneSpawnerComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<RandomCloneSpawnerComponent> ent, ref MapInitEvent args)
     {
         QueueDel(ent.Owner);

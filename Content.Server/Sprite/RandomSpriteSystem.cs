@@ -13,10 +13,9 @@ public sealed partial class RandomSpriteSystem : SharedRandomSpriteSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RandomSpriteComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<RandomSpriteComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, RandomSpriteComponent component, MapInitEvent args)
     {
         if (component.Selected.Count > 0)
@@ -64,6 +63,7 @@ public sealed partial class RandomSpriteSystem : SharedRandomSpriteSystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, RandomSpriteComponent component, ref ComponentGetState args)
     {
         args.State = new RandomSpriteColorComponentState()

@@ -43,22 +43,9 @@ public sealed partial class ThrusterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ThrusterComponent, ActivateInWorldEvent>(OnActivateThruster);
-        SubscribeLocalEvent<ThrusterComponent, ComponentInit>(OnThrusterInit);
-        SubscribeLocalEvent<ThrusterComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ThrusterComponent, ComponentShutdown>(OnThrusterShutdown);
-        SubscribeLocalEvent<ThrusterComponent, PowerChangedEvent>(OnPowerChange);
-        SubscribeLocalEvent<ThrusterComponent, AnchorStateChangedEvent>(OnAnchorChange);
-        SubscribeLocalEvent<ThrusterComponent, MoveEvent>(OnRotate);
-        SubscribeLocalEvent<ThrusterComponent, IsHotEvent>(OnIsHotEvent);
-        SubscribeLocalEvent<ThrusterComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<ThrusterComponent, EndCollideEvent>(OnEndCollide);
-
-        SubscribeLocalEvent<ThrusterComponent, ExaminedEvent>(OnThrusterExamine);
-
-        SubscribeLocalEvent<ShuttleComponent, TileChangedEvent>(OnShuttleTileChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrusterExamine(EntityUid uid, ThrusterComponent component, ExaminedEvent args)
     {
         // Powered is already handled by other power components
@@ -88,11 +75,13 @@ public sealed partial class ThrusterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnIsHotEvent(EntityUid uid, ThrusterComponent component, IsHotEvent args)
     {
         args.IsHot = component.Type != ThrusterType.Angular && component.IsOn;
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleTileChange(EntityUid uid, ShuttleComponent component, ref TileChangedEvent args)
     {
         foreach (var change in args.Changes)
@@ -134,6 +123,7 @@ public sealed partial class ThrusterSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateThruster(EntityUid uid, ThrusterComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex || !component.CanToggle)
@@ -156,6 +146,7 @@ public sealed partial class ThrusterSystem : EntitySystem
     /// <summary>
     /// If the thruster rotates change the direction where the linear thrust is applied
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRotate(EntityUid uid, ThrusterComponent component, ref MoveEvent args)
     {
         // TODO: Disable visualizer for old direction
@@ -222,6 +213,7 @@ public sealed partial class ThrusterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChange(EntityUid uid, ThrusterComponent component, ref AnchorStateChangedEvent args)
     {
         if (args.Anchored && CanEnable(uid, component))
@@ -234,6 +226,7 @@ public sealed partial class ThrusterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnThrusterInit(EntityUid uid, ThrusterComponent component, ComponentInit args)
     {
         _ambient.SetAmbience(uid, false);
@@ -249,16 +242,19 @@ public sealed partial class ThrusterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ThrusterComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextFire = _timing.CurTime + ent.Comp.FireCooldown;
     }
 
+    [SubscribeLocalEvent]
     private void OnThrusterShutdown(EntityUid uid, ThrusterComponent component, ComponentShutdown args)
     {
         DisableThruster(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChange(EntityUid uid, ThrusterComponent component, ref PowerChangedEvent args)
     {
         if (args.Powered && CanEnable(uid, component))
@@ -483,6 +479,7 @@ public sealed partial class ThrusterSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(EntityUid uid, ThrusterComponent component, ref StartCollideEvent args)
     {
         if (args.OurFixtureId != BurnFixture)
@@ -491,6 +488,7 @@ public sealed partial class ThrusterSystem : EntitySystem
         component.Colliding.Add(args.OtherEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(EntityUid uid, ThrusterComponent component, ref EndCollideEvent args)
     {
         if (args.OurFixtureId != BurnFixture)

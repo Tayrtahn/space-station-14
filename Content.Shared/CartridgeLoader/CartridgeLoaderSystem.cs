@@ -17,19 +17,9 @@ public sealed partial class CartridgeLoaderSystem : EntitySystem
         base.Initialize();
 
         InitializeRelay();
-
-        SubscribeLocalEvent<CartridgeLoaderComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<CartridgeLoaderComponent, ComponentRemove>(OnComponentRemove);
-
-        SubscribeLocalEvent<CartridgeLoaderComponent, EntInsertedIntoContainerMessage>(OnItemInserted);
-        SubscribeLocalEvent<CartridgeLoaderComponent, EntRemovedFromContainerMessage>(OnItemRemoved);
-
-        SubscribeLocalEvent<CartridgeLoaderComponent, CartridgeLoaderUiMessage>(OnLoaderUiMessage);
-        SubscribeLocalEvent<CartridgeLoaderComponent, CartridgeUiMessage>(OnUiMessage);
-
-        SubscribeLocalEvent<CartridgeComponent, AfterAutoHandleStateEvent>(OnCartridgeState);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<CartridgeLoaderComponent> ent, ref ComponentInit args)
     {
         _itemSlotsSystem.AddItemSlot(ent, CartridgeLoaderComponent.CartridgeSlotId, ent.Comp.CartridgeSlot);
@@ -40,6 +30,7 @@ public sealed partial class CartridgeLoaderSystem : EntitySystem
     /// <summary>
     /// Marks installed program entities for deletion when the component gets removed
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentRemove(Entity<CartridgeLoaderComponent> ent, ref ComponentRemove args)
     {
         _itemSlotsSystem.RemoveItemSlot(ent, ent.Comp.CartridgeSlot);
@@ -49,6 +40,7 @@ public sealed partial class CartridgeLoaderSystem : EntitySystem
             _container.ShutdownContainer(unremovable);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemInserted(Entity<CartridgeLoaderComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -78,6 +70,7 @@ public sealed partial class CartridgeLoaderSystem : EntitySystem
         UpdateAppearanceData(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemRemoved(Entity<CartridgeLoaderComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -125,6 +118,7 @@ public sealed partial class CartridgeLoaderSystem : EntitySystem
         RaiseLocalEvent(loaderUid, ref args);
     }
 
+    [SubscribeLocalEvent]
     private void OnCartridgeState(Entity<CartridgeComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (ent.Comp.LoaderUid is not { } loader)

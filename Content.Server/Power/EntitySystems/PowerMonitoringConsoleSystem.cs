@@ -35,50 +35,35 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
     public override void Initialize()
     {
         base.Initialize();
-
-        // Console events
-        SubscribeLocalEvent<PowerMonitoringConsoleComponent, ComponentInit>(OnConsoleInit);
-        SubscribeLocalEvent<PowerMonitoringConsoleComponent, EntParentChangedMessage>(OnConsoleParentChanged);
-        SubscribeLocalEvent<PowerMonitoringCableNetworksComponent, ComponentInit>(OnCableNetworksInit);
-        SubscribeLocalEvent<PowerMonitoringCableNetworksComponent, EntParentChangedMessage>(OnCableNetworksParentChanged);
-
-        // UI events
-        SubscribeLocalEvent<PowerMonitoringConsoleComponent, PowerMonitoringConsoleMessage>(OnPowerMonitoringConsoleMessage);
-        SubscribeLocalEvent<PowerMonitoringConsoleComponent, BoundUIOpenedEvent>(OnBoundUIOpened);
-
-        // Grid events
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
-        SubscribeLocalEvent<CableComponent, CableAnchorStateChangedEvent>(OnCableAnchorStateChanged);
-        SubscribeLocalEvent<PowerMonitoringDeviceComponent, AnchorStateChangedEvent>(OnDeviceAnchoringChanged);
-        SubscribeLocalEvent<PowerMonitoringDeviceComponent, NodeGroupsRebuilt>(OnNodeGroupRebuilt);
-
-        // Game rule events
-        SubscribeLocalEvent<GameRuleStartedEvent>(OnPowerGridCheckStarted);
-        SubscribeLocalEvent<GameRuleEndedEvent>(OnPowerGridCheckEnded);
     }
 
     #region EventHandling
 
+    [SubscribeLocalEvent]
     private void OnConsoleInit(EntityUid uid, PowerMonitoringConsoleComponent component, ComponentInit args)
     {
         RefreshPowerMonitoringConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleParentChanged(EntityUid uid, PowerMonitoringConsoleComponent component, EntParentChangedMessage args)
     {
         RefreshPowerMonitoringConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnCableNetworksInit(EntityUid uid, PowerMonitoringCableNetworksComponent component, ComponentInit args)
     {
         RefreshPowerMonitoringCableNetworks(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnCableNetworksParentChanged(EntityUid uid, PowerMonitoringCableNetworksComponent component, EntParentChangedMessage args)
     {
         RefreshPowerMonitoringCableNetworks(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerMonitoringConsoleMessage(EntityUid uid, PowerMonitoringConsoleComponent component, PowerMonitoringConsoleMessage args)
     {
         var focus = GetEntity(args.FocusDevice);
@@ -106,6 +91,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIOpened(EntityUid uid, PowerMonitoringConsoleComponent component, BoundUIOpenedEvent args)
     {
         component.Focus = null;
@@ -118,6 +104,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         // Collect grids
@@ -150,6 +137,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     public void OnCableAnchorStateChanged(EntityUid uid, CableComponent component, CableAnchorStateChangedEvent args)
     {
         var xform = args.Transform;
@@ -189,6 +177,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceAnchoringChanged(EntityUid uid, PowerMonitoringDeviceComponent component, AnchorStateChangedEvent args)
     {
         var xform = Transform(uid);
@@ -224,6 +213,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     public void OnNodeGroupRebuilt(EntityUid uid, PowerMonitoringDeviceComponent component, NodeGroupsRebuilt args)
     {
         if (component.IsCollectionMasterOrChild)
@@ -237,6 +227,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerGridCheckStarted(ref GameRuleStartedEvent ev)
     {
         if (!TryComp<PowerGridCheckRuleComponent>(ev.RuleEntity, out var rule))
@@ -253,6 +244,7 @@ internal sealed partial class PowerMonitoringConsoleSystem : SharedPowerMonitori
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerGridCheckEnded(ref GameRuleEndedEvent ev)
     {
         if (!TryComp<PowerGridCheckRuleComponent>(ev.RuleEntity, out var rule))

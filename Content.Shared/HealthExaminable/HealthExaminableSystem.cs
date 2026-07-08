@@ -16,10 +16,9 @@ public sealed partial class HealthExaminableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HealthExaminableComponent, GetVerbsEvent<ExamineVerb>>(OnGetExamineVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetExamineVerbs(EntityUid uid, HealthExaminableComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (!TryComp<DamageableComponent>(uid, out var damage))

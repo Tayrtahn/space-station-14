@@ -81,31 +81,24 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
         _emergencyShuttleEnabled = ConfigManager.GetCVar(CCVars.EmergencyShuttleEnabled);
         // Don't immediately invoke as roundstart will just handle it.
         Subs.CVar(ConfigManager, CCVars.EmergencyShuttleEnabled, SetEmergencyShuttleEnabled);
-
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStart);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundCleanup);
-        SubscribeLocalEvent<StationEmergencyShuttleComponent, StationPostInitEvent>(OnStationStartup);
-        SubscribeLocalEvent<StationCentcommComponent, ComponentShutdown>(OnCentcommShutdown);
-        SubscribeLocalEvent<StationCentcommComponent, MapInitEvent>(OnStationInit);
-
-        SubscribeLocalEvent<EmergencyShuttleComponent, FTLStartedEvent>(OnEmergencyFTL);
-        SubscribeLocalEvent<EmergencyShuttleComponent, FTLCompletedEvent>(OnEmergencyFTLComplete);
-        SubscribeNetworkEvent<EmergencyShuttleRequestPositionMessage>(OnShuttleRequestPosition);
         InitializeEmergencyConsole();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStart(RoundStartingEvent ev)
     {
         CleanupEmergencyConsole();
         _roundEndCancelToken = new CancellationTokenSource();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundCleanup(RoundRestartCleanupEvent ev)
     {
         _roundEndCancelToken?.Cancel();
         _roundEndCancelToken = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnCentcommShutdown(EntityUid uid, StationCentcommComponent component, ComponentShutdown args)
     {
         ClearCentcomm(component);
@@ -166,6 +159,7 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
     /// <summary>
     ///     If the client is requesting debug info on where an emergency shuttle would dock.
     /// </summary>
+    [SubscribeNetworkEvent]
     private void OnShuttleRequestPosition(EmergencyShuttleRequestPositionMessage msg, EntitySessionEventArgs args)
     {
         if (!_admin.IsAdmin(args.SenderSession))
@@ -201,6 +195,7 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
     /// <summary>
     ///     Escape shuttle FTL event handler. The only escape shuttle FTL transit should be from station to centcomm at round end
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEmergencyFTL(EntityUid uid, EmergencyShuttleComponent component, ref FTLStartedEvent args)
     {
         var ftlTime = TimeSpan.FromSeconds
@@ -226,6 +221,7 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
     /// <summary>
     ///     When the escape shuttle finishes FTL (docks at centcomm), have the timers display the round end countdown
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEmergencyFTLComplete(EntityUid uid, EmergencyShuttleComponent component, ref FTLCompletedEvent args)
     {
         var countdownTime = TimeSpan.FromSeconds(ConfigManager.GetCVar(CCVars.RoundRestartTime));
@@ -400,6 +396,7 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
         _audio.PlayGlobal(audioFile, Filter.Broadcast(), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationInit(EntityUid uid, StationCentcommComponent component, MapInitEvent args)
     {
         // This is handled on map-init, so that centcomm has finished initializing by the time the StationPostInitEvent
@@ -417,6 +414,7 @@ public sealed partial class EmergencyShuttleSystem : SharedEmergencyShuttleSyste
         AddCentcomm(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationStartup(Entity<StationEmergencyShuttleComponent> ent, ref StationPostInitEvent args)
     {
         AddEmergencyShuttle((ent, ent));

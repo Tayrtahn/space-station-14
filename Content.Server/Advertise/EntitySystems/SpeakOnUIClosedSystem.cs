@@ -15,9 +15,9 @@ public sealed partial class SpeakOnUIClosedSystem : SharedSpeakOnUIClosedSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpeakOnUIClosedComponent, BoundUIClosedEvent>(OnBoundUIClosed);
     }
+
+    [SubscribeLocalEvent]
     private void OnBoundUIClosed(Entity<SpeakOnUIClosedComponent> entity, ref BoundUIClosedEvent args)
     {
         if (!TryComp(entity, out ActivatableUIComponent? activatable) || !args.UiKey.Equals(activatable.Key))

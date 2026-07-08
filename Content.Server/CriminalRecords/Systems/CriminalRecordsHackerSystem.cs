@@ -22,10 +22,9 @@ public sealed partial class CriminalRecordsHackerSystem : SharedCriminalRecordsH
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CriminalRecordsHackerComponent, CriminalRecordsHackDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<CriminalRecordsHackerComponent> ent, ref CriminalRecordsHackDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target == null)

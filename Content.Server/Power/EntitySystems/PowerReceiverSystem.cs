@@ -23,26 +23,15 @@ namespace Content.Server.Power.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ExaminedEvent>(OnExamined);
-
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ExtensionCableSystem.ProviderConnectedEvent>(OnProviderConnected);
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ExtensionCableSystem.ProviderDisconnectedEvent>(OnProviderDisconnected);
-
-            SubscribeLocalEvent<ApcPowerProviderComponent, ComponentShutdown>(OnProviderShutdown);
-            SubscribeLocalEvent<ApcPowerProviderComponent, ExtensionCableSystem.ReceiverConnectedEvent>(OnReceiverConnected);
-            SubscribeLocalEvent<ApcPowerProviderComponent, ExtensionCableSystem.ReceiverDisconnectedEvent>(OnReceiverDisconnected);
-
-            SubscribeLocalEvent<ApcPowerReceiverComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
-            SubscribeLocalEvent<PowerSwitchComponent, GetVerbsEvent<AlternativeVerb>>(AddSwitchPowerVerb);
-
-            SubscribeLocalEvent<ApcPowerReceiverComponent, ComponentGetState>(OnGetState);
         }
 
+        [SubscribeLocalEvent]
         private void OnExamined(Entity<ApcPowerReceiverComponent> ent, ref ExaminedEvent args)
         {
             args.PushMarkup(GetExamineText(ent.Comp.Powered));
         }
 
+        [SubscribeLocalEvent]
         private void OnGetVerbs(EntityUid uid, ApcPowerReceiverComponent component, GetVerbsEvent<Verb> args)
         {
             if (!_adminManager.HasAdminFlag(args.User, AdminFlags.Admin))
@@ -61,6 +50,7 @@ namespace Content.Server.Power.EntitySystems
             });
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderShutdown(EntityUid uid, ApcPowerProviderComponent component, ComponentShutdown args)
         {
             foreach (var receiver in component.LinkedReceivers)
@@ -72,6 +62,7 @@ namespace Content.Server.Power.EntitySystems
             component.LinkedReceivers.Clear();
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderConnected(Entity<ApcPowerReceiverComponent> receiver, ref ExtensionCableSystem.ProviderConnectedEvent args)
         {
             var providerUid = args.Provider.Owner;
@@ -83,6 +74,7 @@ namespace Content.Server.Power.EntitySystems
             ProviderChanged(receiver);
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderDisconnected(Entity<ApcPowerReceiverComponent> receiver, ref ExtensionCableSystem.ProviderDisconnectedEvent args)
         {
             receiver.Comp.Provider = null;
@@ -90,6 +82,7 @@ namespace Content.Server.Power.EntitySystems
             ProviderChanged(receiver);
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverConnected(Entity<ApcPowerProviderComponent> provider, ref ExtensionCableSystem.ReceiverConnectedEvent args)
         {
             if (_recQuery.TryGetComponent(args.Receiver, out var receiver))
@@ -98,6 +91,7 @@ namespace Content.Server.Power.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnReceiverDisconnected(EntityUid uid, ApcPowerProviderComponent provider, ExtensionCableSystem.ReceiverDisconnectedEvent args)
         {
             if (_recQuery.TryGetComponent(args.Receiver, out var receiver))
@@ -106,6 +100,7 @@ namespace Content.Server.Power.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void AddSwitchPowerVerb(EntityUid uid, PowerSwitchComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
             if(!args.CanAccess || !args.CanInteract)
@@ -133,6 +128,7 @@ namespace Content.Server.Power.EntitySystems
             args.Verbs.Add(verb);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetState(EntityUid uid, ApcPowerReceiverComponent component, ref ComponentGetState args)
         {
             args.State = new ApcPowerReceiverComponentState

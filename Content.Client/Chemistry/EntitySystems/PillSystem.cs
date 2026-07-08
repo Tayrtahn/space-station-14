@@ -10,9 +10,9 @@ public sealed partial class PillSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PillComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, PillComponent component, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp(uid, out SpriteComponent? sprite))

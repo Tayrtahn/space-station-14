@@ -22,9 +22,6 @@ public sealed partial class MappingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FillActionSlotEvent>(OnFillActionSlot);
-        SubscribeLocalEvent<StartPlacementActionEvent>(OnStartPlacementAction);
     }
 
     /// <summary>
@@ -32,6 +29,7 @@ public sealed partial class MappingSystem : EntitySystem
     ///     some entity or tile into an action. This is somewhat janky, but it seem to work well enough. Though I'd
     ///     prefer if it were to function more like DecalPlacementSystem.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnFillActionSlot(FillActionSlotEvent args)
     {
         if (!_placementMan.IsActive)
@@ -74,6 +72,7 @@ public sealed partial class MappingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartPlacementAction(StartPlacementActionEvent args)
     {
         if (args.Handled)

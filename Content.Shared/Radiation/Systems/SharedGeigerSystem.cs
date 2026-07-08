@@ -3,14 +3,14 @@ using Content.Shared.Radiation.Components;
 
 namespace Content.Shared.Radiation.Systems;
 
-public abstract class SharedGeigerSystem : EntitySystem
+public abstract partial class SharedGeigerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GeigerComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, GeigerComponent component, ExaminedEvent args)
     {
         if (!component.ShowExamine || !component.IsEnabled || !args.IsInDetailsRange)

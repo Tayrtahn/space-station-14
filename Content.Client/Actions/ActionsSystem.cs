@@ -49,18 +49,9 @@ namespace Content.Client.Actions
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ActionsComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-            SubscribeLocalEvent<ActionsComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
-            SubscribeLocalEvent<ActionsComponent, ComponentHandleState>(OnHandleState);
-
-            SubscribeLocalEvent<ActionComponent, AfterAutoHandleStateEvent>(OnActionAutoHandleState);
-
-            SubscribeLocalEvent<EntityTargetActionComponent, ActionTargetAttemptEvent>(OnEntityTargetAttempt);
-            SubscribeLocalEvent<WorldTargetActionComponent, ActionTargetAttemptEvent>(OnWorldTargetAttempt);
         }
 
-
+        [SubscribeLocalEvent]
         private void OnActionAutoHandleState(Entity<ActionComponent> ent, ref AfterAutoHandleStateEvent args)
         {
             UpdateAction(ent);
@@ -77,6 +68,7 @@ namespace Content.Client.Actions
             ActionsUpdated?.Invoke();
         }
 
+        [SubscribeLocalEvent]
         private void OnHandleState(Entity<ActionsComponent> ent, ref ComponentHandleState args)
         {
             if (args.Current is not ActionsComponentState state)
@@ -161,11 +153,13 @@ namespace Content.Client.Actions
             return GetActions(user);
         }
 
+        [SubscribeLocalEvent]
         private void OnPlayerAttached(EntityUid uid, ActionsComponent component, LocalPlayerAttachedEvent args)
         {
             LinkAllActions(component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPlayerDetached(EntityUid uid, ActionsComponent component, LocalPlayerDetachedEvent? args = null)
         {
             UnlinkAllActions();
@@ -308,6 +302,7 @@ namespace Content.Client.Actions
             AssignSlot?.Invoke(assignments);
         }
 
+        [SubscribeLocalEvent]
         private void OnWorldTargetAttempt(Entity<WorldTargetActionComponent> ent, ref ActionTargetAttemptEvent args)
         {
             if (args.Handled)
@@ -350,6 +345,7 @@ namespace Content.Client.Actions
             args.FoundTarget = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnEntityTargetAttempt(Entity<EntityTargetActionComponent> ent, ref ActionTargetAttemptEvent args)
         {
             if (args.Handled)

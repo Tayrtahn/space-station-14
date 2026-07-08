@@ -14,10 +14,9 @@ namespace Content.Shared.Storage.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ItemCounterComponent, EntInsertedIntoContainerMessage>(CounterEntityInserted);
-            SubscribeLocalEvent<ItemCounterComponent, EntRemovedFromContainerMessage>(CounterEntityRemoved);
         }
 
+        [SubscribeLocalEvent]
         private void CounterEntityInserted(EntityUid uid, ItemCounterComponent itemCounter,
             EntInsertedIntoContainerMessage args)
         {
@@ -34,6 +33,7 @@ namespace Content.Shared.Storage.EntitySystems
                 _appearance.SetData(uid, StackVisuals.MaxCount, itemCounter.MaxAmount, appearanceComponent);
         }
 
+        [SubscribeLocalEvent]
         private void CounterEntityRemoved(EntityUid uid, ItemCounterComponent itemCounter,
             EntRemovedFromContainerMessage args)
         {

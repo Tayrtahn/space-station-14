@@ -31,14 +31,10 @@ public sealed partial class StationJobsSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<StationInitializedEvent>(OnStationInitialized);
-        SubscribeLocalEvent<StationJobsComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<StationJobsComponent, StationRenamedEvent>(OnStationRenamed);
-        SubscribeLocalEvent<StationJobsComponent, ComponentShutdown>(OnStationDeletion);
-        SubscribeLocalEvent<PlayerJoinedLobbyEvent>(OnPlayerJoinedLobby);
         Subs.CVar(_configurationManager, CCVars.GameDisallowLateJoins, _ => UpdateJobsAvailable(), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<StationJobsComponent> ent, ref ComponentInit args)
     {
         ent.Comp.MidRoundTotalJobs = ent.Comp.SetupAvailableJobs.Values
@@ -61,11 +57,13 @@ public sealed partial class StationJobsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStationDeletion(EntityUid uid, StationJobsComponent component, ComponentShutdown args)
     {
         UpdateJobsAvailable(); // we no longer exist so the jobs list is changed.
     }
 
+    [SubscribeLocalEvent]
     private void OnStationInitialized(StationInitializedEvent msg)
     {
         if (!TryComp<StationJobsComponent>(msg.Station, out var stationJobs))
@@ -508,11 +506,13 @@ public sealed partial class StationJobsSystem : EntitySystem
         _availableJobsDirty = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerJoinedLobby(PlayerJoinedLobbyEvent ev)
     {
         RaiseNetworkEvent(_cachedAvailableJobs, ev.PlayerSession.Channel);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationRenamed(EntityUid uid, StationJobsComponent component, StationRenamedEvent args)
     {
         UpdateJobsAvailable();

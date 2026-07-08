@@ -17,11 +17,9 @@ public sealed partial class FireStackOnTriggerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FireStackOnTriggerComponent, TriggerEvent>(OnTriggerFlame);
-        SubscribeLocalEvent<ExtinguishOnTriggerComponent, TriggerEvent>(OnTriggerExtinguish);
     }
 
+    [SubscribeLocalEvent]
     private void OnTriggerFlame(Entity<FireStackOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))
@@ -40,6 +38,7 @@ public sealed partial class FireStackOnTriggerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnTriggerExtinguish(Entity<ExtinguishOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

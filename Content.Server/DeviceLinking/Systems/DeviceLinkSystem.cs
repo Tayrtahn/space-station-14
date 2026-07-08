@@ -17,9 +17,6 @@ public sealed partial class DeviceLinkSystem : SharedDeviceLinkSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeviceLinkSinkComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<DeviceLinkSourceComponent, NewLinkEvent>(OnNewLink);
     }
 
     #region Sending & Receiving
@@ -126,6 +123,7 @@ public sealed partial class DeviceLinkSystem : SharedDeviceLinkSystem
     /// Checks if the payload has a port defined and if the port is present on the sink.
     /// Raises a <see cref="SignalReceivedEvent"/> containing the payload when the check passes
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, DeviceLinkSinkComponent component, DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(InvokedPort, out string? port) || !(component.Ports?.Contains(port) ?? false))
@@ -138,6 +136,7 @@ public sealed partial class DeviceLinkSystem : SharedDeviceLinkSystem
     /// <summary>
     /// When linking from a port that currently has a signal being sent, invoke the new link with that signal.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnNewLink(Entity<DeviceLinkSourceComponent> ent, ref NewLinkEvent args)
     {
         if (args.Source != ent.Owner)

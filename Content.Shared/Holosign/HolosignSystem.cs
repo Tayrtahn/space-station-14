@@ -14,11 +14,9 @@ public sealed partial class HolosignSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HolosignProjectorComponent, BeforeRangedInteractEvent>(OnBeforeInteract);
-        SubscribeLocalEvent<HolosignProjectorComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<HolosignProjectorComponent> ent, ref ExaminedEvent args)
     {
         // TODO: This should probably be using an itemstatus
@@ -37,6 +35,7 @@ public sealed partial class HolosignSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeInteract(Entity<HolosignProjectorComponent> ent, ref BeforeRangedInteractEvent args)
     {
         if (args.Handled

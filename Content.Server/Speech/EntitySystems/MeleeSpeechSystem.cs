@@ -16,19 +16,21 @@ public sealed partial class MeleeSpeechSystem : SharedMeleeSpeechSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MeleeSpeechComponent, MeleeSpeechBattlecryChangedMessage>(OnBattlecryChanged);
-        SubscribeLocalEvent<MeleeSpeechComponent, MeleeSpeechConfigureActionEvent>(OnConfigureAction);
-        SubscribeLocalEvent<MeleeSpeechComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<MeleeSpeechComponent, MapInitEvent>(OnComponentMapInit);
     }
+
+    [SubscribeLocalEvent]
     private void OnComponentMapInit(EntityUid uid, MeleeSpeechComponent component, MapInitEvent args)
     {
         _actionSystem.AddAction(uid, ref component.ConfigureActionEntity, component.ConfigureAction, uid);
     }
+
+    [SubscribeLocalEvent]
     private void OnGetActions(EntityUid uid, MeleeSpeechComponent component, GetItemActionsEvent args)
     {
         args.AddAction(ref component.ConfigureActionEntity, component.ConfigureAction);
     }
+
+    [SubscribeLocalEvent]
     private void OnBattlecryChanged(EntityUid uid, MeleeSpeechComponent comp, MeleeSpeechBattlecryChangedMessage args)
     {
         if (!TryComp<MeleeSpeechComponent>(uid, out var meleeSpeechUser))
@@ -38,9 +40,11 @@ public sealed partial class MeleeSpeechSystem : SharedMeleeSpeechSystem
             battlecry = battlecry[..comp.MaxBattlecryLength];
         TryChangeBattlecry(uid, battlecry, meleeSpeechUser);
     }
+
     /// <summary>
     /// Attempts to open the Battlecry UI.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnConfigureAction(EntityUid uid, MeleeSpeechComponent comp, MeleeSpeechConfigureActionEvent args)
     {
         TryOpenUi(args.Performer, uid, comp);

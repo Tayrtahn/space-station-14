@@ -22,10 +22,9 @@ public sealed partial class GasPressurePumpSystem : SharedGasPressurePumpSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasPressurePumpComponent, AtmosDeviceUpdateEvent>(OnPumpUpdated);
     }
 
+    [SubscribeLocalEvent]
     private void OnPumpUpdated(Entity<GasPressurePumpComponent> ent, ref AtmosDeviceUpdateEvent args)
     {
         if (!ent.Comp.Enabled

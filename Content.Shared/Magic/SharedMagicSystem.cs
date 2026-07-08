@@ -74,21 +74,9 @@ public abstract partial class SharedMagicSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MagicComponent, BeforeCastSpellEvent>(OnBeforeCastSpell);
-
-        SubscribeLocalEvent<InstantSpawnSpellEvent>(OnInstantSpawn);
-        SubscribeLocalEvent<TeleportSpellEvent>(OnTeleportSpell);
-        SubscribeLocalEvent<WorldSpawnSpellEvent>(OnWorldSpawn);
-        SubscribeLocalEvent<ProjectileSpellEvent>(OnProjectileSpell);
-        SubscribeLocalEvent<ChangeComponentsSpellEvent>(OnChangeComponentsSpell);
-        SubscribeLocalEvent<SmiteSpellEvent>(OnSmiteSpell);
-        SubscribeLocalEvent<KnockSpellEvent>(OnKnockSpell);
-        SubscribeLocalEvent<ChargeSpellEvent>(OnChargeSpell);
-        SubscribeLocalEvent<RandomGlobalSpawnSpellEvent>(OnRandomGlobalSpawnSpell);
-        SubscribeLocalEvent<MindSwapSpellEvent>(OnMindSwapSpell);
-        SubscribeLocalEvent<VoidApplauseSpellEvent>(OnVoidApplause);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeCastSpell(Entity<MagicComponent> ent, ref BeforeCastSpellEvent args)
     {
         var comp = ent.Comp;
@@ -133,6 +121,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
     /// <summary>
     /// Handles the instant action (i.e. on the caster) attempting to spawn an entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInstantSpawn(InstantSpawnSpellEvent args)
     {
         if (args.Handled || !PassesSpellPrerequisites(args.Action, args.Performer))
@@ -220,6 +209,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
                 throw new ArgumentOutOfRangeException();
         }
     }
+
     // End Instant Spawn Spells
     #endregion
     #region World Spawn Spells
@@ -230,6 +220,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
     /// It will offset entities after the first entity based on the OffsetVector2.
     /// </remarks>
     /// <param name="args"> The Spawn Spell Event args.</param>
+    [SubscribeLocalEvent]
     private void OnWorldSpawn(WorldSpawnSpellEvent args)
     {
         if (args.Handled || !PassesSpellPrerequisites(args.Action, args.Performer))
@@ -264,9 +255,11 @@ public abstract partial class SharedMagicSystem : EntitySystem
             offsetCoords = offsetCoords.Offset(offsetVector2);
         }
     }
+
     // End World Spawn Spells
     #endregion
     #region Projectile Spells
+    [SubscribeLocalEvent]
     private void OnProjectileSpell(ProjectileSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer))
@@ -289,10 +282,12 @@ public abstract partial class SharedMagicSystem : EntitySystem
                          fromMap.Position;
         _gunSystem.ShootProjectile(ent, direction, userVelocity, ev.Performer, ev.Performer, ev.ProjectileSpeed);
     }
+
     // End Projectile Spells
     #endregion
     #region Change Component Spells
     // staves.yml ActionRGB light
+    [SubscribeLocalEvent]
     private void OnChangeComponentsSpell(ChangeComponentsSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer))
@@ -303,6 +298,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
         RemoveComponents(ev.Target, ev.ToRemove);
         AddComponents(ev.Target, ev.ToAdd);
     }
+
     // End Change Component Spells
     #endregion
     #region Teleport Spells
@@ -311,6 +307,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
     /// Teleports the user to the clicked location
     /// </summary>
     /// <param name="args"></param>
+    [SubscribeLocalEvent]
     private void OnTeleportSpell(TeleportSpellEvent args)
     {
         if (args.Handled || !PassesSpellPrerequisites(args.Action, args.Performer))
@@ -325,6 +322,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     public virtual void OnVoidApplause(VoidApplauseSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer))
@@ -379,9 +377,11 @@ public abstract partial class SharedMagicSystem : EntitySystem
                 RemComp(target, registration.Type);
         }
     }
+
     // End Spell Helpers
     #endregion
     #region Touch Spells
+    [SubscribeLocalEvent]
     private void OnSmiteSpell(SmiteSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer))
@@ -402,6 +402,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
     /// <summary>
     /// Opens all doors and locks within range.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnKnockSpell(KnockSpellEvent args)
     {
         if (args.Handled || !PassesSpellPrerequisites(args.Action, args.Performer))
@@ -436,10 +437,12 @@ public abstract partial class SharedMagicSystem : EntitySystem
                 _lock.Unlock(target, performer, lockComp);
         }
     }
+
     // End Knock Spells
     #endregion
     #region Charge Spells
     // TODO: Future support to charge other items
+    [SubscribeLocalEvent]
     private void OnChargeSpell(ChargeSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer) || !TryComp<HandsComponent>(ev.Performer, out var handsComp))
@@ -464,11 +467,13 @@ public abstract partial class SharedMagicSystem : EntitySystem
         else if (TryComp<LimitedChargesComponent>(wand, out var charges))
             _charges.AddCharges((wand.Value, charges), ev.Charge);
     }
+
     // End Charge Spells
     #endregion
     #region Global Spells
 
     // TODO: Change this into a "StartRuleAction" when actions with multiple events are supported
+    [SubscribeLocalEvent]
     protected virtual void OnRandomGlobalSpawnSpell(RandomGlobalSpawnSpellEvent ev)
     {
         if (!_net.IsServer || ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer) || ev.Spawns is not { } spawns)
@@ -502,6 +507,7 @@ public abstract partial class SharedMagicSystem : EntitySystem
     #endregion
     #region Mindswap Spells
 
+    [SubscribeLocalEvent]
     private void OnMindSwapSpell(MindSwapSpellEvent ev)
     {
         if (ev.Handled || !PassesSpellPrerequisites(ev.Action, ev.Performer))

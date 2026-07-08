@@ -26,11 +26,9 @@ public abstract partial class SharedTemperatureSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TemperatureSpeedComponent, OnTemperatureChangeEvent>(OnTemperatureChanged);
-        SubscribeLocalEvent<TemperatureSpeedComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnTemperatureChanged(Entity<TemperatureSpeedComponent> ent, ref OnTemperatureChangeEvent args)
     {
         foreach (var (threshold, modifier) in ent.Comp.Thresholds)
@@ -54,6 +52,7 @@ public abstract partial class SharedTemperatureSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovementSpeedModifiers(Entity<TemperatureSpeedComponent> ent, ref RefreshMovementSpeedModifiersEvent args)
     {
         // Don't update speed and mispredict while we're compensating for lag.

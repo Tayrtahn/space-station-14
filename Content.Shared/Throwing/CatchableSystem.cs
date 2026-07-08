@@ -29,10 +29,9 @@ public sealed partial class CatchableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CatchableComponent, ThrowDoHitEvent>(OnDoHit);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoHit(Entity<CatchableComponent> ent, ref ThrowDoHitEvent args)
     {
         if (!_handsQuery.TryGetComponent(args.Target, out var handsComp))

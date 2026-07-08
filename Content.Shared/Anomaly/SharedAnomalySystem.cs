@@ -42,11 +42,9 @@ public abstract partial class SharedAnomalySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalyComponent, MeleeThrowOnHitStartEvent>(OnAnomalyThrowStart);
-        SubscribeLocalEvent<AnomalyComponent, LandEvent>(OnLand);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnomalyThrowStart(Entity<AnomalyComponent> ent, ref MeleeThrowOnHitStartEvent args)
     {
         if (!TryComp<CorePoweredThrowerComponent>(args.Weapon, out var corePowered) || !TryComp<PhysicsComponent>(ent, out var body))
@@ -59,6 +57,7 @@ public abstract partial class SharedAnomalySystem : EntitySystem
         ChangeAnomalyStability(ent, Random.NextFloat(corePowered.StabilityPerThrow.X, corePowered.StabilityPerThrow.Y), ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnLand(Entity<AnomalyComponent> ent, ref LandEvent args)
     {
         // revert back to static, but only if the object was dynamic (such as thrown anomalies, but not anomaly infected players)

@@ -30,10 +30,6 @@ public abstract partial class SharedMaterialStorageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MaterialStorageComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<MaterialStorageComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<MaterialStorageComponent, TechnologyDatabaseModifiedEvent>(OnDatabaseModified);
     }
 
     public override void Update(float frameTime)
@@ -50,6 +46,7 @@ public abstract partial class SharedMaterialStorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, MaterialStorageComponent component, MapInitEvent args)
     {
         _appearance.SetData(uid, MaterialStorageVisuals.Inserting, false);
@@ -397,6 +394,7 @@ public abstract partial class SharedMaterialStorageSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, MaterialStorageComponent component, InteractUsingEvent args)
     {
         if (args.Handled || !component.InsertOnInteract)
@@ -404,6 +402,7 @@ public abstract partial class SharedMaterialStorageSystem : EntitySystem
         args.Handled = TryInsertMaterialEntity(args.User, args.Used, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnDatabaseModified(Entity<MaterialStorageComponent> ent, ref TechnologyDatabaseModifiedEvent args)
     {
         UpdateMaterialWhitelist(ent);

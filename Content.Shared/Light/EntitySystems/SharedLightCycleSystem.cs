@@ -3,15 +3,14 @@ using Robust.Shared.Map.Components;
 
 namespace Content.Shared.Light.EntitySystems;
 
-public abstract class SharedLightCycleSystem : EntitySystem
+public abstract partial class SharedLightCycleSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LightCycleComponent, MapInitEvent>(OnCycleMapInit);
-        SubscribeLocalEvent<LightCycleComponent, ComponentShutdown>(OnCycleShutdown);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnCycleMapInit(Entity<LightCycleComponent> ent, ref MapInitEvent args)
     {
         if (TryComp(ent.Owner, out MapLightComponent? mapLight))
@@ -21,6 +20,7 @@ public abstract class SharedLightCycleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCycleShutdown(Entity<LightCycleComponent> ent, ref ComponentShutdown args)
     {
         if (TryComp(ent.Owner, out MapLightComponent? mapLight))

@@ -66,16 +66,9 @@ public sealed partial class CloningPodSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
-        SubscribeLocalEvent<BeingClonedComponent, MindAddedMessage>(HandleMindAdded);
-        SubscribeLocalEvent<CloningPodComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<CloningPodComponent, PortDisconnectedEvent>(OnPortDisconnected);
-        SubscribeLocalEvent<CloningPodComponent, AnchorStateChangedEvent>(OnAnchor);
-        SubscribeLocalEvent<CloningPodComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<CloningPodComponent, GotEmaggedEvent>(OnEmagged);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<CloningPodComponent> ent, ref ComponentInit args)
     {
         ent.Comp.BodyContainer = _containerSystem.EnsureContainer<ContainerSlot>(ent.Owner, "clonepod-bodyContainer");
@@ -95,6 +88,7 @@ public sealed partial class CloningPodSystem : EntitySystem
         ClonesWaitingForMind.Remove(mind);
     }
 
+    [SubscribeLocalEvent]
     private void HandleMindAdded(EntityUid uid, BeingClonedComponent clonedComponent, MindAddedMessage message)
     {
         if (clonedComponent.Parent == EntityUid.Invalid ||
@@ -107,11 +101,14 @@ public sealed partial class CloningPodSystem : EntitySystem
         }
         UpdateStatus(clonedComponent.Parent, CloningPodStatus.Cloning, cloningPodComponent);
     }
+
+    [SubscribeLocalEvent]
     private void OnPortDisconnected(Entity<CloningPodComponent> ent, ref PortDisconnectedEvent args)
     {
         ent.Comp.ConnectedConsole = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchor(Entity<CloningPodComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (ent.Comp.ConnectedConsole == null || !TryComp<CloningConsoleComponent>(ent.Comp.ConnectedConsole, out var console))
@@ -125,6 +122,7 @@ public sealed partial class CloningPodSystem : EntitySystem
         _cloningConsoleSystem.UpdateUserInterface(ent.Comp.ConnectedConsole.Value, console);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<CloningPodComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || !_powerReceiverSystem.IsPowered(ent.Owner))
@@ -254,6 +252,7 @@ public sealed partial class CloningPodSystem : EntitySystem
     /// <summary>
     /// On emag, spawns a failed clone when cloning process fails which attacks nearby crew.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEmagged(Entity<CloningPodComponent> ent, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -321,6 +320,7 @@ public sealed partial class CloningPodSystem : EntitySystem
         RemCompDeferred<ActiveCloningPodComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     public void Reset(RoundRestartCleanupEvent ev)
     {
         ClonesWaitingForMind.Clear();

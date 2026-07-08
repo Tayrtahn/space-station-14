@@ -19,11 +19,9 @@ public sealed partial class FlatpackSystem : SharedFlatpackSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FlatpackCreatorComponent, FlatpackCreatorStartPackBuiMessage>(OnStartPack);
-        SubscribeLocalEvent<FlatpackCreatorComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartPack(Entity<FlatpackCreatorComponent> ent, ref FlatpackCreatorStartPackBuiMessage args)
     {
         var (uid, comp) = ent;
@@ -47,6 +45,7 @@ public sealed partial class FlatpackSystem : SharedFlatpackSystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<FlatpackCreatorComponent> ent, ref PowerChangedEvent args)
     {
         if (args.Powered)

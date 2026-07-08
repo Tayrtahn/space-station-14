@@ -15,10 +15,9 @@ public sealed partial class FlatpackSystem : SharedFlatpackSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FlatpackComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<FlatpackComponent> ent, ref AppearanceChangeEvent args)
     {
         var (_, comp) = ent;

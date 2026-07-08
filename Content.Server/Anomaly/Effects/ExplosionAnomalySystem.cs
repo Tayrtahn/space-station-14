@@ -14,9 +14,9 @@ public sealed partial class ExplosionAnomalySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ExplosionAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, ExplosionAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         _boom.QueueExplosion(

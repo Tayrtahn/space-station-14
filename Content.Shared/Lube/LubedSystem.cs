@@ -20,17 +20,15 @@ public sealed partial class LubedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LubedComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<LubedComponent, BeforeGettingEquippedHandEvent>(OnHandPickUp);
-        SubscribeLocalEvent<LubedComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<LubedComponent> ent, ref ComponentInit args)
     {
         _nameMod.RefreshNameModifiers(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandPickUp(Entity<LubedComponent> ent, ref BeforeGettingEquippedHandEvent args)
     {
         var user = args.User;
@@ -54,6 +52,7 @@ public sealed partial class LubedSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<LubedComponent> ent, ref RefreshNameModifiersEvent args)
     {
         if (ent.Comp.SlipsLeft > 0) // The component is removed deferred, so it might still exist when we refresh.

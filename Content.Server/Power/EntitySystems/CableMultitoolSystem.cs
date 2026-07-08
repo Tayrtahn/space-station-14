@@ -22,11 +22,9 @@ namespace Content.Server.Power.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<CableComponent, GetVerbsEvent<ExamineVerb>>(OnGetExamineVerbs);
-            SubscribeLocalEvent<CableComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
         }
 
+        [SubscribeLocalEvent]
         private void OnAfterInteractUsing(EntityUid uid, CableComponent component, AfterInteractUsingEvent args)
         {
             if (args.Handled || args.Target == null || !args.CanReach || !_toolSystem.HasQuality(args.Used, SharedToolSystem.PulseQuality))
@@ -37,6 +35,7 @@ namespace Content.Server.Power.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGetExamineVerbs(EntityUid uid, CableComponent component, GetVerbsEvent<ExamineVerb> args)
         {
             // Must be in details range to try this.

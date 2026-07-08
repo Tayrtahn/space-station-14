@@ -16,12 +16,9 @@ public sealed partial class MultiHandedItemSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MultiHandedItemComponent, GettingPickedUpAttemptEvent>(OnAttemptPickup);
-        SubscribeLocalEvent<MultiHandedItemComponent, VirtualItemDeletedEvent>(OnVirtualItemDeleted);
-        SubscribeLocalEvent<MultiHandedItemComponent, GotEquippedHandEvent>(OnEquipped);
-        SubscribeLocalEvent<MultiHandedItemComponent, GotUnequippedHandEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<MultiHandedItemComponent> ent, ref GotEquippedHandEvent args)
     {
         for (var i = 0; i < ent.Comp.HandsNeeded - 1; i++)
@@ -30,11 +27,13 @@ public sealed partial class MultiHandedItemSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<MultiHandedItemComponent> ent, ref GotUnequippedHandEvent args)
     {
         _virtualItem.DeleteInHandsMatching(args.User, ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptPickup(Entity<MultiHandedItemComponent> ent, ref GettingPickedUpAttemptEvent args)
     {
         if (args.Cancelled || _hands.CountFreeHands(args.User) >= ent.Comp.HandsNeeded)
@@ -50,6 +49,7 @@ public sealed partial class MultiHandedItemSystem : EntitySystem
                 args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnVirtualItemDeleted(Entity<MultiHandedItemComponent> ent, ref VirtualItemDeletedEvent args)
     {
         if (args.BlockingEntity != ent.Owner || _timing.ApplyingState)

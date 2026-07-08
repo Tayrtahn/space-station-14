@@ -42,19 +42,6 @@ public sealed partial class PlayTimeTrackingSystem : EntitySystem
         base.Initialize();
 
         _tracking.CalcTrackers += CalcTrackers;
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundEnd);
-        SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<PlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<RoleAddedEvent>(OnRoleEvent);
-        SubscribeLocalEvent<RoleRemovedEvent>(OnRoleEvent);
-        SubscribeLocalEvent<AFKEvent>(OnAFK);
-        SubscribeLocalEvent<UnAFKEvent>(OnUnAFK);
-        SubscribeLocalEvent<MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<PlayerJoinedLobbyEvent>(OnPlayerJoinedLobby);
-        SubscribeLocalEvent<StationJobsGetCandidatesEvent>(OnStationJobsGetCandidates);
-        SubscribeLocalEvent<IsRoleAllowedEvent>(OnIsRoleAllowed);
-        SubscribeLocalEvent<GetDisallowedJobsEvent>(OnGetDisallowedJobs);
         _adminManager.OnPermsChanged += AdminPermsChanged;
     }
 
@@ -123,22 +110,26 @@ public sealed partial class PlayTimeTrackingSystem : EntitySystem
         return GetTimedRoles(contentData.Mind.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleEvent(RoleEvent ev)
     {
         if (_playerManager.TryGetSessionById(ev.Mind.UserId, out var session))
             _tracking.QueueRefreshTrackers(session);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEnd(RoundRestartCleanupEvent ev)
     {
         _tracking.Save();
     }
 
+    [SubscribeLocalEvent]
     private void OnUnAFK(ref UnAFKEvent ev)
     {
         _tracking.QueueRefreshTrackers(ev.Session);
     }
 
+    [SubscribeLocalEvent]
     private void OnAFK(ref AFKEvent ev)
     {
         _tracking.QueueRefreshTrackers(ev.Session);
@@ -149,17 +140,20 @@ public sealed partial class PlayTimeTrackingSystem : EntitySystem
         _tracking.QueueRefreshTrackers(admin.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(PlayerAttachedEvent ev)
     {
         _tracking.QueueRefreshTrackers(ev.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(PlayerDetachedEvent ev)
     {
         // This doesn't fire if the player doesn't leave their body. I guess it's fine?
         _tracking.QueueRefreshTrackers(ev.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(MobStateChangedEvent ev)
     {
         if (!TryComp(ev.Target, out ActorComponent? actor))
@@ -168,6 +162,7 @@ public sealed partial class PlayTimeTrackingSystem : EntitySystem
         _tracking.QueueRefreshTrackers(actor.PlayerSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerJoinedLobby(PlayerJoinedLobbyEvent ev)
     {
         _tracking.QueueRefreshTrackers(ev.PlayerSession);
@@ -175,17 +170,20 @@ public sealed partial class PlayTimeTrackingSystem : EntitySystem
         _tracking.QueueSendTimers(ev.PlayerSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationJobsGetCandidates(ref StationJobsGetCandidatesEvent ev)
     {
         RemoveDisallowedJobs(ev.Player, ev.Jobs);
     }
 
+    [SubscribeLocalEvent]
     private void OnIsRoleAllowed(ref IsRoleAllowedEvent ev)
     {
         if (!IsAllowed(ev.Player, ev.Jobs) || !IsAllowed(ev.Player, ev.Antags))
             ev.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDisallowedJobs(ref GetDisallowedJobsEvent ev)
     {
         ev.Jobs.UnionWith(GetDisallowedJobs(ev.Player));

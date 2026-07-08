@@ -23,37 +23,35 @@ public abstract partial class SharedCursedMaskSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CursedMaskComponent, ClothingGotEquippedEvent>(OnClothingEquip);
-        SubscribeLocalEvent<CursedMaskComponent, ClothingGotUnequippedEvent>(OnClothingUnequip);
-        SubscribeLocalEvent<CursedMaskComponent, ExaminedEvent>(OnExamine);
-
-        SubscribeLocalEvent<CursedMaskComponent, InventoryRelayedEvent<RefreshMovementSpeedModifiersEvent>>(OnMovementSpeedModifier);
-        SubscribeLocalEvent<CursedMaskComponent, InventoryRelayedEvent<DamageModifyEvent>>(OnModifyDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnClothingEquip(Entity<CursedMaskComponent> ent, ref ClothingGotEquippedEvent args)
     {
         RandomizeCursedMask(ent, args.Wearer);
         TryTakeover(ent, args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnClothingUnequip(Entity<CursedMaskComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         RandomizeCursedMask(ent, args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<CursedMaskComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString($"cursed-mask-examine-{ent.Comp.CurrentState.ToString()}"));
     }
 
+    [SubscribeLocalEvent]
     private void OnMovementSpeedModifier(Entity<CursedMaskComponent> ent, ref InventoryRelayedEvent<RefreshMovementSpeedModifiersEvent> args)
     {
         if (ent.Comp.CurrentState == CursedMaskExpression.Joy)
             args.Args.ModifySpeed(ent.Comp.JoySpeedModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnModifyDamage(Entity<CursedMaskComponent> ent, ref InventoryRelayedEvent<DamageModifyEvent> args)
     {
         if (ent.Comp.CurrentState == CursedMaskExpression.Despair)

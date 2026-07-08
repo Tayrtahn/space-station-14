@@ -13,9 +13,9 @@ public sealed partial class TimerTriggerVisualizerSystem : VisualizerSystem<Time
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TimerTriggerVisualsComponent, ComponentInit>(OnComponentInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<TimerTriggerVisualsComponent> ent, ref ComponentInit args)
     {
         ent.Comp.PrimingAnimation = new Animation

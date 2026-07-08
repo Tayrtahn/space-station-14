@@ -69,30 +69,10 @@ public sealed partial class GhostRoleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(Reset);
-        SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
-
-        SubscribeLocalEvent<GhostTakeoverAvailableComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<GhostTakeoverAvailableComponent, MindRemovedMessage>(OnMindRemoved);
-        SubscribeLocalEvent<GhostTakeoverAvailableComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<GhostTakeoverAvailableComponent, TakeGhostRoleEvent>(OnTakeoverTakeRole);
-
-        SubscribeLocalEvent<GhostRoleComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<GhostRoleComponent, ComponentStartup>(OnRoleStartup);
-        SubscribeLocalEvent<GhostRoleComponent, ComponentShutdown>(OnRoleShutdown);
-        SubscribeLocalEvent<GhostRoleComponent, EntityPausedEvent>(OnPaused);
-        SubscribeLocalEvent<GhostRoleComponent, EntityUnpausedEvent>(OnUnpaused);
-
-        SubscribeLocalEvent<GhostRoleRaffleComponent, ComponentInit>(OnRaffleInit);
-        SubscribeLocalEvent<GhostRoleRaffleComponent, ComponentShutdown>(OnRaffleShutdown);
-
-        SubscribeLocalEvent<GhostRoleMobSpawnerComponent, TakeGhostRoleEvent>(OnSpawnerTakeRole);
-        SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GetVerbsEvent<Verb>>(OnVerb);
-        SubscribeLocalEvent<GhostRoleMobSpawnerComponent, GhostRoleRadioMessage>(OnGhostRoleRadioMessage);
         _playerManager.PlayerStatusChanged += PlayerStatusChanged;
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<GhostTakeoverAvailableComponent> component, ref MobStateChangedEvent args)
     {
         if (!TryComp(component, out GhostRoleComponent? ghostRole))
@@ -339,6 +319,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
     }
 
     // probably fine to be init because it's never added during entity initialization, but much later
+    [SubscribeLocalEvent]
     private void OnRaffleInit(Entity<GhostRoleRaffleComponent> ent, ref ComponentInit args)
     {
         if (!TryComp(ent, out GhostRoleComponent? ghostRole))
@@ -373,6 +354,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         raffle.MaxDuration = TimeSpan.FromSeconds(settings.MaxDuration);
     }
 
+    [SubscribeLocalEvent]
     private void OnRaffleShutdown(Entity<GhostRoleRaffleComponent> ent, ref ComponentShutdown args)
     {
         _ghostRoleRaffles.Remove(ent.Comp.Identifier);
@@ -678,6 +660,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         return roles.ToArray();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(PlayerAttachedEvent message)
     {
         // Close the session of any player that has a ghost roles window open and isn't a ghost anymore.
@@ -694,6 +677,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         CloseEui(message.Player);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, GhostTakeoverAvailableComponent component, MindAddedMessage args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole))
@@ -708,6 +692,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         UnregisterGhostRole((uid, ghostRole));
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(EntityUid uid, GhostTakeoverAvailableComponent component, MindRemovedMessage args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole))
@@ -721,6 +706,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         RegisterGhostRole((uid, ghostRole));
     }
 
+    [SubscribeLocalEvent]
     public void Reset(RoundRestartCleanupEvent ev)
     {
         foreach (var session in _openUis.Keys)
@@ -734,6 +720,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         _nextRoleIdentifier = 0;
     }
 
+    [SubscribeLocalEvent]
     private void OnPaused(EntityUid uid, GhostRoleComponent component, ref EntityPausedEvent args)
     {
         if (HasComp<ActorComponent>(uid))
@@ -742,6 +729,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         UpdateAllEui();
     }
 
+    [SubscribeLocalEvent]
     private void OnUnpaused(EntityUid uid, GhostRoleComponent component, ref EntityUnpausedEvent args)
     {
         if (HasComp<ActorComponent>(uid))
@@ -750,22 +738,26 @@ public sealed partial class GhostRoleSystem : EntitySystem
         UpdateAllEui();
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<GhostRoleComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.Probability < 1f && !_random.Prob(ent.Comp.Probability))
             RemCompDeferred<GhostRoleComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleStartup(Entity<GhostRoleComponent> ent, ref ComponentStartup args)
     {
         RegisterGhostRole(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleShutdown(Entity<GhostRoleComponent> role, ref ComponentShutdown args)
     {
         UnregisterGhostRole(role);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnerTakeRole(EntityUid uid, GhostRoleMobSpawnerComponent component, ref TakeGhostRoleEvent args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole) ||
@@ -812,6 +804,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
                !MetaData(uid).EntityPaused;
     }
 
+    [SubscribeLocalEvent]
     private void OnTakeoverTakeRole(EntityUid uid, GhostTakeoverAvailableComponent component, ref TakeGhostRoleEvent args)
     {
         if (!TryComp(uid, out GhostRoleComponent? ghostRole) ||
@@ -840,6 +833,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         args.TookRole = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnVerb(EntityUid uid, GhostRoleMobSpawnerComponent component, GetVerbsEvent<Verb> args)
     {
         var prototypes = component.SelectablePrototypes;
@@ -897,6 +891,7 @@ public sealed partial class GhostRoleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     public void OnGhostRoleRadioMessage(Entity<GhostRoleMobSpawnerComponent> entity, ref GhostRoleRadioMessage args)
     {
         if (!ProtoMan.Resolve(args.ProtoId, out var ghostRoleProto))

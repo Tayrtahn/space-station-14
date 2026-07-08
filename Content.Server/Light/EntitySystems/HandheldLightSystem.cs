@@ -36,40 +36,29 @@ namespace Content.Server.Light.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<HandheldLightComponent, ComponentRemove>(OnRemove);
-            SubscribeLocalEvent<HandheldLightComponent, ComponentGetState>(OnGetState);
-
-            SubscribeLocalEvent<HandheldLightComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<HandheldLightComponent, ComponentShutdown>(OnShutdown);
-
-
-            SubscribeLocalEvent<HandheldLightComponent, ActivateInWorldEvent>(OnActivate);
-
-            SubscribeLocalEvent<HandheldLightComponent, GetItemActionsEvent>(OnGetActions);
-            SubscribeLocalEvent<HandheldLightComponent, ToggleActionEvent>(OnToggleAction);
-
-            SubscribeLocalEvent<HandheldLightComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-            SubscribeLocalEvent<HandheldLightComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
         }
 
+        [SubscribeLocalEvent]
         private void OnEntInserted(Entity<HandheldLightComponent> ent, ref EntInsertedIntoContainerMessage args)
         {
             // Not guaranteed to be the correct container for our slot, I don't care.
             UpdateLevel(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnEntRemoved(Entity<HandheldLightComponent> ent, ref EntRemovedFromContainerMessage args)
         {
             // Ditto above
             UpdateLevel(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetActions(EntityUid uid, HandheldLightComponent component, GetItemActionsEvent args)
         {
             args.AddAction(ref component.ToggleActionEntity, component.ToggleAction);
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleAction(Entity<HandheldLightComponent> ent, ref ToggleActionEvent args)
         {
             if (args.Handled)
@@ -83,11 +72,13 @@ namespace Content.Server.Light.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGetState(Entity<HandheldLightComponent> ent, ref ComponentGetState args)
         {
             args.State = new HandheldLightComponent.HandheldLightComponentState(ent.Comp.Activated, GetLevel(ent));
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(Entity<HandheldLightComponent> ent, ref MapInitEvent args)
         {
             var component = ent.Comp;
@@ -95,6 +86,7 @@ namespace Content.Server.Light.EntitySystems
             _actions.AddAction(ent, ref component.SelfToggleActionEntity, component.ToggleAction);
         }
 
+        [SubscribeLocalEvent]
         private void OnShutdown(EntityUid uid, HandheldLightComponent component, ComponentShutdown args)
         {
             _actions.RemoveAction(uid, component.ToggleActionEntity);
@@ -117,11 +109,13 @@ namespace Content.Server.Light.EntitySystems
             return (byte?)ContentHelpers.RoundToNearestLevels(currentCharge / battery.Value.Comp.MaxCharge * 255, 255, HandheldLightComponent.StatusLevels);
         }
 
+        [SubscribeLocalEvent]
         private void OnRemove(Entity<HandheldLightComponent> ent, ref ComponentRemove args)
         {
             _activeLights.Remove(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnActivate(Entity<HandheldLightComponent> ent, ref ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex || !ent.Comp.ToggleOnInteract)

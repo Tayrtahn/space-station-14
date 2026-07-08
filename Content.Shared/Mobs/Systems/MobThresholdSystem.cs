@@ -19,16 +19,9 @@ public sealed partial class MobThresholdSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<MobThresholdsComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<MobThresholdsComponent, ComponentHandleState>(OnHandleState);
-
-        SubscribeLocalEvent<MobThresholdsComponent, ComponentShutdown>(MobThresholdShutdown);
-        SubscribeLocalEvent<MobThresholdsComponent, ComponentStartup>(MobThresholdStartup);
-        SubscribeLocalEvent<MobThresholdsComponent, DamageChangedEvent>(OnDamaged);
-        SubscribeLocalEvent<MobThresholdsComponent, UpdateMobStateEvent>(OnUpdateMobState);
-        SubscribeLocalEvent<MobThresholdsComponent, MobStateChangedEvent>(OnThresholdsMobState);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, MobThresholdsComponent component, ref ComponentGetState args)
     {
         var thresholds = new Dictionary<FixedPoint2, MobState>();
@@ -44,6 +37,7 @@ public sealed partial class MobThresholdSystem : EntitySystem
             component.AllowRevives);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, MobThresholdsComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not MobThresholdsComponentState state)
@@ -424,6 +418,7 @@ public sealed partial class MobThresholdSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDamaged(EntityUid target, MobThresholdsComponent thresholds, DamageChangedEvent args)
     {
         if (!TryComp<MobStateComponent>(target, out var mobState))
@@ -434,6 +429,7 @@ public sealed partial class MobThresholdSystem : EntitySystem
         UpdateAlerts(target, mobState.CurrentState, thresholds, args.Damageable);
     }
 
+    [SubscribeLocalEvent]
     private void MobThresholdStartup(EntityUid target, MobThresholdsComponent thresholds, ComponentStartup args)
     {
         if (!TryComp<MobStateComponent>(target, out var mobState) || !TryComp<DamageableComponent>(target, out var damageable))
@@ -442,12 +438,14 @@ public sealed partial class MobThresholdSystem : EntitySystem
         UpdateAllEffects((target, thresholds, mobState, damageable), mobState.CurrentState);
     }
 
+    [SubscribeLocalEvent]
     private void MobThresholdShutdown(EntityUid target, MobThresholdsComponent component, ComponentShutdown args)
     {
         if (component.TriggersAlerts)
             _alerts.ClearAlertCategory(target, component.HealthAlertCategory);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateMobState(EntityUid target, MobThresholdsComponent component, ref UpdateMobStateEvent args)
     {
         if (!component.AllowRevives && component.CurrentThresholdState == MobState.Dead)
@@ -472,6 +470,7 @@ public sealed partial class MobThresholdSystem : EntitySystem
         UpdateAlerts(ent, currentState, thresholds, damageable);
     }
 
+    [SubscribeLocalEvent]
     private void OnThresholdsMobState(Entity<MobThresholdsComponent> ent, ref MobStateChangedEvent args)
     {
         UpdateAllEffects((ent, ent, null, null), args.NewMobState);

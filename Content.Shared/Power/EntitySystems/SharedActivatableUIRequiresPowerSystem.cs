@@ -3,13 +3,13 @@ using Content.Shared.UserInterface;
 
 namespace Content.Shared.Power.EntitySystems;
 
-public abstract class SharedActivatableUIRequiresPowerSystem : EntitySystem
+public abstract partial class SharedActivatableUIRequiresPowerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ActivatableUIRequiresPowerComponent, ActivatableUIOpenAttemptEvent>(OnActivate);
     }
 
+    [SubscribeLocalEvent]
     protected abstract void OnActivate(Entity<ActivatableUIRequiresPowerComponent> ent, ref ActivatableUIOpenAttemptEvent args);
 }

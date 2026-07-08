@@ -34,17 +34,13 @@ public sealed partial class DefusableSystem : SharedDefusableSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DefusableComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<DefusableComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerbs);
-        SubscribeLocalEvent<DefusableComponent, AnchorAttemptEvent>(OnAnchorAttempt);
-        SubscribeLocalEvent<DefusableComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
     }
 
     #region Subscribed Events
     /// <summary>
     ///     Adds a verb allowing for the bomb to be started easily.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGetAltVerbs(EntityUid uid, DefusableComponent comp, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Hands == null)
@@ -62,6 +58,7 @@ public sealed partial class DefusableSystem : SharedDefusableSystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, DefusableComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -95,12 +92,14 @@ public sealed partial class DefusableSystem : SharedDefusableSystem
         args.PushMarkup(Loc.GetString("defusable-examine-bolts", ("down", comp.Bolted)));
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorAttempt(EntityUid uid, DefusableComponent component, AnchorAttemptEvent args)
     {
         if (CheckAnchorAttempt(uid, component, args))
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(EntityUid uid, DefusableComponent component, UnanchorAttemptEvent args)
     {
         if (CheckAnchorAttempt(uid, component, args))

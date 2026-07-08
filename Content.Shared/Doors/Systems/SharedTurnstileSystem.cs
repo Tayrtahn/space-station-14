@@ -25,11 +25,9 @@ public abstract partial class SharedTurnstileSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<TurnstileComponent, PreventCollideEvent>(OnPreventCollide);
-        SubscribeLocalEvent<TurnstileComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<TurnstileComponent, EndCollideEvent>(OnEndCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnPreventCollide(Entity<TurnstileComponent> ent, ref PreventCollideEvent args)
     {
         if (args.Cancelled || !args.OurFixture.Hard || !args.OtherFixture.Hard)
@@ -80,6 +78,7 @@ public abstract partial class SharedTurnstileSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStartCollide(Entity<TurnstileComponent> ent, ref StartCollideEvent args)
     {
         if (!ent.Comp.CollideExceptions.Contains(args.OtherEntity))
@@ -100,6 +99,7 @@ public abstract partial class SharedTurnstileSystem : EntitySystem
         _audio.PlayPredicted(ent.Comp.TurnSound, ent, args.OtherEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEndCollide(Entity<TurnstileComponent> ent, ref EndCollideEvent args)
     {
         if (!args.OurFixture.Hard)

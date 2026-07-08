@@ -21,25 +21,16 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, ItemPlacedEvent>(OnItemPlaced);
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, ItemRemovedEvent>(OnItemRemoved);
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, NewLinkEvent>(OnNewLinkAnalyzer);
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, LinkAttemptEvent>(OnLinkAttemptAnalyzer);
-        SubscribeLocalEvent<ArtifactAnalyzerComponent, PortDisconnectedEvent>(OnPortDisconnectedAnalyzer);
-
-        SubscribeLocalEvent<AnalysisConsoleComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AnalysisConsoleComponent, NewLinkEvent>(OnNewLinkConsole);
-        SubscribeLocalEvent<AnalysisConsoleComponent, LinkAttemptEvent>(OnLinkAttemptConsole);
-        SubscribeLocalEvent<AnalysisConsoleComponent, PortDisconnectedEvent>(OnPortDisconnectedConsole);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemPlaced(Entity<ArtifactAnalyzerComponent> ent, ref ItemPlacedEvent args)
     {
         ent.Comp.CurrentArtifact = args.OtherEntity;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemRemoved(Entity<ArtifactAnalyzerComponent> ent, ref ItemRemovedEvent args)
     {
         if (args.OtherEntity != ent.Comp.CurrentArtifact)
@@ -49,6 +40,7 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<AnalysisConsoleComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<DeviceLinkSourceComponent>(ent, out var source))
@@ -69,6 +61,7 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnNewLinkConsole(Entity<AnalysisConsoleComponent> ent, ref NewLinkEvent args)
     {
         if (args.SourcePort != ent.Comp.LinkingPort || !HasComp<ArtifactAnalyzerComponent>(args.Sink))
@@ -78,6 +71,7 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnNewLinkAnalyzer(Entity<ArtifactAnalyzerComponent> ent, ref NewLinkEvent args)
     {
         if (args.SinkPort != ent.Comp.LinkingPort || !HasComp<AnalysisConsoleComponent>(args.Source))
@@ -87,18 +81,21 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnLinkAttemptConsole(Entity<AnalysisConsoleComponent> ent, ref LinkAttemptEvent args)
     {
         if (ent.Comp.AnalyzerEntity != null)
             args.Cancel(); // can only link to one device at a time
     }
 
+    [SubscribeLocalEvent]
     private void OnLinkAttemptAnalyzer(Entity<ArtifactAnalyzerComponent> ent, ref LinkAttemptEvent args)
     {
         if (ent.Comp.Console != null)
             args.Cancel(); // can only link to one device at a time
     }
 
+    [SubscribeLocalEvent]
     private void OnPortDisconnectedConsole(Entity<AnalysisConsoleComponent> ent, ref PortDisconnectedEvent args)
     {
         if (args.Port != ent.Comp.LinkingPort || ent.Comp.AnalyzerEntity == null)
@@ -108,6 +105,7 @@ public abstract partial class SharedArtifactAnalyzerSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPortDisconnectedAnalyzer(Entity<ArtifactAnalyzerComponent> ent, ref PortDisconnectedEvent args)
     {
         if (args.Port != ent.Comp.LinkingPort || ent.Comp.Console == null)

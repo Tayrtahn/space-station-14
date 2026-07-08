@@ -14,8 +14,6 @@ public sealed partial class HumanoidProfileSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HumanoidProfileComponent, ExaminedEvent>(OnExamined);
     }
 
     public void ApplyProfileTo(Entity<HumanoidProfileComponent?> ent, HumanoidCharacterProfile profile)
@@ -39,6 +37,7 @@ public sealed partial class HumanoidProfileSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<HumanoidProfileComponent> ent, ref ExaminedEvent args)
     {
         var identity = Identity.Entity(ent, EntityManager);

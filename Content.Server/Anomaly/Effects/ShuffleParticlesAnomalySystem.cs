@@ -11,10 +11,9 @@ public sealed partial class ShuffleParticlesAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ShuffleParticlesAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<ShuffleParticlesAnomalyComponent, AnomalyAffectedByParticleEvent>(OnAffectedByParticle);
     }
 
+    [SubscribeLocalEvent]
     private void OnAffectedByParticle(Entity<ShuffleParticlesAnomalyComponent> ent, ref AnomalyAffectedByParticleEvent args)
     {
         if (!TryComp<AnomalyComponent>(ent, out var anomalyComp))
@@ -24,6 +23,7 @@ public sealed partial class ShuffleParticlesAnomalySystem : EntitySystem
             _anomaly.ShuffleParticlesEffect((args.Anomaly, anomalyComp));
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(Entity<ShuffleParticlesAnomalyComponent> ent, ref AnomalyPulseEvent args)
     {
         if (!TryComp<AnomalyComponent>(ent, out var anomaly))

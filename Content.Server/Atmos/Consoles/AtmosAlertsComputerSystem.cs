@@ -35,37 +35,29 @@ public sealed partial class AtmosAlertsComputerSystem : SharedAtmosAlertsCompute
     public override void Initialize()
     {
         base.Initialize();
-
-        // Console events
-        SubscribeLocalEvent<AtmosAlertsComputerComponent, ComponentInit>(OnConsoleInit);
-        SubscribeLocalEvent<AtmosAlertsComputerComponent, EntParentChangedMessage>(OnConsoleParentChanged);
-        SubscribeLocalEvent<AtmosAlertsComputerComponent, AtmosAlertsComputerFocusChangeMessage>(OnFocusChangedMessage);
-
-        // Grid events
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
-
-        // Alarm events
-        SubscribeLocalEvent<AtmosAlertsDeviceComponent, EntityTerminatingEvent>(OnDeviceTerminatingEvent);
-        SubscribeLocalEvent<AtmosAlertsDeviceComponent, AnchorStateChangedEvent>(OnDeviceAnchorChanged);
     }
 
     #region Event handling
 
+    [SubscribeLocalEvent]
     private void OnConsoleInit(EntityUid uid, AtmosAlertsComputerComponent component, ComponentInit args)
     {
         InitalizeConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleParentChanged(EntityUid uid, AtmosAlertsComputerComponent component, EntParentChangedMessage args)
     {
         InitalizeConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnFocusChangedMessage(EntityUid uid, AtmosAlertsComputerComponent component, AtmosAlertsComputerFocusChangeMessage args)
     {
         component.FocusDevice = args.FocusDevice;
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         // Collect grids
@@ -88,11 +80,13 @@ public sealed partial class AtmosAlertsComputerSystem : SharedAtmosAlertsCompute
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceAnchorChanged(EntityUid uid, AtmosAlertsDeviceComponent component, AnchorStateChangedEvent args)
     {
         OnDeviceAdditionOrRemoval(uid, component, args.Anchored);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceTerminatingEvent(EntityUid uid, AtmosAlertsDeviceComponent component, ref EntityTerminatingEvent args)
     {
         OnDeviceAdditionOrRemoval(uid, component, false);

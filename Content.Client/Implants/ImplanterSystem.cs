@@ -12,11 +12,10 @@ public sealed partial class ImplanterSystem : SharedImplanterSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ImplanterComponent, AfterAutoHandleStateEvent>(OnHandleImplanterState);
         Subs.ItemStatus<ImplanterComponent>(ent => new ImplanterStatusControl(ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleImplanterState(Entity<ImplanterComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateUi(ent);

@@ -14,9 +14,9 @@ public sealed partial class BoundarySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<BoundaryComponent, StartCollideEvent>(OnBoundaryCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundaryCollide(Entity<BoundaryComponent> ent, ref StartCollideEvent args)
     {
         var center = _xform.GetWorldPosition(ent.Owner);

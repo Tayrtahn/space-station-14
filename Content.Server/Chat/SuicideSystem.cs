@@ -35,10 +35,6 @@ public sealed partial class SuicideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DamageableComponent, SuicideEvent>(OnDamageableSuicide);
-        SubscribeLocalEvent<MobStateComponent, SuicideEvent>(OnEnvironmentalSuicide);
-        SubscribeLocalEvent<MindContainerComponent, SuicideGhostEvent>(OnSuicideGhost);
     }
 
     /// <summary>
@@ -90,6 +86,7 @@ public sealed partial class SuicideSystem : EntitySystem
     /// Event subscription created to handle the ghosting aspect relating to suicides
     /// Mainly useful when you can raise an event in Shared and can't call Suicide() directly
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSuicideGhost(Entity<MindContainerComponent> victim, ref SuicideGhostEvent args)
     {
         if (args.Handled)
@@ -113,6 +110,7 @@ public sealed partial class SuicideSystem : EntitySystem
     /// <summary>
     /// Raise event to attempt to use held item, or surrounding entities to attempt to commit suicide
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEnvironmentalSuicide(Entity<MobStateComponent> victim, ref SuicideEvent args)
     {
         if (args.Handled || _mobState.IsCritical(victim))
@@ -151,6 +149,7 @@ public sealed partial class SuicideSystem : EntitySystem
     /// <summary>
     /// Default suicide behavior for any kind of entity that can take damage
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDamageableSuicide(Entity<DamageableComponent> victim, ref SuicideEvent args)
     {
         if (args.Handled)

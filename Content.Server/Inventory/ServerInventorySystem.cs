@@ -3,15 +3,14 @@ using Content.Shared.Inventory;
 
 namespace Content.Server.Inventory
 {
-    public sealed class ServerInventorySystem : InventorySystem
+    public sealed partial class ServerInventorySystem : InventorySystem
     {
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<InventoryComponent, BeforeExplodeEvent>(OnExploded);
         }
 
+        [SubscribeLocalEvent]
         private void OnExploded(Entity<InventoryComponent> ent, ref BeforeExplodeEvent args)
         {
             // explode each item in their inventory too

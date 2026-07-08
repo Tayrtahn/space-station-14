@@ -38,11 +38,9 @@ public sealed partial class TraitorRuleSystem : GameRuleSystem<TraitorRuleCompon
         base.Initialize();
 
         Log.Level = LogLevel.Debug;
-
-        SubscribeLocalEvent<TraitorRuleComponent, AfterAntagEntitySelectedEvent>(AfterEntitySelected);
-        SubscribeLocalEvent<TraitorRuleComponent, ObjectivesTextPrependEvent>(OnObjectivesTextPrepend);
     }
 
+    [SubscribeLocalEvent]
     private void AfterEntitySelected(Entity<TraitorRuleComponent> ent, ref AfterAntagEntitySelectedEvent args)
     {
         Log.Debug($"AfterAntagEntitySelected {ToPrettyString(ent)}");
@@ -175,6 +173,7 @@ public sealed partial class TraitorRuleSystem : GameRuleSystem<TraitorRuleCompon
     }
 
     // TODO: AntagCodewordsComponent
+    [SubscribeLocalEvent]
     private void OnObjectivesTextPrepend(EntityUid uid, TraitorRuleComponent comp, ref ObjectivesTextPrependEvent args)
     {
         if(comp.GiveCodewords)

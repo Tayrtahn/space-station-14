@@ -16,13 +16,9 @@ namespace Content.Server.Atmos.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<AirtightComponent, ComponentInit>(OnAirtightInit);
-            SubscribeLocalEvent<AirtightComponent, ComponentShutdown>(OnAirtightShutdown);
-            SubscribeLocalEvent<AirtightComponent, AnchorStateChangedEvent>(OnAirtightPositionChanged);
-            SubscribeLocalEvent<AirtightComponent, ReAnchorEvent>(OnAirtightReAnchor);
-            SubscribeLocalEvent<AirtightComponent, MoveEvent>(OnAirtightMoved);
         }
 
+        [SubscribeLocalEvent]
         private void OnAirtightInit(Entity<AirtightComponent> airtight, ref ComponentInit args)
         {
             // If this entity blocks air in all directions (e.g. full tile walls, doors, and windows)
@@ -44,6 +40,7 @@ namespace Content.Server.Atmos.EntitySystems
             RaiseLocalEvent(airtight, ref airtightEv, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnAirtightShutdown(Entity<AirtightComponent> airtight, ref ComponentShutdown args)
         {
             var xform = Transform(airtight);
@@ -53,6 +50,7 @@ namespace Content.Server.Atmos.EntitySystems
                 SetAirblocked(airtight, false, xform);
         }
 
+        [SubscribeLocalEvent]
         private void OnAirtightPositionChanged(EntityUid uid, AirtightComponent airtight, ref AnchorStateChangedEvent args)
         {
             var xform = args.Transform;
@@ -72,6 +70,7 @@ namespace Content.Server.Atmos.EntitySystems
             RaiseLocalEvent(uid, ref airtightEv, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnAirtightReAnchor(EntityUid uid, AirtightComponent airtight, ref ReAnchorEvent args)
         {
             foreach (var gridId in new[] { args.OldGrid, args.Grid })
@@ -85,6 +84,7 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnAirtightMoved(Entity<AirtightComponent> ent, ref MoveEvent ev)
         {
             var (owner, airtight) = ent;

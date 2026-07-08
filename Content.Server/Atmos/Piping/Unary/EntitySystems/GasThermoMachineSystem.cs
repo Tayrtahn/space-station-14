@@ -27,13 +27,9 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasThermoMachineComponent, AtmosDeviceUpdateEvent>(OnThermoMachineUpdated);
-
-            // Device network
-            SubscribeLocalEvent<GasThermoMachineComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
         }
 
+        [SubscribeLocalEvent]
         private void OnThermoMachineUpdated(EntityUid uid, GasThermoMachineComponent thermoMachine, ref AtmosDeviceUpdateEvent args)
         {
             thermoMachine.LastEnergyDelta = 0f;
@@ -117,6 +113,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnPacketRecv(EntityUid uid, GasThermoMachineComponent component, DeviceNetworkPacketEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? netConn)

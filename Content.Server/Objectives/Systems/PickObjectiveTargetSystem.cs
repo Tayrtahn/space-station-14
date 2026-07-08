@@ -21,11 +21,9 @@ public sealed partial class PickObjectiveTargetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PickSpecificPersonComponent, ObjectiveAssignedEvent>(OnSpecificPersonAssigned);
-        SubscribeLocalEvent<PickRandomPersonComponent, ObjectiveAssignedEvent>(OnRandomPersonAssigned);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpecificPersonAssigned(Entity<PickSpecificPersonComponent> ent, ref ObjectiveAssignedEvent args)
     {
         // invalid objective prototype
@@ -55,6 +53,7 @@ public sealed partial class PickObjectiveTargetSystem : EntitySystem
         _objective.SetTarget(ent.Owner, targetComp.Target.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnRandomPersonAssigned(Entity<PickRandomPersonComponent> ent, ref ObjectiveAssignedEvent args)
     {
         // invalid objective prototype

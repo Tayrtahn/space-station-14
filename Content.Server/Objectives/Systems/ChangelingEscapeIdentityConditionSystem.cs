@@ -20,11 +20,9 @@ public sealed partial class ChangelingEscapeIdentityConditionSystem : EntitySyst
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingEscapeIdentityConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
-        SubscribeLocalEvent<ChangelingEscapeIdentityConditionComponent, ObjectiveAfterAssignEvent>(OnAfterAssign);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAssign(Entity<ChangelingEscapeIdentityConditionComponent> ent, ref ObjectiveAfterAssignEvent args)
     {
         if (!_target.GetTarget(ent, out var target))
@@ -36,6 +34,7 @@ public sealed partial class ChangelingEscapeIdentityConditionSystem : EntitySyst
         ent.Comp.TargetName = targetMind.CharacterName;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<ChangelingEscapeIdentityConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress(ent, (args.MindId, args.Mind));

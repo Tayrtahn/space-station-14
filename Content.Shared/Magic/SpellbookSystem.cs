@@ -22,8 +22,6 @@ public sealed partial class SpellbookSystem : EntitySystem
     public override void Initialize()
     {
         SubscribeLocalEvent<SpellbookComponent, MapInitEvent>(OnInit, before: [typeof(SharedMagicSystem)]);
-        SubscribeLocalEvent<SpellbookComponent, UseInHandEvent>(OnUse);
-        SubscribeLocalEvent<SpellbookComponent, SpellbookDoAfterEvent>(OnDoAfter);
     }
 
     private void OnInit(Entity<SpellbookComponent> ent, ref MapInitEvent args)
@@ -46,6 +44,7 @@ public sealed partial class SpellbookSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUse(Entity<SpellbookComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)
@@ -56,6 +55,7 @@ public sealed partial class SpellbookSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter<T>(Entity<SpellbookComponent> ent, ref T args) where T : DoAfterEvent // Sometimes i despise this language
     {
         if (args.Handled || args.Cancelled)

@@ -16,17 +16,16 @@ public abstract partial class SharedCargoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StationBankAccountComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<HijackBeaconSuccessEvent>(OnHijackSuccess);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<StationBankAccountComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextIncomeTime = Timing.CurTime + ent.Comp.IncomeDelay;
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnHijackSuccess(ref HijackBeaconSuccessEvent args)
     {
         var stationQuery = EntityQueryEnumerator<StationBankAccountComponent>();

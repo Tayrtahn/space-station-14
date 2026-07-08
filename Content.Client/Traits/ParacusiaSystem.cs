@@ -19,8 +19,6 @@ public sealed partial class ParacusiaSystem : SharedParacusiaSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ParacusiaComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<ParacusiaComponent, LocalPlayerDetachedEvent>(OnPlayerDetach);
     }
 
     public override void Update(float frameTime)
@@ -36,11 +34,13 @@ public sealed partial class ParacusiaSystem : SharedParacusiaSystem
         PlayParacusiaSounds(localPlayer);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(EntityUid uid, ParacusiaComponent component, ComponentStartup args)
     {
         component.NextIncidentTime = _timing.CurTime + TimeSpan.FromSeconds(_random.NextFloat(component.MinTimeBetweenIncidents, component.MaxTimeBetweenIncidents));
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetach(EntityUid uid, ParacusiaComponent component, LocalPlayerDetachedEvent args)
     {
         component.Stream = _audio.Stop(component.Stream);

@@ -54,15 +54,10 @@ public sealed partial class SurveillanceCameraSystem : SharedSurveillanceCameraS
     {
         base.Initialize();
 
-        SubscribeLocalEvent<SurveillanceCameraComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<SurveillanceCameraComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<SurveillanceCameraComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<SurveillanceCameraComponent, SurveillanceCameraSetupSetName>(OnSetName);
-        SubscribeLocalEvent<SurveillanceCameraComponent, SurveillanceCameraSetupSetNetwork>(OnSetNetwork);
-
         InitializeCollide();
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, SurveillanceCameraComponent component, DeviceNetworkPacketEvent args)
     {
         if (!component.Active)
@@ -126,16 +121,19 @@ public sealed partial class SurveillanceCameraSystem : SharedSurveillanceCameraS
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid camera, SurveillanceCameraComponent component, ref PowerChangedEvent args)
     {
         SetActive(camera, args.Powered, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid camera, SurveillanceCameraComponent component, ComponentShutdown args)
     {
         Deactivate(camera, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnSetName(EntityUid uid, SurveillanceCameraComponent component, SurveillanceCameraSetupSetName args)
     {
         if (args.UiKey is not SurveillanceCameraSetupUiKey key
@@ -153,6 +151,7 @@ public sealed partial class SurveillanceCameraSystem : SharedSurveillanceCameraS
         _adminLogger.Add(LogType.Chat, LogImpact.Low, $"{ToPrettyString(args.Actor)} set the name of {ToPrettyString(uid)} to \"{args.Name}.\"");
     }
 
+    [SubscribeLocalEvent]
     private void OnSetNetwork(EntityUid uid, SurveillanceCameraComponent component,
         SurveillanceCameraSetupSetNetwork args)
     {

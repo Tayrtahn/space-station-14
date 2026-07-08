@@ -74,37 +74,12 @@ namespace Content.Server.Kitchen.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<MicrowaveComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<MicrowaveComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<MicrowaveComponent, SolutionChangedEvent>(OnSolutionChange);
-            SubscribeLocalEvent<MicrowaveComponent, EntInsertedIntoContainerMessage>(OnContentUpdate);
-            SubscribeLocalEvent<MicrowaveComponent, EntRemovedFromContainerMessage>(OnContentUpdate);
             SubscribeLocalEvent<MicrowaveComponent, InteractUsingEvent>(OnInteractUsing, after: new[] { typeof(AnchorableSystem) });
-            SubscribeLocalEvent<MicrowaveComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-            SubscribeLocalEvent<MicrowaveComponent, BreakageEventArgs>(OnBreak);
-            SubscribeLocalEvent<MicrowaveComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<MicrowaveComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-            SubscribeLocalEvent<MicrowaveComponent, SuicideByEnvironmentEvent>(OnSuicideByEnvironment);
-
-            SubscribeLocalEvent<MicrowaveComponent, SignalReceivedEvent>(OnSignalReceived);
 
             SubscribeLocalEvent<MicrowaveComponent, MicrowaveStartCookMessage>((u, c, m) => Wzhzhzh(u, c, m.Actor));
-            SubscribeLocalEvent<MicrowaveComponent, MicrowaveEjectMessage>(OnEjectMessage);
-            SubscribeLocalEvent<MicrowaveComponent, MicrowaveEjectSolidIndexedMessage>(OnEjectIndex);
-            SubscribeLocalEvent<MicrowaveComponent, MicrowaveSelectCookTimeMessage>(OnSelectTime);
-
-            SubscribeLocalEvent<ActiveMicrowaveComponent, ComponentStartup>(OnCookStart);
-            SubscribeLocalEvent<ActiveMicrowaveComponent, ComponentShutdown>(OnCookStop);
-            SubscribeLocalEvent<ActiveMicrowaveComponent, EntInsertedIntoContainerMessage>(OnActiveMicrowaveInsert);
-            SubscribeLocalEvent<ActiveMicrowaveComponent, EntRemovedFromContainerMessage>(OnActiveMicrowaveRemove);
-
-            SubscribeLocalEvent<ActivelyMicrowavedComponent, OnConstructionTemperatureEvent>(OnConstructionTemp);
-            SubscribeLocalEvent<ActivelyMicrowavedComponent, SolutionRelayEvent<ReactionAttemptEvent>>(OnReactionAttempt);
-
-            SubscribeLocalEvent<FoodRecipeProviderComponent, GetSecretRecipesEvent>(OnGetSecretRecipes);
         }
 
+        [SubscribeLocalEvent]
         private void OnCookStart(Entity<ActiveMicrowaveComponent> ent, ref ComponentStartup args)
         {
             if (!TryComp<MicrowaveComponent>(ent, out var microwaveComponent))
@@ -116,6 +91,7 @@ namespace Content.Server.Kitchen.EntitySystems
             _powerState.SetWorkingState(ent.Owner, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnCookStop(Entity<ActiveMicrowaveComponent> ent, ref ComponentShutdown args)
         {
             if (!TryComp<MicrowaveComponent>(ent, out var microwaveComponent))
@@ -126,12 +102,14 @@ namespace Content.Server.Kitchen.EntitySystems
             _powerState.SetWorkingState(ent.Owner, false);
         }
 
+        [SubscribeLocalEvent]
         private void OnActiveMicrowaveInsert(Entity<ActiveMicrowaveComponent> ent, ref EntInsertedIntoContainerMessage args)
         {
             var microwavedComp = AddComp<ActivelyMicrowavedComponent>(args.Entity);
             microwavedComp.Microwave = ent.Owner;
         }
 
+        [SubscribeLocalEvent]
         private void OnActiveMicrowaveRemove(Entity<ActiveMicrowaveComponent> ent, ref EntRemovedFromContainerMessage args)
         {
             RemCompDeferred<ActivelyMicrowavedComponent>(args.Entity);
@@ -139,6 +117,7 @@ namespace Content.Server.Kitchen.EntitySystems
 
         // Stop items from transforming through constructiongraphs while being microwaved.
         // They might be reserved for a microwave recipe.
+        [SubscribeLocalEvent]
         private void OnConstructionTemp(Entity<ActivelyMicrowavedComponent> ent, ref OnConstructionTemperatureEvent args)
         {
             args.Result = HandleResult.False;
@@ -146,6 +125,7 @@ namespace Content.Server.Kitchen.EntitySystems
 
         // Stop reagents from reacting if they are currently reserved for a microwave recipe.
         // For example Egg would cook into EggCooked, causing it to not being removed once we are done microwaving.
+        [SubscribeLocalEvent]
         private void OnReactionAttempt(Entity<ActivelyMicrowavedComponent> ent, ref SolutionRelayEvent<ReactionAttemptEvent> args)
         {
             if (!TryComp<ActiveMicrowaveComponent>(ent.Comp.Microwave, out var activeMicrowaveComp))
@@ -274,12 +254,14 @@ namespace Content.Server.Kitchen.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(Entity<MicrowaveComponent> ent, ref ComponentInit args)
         {
             // this really does have to be in ComponentInit
             ent.Comp.Storage = _container.EnsureContainer<Container>(ent, ent.Comp.ContainerId);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(Entity<MicrowaveComponent> ent, ref MapInitEvent args)
         {
             _deviceLink.EnsureSinkPorts(ent, ent.Comp.OnPort);
@@ -289,6 +271,7 @@ namespace Content.Server.Kitchen.EntitySystems
         /// Kills the user by microwaving their head
         /// TODO: Make this not awful, it keeps any items attached to your head still on and you can revive someone and cogni them so you have some dumb headless fuck running around. I've seen it happen.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnSuicideByEnvironment(Entity<MicrowaveComponent> ent, ref SuicideByEnvironmentEvent args)
         {
             if (args.Handled)
@@ -316,11 +299,13 @@ namespace Content.Server.Kitchen.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnSolutionChange(Entity<MicrowaveComponent> ent, ref SolutionChangedEvent args)
         {
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnContentUpdate(EntityUid uid, MicrowaveComponent component, ContainerModifiedMessage args) // For some reason ContainerModifiedMessage just can't be used at all with Entity<T>. TODO: replace with Entity<T> syntax once that's possible
         {
             if (component.Storage != args.Container)
@@ -329,6 +314,7 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnInsertAttempt(Entity<MicrowaveComponent> ent, ref ContainerIsInsertingAttemptEvent args)
         {
             if (args.Container.ID != ent.Comp.ContainerId)
@@ -401,6 +387,7 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnBreak(Entity<MicrowaveComponent> ent, ref BreakageEventArgs args)
         {
             ent.Comp.Broken = true;
@@ -410,6 +397,7 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(Entity<MicrowaveComponent> ent, ref PowerChangedEvent args)
         {
             if (!args.Powered)
@@ -420,12 +408,14 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorChanged(EntityUid uid, MicrowaveComponent component, ref AnchorStateChangedEvent args)
         {
             if (!args.Anchored)
                 _container.EmptyContainer(component.Storage);
         }
 
+        [SubscribeLocalEvent]
         private void OnSignalReceived(Entity<MicrowaveComponent> ent, ref SignalReceivedEvent args)
         {
             if (args.Port != ent.Comp.OnPort)
@@ -700,6 +690,7 @@ namespace Content.Server.Kitchen.EntitySystems
         /// This event tries to get secret recipes that the microwave might be capable of.
         /// Currently, we only check the microwave itself, but in the future, the user might be able to learn recipes.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnGetSecretRecipes(Entity<FoodRecipeProviderComponent> ent, ref GetSecretRecipesEvent args)
         {
             foreach (ProtoId<FoodRecipePrototype> recipeId in ent.Comp.ProvidedRecipes)
@@ -712,6 +703,7 @@ namespace Content.Server.Kitchen.EntitySystems
         }
 
         #region ui
+        [SubscribeLocalEvent]
         private void OnEjectMessage(Entity<MicrowaveComponent> ent, ref MicrowaveEjectMessage args)
         {
             if (!HasContents(ent.Comp) || HasComp<ActiveMicrowaveComponent>(ent))
@@ -722,6 +714,7 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnEjectIndex(Entity<MicrowaveComponent> ent, ref MicrowaveEjectSolidIndexedMessage args)
         {
             if (!HasContents(ent.Comp) || HasComp<ActiveMicrowaveComponent>(ent))
@@ -731,6 +724,7 @@ namespace Content.Server.Kitchen.EntitySystems
             UpdateUserInterfaceState(ent, ent.Comp);
         }
 
+        [SubscribeLocalEvent]
         private void OnSelectTime(Entity<MicrowaveComponent> ent, ref MicrowaveSelectCookTimeMessage args)
         {
             if (!HasContents(ent.Comp) || HasComp<ActiveMicrowaveComponent>(ent) || !(TryComp<ApcPowerReceiverComponent>(ent, out var apc) && apc.Powered))

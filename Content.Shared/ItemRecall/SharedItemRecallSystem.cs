@@ -26,19 +26,16 @@ public abstract partial class SharedItemRecallSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemRecallComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ItemRecallComponent, OnItemRecallActionEvent>(OnItemRecallActionUse);
-
-        SubscribeLocalEvent<RecallMarkerComponent, ComponentShutdown>(OnRecallMarkerShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ItemRecallComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.InitialName = Name(ent);
         ent.Comp.InitialDescription = Description(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemRecallActionUse(Entity<ItemRecallComponent> ent, ref OnItemRecallActionEvent args)
     {
         if (ent.Comp.MarkedEntity == null)
@@ -91,6 +88,7 @@ public abstract partial class SharedItemRecallSystem : EntitySystem
         _hands.TryForcePickupAnyHand(user, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRecallMarkerShutdown(Entity<RecallMarkerComponent> ent, ref ComponentShutdown args)
     {
         TryUnmarkItem(ent);

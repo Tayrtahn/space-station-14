@@ -12,11 +12,9 @@ public sealed partial class AlertLevelDisplaySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AlertLevelChangedEvent>(OnAlertChanged);
-        SubscribeLocalEvent<AlertLevelDisplayComponent, ComponentInit>(OnDisplayInit);
-        SubscribeLocalEvent<AlertLevelDisplayComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnAlertChanged(AlertLevelChangedEvent args)
     {
         var query = EntityQueryEnumerator<AlertLevelDisplayComponent, AppearanceComponent>();
@@ -26,6 +24,7 @@ public sealed partial class AlertLevelDisplaySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDisplayInit(EntityUid uid, AlertLevelDisplayComponent alertLevelDisplay, ComponentInit args)
     {
         if (TryComp(uid, out AppearanceComponent? appearance))
@@ -37,6 +36,8 @@ public sealed partial class AlertLevelDisplaySystem : EntitySystem
             }
         }
     }
+
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, AlertLevelDisplayComponent alertLevelDisplay, ref PowerChangedEvent args)
     {
         if (!TryComp(uid, out AppearanceComponent? appearance))

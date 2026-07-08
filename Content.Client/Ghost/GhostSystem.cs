@@ -56,28 +56,16 @@ namespace Content.Client.Ghost
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GhostComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<GhostComponent, ComponentRemove>(OnGhostRemove);
-            SubscribeLocalEvent<GhostComponent, AfterAutoHandleStateEvent>(OnGhostState);
-
-            SubscribeLocalEvent<GhostComponent, LocalPlayerAttachedEvent>(OnGhostPlayerAttach);
-            SubscribeLocalEvent<GhostComponent, LocalPlayerDetachedEvent>(OnGhostPlayerDetach);
-
-            SubscribeNetworkEvent<GhostWarpsResponseEvent>(OnGhostWarpsResponse);
-            SubscribeNetworkEvent<GhostUpdateGhostRoleCountEvent>(OnUpdateGhostRoleCount);
-
-            SubscribeLocalEvent<EyeComponent, ToggleLightingActionEvent>(OnToggleLighting);
-            SubscribeLocalEvent<EyeComponent, ToggleFoVActionEvent>(OnToggleFoV);
-            SubscribeLocalEvent<GhostComponent, ToggleGhostsActionEvent>(OnToggleGhosts);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, GhostComponent component, ComponentStartup args)
         {
             if (TryComp(uid, out SpriteComponent? sprite))
                 _sprite.SetVisible((uid, sprite), GhostVisibility || uid == _playerManager.LocalEntity);
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleLighting(EntityUid uid, EyeComponent component, ToggleLightingActionEvent args)
         {
             if (args.Handled)
@@ -105,6 +93,7 @@ namespace Content.Client.Ghost
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleFoV(EntityUid uid, EyeComponent component, ToggleFoVActionEvent args)
         {
             if (args.Handled)
@@ -115,6 +104,7 @@ namespace Content.Client.Ghost
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnToggleGhosts(EntityUid uid, GhostComponent component, ToggleGhostsActionEvent args)
         {
             if (args.Handled)
@@ -128,6 +118,7 @@ namespace Content.Client.Ghost
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostRemove(EntityUid uid, GhostComponent component, ComponentRemove args)
         {
             _actions.RemoveAction(uid, component.ToggleLightingActionEntity);
@@ -142,12 +133,14 @@ namespace Content.Client.Ghost
             PlayerRemoved?.Invoke(component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostPlayerAttach(EntityUid uid, GhostComponent component, LocalPlayerAttachedEvent localPlayerAttachedEvent)
         {
             GhostVisibility = true;
             PlayerAttached?.Invoke(component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostState(EntityUid uid, GhostComponent component, ref AfterAutoHandleStateEvent args)
         {
             if (TryComp<SpriteComponent>(uid, out var sprite))
@@ -159,12 +152,14 @@ namespace Content.Client.Ghost
             PlayerUpdated?.Invoke(component);
         }
 
+        [SubscribeLocalEvent]
         private void OnGhostPlayerDetach(EntityUid uid, GhostComponent component, LocalPlayerDetachedEvent args)
         {
             GhostVisibility = false;
             PlayerDetached?.Invoke();
         }
 
+        [SubscribeNetworkEvent]
         private void OnGhostWarpsResponse(GhostWarpsResponseEvent msg)
         {
             if (!IsGhost)
@@ -175,6 +170,7 @@ namespace Content.Client.Ghost
             GhostWarpsResponse?.Invoke(msg);
         }
 
+        [SubscribeNetworkEvent]
         private void OnUpdateGhostRoleCount(GhostUpdateGhostRoleCountEvent msg)
         {
             AvailableGhostRoleCount = msg.AvailableGhostRoles;

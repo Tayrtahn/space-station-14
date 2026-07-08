@@ -17,9 +17,9 @@ public sealed partial class FlyBySoundSystem : SharedFlyBySoundSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FlyBySoundComponent, StartCollideEvent>(OnCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(Entity<FlyBySoundComponent> ent, ref StartCollideEvent args)
     {
         var attachedEnt = _player.LocalEntity;

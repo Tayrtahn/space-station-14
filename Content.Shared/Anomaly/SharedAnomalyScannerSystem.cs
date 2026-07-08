@@ -20,12 +20,9 @@ public abstract partial class SharedAnomalyScannerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalyScannerComponent, ScannerDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<AnomalyScannerComponent, AfterInteractEvent>(OnScannerAfterInteract);
-        SubscribeLocalEvent<AnomalyShutdownEvent>(OnScannerAnomalyShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAnomalyShutdown(ref AnomalyShutdownEvent args)
     {
         var query = EntityQueryEnumerator<AnomalyScannerComponent>();
@@ -44,6 +41,7 @@ public abstract partial class SharedAnomalyScannerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAfterInteract(EntityUid uid, AnomalyScannerComponent component, AfterInteractEvent args)
     {
         if (args.Target is not { } target)
@@ -70,6 +68,7 @@ public abstract partial class SharedAnomalyScannerSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfterArgs);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnDoAfter(EntityUid uid, AnomalyScannerComponent component, DoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Args.Target == null)

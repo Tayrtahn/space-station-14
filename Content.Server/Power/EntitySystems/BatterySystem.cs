@@ -6,14 +6,11 @@ using Robust.Shared.Utility;
 
 namespace Content.Server.Power.EntitySystems;
 
-public sealed class BatterySystem : SharedBatterySystem
+public sealed partial class BatterySystem : SharedBatterySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PowerNetworkBatteryComponent, RejuvenateEvent>(OnNetBatteryRejuvenate);
-        SubscribeLocalEvent<NetworkBatteryPreSync>(PreSync);
         SubscribeLocalEvent<NetworkBatteryPostSync>(PostSync);
     }
 
@@ -37,12 +34,13 @@ public sealed class BatterySystem : SharedBatterySystem
         DebugTools.Assert(!HasComp<PowerConsumerComponent>(ent), $"{ToPrettyString(ent.Owner)} has a predicted battery connected to the power net. Disable net sync!");
     }
 
-
+    [SubscribeLocalEvent]
     private void OnNetBatteryRejuvenate(Entity<PowerNetworkBatteryComponent> ent, ref RejuvenateEvent args)
     {
         ent.Comp.NetworkBattery.CurrentStorage = ent.Comp.NetworkBattery.Capacity;
     }
 
+    [SubscribeLocalEvent]
     private void PreSync(NetworkBatteryPreSync ev)
     {
         // Ignoring entity pausing. If the entity was paused, neither component's data should have been changed.

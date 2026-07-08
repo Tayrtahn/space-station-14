@@ -16,10 +16,9 @@ public sealed partial class EmoteOnDamageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmoteOnDamageComponent, DamageChangedEvent>(OnDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamage(EntityUid uid, EmoteOnDamageComponent emoteOnDamage, DamageChangedEvent args)
     {
         if (!args.DamageIncreased)

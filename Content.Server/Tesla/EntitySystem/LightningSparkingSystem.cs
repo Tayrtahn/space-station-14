@@ -16,10 +16,9 @@ public sealed partial class LightningSparkingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<LightningSparkingComponent, HitByLightningEvent>(OnHitByLightning);
     }
 
+    [SubscribeLocalEvent]
     private void OnHitByLightning(Entity<LightningSparkingComponent> uid, ref HitByLightningEvent args)
     {
         _appearance.SetData(uid.Owner, TeslaCoilVisuals.Lightning, true);

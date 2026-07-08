@@ -18,13 +18,9 @@ public sealed partial class PilotedClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PilotedClothingComponent, EntInsertedIntoContainerMessage>(OnEntInserted);
-        SubscribeLocalEvent<PilotedClothingComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-        SubscribeLocalEvent<PilotedClothingComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<PilotedClothingComponent, GotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntInserted(Entity<PilotedClothingComponent> entity, ref EntInsertedIntoContainerMessage args)
     {
         // Make sure the entity was actually inserted into storage and not a different container.
@@ -42,6 +38,7 @@ public sealed partial class PilotedClothingSystem : EntitySystem
         StartPiloting(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<PilotedClothingComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity is actually the pilot.
@@ -53,6 +50,7 @@ public sealed partial class PilotedClothingSystem : EntitySystem
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<PilotedClothingComponent> entity, ref GotEquippedEvent args)
     {
         if (!TryComp(entity, out ClothingComponent? clothing))
@@ -70,6 +68,7 @@ public sealed partial class PilotedClothingSystem : EntitySystem
         StartPiloting(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<PilotedClothingComponent> entity, ref GotUnequippedEvent args)
     {
         StopPiloting(entity);

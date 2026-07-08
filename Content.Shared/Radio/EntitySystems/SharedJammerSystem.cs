@@ -19,13 +19,9 @@ public abstract partial class SharedJammerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RadioJammerComponent, ItemToggledEvent>(OnItemToggle);
-        SubscribeLocalEvent<RadioJammerComponent, RefreshChargeRateEvent>(OnRefreshChargeRate);
-        SubscribeLocalEvent<RadioJammerComponent, GetVerbsEvent<Verb>>(OnGetVerb);
-        SubscribeLocalEvent<RadioJammerComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemToggle(Entity<RadioJammerComponent> entity, ref ItemToggledEvent args)
     {
         if (args.Activated)
@@ -55,12 +51,14 @@ public abstract partial class SharedJammerSystem : EntitySystem
         _popup.PopupPredicted(message, args.User.Value, args.User.Value);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshChargeRate(Entity<RadioJammerComponent> entity, ref RefreshChargeRateEvent args)
     {
         if (_itemToggle.IsActivated(entity.Owner))
             args.NewChargeRate -= GetCurrentWattage(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<RadioJammerComponent> entity, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -97,6 +95,7 @@ public abstract partial class SharedJammerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<RadioJammerComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

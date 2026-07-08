@@ -10,10 +10,9 @@ public sealed partial class StoreAfterFailedInteractSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StoreAfterFailedInteractComponent, StorageInsertFailedEvent>(OnStorageInsertFailed);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageInsertFailed(Entity<StoreAfterFailedInteractComponent> ent, ref StorageInsertFailedEvent args)
     {
         _storage.PlayerInsertHeldEntity(args.Storage, args.Player);

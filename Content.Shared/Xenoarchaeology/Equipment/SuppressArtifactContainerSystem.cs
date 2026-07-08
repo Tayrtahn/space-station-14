@@ -12,10 +12,9 @@ public sealed partial class SuppressArtifactContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SuppressArtifactContainerComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<SuppressArtifactContainerComponent, EntRemovedFromContainerMessage>(OnRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnInserted(EntityUid uid, SuppressArtifactContainerComponent component, EntInsertedIntoContainerMessage args)
     {
         if (!TryComp<XenoArtifactComponent>(args.Entity, out var artifact))
@@ -24,6 +23,7 @@ public sealed partial class SuppressArtifactContainerSystem : EntitySystem
         _xenoArtifact.SetSuppressed((args.Entity, artifact), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(EntityUid uid, SuppressArtifactContainerComponent component, EntRemovedFromContainerMessage args)
     {
         if (!TryComp<XenoArtifactComponent>(args.Entity, out var artifact))

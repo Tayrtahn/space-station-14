@@ -11,22 +11,21 @@ public sealed partial class BlindfoldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BlindfoldComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<BlindfoldComponent, GotUnequippedEvent>(OnUnequipped);
-        SubscribeLocalEvent<BlindfoldComponent, InventoryRelayedEvent<CanSeeAttemptEvent>>(OnBlindfoldTrySee);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlindfoldTrySee(Entity<BlindfoldComponent> blindfold, ref InventoryRelayedEvent<CanSeeAttemptEvent> args)
     {
         args.Args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<BlindfoldComponent> blindfold, ref GotEquippedEvent args)
     {
         _blindableSystem.UpdateIsBlind(args.EquipTarget);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<BlindfoldComponent> blindfold, ref GotUnequippedEvent args)
     {
         _blindableSystem.UpdateIsBlind(args.EquipTarget);

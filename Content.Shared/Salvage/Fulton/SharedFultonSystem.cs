@@ -39,23 +39,15 @@ public abstract partial class SharedFultonSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FultonedDoAfterEvent>(OnFultonDoAfter);
-
-        SubscribeLocalEvent<FultonedComponent, GetVerbsEvent<InteractionVerb>>(OnFultonedGetVerbs);
-        SubscribeLocalEvent<FultonedComponent, ExaminedEvent>(OnFultonedExamine);
-        SubscribeLocalEvent<FultonedComponent, EntGotInsertedIntoContainerMessage>(OnFultonContainerInserted);
-
-        SubscribeLocalEvent<FultonComponent, AfterInteractEvent>(OnFultonInteract);
-
-        SubscribeLocalEvent<FultonComponent, StackSplitEvent>(OnFultonSplit);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonContainerInserted(EntityUid uid, FultonedComponent component, EntGotInsertedIntoContainerMessage args)
     {
         RemCompDeferred<FultonedComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonedExamine(EntityUid uid, FultonedComponent component, ExaminedEvent args)
     {
         var remaining = component.NextFulton + _metadata.GetPauseTime(uid) - Timing.CurTime;
@@ -64,6 +56,7 @@ public abstract partial class SharedFultonSystem : EntitySystem
         args.PushText(message);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonedGetVerbs(EntityUid uid, FultonedComponent component, GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -87,6 +80,7 @@ public abstract partial class SharedFultonSystem : EntitySystem
         RemCompDeferred<FultonedComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonDoAfter(FultonedDoAfterEvent args)
     {
         if (args.Cancelled || args.Target == null || !TryComp<FultonComponent>(args.Used, out var fulton))
@@ -107,6 +101,7 @@ public abstract partial class SharedFultonSystem : EntitySystem
         Audio.PlayPredicted(fulton.FultonSound, args.Target.Value, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonInteract(EntityUid uid, FultonComponent component, AfterInteractEvent args)
     {
         if (args.Target == null || args.Handled || !args.CanReach)
@@ -160,6 +155,7 @@ public abstract partial class SharedFultonSystem : EntitySystem
             });
     }
 
+    [SubscribeLocalEvent]
     private void OnFultonSplit(EntityUid uid, FultonComponent component, ref StackSplitEvent args)
     {
         var newFulton = EnsureComp<FultonComponent>(args.NewId);

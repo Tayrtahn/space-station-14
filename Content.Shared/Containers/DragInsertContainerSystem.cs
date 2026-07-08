@@ -23,9 +23,6 @@ public sealed partial class DragInsertContainerSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<DragInsertContainerComponent, DragDropTargetEvent>(OnDragDropOn, before: new []{ typeof(ClimbSystem)});
-        SubscribeLocalEvent<DragInsertContainerComponent, DragInsertContainerDoAfterEvent>(OnDragFinished);
-        SubscribeLocalEvent<DragInsertContainerComponent, CanDropTargetEvent>(OnCanDragDropOn);
-        SubscribeLocalEvent<DragInsertContainerComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAlternativeVerb);
     }
 
     private void OnDragDropOn(Entity<DragInsertContainerComponent> ent, ref DragDropTargetEvent args)
@@ -56,6 +53,7 @@ public sealed partial class DragInsertContainerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDragFinished(Entity<DragInsertContainerComponent> ent, ref DragInsertContainerDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Args.Target == null)
@@ -67,6 +65,7 @@ public sealed partial class DragInsertContainerSystem : EntitySystem
         Insert(args.Args.Target.Value, args.User, ent, container);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDragDropOn(Entity<DragInsertContainerComponent> ent, ref CanDropTargetEvent args)
     {
         var (_, comp) = ent;
@@ -77,6 +76,7 @@ public sealed partial class DragInsertContainerSystem : EntitySystem
         args.CanDrop |= _container.CanInsert(args.Dragged, container);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAlternativeVerb(Entity<DragInsertContainerComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         var (uid, comp) = ent;

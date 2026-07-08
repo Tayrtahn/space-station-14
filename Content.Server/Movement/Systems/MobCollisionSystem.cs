@@ -13,9 +13,9 @@ public sealed partial class MobCollisionSystem : SharedMobCollisionSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<MobCollisionComponent, MobCollisionMessage>(OnServerMobCollision);
     }
 
+    [SubscribeLocalEvent]
     private void OnServerMobCollision(Entity<MobCollisionComponent> ent, ref MobCollisionMessage args)
     {
         MoveMob((ent.Owner, ent.Comp, Transform(ent.Owner)), args.Direction, args.SpeedModifier);

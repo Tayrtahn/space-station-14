@@ -57,6 +57,7 @@ namespace Content.Server.Pointing.EntitySystems
 
         private const float PointingRange = 15f;
 
+        [SubscribeLocalEvent]
         private void GetCompState(Entity<PointingArrowComponent> entity, ref ComponentGetState args)
         {
             args.State = new SharedPointingArrowComponentState
@@ -310,10 +311,6 @@ namespace Content.Server.Pointing.EntitySystems
         {
             base.Initialize();
 
-            SubscribeLocalEvent<PointingArrowComponent, ComponentGetState>(GetCompState);
-
-            SubscribeNetworkEvent<PointingAttemptEvent>(OnPointAttempt);
-
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
 
             CommandBinds.Builder
@@ -323,6 +320,7 @@ namespace Content.Server.Pointing.EntitySystems
             Subs.CVar(_config, CCVars.PointingCooldownSeconds, v => _pointDelay = TimeSpan.FromSeconds(v), true);
         }
 
+        [SubscribeNetworkEvent]
         private void OnPointAttempt(PointingAttemptEvent ev, EntitySessionEventArgs args)
         {
             var target = GetEntity(ev.Target);

@@ -13,9 +13,9 @@ public sealed partial class RandomGateSystem : SharedRandomGateSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RandomGateComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<RandomGateComponent> ent, ref SignalReceivedEvent args)
     {
         if (args.Port != ent.Comp.InputPort)

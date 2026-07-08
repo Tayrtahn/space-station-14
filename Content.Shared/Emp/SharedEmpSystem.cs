@@ -25,12 +25,6 @@ public abstract partial class SharedEmpSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmpDisabledComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<EmpDisabledComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<EmpDisabledComponent, RejuvenateEvent>(OnRejuvenate);
-
-        SubscribeLocalEvent<EmpResistanceComponent, EmpAttemptEvent>(OnResistEmpAttempt);
     }
 
     public static readonly EntProtoId EmpPulseEffectPrototype = "EffectEmpPulse";
@@ -153,22 +147,26 @@ public abstract partial class SharedEmpSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<EmpDisabledComponent> ent, ref ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString("emp-disabled-comp-on-examine"));
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(Entity<EmpDisabledComponent> ent, ref ComponentRemove args)
     {
         var ev = new EmpDisabledRemovedEvent();
         RaiseLocalEvent(ent, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<EmpDisabledComponent> ent, ref RejuvenateEvent args)
     {
         RemCompDeferred<EmpDisabledComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnResistEmpAttempt(Entity<EmpResistanceComponent> ent, ref EmpAttemptEvent args)
     {
         // We only cancel if the strength multiplier is 0, because then the effect basically doesn't exist.

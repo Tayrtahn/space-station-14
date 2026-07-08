@@ -23,10 +23,9 @@ public sealed partial class XAEFoamSystem : BaseXAESystem<XAEFoamComponent>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<XAEFoamComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, XAEFoamComponent component, MapInitEvent args)
     {
         if (component.SelectedReagent != null)

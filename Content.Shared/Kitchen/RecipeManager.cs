@@ -12,9 +12,9 @@ public sealed partial class RecipeManager : EntitySystem
         base.Initialize();
 
         ReloadRecipes();
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
     {
         if (args.WasModified<FoodRecipePrototype>())

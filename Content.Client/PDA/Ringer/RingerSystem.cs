@@ -7,19 +7,18 @@ namespace Content.Client.PDA.Ringer;
 /// <summary>
 /// Handles the client-side logic for <see cref="SharedRingerSystem"/>.
 /// </summary>
-public sealed class RingerSystem : SharedRingerSystem
+public sealed partial class RingerSystem : SharedRingerSystem
 {
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RingerComponent, AfterAutoHandleStateEvent>(OnRingerUpdate);
     }
 
     /// <summary>
     /// Updates the UI whenever we get a new component state from the server.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRingerUpdate(Entity<RingerComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateRingerUi(ent);

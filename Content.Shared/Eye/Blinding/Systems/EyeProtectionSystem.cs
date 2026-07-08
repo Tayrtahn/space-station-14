@@ -15,19 +15,16 @@ namespace Content.Shared.Eye.Blinding.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<RequiresEyeProtectionComponent, ToolUseAttemptEvent>(OnUseAttempt);
-            SubscribeLocalEvent<RequiresEyeProtectionComponent, ItemToggledEvent>(OnWelderToggled);
-
-            SubscribeLocalEvent<EyeProtectionComponent, GetEyeProtectionEvent>(OnGetProtection);
-            SubscribeLocalEvent<EyeProtectionComponent, InventoryRelayedEvent<GetEyeProtectionEvent>>(OnGetRelayedProtection);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetRelayedProtection(EntityUid uid, EyeProtectionComponent component,
             InventoryRelayedEvent<GetEyeProtectionEvent> args)
         {
             OnGetProtection(uid, component, args.Args);
         }
 
+        [SubscribeLocalEvent]
         private void OnGetProtection(EntityUid uid, EyeProtectionComponent component, GetEyeProtectionEvent args)
         {
             if (TryComp<MaskComponent>(uid, out var mask) && mask.IsToggled)
@@ -36,6 +33,7 @@ namespace Content.Shared.Eye.Blinding.Systems
             args.Protection += component.ProtectionTime;
         }
 
+        [SubscribeLocalEvent]
         private void OnUseAttempt(EntityUid uid, RequiresEyeProtectionComponent component, ToolUseAttemptEvent args)
         {
             if (!component.Toggled)
@@ -58,6 +56,7 @@ namespace Content.Shared.Eye.Blinding.Systems
             _statusEffectsSystem.TryAddStatusEffectDuration(args.User, BlindnessSystem.BlindingStatusEffect, statusTimeSpan);
         }
 
+        [SubscribeLocalEvent]
         private void OnWelderToggled(EntityUid uid, RequiresEyeProtectionComponent component, ItemToggledEvent args)
         {
             component.Toggled = args.Activated;

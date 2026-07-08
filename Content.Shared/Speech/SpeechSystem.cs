@@ -1,12 +1,10 @@
 namespace Content.Shared.Speech
 {
-    public sealed class SpeechSystem : EntitySystem
+    public sealed partial class SpeechSystem : EntitySystem
     {
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<SpeakAttemptEvent>(OnSpeakAttempt);
         }
 
         public void SetSpeech(EntityUid uid, bool value, SpeechComponent? component = null)
@@ -24,6 +22,7 @@ namespace Content.Shared.Speech
             Dirty(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnSpeakAttempt(SpeakAttemptEvent args)
         {
             if (!TryComp(args.Uid, out SpeechComponent? speech) || !speech.Enabled)

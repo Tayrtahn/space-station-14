@@ -13,9 +13,6 @@ public abstract partial class SharedFloatingVisualizerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FloatingVisualsComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<FloatingVisualsComponent, WeightlessnessChangedEvent>(OnWeightlessnessChanged);
     }
 
     /// <summary>
@@ -30,12 +27,14 @@ public abstract partial class SharedFloatingVisualizerSystem : EntitySystem
         return entity.Comp.CanFloat;
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<FloatingVisualsComponent> entity, ref ComponentStartup args)
     {
         if (CanFloat(entity))
             FloatAnimation(entity, entity.Comp.Offset, entity.Comp.AnimationKey, entity.Comp.AnimationTime);
     }
 
+    [SubscribeLocalEvent]
     private void OnWeightlessnessChanged(Entity<FloatingVisualsComponent> entity, ref WeightlessnessChangedEvent args)
     {
         if (entity.Comp.CanFloat == args.Weightless)

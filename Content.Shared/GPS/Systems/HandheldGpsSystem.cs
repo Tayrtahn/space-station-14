@@ -12,13 +12,12 @@ public sealed partial class HandheldGpsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HandheldGPSComponent, ExaminedEvent>(OnExamine);
     }
 
     /// <summary>
     /// Handles showing the coordinates when a GPS is examined.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<HandheldGPSComponent> ent, ref ExaminedEvent args)
     {
         var posText = "Error";

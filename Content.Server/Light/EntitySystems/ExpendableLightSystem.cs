@@ -35,12 +35,6 @@ namespace Content.Server.Light.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ExpendableLightComponent, ComponentInit>(OnExpLightInit);
-            SubscribeLocalEvent<ExpendableLightComponent, UseInHandEvent>(OnExpLightUse);
-            SubscribeLocalEvent<ExpendableLightComponent, GetVerbsEvent<ActivationVerb>>(AddIgniteVerb);
-            SubscribeLocalEvent<ExpendableLightComponent, InteractUsingEvent>(OnInteractUsing);
-            SubscribeLocalEvent<ExpendableLightComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
         }
 
         public override void Update(float frameTime)
@@ -116,6 +110,7 @@ namespace Content.Server.Light.EntitySystems
             return true;
         }
 
+        [SubscribeLocalEvent]
         private void OnInteractUsing(EntityUid uid, ExpendableLightComponent component, ref InteractUsingEvent args)
         {
             if (args.Handled)
@@ -147,6 +142,7 @@ namespace Content.Server.Light.EntitySystems
             args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnRefreshNameModifiers(Entity<ExpendableLightComponent> entity, ref RefreshNameModifiersEvent args)
         {
             if (entity.Comp.CurrentState is ExpendableLightState.Dead)
@@ -201,6 +197,7 @@ namespace Content.Server.Light.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnExpLightInit(EntityUid uid, ExpendableLightComponent component, ComponentInit args)
         {
             if (TryComp<ItemComponent>(uid, out var item))
@@ -213,6 +210,7 @@ namespace Content.Server.Light.EntitySystems
             EnsureComp<PointLightComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnExpLightUse(Entity<ExpendableLightComponent> ent, ref UseInHandEvent args)
         {
             if (args.Handled)
@@ -222,6 +220,7 @@ namespace Content.Server.Light.EntitySystems
                 args.Handled = true;
         }
 
+        [SubscribeLocalEvent]
         private void AddIgniteVerb(Entity<ExpendableLightComponent> ent, ref GetVerbsEvent<ActivationVerb> args)
         {
             if (!args.CanAccess || !args.CanInteract)

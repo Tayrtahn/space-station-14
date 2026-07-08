@@ -27,11 +27,10 @@ public sealed partial class IonLawSystem : EntitySystem
         base.Initialize();
 
         _sawmill = LogManager.GetSawmill("ion-law");
-
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
         BuildSelectors();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs obj)
     {
         if (obj.ByType.ContainsKey(typeof(DatasetPrototype)))

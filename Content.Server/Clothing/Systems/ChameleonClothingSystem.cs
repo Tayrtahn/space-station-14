@@ -14,15 +14,15 @@ public sealed partial class ChameleonClothingSystem : SharedChameleonClothingSys
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ChameleonClothingComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ChameleonClothingComponent, ChameleonPrototypeSelectedMessage>(OnSelected);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ChameleonClothingComponent component, MapInitEvent args)
     {
         SetSelectedPrototype(uid, component.Default, true, component: component);
     }
 
+    [SubscribeLocalEvent]
     private void OnSelected(EntityUid uid, ChameleonClothingComponent component, ChameleonPrototypeSelectedMessage args)
     {
         SetSelectedPrototype(uid, args.SelectedId, component: component);

@@ -8,10 +8,9 @@ public abstract partial class SharedDeltaPressureSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeltaPressureComponent, ExaminedEvent>(OnExaminedEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExaminedEvent(Entity<DeltaPressureComponent> ent, ref ExaminedEvent args)
     {
         if (ent.Comp.IsTakingDamage)

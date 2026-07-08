@@ -40,18 +40,16 @@ public sealed partial class ZombieRuleSystem : GameRuleSystem<ZombieRuleComponen
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InitialInfectedRoleComponent, GetBriefingEvent>(OnGetBriefing);
-        SubscribeLocalEvent<ZombieRoleComponent, GetBriefingEvent>(OnGetBriefing);
-        SubscribeLocalEvent<IncurableZombieComponent, ZombifySelfActionEvent>(OnZombifySelf);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBriefing(Entity<InitialInfectedRoleComponent> role, ref GetBriefingEvent args)
     {
         if (!_roles.MindHasRole<ZombieRoleComponent>(args.Mind.Owner))
             args.Append(Loc.GetString("zombie-patientzero-role-greeting"));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBriefing(Entity<ZombieRoleComponent> role, ref GetBriefingEvent args)
     {
         args.Append(Loc.GetString("zombie-infection-greeting"));
@@ -151,6 +149,7 @@ public sealed partial class ZombieRuleSystem : GameRuleSystem<ZombieRuleComponen
         component.NextRoundEndCheck = _timing.CurTime + component.EndCheckDelay;
     }
 
+    [SubscribeLocalEvent]
     private void OnZombifySelf(EntityUid uid, IncurableZombieComponent component, ZombifySelfActionEvent args)
     {
         _zombie.ZombifyEntity(uid);

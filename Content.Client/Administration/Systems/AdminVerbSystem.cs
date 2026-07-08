@@ -18,10 +18,10 @@ namespace Content.Client.Administration.Systems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<GetVerbsEvent<Verb>>(AddAdminVerbs);
 
         }
 
+        [SubscribeLocalEvent]
         private void AddAdminVerbs(GetVerbsEvent<Verb> args)
         {
             // Currently this is only the ViewVariables verb, but more admin-UI related verbs can be added here.

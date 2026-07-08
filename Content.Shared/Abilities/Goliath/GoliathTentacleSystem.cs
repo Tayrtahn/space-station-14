@@ -23,9 +23,9 @@ public sealed partial class GoliathTentacleSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GoliathSummonTentacleAction>(OnSummonAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnSummonAction(GoliathSummonTentacleAction args)
     {
         if (args.Handled)

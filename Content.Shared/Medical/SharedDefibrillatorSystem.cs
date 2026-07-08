@@ -44,10 +44,9 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<DefibrillatorComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<DefibrillatorComponent, DefibrillatorZapDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<DefibrillatorComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || args.Target is not { } target)
@@ -56,6 +55,7 @@ public abstract partial class SharedDefibrillatorSystem : EntitySystem
         args.Handled = TryStartZap(ent.AsNullable(), target, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<DefibrillatorComponent> ent, ref DefibrillatorZapDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled)

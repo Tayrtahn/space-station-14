@@ -31,19 +31,9 @@ namespace Content.Shared.SubFloor
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
-            SubscribeLocalEvent<SubFloorHideComponent, ComponentStartup>(OnSubFloorStarted);
-            SubscribeLocalEvent<SubFloorHideComponent, ComponentShutdown>(OnSubFloorTerminating);
-            // Like 80% sure this doesn't need to handle re-anchoring.
-            SubscribeLocalEvent<SubFloorHideComponent, AnchorStateChangedEvent>(HandleAnchorChanged);
-            SubscribeLocalEvent<SubFloorHideComponent, GettingInteractedWithAttemptEvent>(OnInteractionAttempt);
-            SubscribeLocalEvent<SubFloorHideComponent, GettingAttackedAttemptEvent>(OnAttackAttempt);
-            SubscribeLocalEvent<SubFloorHideComponent, GetExplosionResistanceEvent>(OnGetExplosionResistance);
-            SubscribeLocalEvent<SubFloorHideComponent, AnchorAttemptEvent>(OnAnchorAttempt);
-            SubscribeLocalEvent<SubFloorHideComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorAttempt(EntityUid uid, SubFloorHideComponent component, AnchorAttemptEvent args)
         {
             // No teleporting entities through floor tiles when anchoring them.
@@ -57,6 +47,7 @@ namespace Content.Shared.SubFloor
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnUnanchorAttempt(EntityUid uid, SubFloorHideComponent component, UnanchorAttemptEvent args)
         {
             // No un-anchoring things under the floor. Only required for something like vents, which are still interactable
@@ -68,18 +59,21 @@ namespace Content.Shared.SubFloor
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGetExplosionResistance(EntityUid uid, SubFloorHideComponent component, ref GetExplosionResistanceEvent args)
         {
             if (component.BlockInteractions && component.IsUnderCover)
                 args.DamageCoefficient = 0;
         }
 
+        [SubscribeLocalEvent]
         private void OnAttackAttempt(EntityUid uid, SubFloorHideComponent component, ref GettingAttackedAttemptEvent args)
         {
             if (component.BlockInteractions && component.IsUnderCover)
                 args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnInteractionAttempt(EntityUid uid, SubFloorHideComponent component, ref GettingInteractedWithAttemptEvent args)
         {
             // Allow admins (e.g., mappers/aghosts) to twiddle with stuff under subfloors
@@ -91,6 +85,7 @@ namespace Content.Shared.SubFloor
                 args.Cancelled = true;
         }
 
+        [SubscribeLocalEvent]
         private void OnSubFloorStarted(EntityUid uid, SubFloorHideComponent component, ComponentStartup _)
         {
             UpdateFloorCover(uid, component);
@@ -98,6 +93,7 @@ namespace Content.Shared.SubFloor
             EnsureComp<CollideOnAnchorComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnSubFloorTerminating(EntityUid uid, SubFloorHideComponent component, ComponentShutdown _)
         {
             // If component is being deleted don't need to worry about updating any component stuff because it won't matter very shortly.
@@ -109,6 +105,7 @@ namespace Content.Shared.SubFloor
             UpdateAppearance(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void HandleAnchorChanged(EntityUid uid, SubFloorHideComponent component, ref AnchorStateChangedEvent args)
         {
             if (args.Anchored)
@@ -123,6 +120,7 @@ namespace Content.Shared.SubFloor
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnTileChanged(ref TileChangedEvent args)
         {
             foreach (var change in args.Changes)

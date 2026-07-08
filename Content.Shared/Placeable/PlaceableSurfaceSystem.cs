@@ -16,13 +16,6 @@ public sealed partial class PlaceableSurfaceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PlaceableSurfaceComponent, AfterInteractUsingEvent>(OnAfterInteractUsing);
-        SubscribeLocalEvent<PlaceableSurfaceComponent, StorageInteractUsingAttemptEvent>(OnStorageInteractUsingAttempt);
-        SubscribeLocalEvent<PlaceableSurfaceComponent, StorageAfterOpenEvent>(OnStorageAfterOpen);
-        SubscribeLocalEvent<PlaceableSurfaceComponent, StorageAfterCloseEvent>(OnStorageAfterClose);
-        SubscribeLocalEvent<PlaceableSurfaceComponent, GetDumpableVerbEvent>(OnGetDumpableVerb);
-        SubscribeLocalEvent<PlaceableSurfaceComponent, DumpEvent>(OnDump);
     }
 
     public void SetPlaceable(EntityUid uid, bool isPlaceable, PlaceableSurfaceComponent? surface = null)
@@ -55,6 +48,7 @@ public sealed partial class PlaceableSurfaceSystem : EntitySystem
         Dirty(uid, surface);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteractUsing(EntityUid uid, PlaceableSurfaceComponent surface, AfterInteractUsingEvent args)
     {
         if (args.Handled || !args.CanReach)
@@ -77,26 +71,31 @@ public sealed partial class PlaceableSurfaceSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageInteractUsingAttempt(Entity<PlaceableSurfaceComponent> ent, ref StorageInteractUsingAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageAfterOpen(Entity<PlaceableSurfaceComponent> ent, ref StorageAfterOpenEvent args)
     {
         SetPlaceable(ent.Owner, true, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnStorageAfterClose(Entity<PlaceableSurfaceComponent> ent, ref StorageAfterCloseEvent args)
     {
         SetPlaceable(ent.Owner, false, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDumpableVerb(Entity<PlaceableSurfaceComponent> ent, ref GetDumpableVerbEvent args)
     {
         args.Verb = Loc.GetString("dump-placeable-verb-name", ("surface", ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnDump(Entity<PlaceableSurfaceComponent> ent, ref DumpEvent args)
     {
         if (args.Handled)

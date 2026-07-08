@@ -36,19 +36,9 @@ public sealed partial class PaperSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PaperComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<PaperComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<PaperComponent, BeforeActivatableUIOpenEvent>(BeforeUIOpen);
-        SubscribeLocalEvent<PaperComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<PaperComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<PaperComponent, PaperInputTextMessage>(OnInputTextMessage);
-
-        SubscribeLocalEvent<RandomPaperContentComponent, MapInitEvent>(OnRandomPaperContentMapInit);
-
-        SubscribeLocalEvent<ActivateOnPaperOpenedComponent, PaperWriteEvent>(OnPaperWrite);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<PaperComponent> entity, ref MapInitEvent args)
     {
         if (!string.IsNullOrEmpty(entity.Comp.Content))
@@ -57,6 +47,7 @@ public sealed partial class PaperSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<PaperComponent> entity, ref ComponentInit args)
     {
         entity.Comp.Mode = PaperAction.Read;
@@ -72,12 +63,14 @@ public sealed partial class PaperSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void BeforeUIOpen(Entity<PaperComponent> entity, ref BeforeActivatableUIOpenEvent args)
     {
         entity.Comp.Mode = PaperAction.Read;
         UpdateUserInterface(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<PaperComponent> entity, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -109,6 +102,7 @@ public sealed partial class PaperSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<PaperComponent> entity, ref InteractUsingEvent args)
     {
         // only allow editing if there are no stamps or when using a cyberpen
@@ -181,6 +175,7 @@ public sealed partial class PaperSystem : EntitySystem
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnInputTextMessage(Entity<PaperComponent> entity, ref PaperInputTextMessage args)
     {
         var ev = new PaperWriteAttemptEvent(entity.Owner);
@@ -211,6 +206,7 @@ public sealed partial class PaperSystem : EntitySystem
         UpdateUserInterface(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnRandomPaperContentMapInit(Entity<RandomPaperContentComponent> ent, ref MapInitEvent args)
     {
         if (!_paperQuery.TryComp(ent, out var paperComp))
@@ -235,6 +231,7 @@ public sealed partial class PaperSystem : EntitySystem
         RemCompDeferred(ent, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnPaperWrite(Entity<ActivateOnPaperOpenedComponent> entity, ref PaperWriteEvent args)
     {
         _interaction.UseInHandInteraction(args.User, entity);

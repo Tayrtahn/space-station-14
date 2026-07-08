@@ -8,10 +8,9 @@ public sealed partial class PilotedByClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PilotedByClothingComponent, UpdateIsPredictedEvent>(OnUpdatePredicted);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdatePredicted(Entity<PilotedByClothingComponent> entity, ref UpdateIsPredictedEvent args)
     {
         args.BlockPrediction = true;

@@ -18,11 +18,9 @@ public sealed partial class ContainmentFieldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ContainmentFieldComponent, StartCollideEvent>(HandleFieldCollide);
-        SubscribeLocalEvent<ContainmentFieldComponent, EventHorizonAttemptConsumeEntityEvent>(HandleEventHorizon);
     }
 
+    [SubscribeLocalEvent]
     private void HandleFieldCollide(EntityUid uid, ContainmentFieldComponent component, ref StartCollideEvent args)
     {
         var otherBody = args.OtherEntity;
@@ -42,6 +40,7 @@ public sealed partial class ContainmentFieldSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleEventHorizon(EntityUid uid, ContainmentFieldComponent component, ref EventHorizonAttemptConsumeEntityEvent args)
     {
         if(!args.Cancelled && !args.EventHorizon.CanBreachContainment)

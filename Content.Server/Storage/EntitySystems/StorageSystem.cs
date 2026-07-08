@@ -12,10 +12,9 @@ public sealed partial class StorageSystem : SharedStorageSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StorageComponent, BeforeExplodeEvent>(OnExploded);
-        SubscribeLocalEvent<StorageFillComponent, MapInitEvent>(OnStorageFillMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnExploded(Entity<StorageComponent> ent, ref BeforeExplodeEvent args)
     {
         args.Contents.AddRange(ent.Comp.Container.ContainedEntities);

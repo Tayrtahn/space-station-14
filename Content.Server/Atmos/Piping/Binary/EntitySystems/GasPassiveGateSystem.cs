@@ -17,11 +17,9 @@ public sealed partial class GasPassiveGateSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasPassiveGateComponent, AtmosDeviceUpdateEvent>(OnPassiveGateUpdated);
-        SubscribeLocalEvent<GasPassiveGateComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnPassiveGateUpdated(EntityUid uid, GasPassiveGateComponent gate, ref AtmosDeviceUpdateEvent args)
     {
         if (!_nodeContainer.TryGetNodes(uid, gate.InletName, gate.OutletName, out PipeNode? inlet, out PipeNode? outlet))
@@ -47,6 +45,7 @@ public sealed partial class GasPassiveGateSystem : EntitySystem
         gate.FlowRate = AtmosphereSystem.ExponentialMovingAverage(dV, gate.FlowRate, dt);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<GasPassiveGateComponent> gate, ref ExaminedEvent args)
     {
         if (!Transform(gate).Anchored || !args.IsInDetailsRange) // Not anchored? Out of range? No status.

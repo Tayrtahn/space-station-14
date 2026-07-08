@@ -13,10 +13,9 @@ public sealed partial class DatasetVocalizationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DatasetVocalizerComponent, TryVocalizeEvent>(OnTryVocalize);
     }
 
+    [SubscribeLocalEvent]
     private void OnTryVocalize(Entity<DatasetVocalizerComponent> ent, ref TryVocalizeEvent args)
     {
         if (args.Handled)

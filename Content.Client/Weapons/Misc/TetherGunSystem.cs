@@ -21,13 +21,10 @@ public sealed partial class TetherGunSystem : SharedTetherGunSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<TetheredComponent, ComponentStartup>(OnTetheredStartup);
-        SubscribeLocalEvent<TetheredComponent, ComponentShutdown>(OnTetheredShutdown);
-        SubscribeLocalEvent<TetherGunComponent, AfterAutoHandleStateEvent>(OnAfterState);
-        SubscribeLocalEvent<ForceGunComponent, AfterAutoHandleStateEvent>(OnAfterState);
         _overlay.AddOverlay(new TetherGunOverlay(EntityManager));
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterState(EntityUid uid, BaseForceGunComponent component, ref AfterAutoHandleStateEvent args)
     {
         if (!TryComp<SpriteComponent>(component.Tethered, out var sprite))
@@ -96,6 +93,7 @@ public sealed partial class TetherGunSystem : SharedTetherGunSystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnTetheredStartup(EntityUid uid, TetheredComponent component, ComponentStartup args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))
@@ -113,6 +111,7 @@ public sealed partial class TetherGunSystem : SharedTetherGunSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnTetheredShutdown(EntityUid uid, TetheredComponent component, ComponentShutdown args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

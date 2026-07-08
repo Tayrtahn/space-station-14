@@ -13,19 +13,18 @@ public sealed partial class EnergyKatanaSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EnergyKatanaComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<EnergyKatanaComponent, CheckDashEvent>(OnCheckDash);
     }
 
     /// <summary>
     /// When equipped by a ninja, try to bind it.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<EnergyKatanaComponent> ent, ref GotEquippedEvent args)
     {
         _ninja.BindKatana(args.EquipTarget, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheckDash(Entity<EnergyKatanaComponent> ent, ref CheckDashEvent args)
     {
         // Just use a whitelist fam

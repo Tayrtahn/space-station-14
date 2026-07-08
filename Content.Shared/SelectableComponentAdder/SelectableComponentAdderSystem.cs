@@ -11,10 +11,9 @@ public sealed partial class SelectableComponentAdderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SelectableComponentAdderComponent, GetVerbsEvent<Verb>>(OnGetVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<SelectableComponentAdderComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || ent.Comp.Selections <= 0)

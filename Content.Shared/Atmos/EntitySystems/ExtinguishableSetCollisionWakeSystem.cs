@@ -13,16 +13,15 @@ public sealed partial class ExtinguishableSetCollisionWakeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExtinguishableSetCollisionWakeComponent, ExtinguishedEvent>(HandleExtinguished);
-        SubscribeLocalEvent<ExtinguishableSetCollisionWakeComponent, IgnitedEvent>(HandleIgnited);
     }
 
+    [SubscribeLocalEvent]
     private void HandleExtinguished(Entity<ExtinguishableSetCollisionWakeComponent> ent, ref ExtinguishedEvent args)
     {
         _collisionWake.SetEnabled(ent, true);
     }
 
+    [SubscribeLocalEvent]
     private void HandleIgnited(Entity<ExtinguishableSetCollisionWakeComponent> ent, ref IgnitedEvent args)
     {
         _collisionWake.SetEnabled(ent, false);

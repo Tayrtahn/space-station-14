@@ -20,7 +20,6 @@ public sealed partial class HeatExchangerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<HeatExchangerComponent, AtmosDeviceUpdateEvent>(OnAtmosUpdate);
 
         // Getting CVars is expensive, don't do it every tick
         Subs.CVar(_cfg, CCVars.SuperconductionTileLoss, CacheTileLoss, true);
@@ -31,6 +30,7 @@ public sealed partial class HeatExchangerSystem : EntitySystem
         tileLoss = val;
     }
 
+    [SubscribeLocalEvent]
     private void OnAtmosUpdate(EntityUid uid, HeatExchangerComponent comp, ref AtmosDeviceUpdateEvent args)
     {
         // make sure that the tile the device is on isn't blocked by a wall or something similar.

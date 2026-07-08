@@ -18,14 +18,9 @@ internal sealed partial class BuckleSystem : SharedBuckleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BuckleComponent, AppearanceChangeEvent>(OnAppearanceChange);
-        SubscribeLocalEvent<StrapComponent, MoveEvent>(OnStrapMoveEvent);
-        SubscribeLocalEvent<BuckleComponent, BuckledEvent>(OnBuckledEvent);
-        SubscribeLocalEvent<BuckleComponent, UnbuckledEvent>(OnUnbuckledEvent);
-        SubscribeLocalEvent<BuckleComponent, AttemptMobCollideEvent>(OnMobCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobCollide(Entity<BuckleComponent> ent, ref AttemptMobCollideEvent args)
     {
         if (ent.Comp.Buckled)
@@ -34,6 +29,7 @@ internal sealed partial class BuckleSystem : SharedBuckleSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStrapMoveEvent(EntityUid uid, StrapComponent component, ref MoveEvent args)
     {
         // I'm moving this to the client-side system, but for the sake of posterity let's keep this comment:
@@ -87,6 +83,7 @@ internal sealed partial class BuckleSystem : SharedBuckleSystem
     /// Lower the draw depth of the buckled entity without needing for the strap entity to rotate/move.
     /// Only do so when the entity is facing screen-local north
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBuckledEvent(Entity<BuckleComponent> ent, ref BuckledEvent args)
     {
         if (!args.Strap.Comp.ModifyBuckleDrawDepth)
@@ -110,6 +107,7 @@ internal sealed partial class BuckleSystem : SharedBuckleSystem
     /// <summary>
     /// Was the draw depth of the buckled entity lowered? Reset it upon unbuckling.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUnbuckledEvent(Entity<BuckleComponent> ent, ref UnbuckledEvent args)
     {
         if (!args.Strap.Comp.ModifyBuckleDrawDepth)
@@ -125,6 +123,7 @@ internal sealed partial class BuckleSystem : SharedBuckleSystem
         ent.Comp.OriginalDrawDepth = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, BuckleComponent component, ref AppearanceChangeEvent args)
     {
         if (!TryComp<RotationVisualsComponent>(uid, out var rotVisuals))

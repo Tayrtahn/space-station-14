@@ -18,13 +18,9 @@ public sealed partial class AntiGravityClothingSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<AntiGravityClothingComponent, InventoryRelayedEvent<IsWeightlessEvent>>(OnIsWeightless);
-        SubscribeLocalEvent<AntiGravityClothingComponent, ClothingGotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<AntiGravityClothingComponent, ClothingGotUnequippedEvent>(OnUnequipped);
-        SubscribeLocalEvent<AntiGravityClothingComponent, InventoryRelayedEvent<DownedEvent>>(OnDowned);
-        SubscribeLocalEvent<AntiGravityClothingComponent, InventoryRelayedEvent<StoodEvent>>(OnStood);
     }
 
+    [SubscribeLocalEvent]
     private void OnIsWeightless(Entity<AntiGravityClothingComponent> ent, ref InventoryRelayedEvent<IsWeightlessEvent> args)
     {
         if (args.Args.Handled || _standing.IsDown(args.Owner))
@@ -34,6 +30,7 @@ public sealed partial class AntiGravityClothingSystem : EntitySystem
         args.Args.IsWeightless = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<AntiGravityClothingComponent> entity, ref ClothingGotEquippedEvent args)
     {
         // This clothing item does nothing if we're not standing
@@ -43,6 +40,7 @@ public sealed partial class AntiGravityClothingSystem : EntitySystem
         _gravity.RefreshWeightless(args.Wearer, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<AntiGravityClothingComponent> entity, ref ClothingGotUnequippedEvent args)
     {
         // This clothing item does nothing if we're not standing
@@ -52,11 +50,13 @@ public sealed partial class AntiGravityClothingSystem : EntitySystem
         _gravity.RefreshWeightless(args.Wearer, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnDowned(Entity<AntiGravityClothingComponent> entity, ref InventoryRelayedEvent<DownedEvent> args)
     {
         _gravity.RefreshWeightless(args.Owner, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnStood(Entity<AntiGravityClothingComponent> entity, ref InventoryRelayedEvent<StoodEvent> args)
     {
         _gravity.RefreshWeightless(args.Owner, true);

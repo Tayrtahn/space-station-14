@@ -19,19 +19,16 @@ public sealed partial class EssenceSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EssenceComponent, ComponentStartup>(OnEssenceEventReceived);
-        SubscribeLocalEvent<EssenceComponent, MobStateChangedEvent>(OnMobstateChanged);
-        SubscribeLocalEvent<EssenceComponent, MindAddedMessage>(OnEssenceEventReceived);
         SubscribeLocalEvent<EssenceComponent, MindRemovedMessage>(OnEssenceEventReceived);
-        SubscribeLocalEvent<EssenceComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnMobstateChanged(EntityUid uid, EssenceComponent component, MobStateChangedEvent args)
     {
         UpdateEssenceAmount(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, EssenceComponent component, ExaminedEvent args)
     {
         if (!component.SearchComplete || !HasComp<RevenantComponent>(args.Examiner))
@@ -54,6 +51,7 @@ public sealed partial class EssenceSystem : EntitySystem
         args.PushMarkup(Loc.GetString(message, ("target", uid)));
     }
 
+    [SubscribeLocalEvent]
     private void OnEssenceEventReceived(EntityUid uid, EssenceComponent component, EntityEventArgs args)
     {
         UpdateEssenceAmount(uid, component);

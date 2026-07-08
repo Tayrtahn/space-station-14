@@ -25,16 +25,9 @@ public abstract partial class SharedTrayScannerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TrayScannerComponent, ActivateInWorldEvent>(OnTrayScannerActivate);
-        SubscribeLocalEvent<TrayScannerComponent, GetVerbsEvent<AlternativeVerb>>(OnAddSwitchModeVerb);
-        SubscribeLocalEvent<TrayScannerComponent, GotEquippedHandEvent>(OnTrayHandEquipped);
-        SubscribeLocalEvent<TrayScannerComponent, GotUnequippedHandEvent>(OnTrayHandUnequipped);
-        SubscribeLocalEvent<TrayScannerComponent, GotEquippedEvent>(OnTrayEquipped);
-        SubscribeLocalEvent<TrayScannerComponent, GotUnequippedEvent>(OnTrayUnequipped);
-        SubscribeLocalEvent<TrayScannerUserComponent, GetVisMaskEvent>(OnUserGetVis);
     }
 
+    [SubscribeLocalEvent]
     private void OnAddSwitchModeVerb(Entity<TrayScannerComponent> scanner, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.Using.HasValue || !scanner.Comp.Enabled)
@@ -80,6 +73,7 @@ public abstract partial class SharedTrayScannerSystem : EntitySystem
         _audio.PlayPredicted(scanner.Comp.SoundSwitchMode, scanner, userUid, AudioParams.Default.WithVolume(1.5f).WithPitchScale(pitch));
     }
 
+    [SubscribeLocalEvent]
     private void OnUserGetVis(Entity<TrayScannerUserComponent> scanner, ref GetVisMaskEvent args)
     {
         args.VisibilityMask |= (int)VisibilityFlags.Subfloor;
@@ -116,26 +110,31 @@ public abstract partial class SharedTrayScannerSystem : EntitySystem
         _eye.RefreshVisibilityMask(user);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrayHandUnequipped(Entity<TrayScannerComponent> ent, ref GotUnequippedHandEvent args)
     {
         OnUnequip(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrayHandEquipped(Entity<TrayScannerComponent> ent, ref GotEquippedHandEvent args)
     {
         OnEquip(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrayUnequipped(Entity<TrayScannerComponent> ent, ref GotUnequippedEvent args)
     {
         OnUnequip(args.EquipTarget);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrayEquipped(Entity<TrayScannerComponent> ent, ref GotEquippedEvent args)
     {
         OnEquip(args.EquipTarget);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrayScannerActivate(Entity<TrayScannerComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)

@@ -19,11 +19,9 @@ namespace Content.Server.DeviceLinking.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<DoorSignalControlComponent, ComponentInit>(OnInit);
-            SubscribeLocalEvent<DoorSignalControlComponent, SignalReceivedEvent>(OnSignalReceived);
-            SubscribeLocalEvent<DoorSignalControlComponent, DoorStateChangedEvent>(OnStateChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnInit(EntityUid uid, DoorSignalControlComponent component, ComponentInit args)
         {
 
@@ -31,6 +29,7 @@ namespace Content.Server.DeviceLinking.Systems
             _signalSystem.EnsureSourcePorts(uid, component.OutOpen);
         }
 
+        [SubscribeLocalEvent]
         private void OnSignalReceived(EntityUid uid, DoorSignalControlComponent component, ref SignalReceivedEvent args)
         {
             if (!TryComp(uid, out DoorComponent? door))
@@ -83,6 +82,7 @@ namespace Content.Server.DeviceLinking.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnStateChanged(EntityUid uid, DoorSignalControlComponent door, DoorStateChangedEvent args)
         {
             if (args.State == DoorState.Closed)

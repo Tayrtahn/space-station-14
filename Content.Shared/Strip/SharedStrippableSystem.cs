@@ -39,23 +39,9 @@ public abstract partial class SharedStrippableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StrippableComponent, GetVerbsEvent<Verb>>(AddStripVerb);
-        SubscribeLocalEvent<StrippableComponent, GetVerbsEvent<ExamineVerb>>(AddStripExamineVerb);
-
-        // BUI
-        SubscribeLocalEvent<StrippableComponent, StrippingSlotButtonPressed>(OnStripButtonPressed);
-
-        // DoAfters
-        SubscribeLocalEvent<HandsComponent, DoAfterAttemptEvent<StrippableDoAfterEvent>>(OnStrippableDoAfterRunning);
-        SubscribeLocalEvent<HandsComponent, StrippableDoAfterEvent>(OnStrippableDoAfterFinished);
-
-        SubscribeLocalEvent<StrippingComponent, CanDropTargetEvent>(OnCanDropOn);
-        SubscribeLocalEvent<StrippableComponent, CanDropDraggedEvent>(OnCanDrop);
-        SubscribeLocalEvent<StrippableComponent, DragDropDraggedEvent>(OnDragDrop);
-        SubscribeLocalEvent<StrippableComponent, ActivateInWorldEvent>(OnActivateInWorld);
     }
 
+    [SubscribeLocalEvent]
     private void AddStripVerb(EntityUid uid, StrippableComponent component, GetVerbsEvent<Verb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract || args.Target == args.User)
@@ -71,6 +57,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void AddStripExamineVerb(EntityUid uid, StrippableComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract || args.Target == args.User)
@@ -87,6 +74,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnStripButtonPressed(Entity<StrippableComponent> strippable, ref StrippingSlotButtonPressed args)
     {
         if (args.Actor is not { Valid: true } user ||
@@ -570,6 +558,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         // Hand update will trigger strippable update.
     }
 
+    [SubscribeLocalEvent]
     private void OnStrippableDoAfterRunning(Entity<HandsComponent> entity, ref DoAfterAttemptEvent<StrippableDoAfterEvent> ev)
     {
         var args = ev.DoAfter.Args;
@@ -597,6 +586,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStrippableDoAfterFinished(Entity<HandsComponent> entity, ref StrippableDoAfterEvent ev)
     {
         if (ev.Cancelled)
@@ -623,6 +613,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(EntityUid uid, StrippableComponent component, ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex || args.Target == args.User)
@@ -647,6 +638,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         return (targetEv.Time, targetEv.Stealth);
     }
 
+    [SubscribeLocalEvent]
     private void OnDragDrop(EntityUid uid, StrippableComponent component, ref DragDropDraggedEvent args)
     {
         // If the user drags a strippable thing onto themselves.
@@ -669,6 +661,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDropOn(EntityUid uid, StrippingComponent component, ref CanDropTargetEvent args)
     {
         var val = uid == args.User &&
@@ -679,6 +672,7 @@ public abstract partial class SharedStrippableSystem : EntitySystem
         args.CanDrop |= val;
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDrop(EntityUid uid, StrippableComponent component, ref CanDropDraggedEvent args)
     {
         args.CanDrop |= args.Target == args.User &&

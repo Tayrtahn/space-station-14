@@ -19,10 +19,9 @@ public sealed partial class CardboardBoxSystem : SharedCardboardBoxSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<PlayBoxEffectMessage>(OnBoxEffect);
     }
 
+    [SubscribeNetworkEvent]
     private void OnBoxEffect(PlayBoxEffectMessage msg)
     {
         var source = GetEntity(msg.Source);

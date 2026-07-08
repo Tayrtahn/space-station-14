@@ -37,33 +37,21 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EnsnareableComponent, ComponentInit>(OnEnsnareInit);
-        SubscribeLocalEvent<EnsnareableComponent, RefreshMovementSpeedModifiersEvent>(MovementSpeedModify);
-        SubscribeLocalEvent<EnsnareableComponent, EnsnareEvent>(OnEnsnare);
-        SubscribeLocalEvent<EnsnareableComponent, EnsnareRemoveEvent>(OnEnsnareRemove);
-        SubscribeLocalEvent<EnsnareableComponent, EnsnaredChangedEvent>(OnEnsnareChange);
-        SubscribeLocalEvent<EnsnareableComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeLocalEvent<EnsnareableComponent, StrippingEnsnareButtonPressed>(OnStripEnsnareMessage);
-        SubscribeLocalEvent<EnsnareableComponent, RemoveEnsnareAlertEvent>(OnRemoveEnsnareAlert);
-        SubscribeLocalEvent<EnsnareableComponent, EnsnareableDoAfterEvent>(OnDoAfter);
-
-        SubscribeLocalEvent<EnsnaringComponent, ComponentRemove>(OnComponentRemove);
-        SubscribeLocalEvent<EnsnaringComponent, StepTriggerAttemptEvent>(AttemptStepTrigger);
-        SubscribeLocalEvent<EnsnaringComponent, StepTriggeredOffEvent>(OnStepTrigger);
-        SubscribeLocalEvent<EnsnaringComponent, ThrowDoHitEvent>(OnThrowHit);
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnEnsnareInit(Entity<EnsnareableComponent> ent, ref ComponentInit args)
     {
         ent.Comp.Container = Container.EnsureContainer<Container>(ent.Owner, "ensnare");
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, EnsnareableComponent component, ref AfterAutoHandleStateEvent args)
     {
         RaiseLocalEvent(uid, new EnsnaredChangedEvent(IsEnsnared(uid)));
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, EnsnareableComponent component, DoAfterEvent args)
     {
         if (args.Args.Target == null)
@@ -99,6 +87,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEnsnare(EntityUid uid, EnsnareableComponent component, EnsnareEvent args)
     {
         component.WalkSpeed *= args.WalkSpeed;
@@ -110,6 +99,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         RaiseLocalEvent(uid, ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnEnsnareRemove(EntityUid uid, EnsnareableComponent component, EnsnareRemoveEvent args)
     {
         component.WalkSpeed /= args.WalkSpeed;
@@ -121,6 +111,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         RaiseLocalEvent(uid, ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnEnsnareChange(EntityUid uid, EnsnareableComponent component, EnsnaredChangedEvent args)
     {
         UpdateAppearance(uid, component);
@@ -131,6 +122,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         Appearance.SetData(uid, EnsnareableVisuals.IsEnsnared, IsEnsnared(uid), appearance);
     }
 
+    [SubscribeLocalEvent]
     private void MovementSpeedModify(EntityUid uid, EnsnareableComponent component,
         RefreshMovementSpeedModifiersEvent args)
     {
@@ -173,6 +165,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
             Popup.PopupPredicted(Loc.GetString("ensnare-component-try-free-other", ("ensnare", ensnare), ("user", Identity.Entity(target, EntityManager))), user, user);
     }
 
+    [SubscribeLocalEvent]
     private void OnStripEnsnareMessage(EntityUid uid, EnsnareableComponent component, StrippingEnsnareButtonPressed args)
     {
         if (component.Container == null)
@@ -188,6 +181,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoveEnsnareAlert(Entity<EnsnareableComponent> ent, ref RemoveEnsnareAlertEvent args)
     {
         if (args.Handled || ent.Comp.Container == null)
@@ -206,6 +200,7 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, EnsnaringComponent component, ComponentRemove args)
     {
         if (!TryComp<EnsnareableComponent>(component.Ensnared, out var ensnared))
@@ -215,16 +210,19 @@ public abstract partial class SharedEnsnareableSystem : EntitySystem
             ForceFree((uid, component));
     }
 
+    [SubscribeLocalEvent]
     private void AttemptStepTrigger(EntityUid uid, EnsnaringComponent component, ref StepTriggerAttemptEvent args)
     {
         args.Continue = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStepTrigger(EntityUid uid, EnsnaringComponent component, ref StepTriggeredOffEvent args)
     {
         TryEnsnare(args.Tripper, uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnThrowHit(EntityUid uid, EnsnaringComponent component, ThrowDoHitEvent args)
     {
         if (!component.CanThrowTrigger)

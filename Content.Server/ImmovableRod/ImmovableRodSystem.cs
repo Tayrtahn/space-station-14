@@ -52,12 +52,9 @@ public sealed partial class ImmovableRodSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ImmovableRodComponent, StartCollideEvent>(OnCollide);
-        SubscribeLocalEvent<ImmovableRodComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ImmovableRodComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, ImmovableRodComponent component, MapInitEvent args)
     {
         if (TryComp(uid, out PhysicsComponent? phys))
@@ -84,6 +81,7 @@ public sealed partial class ImmovableRodSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(EntityUid uid, ImmovableRodComponent component, ref StartCollideEvent args)
     {
         var ent = args.OtherEntity;
@@ -140,6 +138,7 @@ public sealed partial class ImmovableRodSystem : EntitySystem
         _destructible.DestroyEntity(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, ImmovableRodComponent component, ExaminedEvent args)
     {
         if (component.MobCount == 0)

@@ -24,9 +24,6 @@ public abstract partial class SharedDeviceLinkSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<DeviceLinkSourceComponent, ComponentStartup>(OnSourceStartup);
-        SubscribeLocalEvent<DeviceLinkSourceComponent, ComponentRemove>(OnSourceRemoved);
-        SubscribeLocalEvent<DeviceLinkSinkComponent, ComponentRemove>(OnSinkRemoved);
     }
 
     #region Link Validation
@@ -34,6 +31,7 @@ public abstract partial class SharedDeviceLinkSystem : EntitySystem
     /// <summary>
     /// Removes invalid links where the saved sink doesn't exist/have a sink component for example
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSourceStartup(Entity<DeviceLinkSourceComponent> source, ref ComponentStartup args)
     {
         List<EntityUid> invalidSinks = new();
@@ -81,6 +79,7 @@ public abstract partial class SharedDeviceLinkSystem : EntitySystem
     /// <summary>
     /// Ensures that its links get deleted when a source gets removed
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSourceRemoved(Entity<DeviceLinkSourceComponent> source, ref ComponentRemove args)
     {
         foreach (var sinkUid in source.Comp.LinkedPorts.Keys)
@@ -95,6 +94,7 @@ public abstract partial class SharedDeviceLinkSystem : EntitySystem
     /// <summary>
     /// Ensures that its links get deleted when a sink gets removed
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSinkRemoved(Entity<DeviceLinkSinkComponent> sink, ref ComponentRemove args)
     {
         foreach (var sourceUid in sink.Comp.LinkedSources)

@@ -19,11 +19,9 @@ public sealed partial class RummagerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RummageableComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerb);
-        SubscribeLocalEvent<RummageableComponent, RummageDoAfterEvent>(OnDoAfterComplete);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<RummageableComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!HasComp<RummagerComponent>(args.User) || ent.Comp.Looted)
@@ -53,6 +51,7 @@ public sealed partial class RummagerSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterComplete(Entity<RummageableComponent> ent, ref RummageDoAfterEvent args)
     {
         if (args.Cancelled || ent.Comp.Looted)

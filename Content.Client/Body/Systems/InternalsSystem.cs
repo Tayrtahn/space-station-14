@@ -11,9 +11,9 @@ public sealed partial class InternalsSystem : SharedInternalsSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<InternalsComponent, AfterAutoHandleStateEvent>(OnInternalsAfterState);
     }
 
+    [SubscribeLocalEvent]
     private void OnInternalsAfterState(Entity<InternalsComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (ent.Comp.GasTankEntity != null && _ui.TryGetOpenUi(ent.Comp.GasTankEntity.Value, SharedGasTankUiKey.Key, out var bui))

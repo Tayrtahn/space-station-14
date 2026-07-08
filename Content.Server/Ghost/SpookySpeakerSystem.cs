@@ -16,10 +16,9 @@ public sealed partial class SpookySpeakerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpookySpeakerComponent, GhostBooEvent>(OnGhostBoo);
     }
 
+    [SubscribeLocalEvent]
     private void OnGhostBoo(Entity<SpookySpeakerComponent> entity, ref GhostBooEvent args)
     {
         // Only activate sometimes, so groups don't all trigger together

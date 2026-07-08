@@ -18,8 +18,6 @@ public sealed partial class FrenchAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FrenchAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
     public string Accentuate(string message, FrenchAccentComponent component)
@@ -54,6 +52,7 @@ public sealed partial class FrenchAccentSystem : EntitySystem
         return msg;
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(EntityUid uid, FrenchAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message, component);

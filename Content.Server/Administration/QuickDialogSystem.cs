@@ -26,8 +26,6 @@ public sealed partial class QuickDialogSystem : EntitySystem
     public override void Initialize()
     {
         _playerManager.PlayerStatusChanged += PlayerManagerOnPlayerStatusChanged;
-
-        SubscribeNetworkEvent<QuickDialogResponseEvent>(Handler);
     }
 
     public override void Shutdown()
@@ -36,6 +34,7 @@ public sealed partial class QuickDialogSystem : EntitySystem
         _playerManager.PlayerStatusChanged -= PlayerManagerOnPlayerStatusChanged;
     }
 
+    [SubscribeNetworkEvent]
     private void Handler(QuickDialogResponseEvent msg, EntitySessionEventArgs args)
     {
         if (!_openDialogs.ContainsKey(msg.DialogId) || !_openDialogsByUser[args.SenderSession.UserId].Contains(msg.DialogId))

@@ -74,31 +74,9 @@ public abstract partial class SharedBorgSystem : EntitySystem
         InitializeRelay();
         InitializeUI();
 
-        SubscribeLocalEvent<BorgChassisComponent, TryGetIdentityShortInfoEvent>(OnTryGetIdentityShortInfo);
-
-        SubscribeLocalEvent<BorgChassisComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<BorgChassisComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BorgChassisComponent, ItemSlotInsertAttemptEvent>(OnItemSlotInsertAttempt);
-        SubscribeLocalEvent<BorgChassisComponent, ItemSlotEjectAttemptEvent>(OnItemSlotEjectAttempt);
-        SubscribeLocalEvent<BorgChassisComponent, EntInsertedIntoContainerMessage>(OnInserted);
-        SubscribeLocalEvent<BorgChassisComponent, EntRemovedFromContainerMessage>(OnRemoved);
-        SubscribeLocalEvent<BorgChassisComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<BorgChassisComponent, MindRemovedMessage>(OnMindRemoved);
-        SubscribeLocalEvent<BorgChassisComponent, AfterInteractUsingEvent>(OnChassisInteractUsing);
-        SubscribeLocalEvent<BorgChassisComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeedModifiers);
-        SubscribeLocalEvent<BorgChassisComponent, ActivatableUIOpenAttemptEvent>(OnUIOpenAttempt);
-        SubscribeLocalEvent<BorgChassisComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<BorgChassisComponent, BeingGibbedEvent>(OnBeingGibbed);
-        SubscribeLocalEvent<BorgChassisComponent, GetCharactedDeadIcEvent>(OnGetDeadIC);
-        SubscribeLocalEvent<BorgChassisComponent, GetCharacterUnrevivableIcEvent>(OnGetUnrevivableIC);
-        SubscribeLocalEvent<BorgChassisComponent, PowerCellSlotEmptyEvent>(OnPowerCellSlotEmpty);
-        SubscribeLocalEvent<BorgChassisComponent, PowerCellChangedEvent>(OnPowerCellChanged);
-
-        SubscribeLocalEvent<BorgBrainComponent, MindAddedMessage>(OnBrainMindAdded);
-        SubscribeLocalEvent<BorgBrainComponent, PointAttemptEvent>(OnBrainPointAttempt);
-
     }
 
+    [SubscribeLocalEvent]
     private void OnTryGetIdentityShortInfo(Entity<BorgChassisComponent> chassis, ref TryGetIdentityShortInfoEvent args)
     {
         if (args.Handled)
@@ -108,6 +86,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<BorgChassisComponent> chassis, ref ComponentStartup args)
     {
         if (!TryComp<ContainerManagerComponent>(chassis, out var containerManager))
@@ -117,11 +96,13 @@ public abstract partial class SharedBorgSystem : EntitySystem
         chassis.Comp.ModuleContainer = _container.EnsureContainer<Container>(chassis.Owner, chassis.Comp.ModuleContainerId, containerManager);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<BorgChassisComponent> chassis, ref MapInitEvent args)
     {
         _movementSpeedModifier.RefreshMovementSpeedModifiers(chassis.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSlotInsertAttempt(Entity<BorgChassisComponent> chassis, ref ItemSlotInsertAttemptEvent args)
     {
         if (args.Cancelled)
@@ -138,6 +119,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSlotEjectAttempt(Entity<BorgChassisComponent> chassis, ref ItemSlotEjectAttemptEvent args)
     {
         if (args.Cancelled)
@@ -155,6 +137,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
     }
 
     // TODO: consider transferring over the ghost role? managing that might suck.
+    [SubscribeLocalEvent]
     protected virtual void OnInserted(Entity<BorgChassisComponent> chassis, ref EntInsertedIntoContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -169,6 +152,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnRemoved(Entity<BorgChassisComponent> chassis, ref EntRemovedFromContainerMessage args)
     {
         if (_timing.ApplyingState)
@@ -185,6 +169,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(Entity<BorgChassisComponent> chassis, ref MindAddedMessage args)
     {
         // Unpredicted because the event is raised on the server.
@@ -196,6 +181,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         _appearance.SetData(chassis.Owner, BorgVisuals.HasPlayer, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(Entity<BorgChassisComponent> chassis, ref MindRemovedMessage args)
     {
         // Unpredicted because the event is raised on the server.
@@ -210,6 +196,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         _appearance.SetData(chassis.Owner, BorgVisuals.HasPlayer, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnChassisInteractUsing(Entity<BorgChassisComponent> chassis, ref AfterInteractUsingEvent args)
     {
         if (!args.CanReach || args.Handled || chassis.Owner == args.User)
@@ -255,6 +242,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
     }
 
     // Make the borg slower without power.
+    [SubscribeLocalEvent]
     private void OnRefreshMovementSpeedModifiers(Entity<BorgChassisComponent> chassis, ref RefreshMovementSpeedModifiersEvent args)
     {
         if (chassis.Comp.Active)
@@ -271,6 +259,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
         args.ModifySpeed(1f, sprintDif);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpenAttempt(Entity<BorgChassisComponent> chassis, ref ActivatableUIOpenAttemptEvent args)
     {
         // Borgs generally can't view their own UI.
@@ -278,6 +267,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<BorgChassisComponent> chassis, ref MobStateChangedEvent args)
     {
         if (args.NewMobState == MobState.Alive)
@@ -286,6 +276,7 @@ public abstract partial class SharedBorgSystem : EntitySystem
             SetActive(chassis, false, user: args.Origin);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingGibbed(Entity<BorgChassisComponent> chassis, ref BeingGibbedEvent args)
     {
         // Don't use the ItemSlotsSystem eject method since we don't want to play a sound and want we to eject the battery even if the slot is locked.
@@ -299,16 +290,19 @@ public abstract partial class SharedBorgSystem : EntitySystem
         args.Giblets.UnionWith(_container.EmptyContainer(chassis.Comp.ModuleContainer));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDeadIC(Entity<BorgChassisComponent> chassis, ref GetCharactedDeadIcEvent args)
     {
         args.Dead = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetUnrevivableIC(Entity<BorgChassisComponent> chassis, ref GetCharacterUnrevivableIcEvent args)
     {
         args.Unrevivable = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBrainMindAdded(Entity<BorgBrainComponent> brain, ref MindAddedMessage args)
     {
         if (!_container.TryGetContainingContainer(brain.Owner, out var container))
@@ -336,18 +330,21 @@ public abstract partial class SharedBorgSystem : EntitySystem
         _mind.TransferTo(mindId, borg, mind: mind);
     }
 
+    [SubscribeLocalEvent]
     private void OnBrainPointAttempt(Entity<BorgBrainComponent> brain, ref PointAttemptEvent args)
     {
         args.Cancel();
     }
 
     // Raised when the power cell is empty or removed from the borg.
+    [SubscribeLocalEvent]
     private void OnPowerCellSlotEmpty(Entity<BorgChassisComponent> chassis, ref PowerCellSlotEmptyEvent args)
     {
         SetActive(chassis, false);
     }
 
     // Raised when a power cell is inserted.
+    [SubscribeLocalEvent]
     private void OnPowerCellChanged(Entity<BorgChassisComponent> chassis, ref PowerCellChangedEvent args)
     {
         TryActivate(chassis);

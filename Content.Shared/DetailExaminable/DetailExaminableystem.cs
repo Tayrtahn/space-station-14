@@ -12,10 +12,9 @@ public sealed partial class DetailExaminableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DetailExaminableComponent, GetVerbsEvent<ExamineVerb>>(OnGetExamineVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetExamineVerbs(Entity<DetailExaminableComponent> ent, ref GetVerbsEvent<ExamineVerb> args)
     {
         if (Identity.Name(args.Target, EntityManager) != MetaData(args.Target).EntityName)

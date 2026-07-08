@@ -11,10 +11,9 @@ public sealed partial class ProtectedGridSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ProtectedGridComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ProtectedGridComponent, FloorTileAttemptEvent>(OnFloorTileAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ProtectedGridComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<MapGridComponent>(ent, out var grid))
@@ -52,6 +51,7 @@ public sealed partial class ProtectedGridSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnFloorTileAttempt(Entity<ProtectedGridComponent> ent, ref FloorTileAttemptEvent args)
     {
         var chunkOrigin = SharedMapSystem.GetChunkIndices(args.GridIndices, 8);

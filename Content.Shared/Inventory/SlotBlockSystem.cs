@@ -10,11 +10,9 @@ public sealed partial class SlotBlockSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SlotBlockComponent, InventoryRelayedEvent<IsEquippingTargetAttemptEvent>>(OnEquipAttempt);
-        SubscribeLocalEvent<SlotBlockComponent, InventoryRelayedEvent<IsUnequippingTargetAttemptEvent>>(OnUnequipAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipAttempt(Entity<SlotBlockComponent> ent, ref InventoryRelayedEvent<IsEquippingTargetAttemptEvent> args)
     {
         if (args.Args.Cancelled || (args.Args.SlotFlags & ent.Comp.Slots) == 0)
@@ -24,6 +22,7 @@ public sealed partial class SlotBlockSystem : EntitySystem
         args.Args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipAttempt(Entity<SlotBlockComponent> ent, ref InventoryRelayedEvent<IsUnequippingTargetAttemptEvent> args)
     {
         if (args.Args.Cancelled || (args.Args.SlotFlags & ent.Comp.Slots) == 0)

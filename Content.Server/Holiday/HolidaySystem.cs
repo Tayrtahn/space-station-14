@@ -22,8 +22,6 @@ namespace Content.Server.Holiday
         public override void Initialize()
         {
             Subs.CVar(_configManager, CCVars.HolidaysEnabled, OnHolidaysEnableChange);
-            SubscribeLocalEvent<GameRunLevelChangedEvent>(OnRunLevelChanged);
-            SubscribeLocalEvent<HolidayVisualsComponent, ComponentInit>(OnVisualsInit);
         }
 
         public void RefreshCurrentHolidays()
@@ -85,6 +83,7 @@ namespace Content.Server.Holiday
             RefreshCurrentHolidays();
         }
 
+        [SubscribeLocalEvent]
         private void OnRunLevelChanged(GameRunLevelChangedEvent eventArgs)
         {
             if (!_enabled) return;
@@ -103,6 +102,7 @@ namespace Content.Server.Holiday
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnVisualsInit(Entity<HolidayVisualsComponent> ent, ref ComponentInit args)
         {
             foreach (var (key, holidays) in ent.Comp.Holidays)

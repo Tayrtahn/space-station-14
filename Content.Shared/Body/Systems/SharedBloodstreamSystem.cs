@@ -43,17 +43,6 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BloodstreamComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BloodstreamComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-        SubscribeLocalEvent<BloodstreamComponent, ReactionAttemptEvent>(OnReactionAttempt);
-        SubscribeLocalEvent<BloodstreamComponent, SolutionRelayEvent<ReactionAttemptEvent>>(OnReactionAttempt);
-        SubscribeLocalEvent<BloodstreamComponent, DamageChangedEvent>(OnDamageChanged);
-        SubscribeLocalEvent<BloodstreamComponent, HealthBeingExaminedEvent>(OnHealthBeingExamined);
-        SubscribeLocalEvent<BloodstreamComponent, GibbedBeforeDeletionEvent>(OnBeingGibbed);
-        SubscribeLocalEvent<BloodstreamComponent, ApplyMetabolicMultiplierEvent>(OnApplyMetabolicMultiplier);
-        SubscribeLocalEvent<BloodstreamComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<BloodstreamComponent, MetabolismExclusionEvent>(OnMetabolismExclusion);
     }
 
     public override void Update(float frameTime)
@@ -109,6 +98,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<BloodstreamComponent> entity, ref MapInitEvent args)
     {
         entity.Comp.NextUpdate = _timing.CurTime + entity.Comp.AdjustedUpdateInterval;
@@ -132,6 +122,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
 
     // prevent the infamous UdderSystem debug assert, see https://github.com/space-wizards/space-station-14/pull/35314
     // TODO: find a better solution than copy pasting this into every shared system that caches solution entities
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<BloodstreamComponent> entity, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity was our contained solution and set it to null
@@ -142,6 +133,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
             entity.Comp.TemporarySolution = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnReactionAttempt(Entity<BloodstreamComponent> ent, ref ReactionAttemptEvent args)
     {
         if (args.Cancelled)
@@ -169,6 +161,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
         // Having cheese-clots form in your veins can't be good for you.
     }
 
+    [SubscribeLocalEvent]
     private void OnReactionAttempt(Entity<BloodstreamComponent> ent, ref SolutionRelayEvent<ReactionAttemptEvent> args)
     {
         if (args.Solution.Comp.Id != ent.Comp.BloodSolutionName
@@ -180,6 +173,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
         OnReactionAttempt(ent, ref args.Event);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<BloodstreamComponent> ent, ref DamageChangedEvent args)
     {
         // The incoming state from the server raises a DamageChangedEvent as well.
@@ -243,6 +237,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
     /// <summary>
     /// Shows text on health examine, based on bleed rate and blood level.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnHealthBeingExamined(Entity<BloodstreamComponent> ent, ref HealthBeingExaminedEvent args)
     {
         // Shows massively bleeding at 0.75x the max bleed rate.
@@ -278,17 +273,20 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBeingGibbed(Entity<BloodstreamComponent> ent, ref GibbedBeforeDeletionEvent args)
     {
         SpillAllSolutions(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnApplyMetabolicMultiplier(Entity<BloodstreamComponent> ent, ref ApplyMetabolicMultiplierEvent args)
     {
         ent.Comp.UpdateIntervalMultiplier = args.Multiplier;
         DirtyField(ent, ent.Comp, nameof(BloodstreamComponent.UpdateIntervalMultiplier));
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<BloodstreamComponent> ent, ref RejuvenateEvent args)
     {
         TryModifyBleedAmount(ent.AsNullable(), -ent.Comp.BleedAmount);
@@ -301,6 +299,7 @@ public abstract partial class SharedBloodstreamSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMetabolismExclusion(Entity<BloodstreamComponent> ent, ref MetabolismExclusionEvent args)
     {
         // Adding all blood reagents for filtering blood in metabolizer

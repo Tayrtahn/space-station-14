@@ -29,12 +29,9 @@ public sealed partial class FatExtractorSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<FatExtractorComponent, GotEmaggedEvent>(OnGotEmagged);
-        SubscribeLocalEvent<FatExtractorComponent, StorageAfterCloseEvent>(OnClosed);
-        SubscribeLocalEvent<FatExtractorComponent, StorageAfterOpenEvent>(OnOpen);
-        SubscribeLocalEvent<FatExtractorComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEmagged(EntityUid uid, FatExtractorComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -46,16 +43,19 @@ public sealed partial class FatExtractorSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnClosed(EntityUid uid, FatExtractorComponent component, ref StorageAfterCloseEvent args)
     {
         StartProcessing(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnOpen(EntityUid uid, FatExtractorComponent component, ref StorageAfterOpenEvent args)
     {
         StopProcessing(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, FatExtractorComponent component, ref PowerChangedEvent args)
     {
         if (!args.Powered)

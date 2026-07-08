@@ -44,17 +44,9 @@ namespace Content.Server.Singularity.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<EmitterComponent, PowerConsumerReceivedChanged>(ReceivedChanged);
-            SubscribeLocalEvent<EmitterComponent, PowerChangedEvent>(OnApcChanged);
-            SubscribeLocalEvent<EmitterComponent, ActivateInWorldEvent>(OnActivate);
-            SubscribeLocalEvent<EmitterComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-            SubscribeLocalEvent<EmitterComponent, SignalReceivedEvent>(OnSignalReceived);
-            SubscribeLocalEvent<EmitterComponent, DestructionEventArgs>(OnDestruction);
-            SubscribeLocalEvent<EmitterComponent, MachineDeconstructedEvent>(OnDeconstructed); // you shouldn't be able to deconstruct locked emitters but out of scope to fix
-            SubscribeLocalEvent<EmitterComponent, LockToggledEvent>(OnLockToggled);
         }
 
+        [SubscribeLocalEvent]
         private void OnAnchorStateChanged(EntityUid uid, EmitterComponent component, ref AnchorStateChangedEvent args)
         {
             if (args.Anchored)
@@ -63,6 +55,7 @@ namespace Content.Server.Singularity.EntitySystems
             SwitchOff(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnActivate(EntityUid uid, EmitterComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled || !args.Complex)
@@ -103,6 +96,7 @@ namespace Content.Server.Singularity.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void ReceivedChanged(
             EntityUid uid,
             EmitterComponent component,
@@ -123,6 +117,7 @@ namespace Content.Server.Singularity.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnApcChanged(EntityUid uid, EmitterComponent component, ref PowerChangedEvent args)
         {
             if (!component.IsOn)
@@ -266,6 +261,7 @@ namespace Content.Server.Singularity.EntitySystems
             _appearance.SetData(uid, EmitterVisuals.VisualState, state);
         }
 
+        [SubscribeLocalEvent]
         private void OnSignalReceived(EntityUid uid, EmitterComponent component, ref SignalReceivedEvent args)
         {
             // must anchor the emitter for signals to work
@@ -297,12 +293,14 @@ namespace Content.Server.Singularity.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnDestruction(Entity<EmitterComponent> ent, ref DestructionEventArgs args)
         {
             // Engineering needs to know if an emitter is destroyed so they can replace it before the engine looses.
             AlertRadio(ent, ent.Comp.LocDestroyed);
         }
 
+        [SubscribeLocalEvent]
         private void OnDeconstructed(Entity<EmitterComponent> ent, ref MachineDeconstructedEvent args)
         {
             // right now you don't even need to unlock the emitter to deconstruct it. that's almost certainly a bug but even without it it probably still needs an alert
@@ -321,6 +319,7 @@ namespace Content.Server.Singularity.EntitySystems
             _radio.SendRadioMessage(ent.Owner, message, ent.Comp.RadioChannel, ent.Owner);
         }
 
+        [SubscribeLocalEvent]
         private void OnLockToggled(Entity<EmitterComponent> ent, ref LockToggledEvent args)
         {
             if (args.Locked)

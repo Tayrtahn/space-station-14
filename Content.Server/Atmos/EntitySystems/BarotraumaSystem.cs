@@ -26,15 +26,9 @@ namespace Content.Server.Atmos.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<PressureProtectionComponent, GotEquippedEvent>(OnPressureProtectionEquipped);
-            SubscribeLocalEvent<PressureProtectionComponent, GotUnequippedEvent>(OnPressureProtectionUnequipped);
-            SubscribeLocalEvent<PressureProtectionComponent, ComponentInit>(OnUpdateResistance);
-            SubscribeLocalEvent<PressureProtectionComponent, ComponentRemove>(OnUpdateResistance);
-
-            SubscribeLocalEvent<PressureImmunityComponent, ComponentInit>(OnPressureImmuneInit);
-            SubscribeLocalEvent<PressureImmunityComponent, ComponentRemove>(OnPressureImmuneRemove);
         }
 
+        [SubscribeLocalEvent]
         private void OnPressureImmuneInit(EntityUid uid, PressureImmunityComponent pressureImmunity, ComponentInit args)
         {
             if (TryComp<BarotraumaComponent>(uid, out var barotrauma))
@@ -43,6 +37,7 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnPressureImmuneRemove(EntityUid uid, PressureImmunityComponent pressureImmunity, ComponentRemove args)
         {
             if (TryComp<BarotraumaComponent>(uid, out var barotrauma))
@@ -54,6 +49,7 @@ namespace Content.Server.Atmos.EntitySystems
         /// <summary>
         /// Generic method for updating resistance on component Lifestage events
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnUpdateResistance(EntityUid uid, PressureProtectionComponent pressureProtection, EntityEventArgs args)
         {
             if (TryComp<BarotraumaComponent>(uid, out var barotrauma))
@@ -62,6 +58,7 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnPressureProtectionEquipped(EntityUid uid, PressureProtectionComponent pressureProtection, GotEquippedEvent args)
         {
             if (TryComp<BarotraumaComponent>(args.EquipTarget, out var barotrauma) && barotrauma.ProtectionSlots.Contains(args.Slot))
@@ -70,6 +67,7 @@ namespace Content.Server.Atmos.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnPressureProtectionUnequipped(EntityUid uid, PressureProtectionComponent pressureProtection, GotUnequippedEvent args)
         {
             if (TryComp<BarotraumaComponent>(args.EquipTarget, out var barotrauma) && barotrauma.ProtectionSlots.Contains(args.Slot))

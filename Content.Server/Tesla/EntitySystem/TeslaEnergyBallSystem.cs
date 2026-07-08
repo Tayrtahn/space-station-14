@@ -22,10 +22,9 @@ public sealed partial class TeslaEnergyBallSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TeslaEnergyBallComponent, EntityConsumedByEventHorizonEvent>(OnConsumed);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsumed(Entity<TeslaEnergyBallComponent> tesla, ref EntityConsumedByEventHorizonEvent args)
     {
         Spawn(tesla.Comp.ConsumeEffectProto, Transform(args.Entity).Coordinates);

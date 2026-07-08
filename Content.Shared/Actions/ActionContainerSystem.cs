@@ -28,16 +28,9 @@ public sealed partial class ActionContainerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActionsContainerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ActionsContainerComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ActionsContainerComponent, EntRemovedFromContainerMessage>(OnEntityRemoved);
-        SubscribeLocalEvent<ActionsContainerComponent, EntInsertedIntoContainerMessage>(OnEntityInserted);
-        SubscribeLocalEvent<ActionsContainerComponent, ActionAddedEvent>(OnActionAdded);
-        SubscribeLocalEvent<ActionsContainerComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<ActionsContainerComponent, MindRemovedMessage>(OnMindRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, ActionsContainerComponent component, MindAddedMessage args)
     {
         if (!_mind.TryGetMind(uid, out var mindId, out _))
@@ -49,6 +42,7 @@ public sealed partial class ActionContainerSystem : EntitySystem
             _actions.GrantContainedActions(uid, mindId);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(EntityUid uid, ActionsContainerComponent component, MindRemovedMessage args)
     {
         _actions.RemoveProvidedActions(uid, args.Mind);
@@ -292,11 +286,13 @@ public sealed partial class ActionContainerSystem : EntitySystem
             _actions.RemoveAction(actions, (ent, ent));
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, ActionsContainerComponent component, ComponentInit args)
     {
         component.Container = _container.EnsureContainer<Container>(uid, ActionsContainerComponent.ContainerId);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, ActionsContainerComponent component, ComponentShutdown args)
     {
         if (_timing.ApplyingState && component.NetSyncEnabled)
@@ -305,6 +301,7 @@ public sealed partial class ActionContainerSystem : EntitySystem
         _container.ShutdownContainer(component.Container);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityInserted(EntityUid uid, ActionsContainerComponent component, EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ActionsContainerComponent.ContainerId)
@@ -323,6 +320,7 @@ public sealed partial class ActionContainerSystem : EntitySystem
         RaiseLocalEvent(uid, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityRemoved(EntityUid uid, ActionsContainerComponent component, EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ActionsContainerComponent.ContainerId)
@@ -341,6 +339,7 @@ public sealed partial class ActionContainerSystem : EntitySystem
         DirtyField(action, action.Comp, nameof(ActionComponent.Container));
     }
 
+    [SubscribeLocalEvent]
     private void OnActionAdded(EntityUid uid, ActionsContainerComponent component, ActionAddedEvent args)
     {
         if (TryComp<MindComponent>(uid, out var mindComp) && mindComp.OwnedEntity != null && HasComp<ActionsContainerComponent>(mindComp.OwnedEntity.Value))

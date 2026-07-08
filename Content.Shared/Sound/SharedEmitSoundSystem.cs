@@ -42,21 +42,9 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<EmitSoundOnSpawnComponent, MapInitEvent>(OnEmitSpawnOnInit);
-        SubscribeLocalEvent<EmitSoundOnLandComponent, LandEvent>(OnEmitSoundOnLand);
-        SubscribeLocalEvent<EmitSoundOnUseComponent, UseInHandEvent>(OnEmitSoundOnUseInHand);
-        SubscribeLocalEvent<EmitSoundOnThrowComponent, ThrownEvent>(OnEmitSoundOnThrown);
-        SubscribeLocalEvent<EmitSoundOnActivateComponent, ActivateInWorldEvent>(OnEmitSoundOnActivateInWorld);
-        SubscribeLocalEvent<EmitSoundOnPickupComponent, GotEquippedHandEvent>(OnEmitSoundOnPickup);
-        SubscribeLocalEvent<EmitSoundOnDropComponent, DroppedEvent>(OnEmitSoundOnDrop);
-        SubscribeLocalEvent<EmitSoundOnInteractUsingComponent, InteractUsingEvent>(OnEmitSoundOnInteractUsing);
-        SubscribeLocalEvent<EmitSoundOnUIOpenComponent, AfterActivatableUIOpenEvent>(HandleEmitSoundOnUIOpen);
-
-        SubscribeLocalEvent<EmitSoundOnCollideComponent, StartCollideEvent>(OnEmitSoundOnCollide);
-
-        SubscribeLocalEvent<SoundWhileAliveComponent, MobStateChangedEvent>(OnMobState);
     }
 
+    [SubscribeLocalEvent]
     private void HandleEmitSoundOnUIOpen(EntityUid uid, EmitSoundOnUIOpenComponent component, AfterActivatableUIOpenEvent args)
     {
         if (_whitelistSystem.IsWhitelistFail(component.Blacklist, args.User))
@@ -65,6 +53,7 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMobState(Entity<SoundWhileAliveComponent> entity, ref MobStateChangedEvent args)
     {
         // Disable this component rather than removing it because it can be brought back to life.
@@ -77,11 +66,13 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
         _ambient.SetAmbience(entity.Owner, args.NewMobState != MobState.Dead);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSpawnOnInit(EntityUid uid, EmitSoundOnSpawnComponent component, MapInitEvent args)
     {
         TryEmitSound(uid, component, predict: false);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnLand(EntityUid uid, BaseEmitSoundComponent component, ref LandEvent args)
     {
         if (!args.PlaySound ||
@@ -101,6 +92,7 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
         TryEmitSound(uid, component, args.User, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnUseInHand(EntityUid uid, EmitSoundOnUseComponent component, UseInHandEvent args)
     {
         // Intentionally not checking whether the interaction has already been handled.
@@ -110,11 +102,13 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnThrown(EntityUid uid, BaseEmitSoundComponent component, ref ThrownEvent args)
     {
         TryEmitSound(uid, component, args.User, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnActivateInWorld(EntityUid uid, EmitSoundOnActivateComponent component, ActivateInWorldEvent args)
     {
         // Intentionally not checking whether the interaction has already been handled.
@@ -124,16 +118,19 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnPickup(EntityUid uid, EmitSoundOnPickupComponent component, GotEquippedHandEvent args)
     {
         TryEmitSound(uid, component, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnDrop(EntityUid uid, EmitSoundOnDropComponent component, DroppedEvent args)
     {
         TryEmitSound(uid, component, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnInteractUsing(Entity<EmitSoundOnInteractUsingComponent> ent, ref InteractUsingEvent args)
     {
         if (_whitelistSystem.IsWhitelistPass(ent.Comp.Whitelist, args.Used))
@@ -165,6 +162,7 @@ public abstract partial class SharedEmitSoundSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEmitSoundOnCollide(EntityUid uid, EmitSoundOnCollideComponent component, ref StartCollideEvent args)
     {
         if (!args.OurFixture.Hard ||

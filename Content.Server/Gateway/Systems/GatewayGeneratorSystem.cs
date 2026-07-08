@@ -59,12 +59,9 @@ public sealed partial class GatewayGeneratorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GatewayGeneratorComponent, MapInitEvent>(OnGeneratorMapInit);
-        SubscribeLocalEvent<GatewayGeneratorComponent, ComponentShutdown>(OnGeneratorShutdown);
-        SubscribeLocalEvent<GatewayGeneratorDestinationComponent, AttemptGatewayOpenEvent>(OnGeneratorAttemptOpen);
-        SubscribeLocalEvent<GatewayGeneratorDestinationComponent, GatewayOpenEvent>(OnGeneratorOpen);
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneratorShutdown(EntityUid uid, GatewayGeneratorComponent component, ComponentShutdown args)
     {
         foreach (var genUid in component.Generated)
@@ -76,6 +73,7 @@ public sealed partial class GatewayGeneratorSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneratorMapInit(EntityUid uid, GatewayGeneratorComponent generator, MapInitEvent args)
     {
         if (!_cfgManager.GetCVar(CCVars.GatewayGeneratorEnabled))
@@ -143,6 +141,7 @@ public sealed partial class GatewayGeneratorSystem : EntitySystem
         generator.Generated.Add(mapUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneratorAttemptOpen(Entity<GatewayGeneratorDestinationComponent> ent, ref AttemptGatewayOpenEvent args)
     {
         if (ent.Comp.Loaded || args.Cancelled)
@@ -157,6 +156,7 @@ public sealed partial class GatewayGeneratorSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneratorOpen(Entity<GatewayGeneratorDestinationComponent> ent, ref GatewayOpenEvent args)
     {
         if (ent.Comp.Loaded)

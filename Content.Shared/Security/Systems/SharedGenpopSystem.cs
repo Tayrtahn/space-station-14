@@ -32,16 +32,11 @@ public abstract partial class SharedGenpopSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GenpopLockerComponent, GenpopLockerIdConfiguredMessage>(OnIdConfigured);
-        SubscribeLocalEvent<GenpopLockerComponent, StorageCloseAttemptEvent>(OnCloseAttempt);
-        SubscribeLocalEvent<GenpopLockerComponent, LockToggleAttemptEvent>(OnLockToggleAttempt);
-        SubscribeLocalEvent<GenpopLockerComponent, LockToggledEvent>(OnLockToggled);
-        SubscribeLocalEvent<GenpopLockerComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
-        SubscribeLocalEvent<GenpopIdCardComponent, ExaminedEvent>(OnExamine);
 
         Subs.CVar(_cfgManager, CCVars.MaxIdJobLength, value => _maxIdJobLength = value, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnIdConfigured(Entity<GenpopLockerComponent> ent, ref GenpopLockerIdConfiguredMessage args)
     {
         // validation.
@@ -65,6 +60,7 @@ public abstract partial class SharedGenpopSystem : EntitySystem
         CreateId(ent, args.Name, args.Sentence, args.Crime);
     }
 
+    [SubscribeLocalEvent]
     private void OnCloseAttempt(Entity<GenpopLockerComponent> ent, ref StorageCloseAttemptEvent args)
     {
         if (args.Cancelled)
@@ -90,6 +86,7 @@ public abstract partial class SharedGenpopSystem : EntitySystem
         _userInterface.TryOpenUi(ent.Owner, GenpopLockerUiKey.Key, user);
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggleAttempt(Entity<GenpopLockerComponent> ent, ref LockToggleAttemptEvent args)
     {
         if (args.Cancelled)
@@ -120,6 +117,7 @@ public abstract partial class SharedGenpopSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggled(Entity<GenpopLockerComponent> ent, ref LockToggledEvent args)
     {
         if (args.Locked)
@@ -129,6 +127,7 @@ public abstract partial class SharedGenpopSystem : EntitySystem
         CancelIdCard(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<GenpopLockerComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (ent.Comp.LinkedId == null)
@@ -208,6 +207,7 @@ public abstract partial class SharedGenpopSystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<GenpopIdCardComponent> ent, ref ExaminedEvent args)
     {
         // This component holds the contextual data for the sentence end time and other such things.

@@ -21,12 +21,9 @@ public sealed partial class RottingSystem : SharedRottingSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RottingComponent, GibbedBeforeDeletionEvent>(OnGibbed);
-
-        SubscribeLocalEvent<TemperatureComponent, IsRottingEvent>(OnTempIsRotting);
     }
 
+    [SubscribeLocalEvent]
     private void OnGibbed(EntityUid uid, RottingComponent component, GibbedBeforeDeletionEvent args)
     {
         if (!TryComp<PhysicsComponent>(uid, out var physics))
@@ -40,6 +37,7 @@ public sealed partial class RottingSystem : SharedRottingSystem
         tileMix?.AdjustMoles(Gas.Ammonia, molsToDump);
     }
 
+    [SubscribeLocalEvent]
     private void OnTempIsRotting(EntityUid uid, TemperatureComponent component, ref IsRottingEvent args)
     {
         if (args.Handled)

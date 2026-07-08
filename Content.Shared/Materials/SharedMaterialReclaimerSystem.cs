@@ -42,12 +42,6 @@ public abstract partial class SharedMaterialReclaimerSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MaterialReclaimerComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<MaterialReclaimerComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<MaterialReclaimerComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<MaterialReclaimerComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<CollideMaterialReclaimerComponent, StartCollideEvent>(OnCollide);
-        SubscribeLocalEvent<ActiveMaterialReclaimerComponent, ComponentStartup>(OnActiveStartup);
         SubscribeLocalEvent<MaterialReclaimerComponent, InteractUsingEvent>(OnInteractUsing,
             before: [typeof(SolutionTransferSystem), typeof(AnchorableSystem)]);
     }
@@ -73,21 +67,25 @@ public abstract partial class SharedMaterialReclaimerSystem : EntitySystem
         args.Handled = TryStartProcessItem(entity.Owner, args.Used, entity.Comp, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, MaterialReclaimerComponent component, MapInitEvent args)
     {
         component.NextSound = Timing.CurTime;
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, MaterialReclaimerComponent component, ComponentShutdown args)
     {
         _audio.Stop(component.Stream);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, MaterialReclaimerComponent component, ExaminedEvent args)
     {
         args.PushMarkup(Loc.GetString("recycler-count-items", ("items", component.ItemsProcessed)));
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, MaterialReclaimerComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -99,6 +97,7 @@ public abstract partial class SharedMaterialReclaimerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(EntityUid uid, CollideMaterialReclaimerComponent component, ref StartCollideEvent args)
     {
         if (args.OurFixtureId != component.FixtureId)
@@ -108,6 +107,7 @@ public abstract partial class SharedMaterialReclaimerSystem : EntitySystem
         TryStartProcessItem(uid, args.OtherEntity, reclaimer);
     }
 
+    [SubscribeLocalEvent]
     private void OnActiveStartup(EntityUid uid, ActiveMaterialReclaimerComponent component, ComponentStartup args)
     {
         component.ReclaimingContainer = Container.EnsureContainer<Container>(uid, ActiveReclaimerContainerId);

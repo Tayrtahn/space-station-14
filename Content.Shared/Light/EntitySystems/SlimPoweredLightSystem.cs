@@ -14,10 +14,9 @@ public sealed partial class SlimPoweredLightSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SlimPoweredLightComponent, AttemptPointLightToggleEvent>(OnLightAttempt);
-        SubscribeLocalEvent<SlimPoweredLightComponent, PowerChangedEvent>(OnLightPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnLightAttempt(Entity<SlimPoweredLightComponent> ent, ref AttemptPointLightToggleEvent args)
     {
         // Early-out to avoid having to trycomp stuff if we're the caller setting it
@@ -28,6 +27,7 @@ public sealed partial class SlimPoweredLightSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnLightPowerChanged(Entity<SlimPoweredLightComponent> ent, ref PowerChangedEvent args)
     {
         // Early out if we don't need to trycomp.

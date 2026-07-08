@@ -37,16 +37,9 @@ public sealed partial class MoverController : SharedMoverController
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ActiveInputMoverComponent, EntityPausedEvent>(OnEntityPaused);
-        SubscribeLocalEvent<InputMoverComponent, EntityUnpausedEvent>(OnEntityUnpaused);
-
-        SubscribeLocalEvent<RelayInputMoverComponent, PlayerAttachedEvent>(OnRelayPlayerAttached);
-        SubscribeLocalEvent<RelayInputMoverComponent, PlayerDetachedEvent>(OnRelayPlayerDetached);
-        SubscribeLocalEvent<InputMoverComponent, PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<InputMoverComponent, PlayerDetachedEvent>(OnPlayerDetached);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityPaused(Entity<ActiveInputMoverComponent> ent, ref EntityPausedEvent args)
     {
         // Become unactive [sic] if we don't have PhysicsComp.IgnorePaused
@@ -55,6 +48,7 @@ public sealed partial class MoverController : SharedMoverController
         RemCompDeferred<ActiveInputMoverComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityUnpaused(Entity<InputMoverComponent> ent, ref EntityUnpausedEvent args)
     {
         UpdateMoverStatus((ent, ent.Comp));
@@ -122,23 +116,27 @@ public sealed partial class MoverController : SharedMoverController
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayPlayerAttached(Entity<RelayInputMoverComponent> entity, ref PlayerAttachedEvent args)
     {
         if (MoverQuery.TryGetComponent(entity.Comp.RelayEntity, out var inputMover))
             SetMoveInput((entity.Comp.RelayEntity, inputMover), MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnRelayPlayerDetached(Entity<RelayInputMoverComponent> entity, ref PlayerDetachedEvent args)
     {
         if (MoverQuery.TryGetComponent(entity.Comp.RelayEntity, out var inputMover))
             SetMoveInput((entity.Comp.RelayEntity, inputMover), MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(Entity<InputMoverComponent> entity, ref PlayerAttachedEvent args)
     {
         SetMoveInput(entity, MoveButtons.None);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(Entity<InputMoverComponent> entity, ref PlayerDetachedEvent args)
     {
         SetMoveInput(entity, MoveButtons.None);

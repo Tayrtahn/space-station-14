@@ -21,17 +21,15 @@ public abstract partial class SharedCorporealSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CorporealComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<CorporealComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<CorporealComponent, RefreshMovementSpeedModifiersEvent>(OnRefresh);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefresh(EntityUid uid, CorporealComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         args.ModifySpeed(component.MovementSpeedDebuff, component.MovementSpeedDebuff);
     }
 
+    [SubscribeLocalEvent]
     public virtual void OnStartup(EntityUid uid, CorporealComponent component, ComponentStartup args)
     {
         _appearance.SetData(uid, RevenantVisuals.Corporeal, true);
@@ -46,6 +44,7 @@ public abstract partial class SharedCorporealSystem : EntitySystem
         _movement.RefreshMovementSpeedModifiers(uid);
     }
 
+    [SubscribeLocalEvent]
     public virtual void OnShutdown(EntityUid uid, CorporealComponent component, ComponentShutdown args)
     {
         _appearance.SetData(uid, RevenantVisuals.Corporeal, false);

@@ -20,10 +20,9 @@ public sealed partial class FakeMindShieldSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FakeMindShieldComponent, FakeMindShieldToggleEvent>(OnToggleMindshield);
-        SubscribeLocalEvent<FakeMindShieldComponent, ChameleonControllerOutfitSelectedEvent>(OnChameleonControllerOutfitSelected);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleMindshield(EntityUid uid, FakeMindShieldComponent comp, FakeMindShieldToggleEvent args)
     {
         comp.IsEnabled = !comp.IsEnabled;
@@ -32,6 +31,7 @@ public sealed partial class FakeMindShieldSystem : EntitySystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnChameleonControllerOutfitSelected(EntityUid uid, FakeMindShieldComponent component, ChameleonControllerOutfitSelectedEvent args)
     {
         if (component.IsEnabled == args.ChameleonOutfit.HasMindShield)

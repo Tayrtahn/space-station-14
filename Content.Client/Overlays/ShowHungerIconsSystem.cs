@@ -12,10 +12,9 @@ public sealed partial class ShowHungerIconsSystem : EquipmentHudSystem<ShowHunge
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HungerComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(EntityUid uid, HungerComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)

@@ -46,52 +46,39 @@ public sealed partial class ShuttleConsoleSystem : SharedShuttleConsoleSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ShuttleConsoleComponent, ComponentShutdown>(OnConsoleShutdown);
-        SubscribeLocalEvent<ShuttleConsoleComponent, PowerChangedEvent>(OnConsolePowerChange);
-        SubscribeLocalEvent<ShuttleConsoleComponent, AnchorStateChangedEvent>(OnConsoleAnchorChange);
-        SubscribeLocalEvent<ShuttleConsoleComponent, AfterActivatableUIOpenEvent>(OnConsoleUIOpenAttempt);
         Subs.BuiEvents<ShuttleConsoleComponent>(ShuttleConsoleUiKey.Key, subs =>
         {
             subs.Event<ShuttleConsoleFTLBeaconMessage>(OnBeaconFTLMessage);
             subs.Event<ShuttleConsoleFTLPositionMessage>(OnPositionFTLMessage);
             subs.Event<BoundUIClosedEvent>(OnConsoleUIClose);
         });
-
-        SubscribeLocalEvent<DroneConsoleComponent, ConsoleShuttleEvent>(OnCargoGetConsole);
-        SubscribeLocalEvent<DroneConsoleComponent, AfterActivatableUIOpenEvent>(OnDronePilotConsoleOpen);
         Subs.BuiEvents<DroneConsoleComponent>(ShuttleConsoleUiKey.Key, subs =>
         {
             subs.Event<BoundUIClosedEvent>(OnDronePilotConsoleClose);
         });
 
-        SubscribeLocalEvent<DockEvent>(OnDock);
-        SubscribeLocalEvent<UndockEvent>(OnUndock);
-
-        SubscribeLocalEvent<PilotComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<PilotComponent, StopPilotingAlertEvent>(OnStopPilotingAlert);
-
-        SubscribeLocalEvent<FTLDestinationComponent, ComponentStartup>(OnFtlDestStartup);
-        SubscribeLocalEvent<FTLDestinationComponent, ComponentShutdown>(OnFtlDestShutdown);
-
         InitializeFTL();
     }
 
+    [SubscribeLocalEvent]
     private void OnFtlDestStartup(EntityUid uid, FTLDestinationComponent component, ComponentStartup args)
     {
         RefreshShuttleConsoles();
     }
 
+    [SubscribeLocalEvent]
     private void OnFtlDestShutdown(EntityUid uid, FTLDestinationComponent component, ComponentShutdown args)
     {
         RefreshShuttleConsoles();
     }
 
+    [SubscribeLocalEvent]
     private void OnDock(DockEvent ev)
     {
         RefreshShuttleConsoles();
     }
 
+    [SubscribeLocalEvent]
     private void OnUndock(UndockEvent ev)
     {
         RefreshShuttleConsoles();
@@ -143,12 +130,14 @@ public sealed partial class ShuttleConsoleSystem : SharedShuttleConsoleSystem
         RemovePilot(args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleUIOpenAttempt(EntityUid uid, ShuttleConsoleComponent component,
         AfterActivatableUIOpenEvent args)
     {
         TryPilot(args.User, uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleAnchorChange(EntityUid uid, ShuttleConsoleComponent component,
         ref AnchorStateChangedEvent args)
     {
@@ -156,6 +145,7 @@ public sealed partial class ShuttleConsoleSystem : SharedShuttleConsoleSystem
         UpdateState(uid, ref dockState);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsolePowerChange(EntityUid uid, ShuttleConsoleComponent component, ref PowerChangedEvent args)
     {
         DockingInterfaceState? dockState = null;
@@ -189,11 +179,13 @@ public sealed partial class ShuttleConsoleSystem : SharedShuttleConsoleSystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, PilotComponent component, ref ComponentGetState args)
     {
         args.State = new PilotComponentState(GetNetEntity(component.Console));
     }
 
+    [SubscribeLocalEvent]
     private void OnStopPilotingAlert(Entity<PilotComponent> ent, ref StopPilotingAlertEvent args)
     {
         if (ent.Comp.Console != null)
@@ -308,6 +300,7 @@ public sealed partial class ShuttleConsoleSystem : SharedShuttleConsoleSystem
         RemovePilot(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleShutdown(EntityUid uid, ShuttleConsoleComponent component, ComponentShutdown args)
     {
         ClearPilots(component);

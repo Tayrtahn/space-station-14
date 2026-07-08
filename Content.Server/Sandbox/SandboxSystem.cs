@@ -47,13 +47,6 @@ namespace Content.Server.Sandbox
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeNetworkEvent<MsgSandboxRespawn>(SandboxRespawnReceived);
-            SubscribeNetworkEvent<MsgSandboxGiveAccess>(SandboxGiveAccessReceived);
-            SubscribeNetworkEvent<MsgSandboxGiveAghost>(SandboxGiveAghostReceived);
-            SubscribeNetworkEvent<MsgSandboxSuicide>(SandboxSuicideReceived);
-            SubscribeNetworkEvent<MsgSandboxThermalVision>(UpdateSandboxThermalVision);
-
-            SubscribeLocalEvent<GameRunLevelChangedEvent>(GameTickerOnOnRunLevelChanged);
 
             _playerManager.PlayerStatusChanged += OnPlayerStatusChanged;
 
@@ -83,6 +76,7 @@ namespace Content.Server.Sandbox
             _playerManager.PlayerStatusChanged -= OnPlayerStatusChanged;
         }
 
+        [SubscribeLocalEvent]
         private void GameTickerOnOnRunLevelChanged(GameRunLevelChangedEvent obj)
         {
             // Automatically clear sandbox state when round resets.
@@ -100,6 +94,7 @@ namespace Content.Server.Sandbox
             RaiseNetworkEvent(new MsgSandboxStatus { SandboxAllowed = IsSandboxEnabled }, e.Session.Channel);
         }
 
+        [SubscribeNetworkEvent]
         private void SandboxRespawnReceived(MsgSandboxRespawn message, EntitySessionEventArgs args)
         {
             if (!IsSandboxEnabled)
@@ -111,6 +106,7 @@ namespace Content.Server.Sandbox
             _ticker.Respawn(player);
         }
 
+        [SubscribeNetworkEvent]
         private void SandboxGiveAccessReceived(MsgSandboxGiveAccess message, EntitySessionEventArgs args)
         {
             if (!IsSandboxEnabled)
@@ -172,6 +168,7 @@ namespace Content.Server.Sandbox
             }
         }
 
+        [SubscribeNetworkEvent]
         private void SandboxGiveAghostReceived(MsgSandboxGiveAghost message, EntitySessionEventArgs args)
         {
             if (!IsSandboxEnabled)
@@ -182,6 +179,7 @@ namespace Content.Server.Sandbox
             _host.ExecuteCommand(player, _conGroupController.CanCommand(player, "aghost") ? "aghost" : "ghost");
         }
 
+        [SubscribeNetworkEvent]
         private void SandboxSuicideReceived(MsgSandboxSuicide message, EntitySessionEventArgs args)
         {
             if (!IsSandboxEnabled)
@@ -196,6 +194,7 @@ namespace Content.Server.Sandbox
             RaiseNetworkEvent(new MsgSandboxStatus { SandboxAllowed = IsSandboxEnabled });
         }
 
+        [SubscribeNetworkEvent]
         private void UpdateSandboxThermalVision(MsgSandboxThermalVision message, EntitySessionEventArgs args)
         {
             if (!IsSandboxEnabled)

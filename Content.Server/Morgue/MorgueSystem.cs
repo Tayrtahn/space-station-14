@@ -15,10 +15,9 @@ public sealed partial class MorgueSystem : SharedMorgueSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MorgueComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<MorgueComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextBeep = _timing.CurTime + ent.Comp.NextBeep;

@@ -13,10 +13,9 @@ public sealed partial class SolutionPurgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SolutionPurgeComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<SolutionPurgeComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextPurgeTime = _timing.CurTime + ent.Comp.Duration;

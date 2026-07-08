@@ -13,9 +13,9 @@ public sealed partial class RadioDeviceSystem : SharedRadioDeviceSystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<IntercomComponent, AfterAutoHandleStateEvent>(OnAfterHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterHandleState(Entity<IntercomComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         if (_ui.TryGetOpenUi<IntercomBoundUserInterface>(ent.Owner, IntercomUiKey.Key, out var bui))

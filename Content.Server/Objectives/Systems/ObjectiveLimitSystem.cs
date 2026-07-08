@@ -3,15 +3,14 @@ using Content.Server.Objectives.Components;
 using Content.Shared.Mind;
 using Content.Shared.Objectives.Components;
 
-public sealed class ObjectiveLimitSystem : EntitySystem
+public sealed partial class ObjectiveLimitSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ObjectiveLimitComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(Entity<ObjectiveLimitComponent> ent, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

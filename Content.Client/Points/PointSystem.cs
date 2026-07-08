@@ -15,16 +15,15 @@ public sealed partial class PointSystem : SharedPointSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PointManagerComponent, AfterAutoHandleStateEvent>(OnHandleState);
-        SubscribeLocalEvent<CharacterInfoSystem.GetCharacterInfoControlsEvent>(OnGetCharacterInfoControls);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, PointManagerComponent component, ref AfterAutoHandleStateEvent args)
     {
         _characterInfo.RequestCharacterInfo();
     }
 
+    [SubscribeLocalEvent]
     private void OnGetCharacterInfoControls(ref CharacterInfoSystem.GetCharacterInfoControlsEvent ev)
     {
         foreach (var point in EntityQuery<PointManagerComponent>())

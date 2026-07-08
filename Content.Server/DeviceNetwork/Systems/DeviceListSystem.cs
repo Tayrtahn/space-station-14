@@ -16,12 +16,9 @@ public sealed partial class DeviceListSystem : SharedDeviceListSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DeviceListComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<DeviceListComponent, BeforeBroadcastAttemptEvent>(OnBeforeBroadcast);
-        SubscribeLocalEvent<DeviceListComponent, BeforePacketSentEvent>(OnBeforePacketSent);
-        SubscribeLocalEvent<BeforeSerializationEvent>(OnMapSave);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, DeviceListComponent component, ComponentShutdown args)
     {
         foreach (var conf in component.Configurators)
@@ -82,6 +79,7 @@ public sealed partial class DeviceListSystem : SharedDeviceListSystem
     /// <summary>
     /// Filters the broadcasts recipient list against the device list as either an allow or deny list depending on the components IsAllowList field
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforeBroadcast(EntityUid uid, DeviceListComponent component, BeforeBroadcastAttemptEvent args)
     {
         //Don't filter anything if the device list is empty
@@ -106,6 +104,7 @@ public sealed partial class DeviceListSystem : SharedDeviceListSystem
     /// <summary>
     /// Filters incoming packets if that is enabled <see cref="OnBeforeBroadcast"/>
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnBeforePacketSent(EntityUid uid, DeviceListComponent component, BeforePacketSentEvent args)
     {
         if (component.HandleIncomingPackets && component.Devices.Contains(args.Sender) != component.IsAllowList)
@@ -122,6 +121,7 @@ public sealed partial class DeviceListSystem : SharedDeviceListSystem
         Dirty(list);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapSave(BeforeSerializationEvent ev)
     {
         List<EntityUid> toRemove = new();

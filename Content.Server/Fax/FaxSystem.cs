@@ -62,28 +62,6 @@ public sealed partial class FaxSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // Hooks
-        SubscribeLocalEvent<FaxMachineComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<FaxMachineComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<FaxMachineComponent, ComponentRemove>(OnComponentRemove);
-
-        SubscribeLocalEvent<FaxMachineComponent, EntInsertedIntoContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<FaxMachineComponent, EntRemovedFromContainerMessage>(OnItemSlotChanged);
-        SubscribeLocalEvent<FaxMachineComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<FaxMachineComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-
-        // Interaction
-        SubscribeLocalEvent<FaxMachineComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<FaxMachineComponent, GotEmaggedEvent>(OnEmagged);
-
-        // UI
-        SubscribeLocalEvent<FaxMachineComponent, AfterActivatableUIOpenEvent>(OnToggleInterface);
-        SubscribeLocalEvent<FaxMachineComponent, FaxFileMessage>(OnFileButtonPressed);
-        SubscribeLocalEvent<FaxMachineComponent, FaxCopyMessage>(OnCopyButtonPressed);
-        SubscribeLocalEvent<FaxMachineComponent, FaxSendMessage>(OnSendButtonPressed);
-        SubscribeLocalEvent<FaxMachineComponent, FaxRefreshMessage>(OnRefreshButtonPressed);
-        SubscribeLocalEvent<FaxMachineComponent, FaxDestinationMessage>(OnDestinationSelected);
     }
 
     public override void Update(float frameTime)
@@ -153,23 +131,27 @@ public sealed partial class FaxSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, FaxMachineComponent component, ComponentInit args)
     {
         _itemSlotsSystem.AddItemSlot(uid, PaperSlotId, component.PaperSlot);
         UpdateAppearance(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, FaxMachineComponent component, ComponentRemove args)
     {
         _itemSlotsSystem.RemoveItemSlot(uid, component.PaperSlot);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, FaxMachineComponent component, MapInitEvent args)
     {
         // Load all faxes on map in cache each other to prevent taking same name by user created fax
         Refresh(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemSlotChanged(EntityUid uid, FaxMachineComponent component, ContainerModifiedMessage args)
     {
         if (!component.Initialized)
@@ -188,6 +170,7 @@ public sealed partial class FaxSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(EntityUid uid, FaxMachineComponent component, ref PowerChangedEvent args)
     {
         var isInsertInterrupted = !args.Powered && component.InsertingTimeRemaining > 0;
@@ -212,6 +195,7 @@ public sealed partial class FaxSystem : EntitySystem
         _itemSlotsSystem.SetLock(uid, component.PaperSlot, !args.Powered); // Lock slot when power is off
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, FaxMachineComponent component, InteractUsingEvent args)
     {
         if (args.Handled ||
@@ -250,6 +234,7 @@ public sealed partial class FaxSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, FaxMachineComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))
@@ -261,6 +246,7 @@ public sealed partial class FaxSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, FaxMachineComponent component, DeviceNetworkPacketEvent args)
     {
         if (!HasComp<DeviceNetworkComponent>(uid) || string.IsNullOrEmpty(args.SenderAddress))
@@ -313,11 +299,13 @@ public sealed partial class FaxSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleInterface(EntityUid uid, FaxMachineComponent component, AfterActivatableUIOpenEvent args)
     {
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnFileButtonPressed(EntityUid uid, FaxMachineComponent component, FaxFileMessage args)
     {
         args.Label = args.Label?[..Math.Min(args.Label.Length, FaxFileMessageValidation.MaxLabelSize)];
@@ -325,6 +313,7 @@ public sealed partial class FaxSystem : EntitySystem
         PrintFile(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnCopyButtonPressed(EntityUid uid, FaxMachineComponent component, FaxCopyMessage args)
     {
         if (HasComp<MobStateComponent>(component.PaperSlot.Item))
@@ -333,6 +322,7 @@ public sealed partial class FaxSystem : EntitySystem
             Copy(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnSendButtonPressed(EntityUid uid, FaxMachineComponent component, FaxSendMessage args)
     {
         if (HasComp<MobStateComponent>(component.PaperSlot.Item))
@@ -341,11 +331,13 @@ public sealed partial class FaxSystem : EntitySystem
             Send(uid, component, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshButtonPressed(EntityUid uid, FaxMachineComponent component, FaxRefreshMessage args)
     {
         Refresh(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestinationSelected(EntityUid uid, FaxMachineComponent component, FaxDestinationMessage args)
     {
         SetDestination(uid, args.Address, component);

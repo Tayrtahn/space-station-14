@@ -25,24 +25,13 @@ public sealed partial class OpenableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<OpenableComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<OpenableComponent, UseInHandEvent>(OnUse);
         // always try to unlock first before opening
         SubscribeLocalEvent<OpenableComponent, ActivateInWorldEvent>(OnActivated, after: new[] { typeof(LockSystem) });
-        SubscribeLocalEvent<OpenableComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<OpenableComponent, MeleeHitEvent>(HandleIfClosed);
-        SubscribeLocalEvent<OpenableComponent, AfterInteractEvent>(HandleIfClosed);
-        SubscribeLocalEvent<OpenableComponent, GetVerbsEvent<AlternativeVerb>>(OnGetVerbs);
-        SubscribeLocalEvent<OpenableComponent, SolutionTransferAttemptEvent>(OnTransferAttempt);
-        SubscribeLocalEvent<OpenableComponent, AttemptShakeEvent>(OnAttemptShake);
-        SubscribeLocalEvent<OpenableComponent, AttemptAddFizzinessEvent>(OnAttemptAddFizziness);
-        SubscribeLocalEvent<OpenableComponent, LockToggleAttemptEvent>(OnLockToggleAttempt);
 
 #if DEBUG
-        SubscribeLocalEvent<OpenableComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<OpenableComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.Opened && _lock.IsLocked(ent.Owner))
@@ -52,11 +41,13 @@ public sealed partial class OpenableSystem : EntitySystem
     }
 #endif
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<OpenableComponent> ent, ref ComponentInit args)
     {
         UpdateAppearance(ent, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnUse(Entity<OpenableComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled || !ent.Comp.OpenableByHand)
@@ -73,6 +64,7 @@ public sealed partial class OpenableSystem : EntitySystem
         args.Handled = TryToggle(ent, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, OpenableComponent comp, ExaminedEvent args)
     {
         if (!comp.Opened || !args.IsInDetailsRange)
@@ -82,12 +74,14 @@ public sealed partial class OpenableSystem : EntitySystem
         args.PushMarkup(text);
     }
 
+    [SubscribeLocalEvent]
     private void HandleIfClosed(EntityUid uid, OpenableComponent comp, HandledEntityEventArgs args)
     {
         // prevent spilling/pouring/whatever drinks when closed
         args.Handled = !comp.Opened;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(EntityUid uid, OpenableComponent comp, GetVerbsEvent<AlternativeVerb> args)
     {
         if (args.Hands == null || !args.CanAccess || !args.CanInteract || _lock.IsLocked(uid))
@@ -120,12 +114,14 @@ public sealed partial class OpenableSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransferAttempt(Entity<OpenableComponent> ent, ref SolutionTransferAttemptEvent args)
     {
         if (!ent.Comp.Opened)
             args.Cancel(Loc.GetString(ent.Comp.ClosedPopup, ("owner", ent.Owner)));
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptShake(Entity<OpenableComponent> entity, ref AttemptShakeEvent args)
     {
         // Prevent shaking open containers
@@ -133,6 +129,7 @@ public sealed partial class OpenableSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptAddFizziness(Entity<OpenableComponent> entity, ref AttemptAddFizzinessEvent args)
     {
         // Can't add fizziness to an open container
@@ -140,6 +137,7 @@ public sealed partial class OpenableSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnLockToggleAttempt(Entity<OpenableComponent> ent, ref LockToggleAttemptEvent args)
     {
         // can't lock something while it's open

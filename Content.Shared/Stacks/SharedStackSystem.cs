@@ -35,16 +35,6 @@ public abstract partial class SharedStackSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<StackComponent, InteractUsingEvent>(OnStackInteractUsing);
-        SubscribeLocalEvent<StackComponent, ComponentGetState>(OnStackGetState);
-        SubscribeLocalEvent<StackComponent, ComponentHandleState>(OnStackHandleState);
-        SubscribeLocalEvent<StackComponent, ComponentStartup>(OnStackStarted);
-        SubscribeLocalEvent<StackComponent, ExaminedEvent>(OnStackExamined);
-
-        SubscribeLocalEvent<StackComponent, BeforeIngestedEvent>(OnBeforeEaten);
-        SubscribeLocalEvent<StackComponent, IngestedEvent>(OnEaten);
-        SubscribeLocalEvent<StackComponent, GetVerbsEvent<AlternativeVerb>>(OnStackAlternativeInteract);
-
         _vvm.GetTypeHandler<StackComponent>()
             .AddPath(nameof(StackComponent.Count), (_, comp) => comp.Count, SetCount);
     }
@@ -57,6 +47,7 @@ public abstract partial class SharedStackSystem : EntitySystem
             .RemovePath(nameof(StackComponent.Count));
     }
 
+    [SubscribeLocalEvent]
     private void OnStackInteractUsing(Entity<StackComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)
@@ -104,6 +95,7 @@ public abstract partial class SharedStackSystem : EntitySystem
         _storage.PlayPickupAnimation(args.Used, popupPos, userCoords, localRotation, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnStackStarted(Entity<StackComponent> ent, ref ComponentStartup args)
     {
         if (!TryComp(ent.Owner, out AppearanceComponent? appearance))
@@ -114,11 +106,13 @@ public abstract partial class SharedStackSystem : EntitySystem
         Appearance.SetData(ent.Owner, StackVisuals.Hide, false, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnStackGetState(Entity<StackComponent> ent, ref ComponentGetState args)
     {
         args.State = new StackComponentState(ent.Comp.Count, ent.Comp.MaxCountOverride, ent.Comp.Unlimited);
     }
 
+    [SubscribeLocalEvent]
     private void OnStackHandleState(Entity<StackComponent> ent, ref ComponentHandleState args)
     {
         if (args.Current is not StackComponentState cast)
@@ -130,6 +124,7 @@ public abstract partial class SharedStackSystem : EntitySystem
         SetCount(ent.AsNullable(), cast.Count);
     }
 
+    [SubscribeLocalEvent]
     private void OnStackExamined(Entity<StackComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -143,6 +138,7 @@ public abstract partial class SharedStackSystem : EntitySystem
         );
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeEaten(Entity<StackComponent> eaten, ref BeforeIngestedEvent args)
     {
         if (args.Cancelled)
@@ -175,11 +171,13 @@ public abstract partial class SharedStackSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnEaten(Entity<StackComponent> eaten, ref IngestedEvent args)
     {
         ReduceCount(eaten.AsNullable(), 1);
     }
 
+    [SubscribeLocalEvent]
     private void OnStackAlternativeInteract(Entity<StackComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands == null || ent.Comp.Count == 1)

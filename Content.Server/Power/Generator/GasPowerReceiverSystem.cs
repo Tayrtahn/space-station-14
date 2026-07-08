@@ -18,9 +18,9 @@ public sealed partial class GasPowerReceiverSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<GasPowerReceiverComponent, AtmosDeviceUpdateEvent>(OnDeviceUpdated);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceUpdated(EntityUid uid, GasPowerReceiverComponent component, ref AtmosDeviceUpdateEvent args)
     {
         var timeDelta = args.dt;

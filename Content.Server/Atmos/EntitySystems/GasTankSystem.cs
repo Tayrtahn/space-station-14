@@ -31,9 +31,6 @@ public sealed partial class GasTankSystem : SharedGasTankSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasTankComponent, EntParentChangedMessage>(OnParentChange);
-        SubscribeLocalEvent<GasTankComponent, GasAnalyzerScanEvent>(OnAnalyzed);
-        SubscribeLocalEvent<GasTankComponent, PriceCalculationEvent>(OnGasTankPrice);
     }
 
     protected override void DeviceUpdated(Entity<GasTankComponent> entity, ref AtmosDeviceUpdateEvent args)
@@ -71,6 +68,7 @@ public sealed partial class GasTankSystem : SharedGasTankSystem
             });
     }
 
+    [SubscribeLocalEvent]
     private void OnParentChange(EntityUid uid, GasTankComponent component, ref EntParentChangedMessage args)
     {
         // When an item is moved from hands -> pockets, the container removal briefly dumps the item on the floor.
@@ -156,12 +154,14 @@ public sealed partial class GasTankSystem : SharedGasTankSystem
     /// <summary>
     /// Returns the gas mixture for the gas analyzer
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnalyzed(EntityUid uid, GasTankComponent component, GasAnalyzerScanEvent args)
     {
         args.GasMixtures ??= new List<(string, GasMixture?)>();
         args.GasMixtures.Add((Name(uid), component.Air));
     }
 
+    [SubscribeLocalEvent]
     private void OnGasTankPrice(EntityUid uid, GasTankComponent component, ref PriceCalculationEvent args)
     {
         args.Price += _atmosphereSystem.GetPrice(component.Air);

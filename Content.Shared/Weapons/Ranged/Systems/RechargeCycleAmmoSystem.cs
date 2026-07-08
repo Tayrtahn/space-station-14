@@ -13,9 +13,9 @@ public sealed partial class RechargeCycleAmmoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RechargeCycleAmmoComponent, ActivateInWorldEvent>(OnRechargeCycled);
     }
 
+    [SubscribeLocalEvent]
     private void OnRechargeCycled(Entity<RechargeCycleAmmoComponent> ent, ref ActivateInWorldEvent args)
     {
         if (!args.Complex)

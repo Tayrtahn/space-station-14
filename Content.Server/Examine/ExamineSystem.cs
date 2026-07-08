@@ -21,8 +21,6 @@ namespace Content.Server.Examine
             base.Initialize();
             _entityNotFoundMessage.AddText(Loc.GetString("examine-system-entity-does-not-exist"));
             _entityOutOfRangeMessage.AddText(Loc.GetString("examine-system-cant-see-entity"));
-
-            SubscribeNetworkEvent<ExamineSystemMessages.RequestExamineInfoMessage>(ExamineInfoRequest);
         }
 
         public override void SendExamineTooltip(EntityUid player, EntityUid target, FormattedMessage message, bool getVerbs, bool centerAtCursor)
@@ -43,6 +41,7 @@ namespace Content.Server.Examine
             RaiseNetworkEvent(ev, session.Channel);
         }
 
+        [SubscribeNetworkEvent]
         private void ExamineInfoRequest(ExamineSystemMessages.RequestExamineInfoMessage request, EntitySessionEventArgs eventArgs)
         {
             var player = eventArgs.SenderSession;

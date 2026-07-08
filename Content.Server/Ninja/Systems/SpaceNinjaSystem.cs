@@ -32,10 +32,6 @@ public sealed partial class SpaceNinjaSystem : SharedSpaceNinjaSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpaceNinjaComponent, ResearchStolenEvent>(OnResearchStolen);
-        SubscribeLocalEvent<SpaceNinjaComponent, ThreatCalledInEvent>(OnThreatCalledIn);
-        SubscribeLocalEvent<SpaceNinjaComponent, CriminalRecordsHackedEvent>(OnCriminalRecordsHacked);
     }
 
     // TODO: Make this charge rate based instead of updating it every single tick.
@@ -115,6 +111,7 @@ public sealed partial class SpaceNinjaSystem : SharedSpaceNinjaSystem
     /// <summary>
     /// Add to greentext when stealing technologies.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnResearchStolen(EntityUid uid, SpaceNinjaComponent comp, ref ResearchStolenEvent args)
     {
         var gained = Download(uid, args.Techs);
@@ -125,11 +122,13 @@ public sealed partial class SpaceNinjaSystem : SharedSpaceNinjaSystem
         Popup.PopupEntity(str, uid, uid, PopupType.Medium);
     }
 
+    [SubscribeLocalEvent]
     private void OnThreatCalledIn(Entity<SpaceNinjaComponent> ent, ref ThreatCalledInEvent args)
     {
         _codeCondition.SetCompleted(ent.Owner, ent.Comp.TerrorObjective);
     }
 
+    [SubscribeLocalEvent]
     private void OnCriminalRecordsHacked(Entity<SpaceNinjaComponent> ent, ref CriminalRecordsHackedEvent args)
     {
         _codeCondition.SetCompleted(ent.Owner, ent.Comp.MassArrestObjective);

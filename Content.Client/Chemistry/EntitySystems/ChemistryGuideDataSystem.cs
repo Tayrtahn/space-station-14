@@ -27,12 +27,10 @@ public sealed partial class ChemistryGuideDataSystem : SharedChemistryGuideDataS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<ReagentGuideRegistryChangedEvent>(OnReceiveRegistryUpdate);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
         OnPrototypesReloaded(null);
     }
 
+    [SubscribeNetworkEvent]
     private void OnReceiveRegistryUpdate(ReagentGuideRegistryChangedEvent message)
     {
         var data = message.Changeset;
@@ -47,6 +45,7 @@ public sealed partial class ChemistryGuideDataSystem : SharedChemistryGuideDataS
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs? ev)
     {
         // this doesn't check what prototypes are being reloaded because, to be frank, we use a lot of them.

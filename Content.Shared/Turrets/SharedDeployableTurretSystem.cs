@@ -30,12 +30,9 @@ public abstract partial class SharedDeployableTurretSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeployableTurretComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<DeployableTurretComponent, AttemptChangePanelEvent>(OnAttemptChangeWirePanelWire);
-        SubscribeLocalEvent<DeployableTurretComponent, GetVerbsEvent<Verb>>(OnGetVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<DeployableTurretComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract)
@@ -59,6 +56,7 @@ public abstract partial class SharedDeployableTurretSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<DeployableTurretComponent> ent, ref ActivateInWorldEvent args)
     {
         if (TryComp(ent, out UseDelayComponent? useDelay) && !_useDelay.TryResetDelay((ent, useDelay), true))
@@ -75,6 +73,7 @@ public abstract partial class SharedDeployableTurretSystem : EntitySystem
         TryToggleState(ent, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptChangeWirePanelWire(Entity<DeployableTurretComponent> ent, ref AttemptChangePanelEvent args)
     {
         if (!ent.Comp.Enabled || args.Cancelled)

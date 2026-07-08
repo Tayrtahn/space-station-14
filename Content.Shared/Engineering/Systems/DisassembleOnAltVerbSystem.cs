@@ -15,9 +15,6 @@ public sealed partial class DisassembleOnAltVerbSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DisassembleOnAltVerbComponent, GetVerbsEvent<AlternativeVerb>>(AddDisassembleVerb);
-        SubscribeLocalEvent<DisassembleOnAltVerbComponent, DisassembleDoAfterEvent>(OnDisassembleDoAfter);
     }
 
     /// <summary>
@@ -39,6 +36,7 @@ public sealed partial class DisassembleOnAltVerbSystem : EntitySystem
         _doAfter.TryStartDoAfter(doAfterArgs);
     }
 
+    [SubscribeLocalEvent]
     private void AddDisassembleVerb(Entity<DisassembleOnAltVerbComponent> entity, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Hands == null)
@@ -59,6 +57,7 @@ public sealed partial class DisassembleOnAltVerbSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnDisassembleDoAfter(Entity<DisassembleOnAltVerbComponent> entity, ref DisassembleDoAfterEvent args)
     {
         if (!_net.IsServer || args.Cancelled) // This is odd but it works :)

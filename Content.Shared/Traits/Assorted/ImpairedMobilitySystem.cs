@@ -15,17 +15,15 @@ public sealed partial class ImpairedMobilitySystem : EntitySystem
     [Dependency] private MovementSpeedModifierSystem _speedModifier = default!;
     public override void Initialize()
     {
-        SubscribeLocalEvent<ImpairedMobilityComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<ImpairedMobilityComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<ImpairedMobilityComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovementSpeed);
-        SubscribeLocalEvent<ImpairedMobilityComponent, GetStandUpTimeEvent>(OnGetStandUpTime);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<ImpairedMobilityComponent> ent, ref ComponentInit args)
     {
         _speedModifier.RefreshMovementSpeedModifiers(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<ImpairedMobilityComponent> ent, ref ComponentShutdown args)
     {
         _speedModifier.RefreshMovementSpeedModifiers(ent);
@@ -33,6 +31,7 @@ public sealed partial class ImpairedMobilitySystem : EntitySystem
 
     // Handles movement speed for entities with impaired mobility.
     // Applies a speed penalty, but counteracts it if the entity is holding a non-wielded mobility aid.
+    [SubscribeLocalEvent]
     private void OnRefreshMovementSpeed(Entity<ImpairedMobilityComponent> ent, ref RefreshMovementSpeedModifiersEvent args)
     {
         if (HasMobilityAid(ent.Owner))
@@ -42,6 +41,7 @@ public sealed partial class ImpairedMobilitySystem : EntitySystem
     }
 
     // Increases the time it takes for entities to stand up from being knocked down.
+    [SubscribeLocalEvent]
     private void OnGetStandUpTime(Entity<ImpairedMobilityComponent> ent, ref GetStandUpTimeEvent args)
     {
         args.DoAfterTime *= ent.Comp.StandUpTimeModifier;

@@ -17,10 +17,9 @@ public abstract partial class SharedResearchSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TechnologyDatabaseComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, TechnologyDatabaseComponent component, MapInitEvent args)
     {
         UpdateTechnologyCards(uid, component);

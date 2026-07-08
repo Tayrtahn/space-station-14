@@ -34,18 +34,11 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
 
         Subs.CVar(_cfg, CCVars.MaxMidiEventsPerBatch, OnMaxMidiEventsPerBatchChanged, true);
         Subs.CVar(_cfg, CCVars.MaxMidiEventsPerSecond, OnMaxMidiEventsPerSecondChanged, true);
-
-        SubscribeNetworkEvent<InstrumentMidiEventEvent>(OnMidiEventRx);
-        SubscribeNetworkEvent<InstrumentStartMidiEvent>(OnMidiStart);
-        SubscribeNetworkEvent<InstrumentStopMidiEvent>(OnMidiStop);
-
-        SubscribeLocalEvent<InstrumentComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<InstrumentComponent, ComponentHandleState>(OnHandleState);
-        SubscribeLocalEvent<ActiveInstrumentComponent, AfterAutoHandleStateEvent>(OnActiveInstrumentAfterHandleState);
     }
 
     private bool _isUpdateQueued = false;
 
+    [SubscribeLocalEvent]
     private void OnActiveInstrumentAfterHandleState(Entity<ActiveInstrumentComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         // Called in the update loop so that the components update client side for resolving them in TryComps.
@@ -63,6 +56,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         OnChannelsUpdated?.Invoke();
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, SharedInstrumentComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not InstrumentComponentState state)
@@ -83,6 +77,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
             EndRenderer(uid, true, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, InstrumentComponent component, ComponentShutdown args)
     {
         EndRenderer(uid, false, component);
@@ -336,6 +331,7 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         MaxMidiEventsPerBatch = obj;
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiEventRx(InstrumentMidiEventEvent midiEv)
     {
         var uid = GetEntity(midiEv.Uid);
@@ -408,11 +404,13 @@ public sealed partial class InstrumentSystem : SharedInstrumentSystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiStart(InstrumentStartMidiEvent ev)
     {
         SetupRenderer(GetEntity(ev.Uid), true);
     }
 
+    [SubscribeNetworkEvent]
     private void OnMidiStop(InstrumentStopMidiEvent ev)
     {
         EndRenderer(GetEntity(ev.Uid), true);

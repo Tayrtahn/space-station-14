@@ -16,11 +16,10 @@ public sealed partial class TraitSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
     }
 
     // When the player is spawned in, add all trait components selected during character creation
+    [SubscribeLocalEvent]
     private void OnPlayerSpawnComplete(PlayerSpawnCompleteEvent args)
     {
         // Check if player's job allows to apply traits

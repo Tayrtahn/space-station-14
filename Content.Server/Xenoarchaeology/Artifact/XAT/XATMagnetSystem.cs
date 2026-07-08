@@ -23,8 +23,6 @@ public sealed partial class XATMagnetSystem : BaseQueryUpdateXATSystem<XATMagnet
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SalvageMagnetActivatedEvent>(OnMagnetActivated);
     }
 
     /// <inheritdoc />
@@ -44,6 +42,7 @@ public sealed partial class XATMagnetSystem : BaseQueryUpdateXATSystem<XATMagnet
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMagnetActivated(ref SalvageMagnetActivatedEvent args)
     {
         var magnetCoordinates = Transform(args.Magnet).Coordinates;

@@ -15,11 +15,9 @@ public sealed partial class FactionClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FactionClothingComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<FactionClothingComponent, GotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<FactionClothingComponent> ent, ref GotEquippedEvent args)
     {
         TryComp<NpcFactionMemberComponent>(args.EquipTarget, out var factionComp);
@@ -29,6 +27,7 @@ public sealed partial class FactionClothingSystem : EntitySystem
         _faction.AddFaction(faction, ent.Comp.Faction);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<FactionClothingComponent> ent, ref GotUnequippedEvent args)
     {
         if (ent.Comp.AlreadyMember)

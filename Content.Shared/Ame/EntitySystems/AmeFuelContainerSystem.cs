@@ -6,15 +6,14 @@ namespace Content.Shared.Ame.EntitySystems;
 /// <summary>
 /// Adds details about fuel level when examining antimatter engine fuel containers.
 /// </summary>
-public sealed class AmeFuelContainerSystem : EntitySystem
+public sealed partial class AmeFuelContainerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AmeFuelContainerComponent, ExaminedEvent>(OnFuelExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnFuelExamined(EntityUid uid, AmeFuelContainerComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)

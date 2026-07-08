@@ -40,9 +40,6 @@ public abstract partial class SharedHandsSystem
         InitializePickup();
         InitializeRelay();
         InitializeEventListeners();
-
-        SubscribeLocalEvent<HandsComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<HandsComponent, MapInitEvent>(OnMapInit);
     }
 
     public override void Shutdown()
@@ -51,6 +48,7 @@ public abstract partial class SharedHandsSystem
         CommandBinds.Unregister<SharedHandsSystem>();
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<HandsComponent> ent, ref ComponentInit args)
     {
         var container = EnsureComp<ContainerManagerComponent>(ent);
@@ -60,6 +58,7 @@ public abstract partial class SharedHandsSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<HandsComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.ActiveHandId == null)

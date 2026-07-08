@@ -77,20 +77,9 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StationAiCoreComponent, AfterConstructionChangeEntityEvent>(AfterConstructionChangeEntity);
-        SubscribeLocalEvent<StationAiCoreComponent, ContainerSpawnEvent>(OnContainerSpawn);
-        SubscribeLocalEvent<StationAiCoreComponent, ApcPowerReceiverBatteryChangedEvent>(OnApcBatteryChanged);
-        SubscribeLocalEvent<StationAiCoreComponent, ChargeChangedEvent>(OnChargeChanged);
-        SubscribeLocalEvent<StationAiCoreComponent, DamageChangedEvent>(OnDamageChanged);
-        SubscribeLocalEvent<StationAiCoreComponent, DestructionEventArgs>(OnDestruction);
-        SubscribeLocalEvent<StationAiCoreComponent, DoAfterAttemptEvent<IntellicardDoAfterEvent>>(OnDoAfterAttempt);
-        SubscribeLocalEvent<StationAiCoreComponent, RejuvenateEvent>(OnRejuvenate);
-
-        SubscribeLocalEvent<ExpandICChatRecipientsEvent>(OnExpandICChatRecipients);
-        SubscribeLocalEvent<StationAiTurretComponent, AmmoShotEvent>(OnAmmoShot);
     }
 
+    [SubscribeLocalEvent]
     private void AfterConstructionChangeEntity(Entity<StationAiCoreComponent> ent, ref AfterConstructionChangeEntityEvent args)
     {
         if (!_container.TryGetContainer(ent, StationAiCoreComponent.BrainContainer, out var container) ||
@@ -138,6 +127,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         QueueDel(brain);
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerSpawn(Entity<StationAiCoreComponent> ent, ref ContainerSpawnEvent args)
     {
         // Ensure that players that recently joined the round will spawn
@@ -200,6 +190,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         SetStationAiState(ent, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(Entity<StationAiCoreComponent> ent, ref DestructionEventArgs args)
     {
         var station = _station.GetOwningStation(ent);
@@ -215,6 +206,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         _stationJobs.TryAdjustJobSlot(station.Value, _stationAiJob, -1, false, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnApcBatteryChanged(Entity<StationAiCoreComponent> ent, ref ApcPowerReceiverBatteryChangedEvent args)
     {
         if (!args.Enabled)
@@ -227,12 +219,14 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         RaiseLocalEvent(held.Value, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnChargeChanged(Entity<StationAiCoreComponent> entity, ref ChargeChangedEvent args)
     {
         UpdateBatteryAlert(entity);
         UpdateDamagedAccent(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<StationAiCoreComponent> entity, ref DamageChangedEvent args)
     {
         UpdateCoreIntegrityAlert(entity, args.DamageIncreased);
@@ -311,6 +305,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfterAttempt(Entity<StationAiCoreComponent> ent, ref DoAfterAttemptEvent<IntellicardDoAfterEvent> args)
     {
         if (TryGetHeld((ent.Owner, ent.Comp), out _))
@@ -344,6 +339,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         ClearEye(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<StationAiCoreComponent> ent, ref RejuvenateEvent args)
     {
         if (TryGetHeld((ent.Owner, ent.Comp), out var held))
@@ -359,6 +355,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExpandICChatRecipients(ExpandICChatRecipientsEvent ev)
     {
         var sourceXform = Transform(ev.Source);
@@ -389,6 +386,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAmmoShot(Entity<StationAiTurretComponent> ent, ref AmmoShotEvent args)
     {
         var xform = Transform(ent);

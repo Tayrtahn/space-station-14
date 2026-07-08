@@ -9,10 +9,9 @@ public sealed partial class AutoImplantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AutoImplantComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, AutoImplantComponent comp, MapInitEvent args)
     {
         _subdermalImplant.AddImplants(uid, comp.Implants);

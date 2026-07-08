@@ -21,16 +21,15 @@ public sealed partial class PressureControlledValveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PressureControlledValveComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<PressureControlledValveComponent, AtmosDeviceUpdateEvent>(OnUpdate);
-        SubscribeLocalEvent<PressureControlledValveComponent, AtmosDeviceDisabledEvent>(OnFilterLeaveAtmosphere);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(EntityUid uid, PressureControlledValveComponent comp, ComponentInit args)
     {
         UpdateAppearance(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdate(EntityUid uid, PressureControlledValveComponent comp, ref AtmosDeviceUpdateEvent args)
     {
         if (!_nodeContainer.TryGetNodes(uid, comp.InletName, comp.ControlName, comp.OutletName, out PipeNode? inletNode, out PipeNode? controlNode, out PipeNode? outletNode))
@@ -80,6 +79,7 @@ public sealed partial class PressureControlledValveSystem : EntitySystem
         _atmosphereSystem.Merge(outletNode.Air, removed);
     }
 
+    [SubscribeLocalEvent]
     private void OnFilterLeaveAtmosphere(EntityUid uid, PressureControlledValveComponent comp, ref AtmosDeviceDisabledEvent args)
     {
         comp.Enabled = false;

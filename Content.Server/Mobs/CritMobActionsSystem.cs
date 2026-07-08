@@ -28,12 +28,9 @@ public sealed partial class CritMobActionsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MobStateActionsComponent, CritSuccumbEvent>(OnSuccumb);
-        SubscribeLocalEvent<MobStateActionsComponent, CritFakeDeathEvent>(OnFakeDeath);
-        SubscribeLocalEvent<MobStateActionsComponent, CritLastWordsEvent>(OnLastWords);
     }
 
+    [SubscribeLocalEvent]
     private void OnSuccumb(EntityUid uid, MobStateActionsComponent component, CritSuccumbEvent args)
     {
         if (!TryComp<ActorComponent>(uid, out var actor) || !_mobState.IsCritical(uid))
@@ -43,6 +40,7 @@ public sealed partial class CritMobActionsSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnFakeDeath(EntityUid uid, MobStateActionsComponent component, CritFakeDeathEvent args)
     {
         if (!_mobState.IsCritical(uid))
@@ -57,6 +55,7 @@ public sealed partial class CritMobActionsSystem : EntitySystem
         args.Handled = _deathgasp.Deathgasp(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnLastWords(EntityUid uid, MobStateActionsComponent component, CritLastWordsEvent args)
     {
         if (!TryComp<ActorComponent>(uid, out var actor))

@@ -5,16 +5,15 @@ using Content.Shared.Forensics;
 
 namespace Content.Server.Body.Systems;
 
-public sealed class BloodstreamSystem : SharedBloodstreamSystem
+public sealed partial class BloodstreamSystem : SharedBloodstreamSystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BloodstreamComponent, GenerateDnaEvent>(OnDnaGenerated);
     }
 
     // forensics is not predicted yet
+    [SubscribeLocalEvent]
     private void OnDnaGenerated(Entity<BloodstreamComponent> entity, ref GenerateDnaEvent args)
     {
         if (SolutionContainer.ResolveSolution(entity.Owner, entity.Comp.BloodSolutionName, ref entity.Comp.BloodSolution, out var bloodSolution))

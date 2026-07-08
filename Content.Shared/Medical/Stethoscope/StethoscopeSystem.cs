@@ -27,23 +27,21 @@ public sealed partial class StethoscopeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StethoscopeComponent, InventoryRelayedEvent<GetVerbsEvent<InnateVerb>>>(AddStethoscopeVerb);
-        SubscribeLocalEvent<StethoscopeComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<StethoscopeComponent, StethoscopeActionEvent>(OnStethoscopeAction);
-        SubscribeLocalEvent<StethoscopeComponent, StethoscopeDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(Entity<StethoscopeComponent> ent, ref GetItemActionsEvent args)
     {
         args.AddAction(ref ent.Comp.ActionEntity, ent.Comp.Action);
     }
 
+    [SubscribeLocalEvent]
     private void OnStethoscopeAction(Entity<StethoscopeComponent> ent, ref StethoscopeActionEvent args)
     {
         StartListening(ent, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void AddStethoscopeVerb(Entity<StethoscopeComponent> ent, ref InventoryRelayedEvent<GetVerbsEvent<InnateVerb>> args)
     {
         if (!args.Args.CanInteract || !args.Args.CanAccess)
@@ -78,6 +76,7 @@ public sealed partial class StethoscopeSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<StethoscopeComponent> ent, ref StethoscopeDoAfterEvent args)
     {
         var target = args.Target;

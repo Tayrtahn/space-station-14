@@ -11,22 +11,22 @@ namespace Content.IntegrationTests.Tests.Destructible
     ///     threshold to a list for checking during testing.
     /// </summary>
     [Reflect(false)]
-    public sealed class TestDestructibleListenerSystem : EntitySystem
+    public sealed partial class TestDestructibleListenerSystem : EntitySystem
     {
         public readonly List<DamageThresholdReached> ThresholdsReached = new();
 
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<DestructibleComponent, DamageThresholdReached>(AddThresholdsToList);
-            SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
         }
 
+        [SubscribeLocalEvent]
         public void AddThresholdsToList(EntityUid _, DestructibleComponent comp, DamageThresholdReached args)
         {
             ThresholdsReached.Add(args);
         }
 
+        [SubscribeLocalEvent]
         private void OnRoundRestart(RoundRestartCleanupEvent ev)
         {
             ThresholdsReached.Clear();

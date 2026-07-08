@@ -10,9 +10,9 @@ public sealed partial class UseDelayOnShootSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<UseDelayOnShootComponent, GunShotEvent>(OnUseShoot);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseShoot(Entity<UseDelayOnShootComponent> ent, ref GunShotEvent args)
     {
         if (TryComp(ent, out UseDelayComponent? useDelay))

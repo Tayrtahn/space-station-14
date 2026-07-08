@@ -19,8 +19,6 @@ public sealed partial class DamageContactsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageContactsComponent, StartCollideEvent>(OnEntityEnter);
-        SubscribeLocalEvent<DamageContactsComponent, EndCollideEvent>(OnEntityExit);
     }
 
     public override void Update(float frameTime)
@@ -40,6 +38,7 @@ public sealed partial class DamageContactsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityExit(EntityUid uid, DamageContactsComponent component, ref EndCollideEvent args)
     {
         var otherUid = args.OtherEntity;
@@ -59,6 +58,7 @@ public sealed partial class DamageContactsSystem : EntitySystem
         RemComp<DamagedByContactComponent>(otherUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityEnter(EntityUid uid, DamageContactsComponent component, ref StartCollideEvent args)
     {
         var otherUid = args.OtherEntity;

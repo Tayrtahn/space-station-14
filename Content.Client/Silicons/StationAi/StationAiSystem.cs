@@ -20,14 +20,9 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         base.Initialize();
         InitializeAirlock();
         InitializePowerToggle();
-
-        SubscribeLocalEvent<StationAiOverlayComponent, LocalPlayerAttachedEvent>(OnAiAttached);
-        SubscribeLocalEvent<StationAiOverlayComponent, LocalPlayerDetachedEvent>(OnAiDetached);
-        SubscribeLocalEvent<StationAiOverlayComponent, ComponentInit>(OnAiOverlayInit);
-        SubscribeLocalEvent<StationAiOverlayComponent, ComponentRemove>(OnAiOverlayRemove);
-        SubscribeLocalEvent<StationAiCoreComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAiOverlayInit(Entity<StationAiOverlayComponent> ent, ref ComponentInit args)
     {
         var attachedEnt = _player.LocalEntity;
@@ -38,6 +33,7 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         AddOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnAiOverlayRemove(Entity<StationAiOverlayComponent> ent, ref ComponentRemove args)
     {
         var attachedEnt = _player.LocalEntity;
@@ -66,16 +62,19 @@ public sealed partial class StationAiSystem : SharedStationAiSystem
         _overlay = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnAiAttached(Entity<StationAiOverlayComponent> ent, ref LocalPlayerAttachedEvent args)
     {
         AddOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnAiDetached(Entity<StationAiOverlayComponent> ent, ref LocalPlayerDetachedEvent args)
     {
         RemoveOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<StationAiCoreComponent> entity, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

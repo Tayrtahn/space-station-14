@@ -17,8 +17,6 @@ public sealed partial class SpaceSpawnRule : StationEventSystem<SpaceSpawnRuleCo
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpaceSpawnRuleComponent, AntagSelectLocationEvent>(OnSelectLocation);
     }
 
     protected override void Added(EntityUid uid, SpaceSpawnRuleComponent comp, GameRuleComponent gameRule, GameRuleAddedEvent args)
@@ -54,6 +52,7 @@ public sealed partial class SpaceSpawnRule : StationEventSystem<SpaceSpawnRuleCo
         Sawmill.Info($"Picked location {comp.Coords} for {ToPrettyString(uid):rule}");
     }
 
+    [SubscribeLocalEvent]
     private void OnSelectLocation(Entity<SpaceSpawnRuleComponent> ent, ref AntagSelectLocationEvent args)
     {
         if (ent.Comp.Coords is {} coords)

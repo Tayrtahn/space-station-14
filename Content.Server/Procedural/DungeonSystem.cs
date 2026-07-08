@@ -60,9 +60,6 @@ public sealed partial class DungeonSystem : SharedDungeonSystem
         _console.RegisterCommand("dungen", Loc.GetString("cmd-dungen-desc"), Loc.GetString("cmd-dungen-help"), GenerateDungeon, CompletionCallback);
         _console.RegisterCommand("dungen_preset_vis", Loc.GetString("cmd-dungen_preset_vis-desc"), Loc.GetString("cmd-dungen_preset_vis-help"), DungeonPresetVis, PresetCallback);
         _console.RegisterCommand("dungen_pack_vis", Loc.GetString("cmd-dungen_pack_vis-desc"), Loc.GetString("cmd-dungen_pack_vis-help"), DungeonPackVis, PackCallback);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(PrototypeReload);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundCleanup);
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStart);
     }
 
     public override void Update(float frameTime)
@@ -71,6 +68,7 @@ public sealed partial class DungeonSystem : SharedDungeonSystem
         _dungeonJobQueue.Process();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundCleanup(RoundRestartCleanupEvent ev)
     {
         foreach (var token in _dungeonJobs.Values)
@@ -81,6 +79,7 @@ public sealed partial class DungeonSystem : SharedDungeonSystem
         _dungeonJobs.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStart(RoundStartingEvent ev)
     {
         var query = AllEntityQuery<DungeonAtlasTemplateComponent>();
@@ -111,6 +110,7 @@ public sealed partial class DungeonSystem : SharedDungeonSystem
         _dungeonJobs.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void PrototypeReload(PrototypesReloadedEventArgs obj)
     {
         if (!obj.ByType.TryGetValue(typeof(DungeonRoomPrototype), out var rooms))

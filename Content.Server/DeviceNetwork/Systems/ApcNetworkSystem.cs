@@ -17,16 +17,12 @@ namespace Content.Server.DeviceNetwork.Systems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<ApcNetworkComponent, BeforePacketSentEvent>(OnBeforePacketSent);
-
-            SubscribeLocalEvent<ApcNetworkComponent, ExtensionCableSystem.ProviderConnectedEvent>(OnProviderConnected);
-            SubscribeLocalEvent<ApcNetworkComponent, ExtensionCableSystem.ProviderDisconnectedEvent>(OnProviderDisconnected);
         }
 
         /// <summary>
         /// Checks if both devices are connected to the same apc
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBeforePacketSent(EntityUid uid, ApcNetworkComponent receiver, BeforePacketSentEvent args)
         {
             if (!TryComp(args.Sender, out ApcNetworkComponent? sender)) return;
@@ -37,6 +33,7 @@ namespace Content.Server.DeviceNetwork.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderConnected(EntityUid uid, ApcNetworkComponent component, ExtensionCableSystem.ProviderConnectedEvent args)
         {
             if (!TryComp(args.Provider.Owner, out NodeContainerComponent? nodeContainer)) return;
@@ -52,6 +49,7 @@ namespace Content.Server.DeviceNetwork.Systems
 
         }
 
+        [SubscribeLocalEvent]
         private void OnProviderDisconnected(EntityUid uid, ApcNetworkComponent component, ExtensionCableSystem.ProviderDisconnectedEvent args)
         {
             component.ConnectedNode = null;

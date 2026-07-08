@@ -16,7 +16,6 @@ public sealed partial class AutoOrientSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AutoOrientComponent, EntParentChangedMessage>(OnEntParentChanged);
 
         Subs.CVar(_cfgManager, CCVars.AutoOrientDelay, OnAutoOrient, true);
     }
@@ -26,6 +25,7 @@ public sealed partial class AutoOrientSystem : EntitySystem
         _delay = TimeSpan.FromSeconds(obj);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntParentChanged(Entity<AutoOrientComponent> ent, ref EntParentChangedMessage args)
     {
         ent.Comp.NextChange = _timing.CurTime + _delay;

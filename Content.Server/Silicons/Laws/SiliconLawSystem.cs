@@ -39,25 +39,15 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SiliconLawBoundComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<SiliconLawBoundComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<SiliconLawBoundComponent, ToggleLawsScreenEvent>(OnToggleLawsScreen);
-        SubscribeLocalEvent<SiliconLawBoundComponent, BoundUIOpenedEvent>(OnBoundUIOpened);
-        SubscribeLocalEvent<SiliconLawBoundComponent, PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
-
-        SubscribeLocalEvent<SiliconLawProviderComponent, GetSiliconLawsEvent>(OnDirectedGetLaws);
-        SubscribeLocalEvent<SiliconLawProviderComponent, IonStormLawsEvent>(OnIonStormLaws);
-        SubscribeLocalEvent<SiliconLawProviderComponent, MindAddedMessage>(OnLawProviderMindAdded);
-        SubscribeLocalEvent<SiliconLawProviderComponent, MindRemovedMessage>(OnLawProviderMindRemoved);
-        SubscribeLocalEvent<SiliconLawProviderComponent, SiliconEmaggedEvent>(OnEmagLawsAdded);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SiliconLawBoundComponent component, MapInitEvent args)
     {
         GetLaws(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, SiliconLawBoundComponent component, MindAddedMessage args)
     {
         if (!TryComp<ActorComponent>(uid, out var actor))
@@ -78,6 +68,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         _chatManager.ChatMessageToOne(ChatChannel.Server, modifedLawMsg, modifiedLawWrappedMessage, default, false, actor.PlayerSession.Channel, colorOverride: Color.Red);
     }
 
+    [SubscribeLocalEvent]
     private void OnLawProviderMindAdded(Entity<SiliconLawProviderComponent> ent, ref MindAddedMessage args)
     {
         if (!ent.Comp.Subverted)
@@ -85,6 +76,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         EnsureSubvertedSiliconRole(args.Mind);
     }
 
+    [SubscribeLocalEvent]
     private void OnLawProviderMindRemoved(Entity<SiliconLawProviderComponent> ent, ref MindRemovedMessage args)
     {
         if (!ent.Comp.Subverted || args.TransferEntity == null)
@@ -93,7 +85,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         RemoveSubvertedSiliconRole(args.Mind);
     }
 
-
+    [SubscribeLocalEvent]
     private void OnToggleLawsScreen(EntityUid uid, SiliconLawBoundComponent component, ToggleLawsScreenEvent args)
     {
         if (args.Handled || !TryComp<ActorComponent>(uid, out var actor))
@@ -103,6 +95,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         _userInterface.TryToggleUi(uid, SiliconLawsUiKey.Key, actor.PlayerSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUIOpened(EntityUid uid, SiliconLawBoundComponent component, BoundUIOpenedEvent args)
     {
         TryComp(uid, out IntrinsicRadioTransmitterComponent? intrinsicRadio);
@@ -112,11 +105,13 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         _userInterface.SetUiState(args.Entity, SiliconLawsUiKey.Key, state);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerSpawnComplete(EntityUid uid, SiliconLawBoundComponent component, PlayerSpawnCompleteEvent args)
     {
         component.LastLawProvider = args.Station;
     }
 
+    [SubscribeLocalEvent]
     private void OnDirectedGetLaws(EntityUid uid, SiliconLawProviderComponent component, ref GetSiliconLawsEvent args)
     {
         if (args.Handled)
@@ -130,6 +125,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnIonStormLaws(EntityUid uid, SiliconLawProviderComponent component, ref IonStormLawsEvent args)
     {
         // Emagged borgs are immune to ion storm
@@ -150,6 +146,7 @@ public sealed partial class SiliconLawSystem : SharedSiliconLawSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagLawsAdded(EntityUid uid, SiliconLawProviderComponent component, ref SiliconEmaggedEvent args)
     {
         if (component.Lawset == null)

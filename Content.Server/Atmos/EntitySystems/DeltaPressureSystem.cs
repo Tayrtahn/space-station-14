@@ -21,12 +21,9 @@ public sealed partial class DeltaPressureSystem : SharedDeltaPressureSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeltaPressureComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<DeltaPressureComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<DeltaPressureComponent, GridUidChangedEvent>(OnGridChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<DeltaPressureComponent> ent, ref ComponentInit args)
     {
         var xform = Transform(ent);
@@ -37,6 +34,7 @@ public sealed partial class DeltaPressureSystem : SharedDeltaPressureSystem
         _atmosphereSystem.TryAddDeltaPressureEntity(xform.GridUid.Value, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<DeltaPressureComponent> ent, ref ComponentShutdown args)
     {
         // Wasn't part of a list, so nothing to clean up.
@@ -46,6 +44,7 @@ public sealed partial class DeltaPressureSystem : SharedDeltaPressureSystem
         _atmosphereSystem.TryRemoveDeltaPressureEntity(ent.Comp.GridUid.Value, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridChanged(Entity<DeltaPressureComponent> ent, ref GridUidChangedEvent args)
     {
         if (args.OldGrid != null)

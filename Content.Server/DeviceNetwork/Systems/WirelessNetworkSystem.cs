@@ -12,12 +12,12 @@ namespace Content.Server.DeviceNetwork.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<WirelessNetworkComponent, BeforePacketSentEvent>(OnBeforePacketSent);
         }
 
         /// <summary>
         /// Gets the position of both the sending and receiving entity and checks if the receiver is in range of the sender.
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBeforePacketSent(EntityUid uid, WirelessNetworkComponent component, BeforePacketSentEvent args)
         {
             var ownPosition = args.SenderPosition;

@@ -17,10 +17,9 @@ public sealed partial class PyroclasticAnomalySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<PyroclasticAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<PyroclasticAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(EntityUid uid, PyroclasticAnomalyComponent component, ref AnomalyPulseEvent args)
     {
         var xform = Transform(uid);
@@ -28,6 +27,7 @@ public sealed partial class PyroclasticAnomalySystem : EntitySystem
         IgniteNearby(uid, xform.Coordinates, args.Severity, ignitionRadius);
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, PyroclasticAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         var xform = Transform(uid);

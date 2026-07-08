@@ -28,18 +28,16 @@ public sealed partial class WarDeclaratorSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<WarDeclaratorComponent, MapInitEvent>(OnMapInit);
-
-        SubscribeLocalEvent<WarDeclaratorComponent, ActivatableUIOpenAttemptEvent>(OnAttemptOpenUI);
-        SubscribeLocalEvent<WarDeclaratorComponent, WarDeclaratorActivateMessage>(OnActivated);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<WarDeclaratorComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.Message = Loc.GetString("war-declarator-default-message");
         ent.Comp.DisableAt = _gameTiming.CurTime + TimeSpan.FromMinutes(ent.Comp.WarDeclarationDelay);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptOpenUI(Entity<WarDeclaratorComponent> ent, ref ActivatableUIOpenAttemptEvent args)
     {
         if (!_accessReaderSystem.IsAllowed(args.User, ent))
@@ -56,6 +54,7 @@ public sealed partial class WarDeclaratorSystem : EntitySystem
         UpdateUI(ent, ent.Comp.CurrentStatus);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivated(Entity<WarDeclaratorComponent> ent, ref WarDeclaratorActivateMessage args)
     {
         var ev = new WarDeclaredEvent(ent.Comp.CurrentStatus, ent);

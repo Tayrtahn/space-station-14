@@ -17,7 +17,6 @@ namespace Content.Server.Speech.Muting
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<MutedComponent, SpeakAttemptEvent>(OnSpeakAttempt);
             SubscribeLocalEvent<MutedComponent, EmoteEvent>(OnEmote, before: new[] { typeof(VocalSystem), typeof(MumbleAccentSystem) });
             SubscribeLocalEvent<MutedComponent, EmoteActionEvent>(OnEmoteAction, before: new[] { typeof(VocalSystem) });
         }
@@ -51,7 +50,7 @@ namespace Content.Server.Speech.Muting
             args.Handled = true;
         }
 
-
+        [SubscribeLocalEvent]
         private void OnSpeakAttempt(EntityUid uid, MutedComponent component, SpeakAttemptEvent args)
         {
             // TODO something better than this.

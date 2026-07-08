@@ -47,25 +47,18 @@ public sealed partial class RevenantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RevenantComponent, ComponentStartup>(OnStartup);
-
-        SubscribeLocalEvent<RevenantComponent, DamageChangedEvent>(OnDamage);
-        SubscribeLocalEvent<RevenantComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<RevenantComponent, StatusEffectAddedEvent>(OnStatusAdded);
-        SubscribeLocalEvent<RevenantComponent, StatusEffectEndedEvent>(OnStatusEnded);
         SubscribeLocalEvent<RoundEndTextAppendEvent>(_ => MakeVisible(true));
-
-        SubscribeLocalEvent<RevenantComponent, GetVisMaskEvent>(OnRevenantGetVis);
 
         InitializeAbilities();
     }
 
+    [SubscribeLocalEvent]
     private void OnRevenantGetVis(Entity<RevenantComponent> ent, ref GetVisMaskEvent args)
     {
         args.VisibilityMask |= (int)VisibilityFlags.Ghost;
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, RevenantComponent component, ComponentStartup args)
     {
         //update the icon
@@ -87,18 +80,21 @@ public sealed partial class RevenantSystem : EntitySystem
         _eye.RefreshVisibilityMask(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusAdded(EntityUid uid, RevenantComponent component, StatusEffectAddedEvent args)
     {
         if (args.Key == "Stun")
             _appearance.SetData(uid, RevenantVisuals.Stunned, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusEnded(EntityUid uid, RevenantComponent component, StatusEffectEndedEvent args)
     {
         if (args.Key == "Stun")
             _appearance.SetData(uid, RevenantVisuals.Stunned, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, RevenantComponent component, ExaminedEvent args)
     {
         if (args.Examiner == args.Examined)
@@ -108,6 +104,7 @@ public sealed partial class RevenantSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDamage(EntityUid uid, RevenantComponent component, DamageChangedEvent args)
     {
         if (!HasComp<CorporealComponent>(uid) || args.DamageDelta == null)

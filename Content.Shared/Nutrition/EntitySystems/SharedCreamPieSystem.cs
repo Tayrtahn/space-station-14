@@ -32,12 +32,6 @@ public abstract partial class SharedCreamPieSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CreamPieComponent, ThrowDoHitEvent>(OnCreamPieHit);
-        SubscribeLocalEvent<CreamPieComponent, LandEvent>(OnCreamPieLand);
-        SubscribeLocalEvent<CreamPiedComponent, ThrowHitByEvent>(OnCreamPiedHitBy);
-        SubscribeLocalEvent<CreamPieComponent, BeforeToolRefinedEvent>(OnToolRefine);
-        SubscribeLocalEvent<CreamPiedComponent, RejuvenateEvent>(OnRejuvenate);
     }
 
     /// <summary>
@@ -106,16 +100,19 @@ public abstract partial class SharedCreamPieSystem : EntitySystem
         _appearance.SetData(ent.Owner, CreamPiedVisuals.Creamed, value);
     }
 
+    [SubscribeLocalEvent]
     private void OnCreamPieLand(Entity<CreamPieComponent> ent, ref LandEvent args)
     {
         SplatCreamPie(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCreamPieHit(Entity<CreamPieComponent> ent, ref ThrowDoHitEvent args)
     {
         SplatCreamPie(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCreamPiedHitBy(Entity<CreamPiedComponent> creamPied, ref ThrowHitByEvent args)
     {
         if (!Exists(args.Thrown) || !TryComp<CreamPieComponent>(args.Thrown, out var creamPie))
@@ -153,6 +150,7 @@ public abstract partial class SharedCreamPieSystem : EntitySystem
             creamPied.Owner, otherPlayers, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<CreamPiedComponent> ent, ref RejuvenateEvent args)
     {
         SetCreamPied(ent.AsNullable(), false);
@@ -163,6 +161,7 @@ public abstract partial class SharedCreamPieSystem : EntitySystem
     // However, the refactor to IngestionSystem caused the event to not be reached,
     // because eating is blocked if an item is inside the food.
 
+    [SubscribeLocalEvent]
     private void OnToolRefine(Entity<CreamPieComponent> ent, ref BeforeToolRefinedEvent args)
     {
         ActivatePayload(ent);

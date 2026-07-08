@@ -26,8 +26,6 @@ internal sealed partial class RandomWalkController : VirtualController
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomWalkComponent, ComponentStartup>(OnRandomWalkStartup);
     }
 
     /// <summary>
@@ -86,6 +84,7 @@ internal sealed partial class RandomWalkController : VirtualController
     /// <param name="uid">The uid of the random walker to start up.</param>
     /// <param name="comp">The state of the random walker to start up.</param>
     /// <param name="args">The startup prompt arguments.</param>
+    [SubscribeLocalEvent]
     private void OnRandomWalkStartup(EntityUid uid, RandomWalkComponent comp, ComponentStartup args)
     {
         if (comp.StepOnStartup)

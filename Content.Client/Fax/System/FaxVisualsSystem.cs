@@ -16,10 +16,9 @@ public sealed partial class FaxVisualsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FaxMachineComponent, AppearanceChangeEvent>(OnAppearanceChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChanged(EntityUid uid, FaxMachineComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

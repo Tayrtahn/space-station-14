@@ -24,12 +24,10 @@ public sealed partial class GatherableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GatherableComponent, ActivateInWorldEvent>(OnActivate);
-        SubscribeLocalEvent<GatherableComponent, AttackedEvent>(OnAttacked);
         InitializeProjectile();
     }
 
+    [SubscribeLocalEvent]
     private void OnAttacked(Entity<GatherableComponent> gatherable, ref AttackedEvent args)
     {
         if (_whitelistSystem.IsWhitelistFailOrNull(gatherable.Comp.ToolWhitelist, args.Used))
@@ -38,6 +36,7 @@ public sealed partial class GatherableSystem : EntitySystem
         Gather(gatherable, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<GatherableComponent> gatherable, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)

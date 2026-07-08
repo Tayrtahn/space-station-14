@@ -13,10 +13,9 @@ public sealed partial class ContainerCompSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ContainerCompComponent, EntInsertedIntoContainerMessage>(OnConInsert);
-        SubscribeLocalEvent<ContainerCompComponent, EntRemovedFromContainerMessage>(OnConRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnConRemove(Entity<ContainerCompComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.Container || _timing.ApplyingState)
@@ -28,6 +27,7 @@ public sealed partial class ContainerCompSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnConInsert(Entity<ContainerCompComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.Container || _timing.ApplyingState)

@@ -16,9 +16,9 @@ public sealed partial class StartIonStormedSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<StartIonStormedComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<StartIonStormedComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<SiliconLawBoundComponent>(ent.Owner, out var lawBound))

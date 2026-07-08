@@ -35,10 +35,6 @@ public abstract partial class SharedRingerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        // RingerBoundUserInterface Subscriptions
-        SubscribeLocalEvent<RingerComponent, RingerSetRingtoneMessage>(OnSetRingtone);
-        SubscribeLocalEvent<RingerComponent, RingerPlayRingtoneMessage>(OnPlayRingtone);
     }
 
     /// <inheritdoc/>
@@ -163,6 +159,7 @@ public abstract partial class SharedRingerSystem : EntitySystem
     /// <summary>
     /// Handles the <see cref="RingerSetRingtoneMessage"/> from the client UI.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSetRingtone(Entity<RingerComponent> ent, ref RingerSetRingtoneMessage args)
     {
         // Prevent ringtone spam by checking the last time this ringtone was set
@@ -187,6 +184,7 @@ public abstract partial class SharedRingerSystem : EntitySystem
     /// <summary>
     /// Handles the <see cref="RingerPlayRingtoneMessage"/> from the client UI.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPlayRingtone(Entity<RingerComponent> ent, ref RingerPlayRingtoneMessage args)
     {
         StartRingtone(ent);

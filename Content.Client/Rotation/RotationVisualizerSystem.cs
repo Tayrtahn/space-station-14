@@ -14,10 +14,9 @@ public sealed partial class RotationVisualizerSystem : SharedRotationVisualsSyst
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RotationVisualsComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(EntityUid uid, RotationVisualsComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

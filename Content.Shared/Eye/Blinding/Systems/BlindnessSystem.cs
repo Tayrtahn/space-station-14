@@ -14,23 +14,21 @@ public sealed partial class BlindnessSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BlindnessStatusEffectComponent, StatusEffectAppliedEvent>(OnApplied);
-        SubscribeLocalEvent<BlindnessStatusEffectComponent, StatusEffectRemovedEvent>(OnRemoved);
-        SubscribeLocalEvent<BlindnessStatusEffectComponent, StatusEffectRelayedEvent<CanSeeAttemptEvent>>(OnBlindTrySee);
-        SubscribeLocalEvent<BlindnessStatusEffectComponent, StatusEffectRelayedEvent<FlashAttemptEvent>>(OnFlashAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnApplied(Entity<BlindnessStatusEffectComponent> ent, ref StatusEffectAppliedEvent args)
     {
         _blindableSystem.UpdateIsBlind(args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemoved(Entity<BlindnessStatusEffectComponent> ent, ref StatusEffectRemovedEvent args)
     {
         _blindableSystem.UpdateIsBlind(args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnBlindTrySee(Entity<BlindnessStatusEffectComponent> ent, ref StatusEffectRelayedEvent<CanSeeAttemptEvent> args)
     {
         var ev = args.Args;
@@ -38,6 +36,7 @@ public sealed partial class BlindnessSystem : EntitySystem
         args.Args = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnFlashAttempt(Entity<BlindnessStatusEffectComponent> ent, ref StatusEffectRelayedEvent<FlashAttemptEvent> args)
     {
         var ev = args.Args;

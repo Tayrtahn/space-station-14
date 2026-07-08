@@ -14,10 +14,9 @@ public sealed partial class SurviveConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SurviveConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, SurviveConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = _mind.IsCharacterDeadIc(args.Mind) ? 0f : 1f;

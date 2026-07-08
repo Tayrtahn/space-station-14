@@ -34,16 +34,6 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<CryostorageComponent, EntInsertedIntoContainerMessage>(OnInsertedContainer);
-        SubscribeLocalEvent<CryostorageComponent, EntRemovedFromContainerMessage>(OnRemovedContainer);
-        SubscribeLocalEvent<CryostorageComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
-        SubscribeLocalEvent<CryostorageComponent, ComponentShutdown>(OnShutdownContainer);
-        SubscribeLocalEvent<CryostorageComponent, CanDropTargetEvent>(OnCanDropTarget);
-
-        SubscribeLocalEvent<CryostorageContainedComponent, EntGotRemovedFromContainerMessage>(OnRemovedContained);
-        SubscribeLocalEvent<CryostorageContainedComponent, ComponentShutdown>(OnShutdownContained);
-
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
 
         Subs.CVar(_configuration, CCVars.GameCryoSleepRejoining, OnCvarChanged, true);
     }
@@ -53,6 +43,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         CryoSleepRejoiningEnabled = value;
     }
 
+    [SubscribeLocalEvent]
     protected virtual void OnInsertedContainer(Entity<CryostorageComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         var (_, comp) = ent;
@@ -70,6 +61,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         Dirty(args.Entity, containedComp);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemovedContainer(Entity<CryostorageComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         var (_, comp) = ent;
@@ -79,6 +71,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         _appearance.SetData(ent, CryostorageVisuals.Full, args.Container.ContainedEntities.Count > 0);
     }
 
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<CryostorageComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         var (_, comp) = ent;
@@ -104,6 +97,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdownContainer(Entity<CryostorageComponent> ent, ref ComponentShutdown args)
     {
         var comp = ent.Comp;
@@ -120,6 +114,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         Dirty(ent, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnCanDropTarget(Entity<CryostorageComponent> ent, ref CanDropTargetEvent args)
     {
         if (args.Dragged == args.User)
@@ -133,6 +128,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRemovedContained(Entity<CryostorageContainedComponent> ent, ref EntGotRemovedFromContainerMessage args)
     {
         var (uid, comp) = ent;
@@ -140,6 +136,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
             RemCompDeferred(ent, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdownContained(Entity<CryostorageContainedComponent> ent, ref ComponentShutdown args)
     {
         var comp = ent.Comp;
@@ -149,6 +146,7 @@ public abstract partial class SharedCryostorageSystem : EntitySystem
         Dirty(ent, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestart(RoundRestartCleanupEvent _)
     {
         DeletePausedMap();

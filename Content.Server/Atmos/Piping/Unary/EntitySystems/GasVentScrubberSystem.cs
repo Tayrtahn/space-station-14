@@ -40,16 +40,9 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeLocalEvent<GasVentScrubberComponent, AtmosDeviceUpdateEvent>(OnVentScrubberUpdated);
-            SubscribeLocalEvent<GasVentScrubberComponent, AtmosDeviceEnabledEvent>(OnVentScrubberEnterAtmosphere);
-            SubscribeLocalEvent<GasVentScrubberComponent, AtmosDeviceDisabledEvent>(OnVentScrubberLeaveAtmosphere);
-            SubscribeLocalEvent<GasVentScrubberComponent, AtmosAlarmEvent>(OnAtmosAlarm);
-            SubscribeLocalEvent<GasVentScrubberComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<GasVentScrubberComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
-            SubscribeLocalEvent<GasVentScrubberComponent, WeldableChangedEvent>(OnWeldChanged);
         }
 
+        [SubscribeLocalEvent]
         private void OnVentScrubberUpdated(EntityUid uid, GasVentScrubberComponent scrubber, ref AtmosDeviceUpdateEvent args)
         {
             if (_weldable.IsWelded(uid))
@@ -82,9 +75,11 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnVentScrubberLeaveAtmosphere(EntityUid uid, GasVentScrubberComponent component,
             AtmosDeviceDisabledEvent args) => UpdateState(uid, component);
 
+        [SubscribeLocalEvent]
         private void OnVentScrubberEnterAtmosphere(EntityUid uid, GasVentScrubberComponent component,
             AtmosDeviceEnabledEvent args) => UpdateState(uid, component);
 
@@ -127,6 +122,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             return true;
         }
 
+        [SubscribeLocalEvent]
         private void OnAtmosAlarm(EntityUid uid, GasVentScrubberComponent component, AtmosAlarmEvent args)
         {
             if (args.AlarmType == AtmosAlarmType.Danger)
@@ -141,11 +137,13 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, GasVentScrubberComponent component, ref PowerChangedEvent args)
         {
             UpdateState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnPacketRecv(EntityUid uid, GasVentScrubberComponent component, DeviceNetworkPacketEvent args)
         {
             if (!TryComp(uid, out DeviceNetworkComponent? netConn)
@@ -241,6 +239,7 @@ namespace Content.Server.Atmos.Piping.Unary.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnWeldChanged(EntityUid uid, GasVentScrubberComponent component, ref WeldableChangedEvent args)
         {
             UpdateState(uid, component);

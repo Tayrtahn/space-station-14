@@ -38,11 +38,6 @@ public sealed partial class SensorMonitoringConsoleSystem : EntitySystem
         InitUI();
 
         UpdatesBefore.Add(typeof(UserInterfaceSystem));
-
-        SubscribeLocalEvent<SensorMonitoringConsoleComponent, DeviceListUpdateEvent>(DeviceListUpdated);
-        SubscribeLocalEvent<SensorMonitoringConsoleComponent, ComponentStartup>(ConsoleStartup);
-        SubscribeLocalEvent<SensorMonitoringConsoleComponent, DeviceNetworkPacketEvent>(DevicePacketReceived);
-        SubscribeLocalEvent<SensorMonitoringConsoleComponent, AtmosDeviceUpdateEvent>(AtmosUpdate);
     }
 
     public override void Update(float frameTime)
@@ -75,12 +70,14 @@ public sealed partial class SensorMonitoringConsoleSystem : EntitySystem
         UpdateConsoleUI(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void ConsoleStartup(EntityUid uid, SensorMonitoringConsoleComponent component, ComponentStartup args)
     {
         if (TryComp(uid, out DeviceListComponent? network))
             UpdateDevices(uid, component, network.Devices, Array.Empty<EntityUid>());
     }
 
+    [SubscribeLocalEvent]
     private void DeviceListUpdated(
         EntityUid uid,
         SensorMonitoringConsoleComponent component,
@@ -143,6 +140,7 @@ public sealed partial class SensorMonitoringConsoleSystem : EntitySystem
         return SensorDeviceType.Unknown;
     }
 
+    [SubscribeLocalEvent]
     private void DevicePacketReceived(EntityUid uid, SensorMonitoringConsoleComponent component,
         DeviceNetworkPacketEvent args)
     {
@@ -259,6 +257,7 @@ public sealed partial class SensorMonitoringConsoleSystem : EntitySystem
         return ++component.IdCounter;
     }
 
+    [SubscribeLocalEvent]
     private void AtmosUpdate(
         EntityUid uid,
         SensorMonitoringConsoleComponent comp,

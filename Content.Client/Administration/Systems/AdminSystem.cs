@@ -26,8 +26,6 @@ namespace Content.Client.Administration.Systems
             base.Initialize();
 
             InitializeOverlay();
-            SubscribeNetworkEvent<FullPlayerListEvent>(OnPlayerListChanged);
-            SubscribeNetworkEvent<PlayerInfoChangedEvent>(OnPlayerInfoChanged);
         }
 
         public override void Shutdown()
@@ -36,6 +34,7 @@ namespace Content.Client.Administration.Systems
             ShutdownOverlay();
         }
 
+        [SubscribeNetworkEvent]
         private void OnPlayerInfoChanged(PlayerInfoChangedEvent ev)
         {
             if(ev.PlayerInfo == null) return;
@@ -46,6 +45,7 @@ namespace Content.Client.Administration.Systems
             PlayerListChanged?.Invoke(_playerList.Values.ToList());
         }
 
+        [SubscribeNetworkEvent]
         private void OnPlayerListChanged(FullPlayerListEvent msg)
         {
             _playerList = msg.PlayersInfo.ToDictionary(x => x.SessionId, x => x);

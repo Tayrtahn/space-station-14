@@ -12,8 +12,6 @@ public sealed partial class SpawnerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TimedSpawnerComponent, MapInitEvent>(OnMapInit);
     }
 
     public override void Update(float frameTime)
@@ -33,6 +31,7 @@ public sealed partial class SpawnerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<TimedSpawnerComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextFire = _timing.CurTime + ent.Comp.IntervalSeconds;

@@ -95,17 +95,6 @@ public sealed partial class ArrivalsSystem : EntitySystem
 
         SubscribeLocalEvent<PlayerSpawningEvent>(HandlePlayerSpawning, before: new []{ typeof(SpawnPointSystem)}, after: new [] { typeof(ContainerSpawnPointSystem)});
 
-        SubscribeLocalEvent<StationArrivalsComponent, StationPostInitEvent>(OnStationPostInit);
-
-        SubscribeLocalEvent<ArrivalsShuttleComponent, ComponentStartup>(OnShuttleStartup);
-        SubscribeLocalEvent<ArrivalsShuttleComponent, FTLTagEvent>(OnShuttleTag);
-
-        SubscribeLocalEvent<RoundStartingEvent>(OnRoundStarting);
-        SubscribeLocalEvent<ArrivalsShuttleComponent, FTLStartedEvent>(OnArrivalsFTL);
-        SubscribeLocalEvent<ArrivalsShuttleComponent, FTLCompletedEvent>(OnArrivalsDocked);
-
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(SendDirections);
-
         // Don't invoke immediately as it will get set in the natural course of things.
         Enabled = _cfgManager.GetCVar(CCVars.ArrivalsShuttles);
         ArrivalsGodmode = _cfgManager.GetCVar(CCVars.GodmodeArrivals);
@@ -117,6 +106,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
         _console.RegisterCommand("arrivals", ArrivalsCommand, ArrivalsCompletion);
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleTag(EntityUid uid, ArrivalsShuttleComponent component, ref FTLTagEvent args)
     {
         if (args.Handled)
@@ -198,6 +188,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
     /// <summary>
     ///     First sends shuttle timer data, then kicks people off the shuttle if it isn't leaving the arrivals terminal
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnArrivalsFTL(EntityUid shuttleUid, ArrivalsShuttleComponent component, ref FTLStartedEvent args)
     {
         if (!TryGetArrivals(out EntityUid arrivals))
@@ -276,6 +267,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnArrivalsDocked(EntityUid uid, ArrivalsShuttleComponent component, ref FTLCompletedEvent args)
     {
         var dockTime = component.NextTransfer - _timing.CurTime + TimeSpan.FromSeconds(_shuttles.DefaultStartupTime);
@@ -379,6 +371,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
             EnsureComp<GodmodeComponent>(ev.SpawnResult.Value);
     }
 
+    [SubscribeLocalEvent]
     private void SendDirections(PlayerSpawnCompleteEvent ev)
     {
         if (!Enabled || !ev.LateJoin || ev.Silent || !_pendingQuery.HasComp(ev.Mob))
@@ -426,6 +419,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnShuttleStartup(EntityUid uid, ArrivalsShuttleComponent component, ComponentStartup args)
     {
         EnsureComp<PreventPilotComponent>(uid);
@@ -521,6 +515,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundStarting(RoundStartingEvent ev)
     {
         // Setup arrivals station
@@ -600,6 +595,7 @@ public sealed partial class ArrivalsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStationPostInit(EntityUid uid, StationArrivalsComponent component, ref StationPostInitEvent args)
     {
         if (!Enabled)

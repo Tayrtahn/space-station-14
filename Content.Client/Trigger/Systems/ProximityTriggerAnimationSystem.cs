@@ -46,12 +46,9 @@ public sealed partial class ProximityTriggerAnimationSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnProximityComponent, ComponentInit>(OnProximityInit);
-        SubscribeLocalEvent<TriggerOnProximityComponent, AppearanceChangeEvent>(OnProxAppChange);
-        SubscribeLocalEvent<TriggerOnProximityComponent, AnimationCompletedEvent>(OnProxAnimation);
     }
 
+    [SubscribeLocalEvent]
     private void OnProxAnimation(EntityUid uid, TriggerOnProximityComponent component, AnimationCompletedEvent args)
     {
         if (!TryComp<AppearanceComponent>(uid, out var appearance))
@@ -62,11 +59,13 @@ public sealed partial class ProximityTriggerAnimationSystem : EntitySystem
         OnChangeData(uid, component, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnProximityInit(EntityUid uid, TriggerOnProximityComponent component, ComponentInit args)
     {
         EnsureComp<AnimationPlayerComponent>(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnProxAppChange(EntityUid uid, TriggerOnProximityComponent component, ref AppearanceChangeEvent args)
     {
         OnChangeData(uid, component, args.Component, args.Sprite);

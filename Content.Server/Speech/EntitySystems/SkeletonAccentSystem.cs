@@ -16,8 +16,6 @@ public sealed partial class SkeletonAccentSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SkeletonAccentComponent, AccentGetEvent>(OnAccentGet);
     }
 
     public string Accentuate(string message, SkeletonAccentComponent component)
@@ -44,6 +42,7 @@ public sealed partial class SkeletonAccentSystem : EntitySystem
         return msg;
     }
 
+    [SubscribeLocalEvent]
     private void OnAccentGet(EntityUid uid, SkeletonAccentComponent component, AccentGetEvent args)
     {
         args.Message = Accentuate(args.Message, component);

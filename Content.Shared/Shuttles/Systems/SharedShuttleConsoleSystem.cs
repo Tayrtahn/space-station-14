@@ -13,9 +13,6 @@ namespace Content.Shared.Shuttles.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<PilotComponent, UpdateCanMoveEvent>(HandleMovementBlock);
-            SubscribeLocalEvent<PilotComponent, ComponentStartup>(OnStartup);
-            SubscribeLocalEvent<PilotComponent, ComponentShutdown>(HandlePilotShutdown);
         }
 
         [Serializable, NetSerializable]
@@ -29,16 +26,19 @@ namespace Content.Shared.Shuttles.Systems
             }
         }
 
+        [SubscribeLocalEvent]
         protected virtual void HandlePilotShutdown(EntityUid uid, PilotComponent component, ComponentShutdown args)
         {
             ActionBlockerSystem.UpdateCanMove(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnStartup(EntityUid uid, PilotComponent component, ComponentStartup args)
         {
             ActionBlockerSystem.UpdateCanMove(uid);
         }
 
+        [SubscribeLocalEvent]
         private void HandleMovementBlock(EntityUid uid, PilotComponent component, UpdateCanMoveEvent args)
         {
             if (component.LifeStage > ComponentLifeStage.Running)

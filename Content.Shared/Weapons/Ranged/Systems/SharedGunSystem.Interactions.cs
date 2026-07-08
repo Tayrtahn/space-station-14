@@ -9,6 +9,7 @@ namespace Content.Shared.Weapons.Ranged.Systems;
 
 public abstract partial class SharedGunSystem
 {
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, GunComponent component, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange || !component.ShowExamineText)
@@ -28,6 +29,7 @@ public abstract partial class SharedGunSystem
         return Loc.GetString($"gun-{mode.ToString()}");
     }
 
+    [SubscribeLocalEvent]
     private void OnAltVerb(EntityUid uid, GunComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.CanComplexInteract || args.Hands == null || component.SelectedMode == component.AvailableModes)
@@ -105,11 +107,13 @@ public abstract partial class SharedGunSystem
         public SelectiveFire Mode = default;
     }
 
+    [SubscribeLocalEvent]
     private void OnCycleMode(EntityUid uid, GunComponent component, CycleModeEvent args)
     {
         SelectFire(uid, component, args.Mode, args.Performer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGunSelected(EntityUid uid, GunComponent component, HandSelectedEvent args)
     {
         if (Timing.ApplyingState)

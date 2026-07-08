@@ -18,10 +18,9 @@ public sealed partial class TargetObjectiveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TargetObjectiveComponent, ObjectiveAfterAssignEvent>(OnAfterAssign);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterAssign(EntityUid uid, TargetObjectiveComponent comp, ref ObjectiveAfterAssignEvent args)
     {
         if (!GetTarget(uid, out var target, comp))

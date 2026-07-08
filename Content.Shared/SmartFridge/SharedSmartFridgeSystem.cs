@@ -29,13 +29,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<SmartFridgeComponent, InteractUsingEvent>(OnInteractUsing, after: [typeof(AnchorableSystem)]);
-        SubscribeLocalEvent<SmartFridgeComponent, EntInsertedIntoContainerMessage>(OnItemInserted);
-        SubscribeLocalEvent<SmartFridgeComponent, EntRemovedFromContainerMessage>(OnItemRemoved);
         SubscribeLocalEvent<SmartFridgeComponent, AfterAutoHandleStateEvent>((ent, ref _) => UpdateUI(ent));
-
-        SubscribeLocalEvent<SmartFridgeComponent, GetVerbsEvent<AlternativeVerb>>(OnGetAltVerb);
-        SubscribeLocalEvent<SmartFridgeComponent, GetDumpableVerbEvent>(OnGetDumpableVerb);
-        SubscribeLocalEvent<SmartFridgeComponent, DumpEvent>(OnDump);
 
         Subs.BuiEvents<SmartFridgeComponent>(SmartFridgeUiKey.Key,
             sub =>
@@ -79,6 +73,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         args.Handled = DoInsert(ent, args.User, [args.Used], true);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemInserted(Entity<SmartFridgeComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != ent.Comp.Container || _timing.ApplyingState)
@@ -97,6 +92,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         UpdateUI(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnItemRemoved(Entity<SmartFridgeComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         var key = new SmartFridgeEntry(Identity.Name(args.Entity, EntityManager));
@@ -151,6 +147,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         _popup.PopupPredicted(Loc.GetString("smart-fridge-component-try-eject-out-of-stock"), ent, args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAltVerb(Entity<SmartFridgeComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         var user = args.User;
@@ -185,6 +182,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         UpdateUI(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetDumpableVerb(Entity<SmartFridgeComponent> ent, ref GetDumpableVerbEvent args)
     {
         if (_accessReader.IsAllowed(args.User, ent))
@@ -193,6 +191,7 @@ public abstract partial class SharedSmartFridgeSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDump(Entity<SmartFridgeComponent> ent, ref DumpEvent args)
     {
         if (args.Handled)

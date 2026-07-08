@@ -9,16 +9,15 @@ public sealed partial class HandOrganSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<HandOrganComponent, OrganGotInsertedEvent>(OnGotInserted);
-        SubscribeLocalEvent<HandOrganComponent, OrganGotRemovedEvent>(OnGotRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotInserted(Entity<HandOrganComponent> ent, ref OrganGotInsertedEvent args)
     {
         _hands.AddHand(args.Target, ent.Comp.HandID, ent.Comp.Data);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotRemoved(Entity<HandOrganComponent> ent, ref OrganGotRemovedEvent args)
     {
         // prevent a recursive double-delete bug

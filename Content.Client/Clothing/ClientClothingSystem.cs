@@ -54,15 +54,9 @@ public sealed partial class ClientClothingSystem : ClothingSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ClothingComponent, GetEquipmentVisualsEvent>(OnGetVisuals);
-        SubscribeLocalEvent<InventoryComponent, InventoryTemplateUpdated>(OnInventoryTemplateUpdated);
-
-        SubscribeLocalEvent<InventoryComponent, VisualsChangedEvent>(OnVisualsChanged);
-        SubscribeLocalEvent<SpriteComponent, DidUnequipEvent>(OnDidUnequip);
-        SubscribeLocalEvent<InventoryComponent, AppearanceChangeEvent>(OnAppearanceUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceUpdate(EntityUid uid, InventoryComponent component, ref AppearanceChangeEvent args)
     {
         // May need to update displacement maps if the sex changed. Also required to properly set the stencil on init
@@ -79,6 +73,7 @@ public sealed partial class ClientClothingSystem : ClothingSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInventoryTemplateUpdated(Entity<InventoryComponent> ent, ref InventoryTemplateUpdated args)
     {
         UpdateAllSlots(ent.Owner, ent.Comp);
@@ -95,6 +90,7 @@ public sealed partial class ClientClothingSystem : ClothingSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVisuals(EntityUid uid, ClothingComponent item, GetEquipmentVisualsEvent args)
     {
         if (!TryComp(args.Equipee, out InventoryComponent? inventory))
@@ -180,6 +176,7 @@ public sealed partial class ClientClothingSystem : ClothingSystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnVisualsChanged(EntityUid uid, InventoryComponent component, VisualsChangedEvent args)
     {
         var item = GetEntity(args.Item);
@@ -190,6 +187,7 @@ public sealed partial class ClientClothingSystem : ClothingSystem
         RenderEquipment(uid, item, clothing.InSlot, component, null, clothing);
     }
 
+    [SubscribeLocalEvent]
     private void OnDidUnequip(Entity<SpriteComponent> entity, ref DidUnequipEvent args)
     {
         if (!TryComp(entity, out InventorySlotsComponent? inventorySlots))

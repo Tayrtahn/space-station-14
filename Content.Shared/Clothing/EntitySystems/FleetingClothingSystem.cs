@@ -21,12 +21,9 @@ public sealed partial class FleetingClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FleetingClothingComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<FleetingClothingComponent, BeforeGettingUnequippedEvent>(OnBeforeGettingUnequipped);
-        SubscribeLocalEvent<FleetingClothingComponent, GotUnequippedEvent>(OnGotUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<FleetingClothingComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -54,6 +51,7 @@ public sealed partial class FleetingClothingSystem : EntitySystem
     // Raised before the item is being unequipped.
     // We have to use QueueDel instead of Del because directly deleting the entity while an event is being raised on it will cause errors.
     // We can't do this in.GotUnequippedEvent because container events don't include the user.
+    [SubscribeLocalEvent]
     private void OnBeforeGettingUnequipped(Entity<FleetingClothingComponent> ent, ref BeforeGettingUnequippedEvent args)
     {
         if (ent.Comp.DestroyOnUnequip)
@@ -88,6 +86,7 @@ public sealed partial class FleetingClothingSystem : EntitySystem
     }
 
     // In case the item was somehow removed by any other means not using TryUnequip.
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<FleetingClothingComponent> ent, ref GotUnequippedEvent args)
     {
         if (_timing.ApplyingState)

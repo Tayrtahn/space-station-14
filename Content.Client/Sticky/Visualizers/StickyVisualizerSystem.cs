@@ -10,10 +10,9 @@ public sealed partial class StickyVisualizerSystem : VisualizerSystem<StickyVisu
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StickyVisualizerComponent, ComponentInit>(OnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<StickyVisualizerComponent> ent, ref ComponentInit args)
     {
         if (!_spriteQuery.TryComp(ent, out var sprite))

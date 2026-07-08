@@ -13,7 +13,6 @@ public sealed partial class DamageOnHoldingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DamageOnHoldingComponent, MapInitEvent>(OnMapInit);
     }
 
     public void SetEnabled(EntityUid uid, bool enabled, DamageOnHoldingComponent? component = null)
@@ -25,6 +24,7 @@ public sealed partial class DamageOnHoldingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, DamageOnHoldingComponent component, MapInitEvent args)
     {
         component.NextDamage = _timing.CurTime;

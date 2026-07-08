@@ -16,10 +16,9 @@ public sealed partial class AtmosPipeAppearanceSystem : SharedAtmosPipeAppearanc
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PipeAppearanceComponent, NodeGroupsRebuilt>(OnNodeUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnNodeUpdate(EntityUid uid, PipeAppearanceComponent component, ref NodeGroupsRebuilt args)
     {
         UpdateAppearance(args.NodeOwner);

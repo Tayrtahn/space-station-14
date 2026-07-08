@@ -15,10 +15,9 @@ public sealed partial class SolutionRandomFillSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomFillSolutionComponent, MapInitEvent>(OnRandomSolutionFillMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnRandomSolutionFillMapInit(Entity<RandomFillSolutionComponent> entity, ref MapInitEvent args)
     {
         if (entity.Comp.WeightedRandomId == null)

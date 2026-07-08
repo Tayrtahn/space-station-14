@@ -18,11 +18,9 @@ public sealed partial class ChasmFallingVisualsSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChasmFallingComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<ChasmFallingComponent, ComponentRemove>(OnComponentRemove);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, ChasmFallingComponent component, ComponentInit args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite) ||
@@ -42,6 +40,7 @@ public sealed partial class ChasmFallingVisualsSystem : EntitySystem
         _anim.Play((uid, player), GetFallingAnimation(component), _chasmFallAnimationKey);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, ChasmFallingComponent component, ComponentRemove args)
     {
         if (!TryComp<SpriteComponent>(uid, out var sprite))

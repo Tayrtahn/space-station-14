@@ -36,10 +36,9 @@ public sealed partial class DamageVisualsSystem : VisualizerSystem<DamageVisuals
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DamageVisualsComponent, ComponentInit>(InitializeEntity);
     }
 
+    [SubscribeLocalEvent]
     private void InitializeEntity(EntityUid entity, DamageVisualsComponent comp, ComponentInit args)
     {
         VerifyVisualizerSetup(entity, comp);

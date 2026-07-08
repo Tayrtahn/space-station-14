@@ -9,11 +9,9 @@ public sealed partial class IntrinsicUISystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<IntrinsicUIComponent, MapInitEvent>(InitActions);
-        SubscribeLocalEvent<IntrinsicUIComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<IntrinsicUIComponent, ToggleIntrinsicUIEvent>(OnActionToggle);
     }
 
+    [SubscribeLocalEvent]
     private void OnActionToggle(EntityUid uid, IntrinsicUIComponent component, ToggleIntrinsicUIEvent args)
     {
         if (args.Key == null)
@@ -22,6 +20,7 @@ public sealed partial class IntrinsicUISystem : EntitySystem
         args.Handled = InteractUI(uid, args.Key, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, IntrinsicUIComponent component, ref ComponentShutdown args)
     {
         foreach (var actionEntry in component.UIs.Values)
@@ -31,6 +30,7 @@ public sealed partial class IntrinsicUISystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void InitActions(EntityUid uid, IntrinsicUIComponent component, MapInitEvent args)
     {
         foreach (var entry in component.UIs.Values)

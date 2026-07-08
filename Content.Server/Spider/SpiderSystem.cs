@@ -25,7 +25,6 @@ public sealed partial class SpiderSystem : SharedSpiderSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SpiderComponent, SpiderWebActionEvent>(OnSpawnNet);
     }
 
     public override void Update(float frameTime)
@@ -52,6 +51,7 @@ public sealed partial class SpiderSystem : SharedSpiderSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSpawnNet(EntityUid uid, SpiderComponent component, SpiderWebActionEvent args)
     {
         if (args.Handled)

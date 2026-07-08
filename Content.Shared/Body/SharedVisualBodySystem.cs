@@ -19,11 +19,6 @@ public abstract partial class SharedVisualBodySystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<VisualOrganComponent, BodyRelayedEvent<OrganCopyAppearanceEvent>>(OnVisualOrganCopyAppearance);
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, BodyRelayedEvent<OrganCopyAppearanceEvent>>(OnMarkingsOrganCopyAppearance);
-        SubscribeLocalEvent<VisualOrganComponent, BodyRelayedEvent<ApplyOrganProfileDataEvent>>(OnVisualOrganApplyProfile);
-        SubscribeLocalEvent<VisualOrganMarkingsComponent, BodyRelayedEvent<ApplyOrganMarkingsEvent>>(OnMarkingsOrganApplyMarkings);
-
         InitializeModifiers();
         InitializeInitial();
     }
@@ -86,6 +81,7 @@ public abstract partial class SharedVisualBodySystem : EntitySystem
         Dirty(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnVisualOrganCopyAppearance(Entity<VisualOrganComponent> ent, ref BodyRelayedEvent<OrganCopyAppearanceEvent> args)
     {
         if (!TryComp<VisualOrganComponent>(args.Args.Organ, out var other))
@@ -97,6 +93,7 @@ public abstract partial class SharedVisualBodySystem : EntitySystem
         SetOrganAppearance(ent, other.Data);
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsOrganCopyAppearance(Entity<VisualOrganMarkingsComponent> ent, ref BodyRelayedEvent<OrganCopyAppearanceEvent> args)
     {
         if (!TryComp<VisualOrganMarkingsComponent>(args.Args.Organ, out var other))
@@ -108,6 +105,7 @@ public abstract partial class SharedVisualBodySystem : EntitySystem
         SetOrganMarkings(ent, other.Markings);
     }
 
+    [SubscribeLocalEvent]
     private void OnVisualOrganApplyProfile(Entity<VisualOrganComponent> ent, ref BodyRelayedEvent<ApplyOrganProfileDataEvent> args)
     {
         if (Comp<OrganComponent>(ent).Category is not { } category)
@@ -134,6 +132,7 @@ public abstract partial class SharedVisualBodySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMarkingsOrganApplyMarkings(Entity<VisualOrganMarkingsComponent> ent, ref BodyRelayedEvent<ApplyOrganMarkingsEvent> args)
     {
         if (Comp<OrganComponent>(ent).Category is not { } category)

@@ -22,13 +22,10 @@ public sealed partial class ExplosionOverlaySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExplosionVisualsComponent, ComponentInit>(OnExplosionInit);
-        SubscribeLocalEvent<ExplosionVisualsComponent, ComponentRemove>(OnCompRemove);
-        SubscribeLocalEvent<ExplosionVisualsComponent, ComponentHandleState>(OnExplosionHandleState);
         _overlayMan.AddOverlay(new ExplosionOverlay(_appearance));
     }
 
+    [SubscribeLocalEvent]
     private void OnExplosionHandleState(EntityUid uid, ExplosionVisualsComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not ExplosionVisualsState state)
@@ -49,12 +46,14 @@ public sealed partial class ExplosionOverlaySystem : EntitySystem
         component.SpaceTileSize = state.SpaceTileSize;
     }
 
+    [SubscribeLocalEvent]
     private void OnCompRemove(EntityUid uid, ExplosionVisualsComponent component, ComponentRemove args)
     {
         if (TryComp(uid, out ExplosionVisualsTexturesComponent? textures) && !Deleted(textures.LightEntity))
             QueueDel(textures.LightEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnExplosionInit(EntityUid uid, ExplosionVisualsComponent component, ComponentInit args)
     {
         EnsureComp<ExplosionVisualsTexturesComponent>(uid);

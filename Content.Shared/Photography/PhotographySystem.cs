@@ -21,11 +21,9 @@ public sealed partial class PhotographySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PhotographComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<PictureTakerComponent, AfterFlashActivatedEvent>(OnFlashActivated);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<PhotographComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -45,6 +43,7 @@ public sealed partial class PhotographySystem : EntitySystem
     }
 
     // The flash system is handling charges and all interactions, we just print the picture afterwards.
+    [SubscribeLocalEvent]
     private void OnFlashActivated(Entity<PictureTakerComponent> ent, ref AfterFlashActivatedEvent args)
     {
         TakePicture(ent, args.Target, args.User);

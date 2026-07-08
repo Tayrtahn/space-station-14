@@ -17,10 +17,6 @@ public abstract partial class SharedGasPressureRegulatorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GasPressureRegulatorComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<GasPressureRegulatorComponent, GasPressureRegulatorChangeThresholdMessage>(
-            OnThresholdChangeMessage);
     }
 
     /// <summary>
@@ -28,6 +24,7 @@ public abstract partial class SharedGasPressureRegulatorSystem : EntitySystem
     /// </summary>
     /// <param name="ent"> <see cref="Entity{T}"/> of the valve</param>
     /// <param name="args">Event arguments for examination</param>
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<GasPressureRegulatorComponent> ent, ref ExaminedEvent args)
     {
         if (!Transform(ent).Anchored || !args.IsInDetailsRange)
@@ -52,6 +49,7 @@ public abstract partial class SharedGasPressureRegulatorSystem : EntitySystem
     /// </summary>
     /// <param name="ent">The <see cref="Entity{T}"/> of the valve.</param>
     /// <param name="args">The received pressure from the <see cref="GasPressurePumpChangeOutputPressureMessage"/>message.</param>
+    [SubscribeLocalEvent]
     private void OnThresholdChangeMessage(Entity<GasPressureRegulatorComponent> ent,
         ref GasPressureRegulatorChangeThresholdMessage args)
     {

@@ -2,15 +2,14 @@
 
 namespace Content.Shared.Physics;
 
-public sealed class SharedPreventCollideSystem : EntitySystem
+public sealed partial class SharedPreventCollideSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PreventCollideComponent, PreventCollideEvent>(OnPreventCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnPreventCollide(EntityUid uid, PreventCollideComponent component, ref PreventCollideEvent args)
     {
         if (component.Uid == args.OtherEntity)

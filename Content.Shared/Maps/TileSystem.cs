@@ -35,14 +35,11 @@ public sealed partial class TileSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GridInitializeEvent>(OnGridStartup);
-        SubscribeLocalEvent<TileHistoryComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<TileHistoryComponent, ComponentHandleState>(OnHandleState);
-        SubscribeLocalEvent<TileHistoryComponent, FloorTileAttemptEvent>(OnFloorTileAttempt);
 
         _cfg.OnValueChanged(CCVars.TileStackLimit, t => _tileStackLimit = t, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, TileHistoryComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not TileHistoryState state && args.Current is not TileHistoryDeltaState)
@@ -65,6 +62,7 @@ public sealed partial class TileSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, TileHistoryComponent component, ref ComponentGetState args)
     {
         if (args.FromTick <= component.CreationTick || args.FromTick <= component.ForceTick)
@@ -91,6 +89,7 @@ public sealed partial class TileSystem : EntitySystem
     /// <summary>
     /// On grid startup, ensure that we have Tile History.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGridStartup(GridInitializeEvent ev)
     {
         if (HasComp<MapComponent>(ev.EntityUid))
@@ -326,6 +325,7 @@ public sealed partial class TileSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnFloorTileAttempt(Entity<TileHistoryComponent> ent, ref FloorTileAttemptEvent args)
     {
         if (_tileStackLimit == 0)

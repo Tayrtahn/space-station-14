@@ -22,19 +22,15 @@ public sealed partial class ClothingSpeedModifierSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ClothingSpeedModifierComponent, ComponentGetState>(OnGetState);
-        SubscribeLocalEvent<ClothingSpeedModifierComponent, ComponentHandleState>(OnHandleState);
-        SubscribeLocalEvent<ClothingSpeedModifierComponent, InventoryRelayedEvent<RefreshMovementSpeedModifiersEvent>>(OnRefreshMoveSpeed);
-        SubscribeLocalEvent<ClothingSpeedModifierComponent, GetVerbsEvent<ExamineVerb>>(OnClothingVerbExamine);
-        SubscribeLocalEvent<ClothingSpeedModifierComponent, ItemToggledEvent>(OnToggled);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, ClothingSpeedModifierComponent component, ref ComponentGetState args)
     {
         args.State = new ClothingSpeedModifierComponentState(component.WalkModifier, component.SprintModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid uid, ClothingSpeedModifierComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not ClothingSpeedModifierComponentState state)
@@ -54,6 +50,7 @@ public sealed partial class ClothingSpeedModifierSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMoveSpeed(EntityUid uid, ClothingSpeedModifierComponent component, InventoryRelayedEvent<RefreshMovementSpeedModifiersEvent> args)
     {
         if (component.RequireActivated && !_toggle.IsActivated(uid))
@@ -65,6 +62,7 @@ public sealed partial class ClothingSpeedModifierSystem : EntitySystem
         args.Args.ModifySpeed(component.WalkModifier, component.SprintModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnClothingVerbExamine(EntityUid uid, ClothingSpeedModifierComponent component, GetVerbsEvent<ExamineVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess)
@@ -112,6 +110,7 @@ public sealed partial class ClothingSpeedModifierSystem : EntitySystem
         _examine.AddDetailedExamineVerb(args, component, msg, Loc.GetString("clothing-speed-examinable-verb-text"), "/Textures/Interface/VerbIcons/outfit.svg.192dpi.png", Loc.GetString("clothing-speed-examinable-verb-message"));
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<ClothingSpeedModifierComponent> ent, ref ItemToggledEvent args)
     {
         if (!ent.Comp.RequireActivated)

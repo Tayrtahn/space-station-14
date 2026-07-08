@@ -19,10 +19,9 @@ public sealed partial class JobSystem : SharedJobSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RoleAddedEvent>(OnRoleAddedEvent);
-        SubscribeLocalEvent<RoleRemovedEvent>(OnRoleRemovedEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleAddedEvent(RoleAddedEvent args)
     {
         MindOnDoGreeting(args.MindId, args.Mind, args);
@@ -31,6 +30,7 @@ public sealed partial class JobSystem : SharedJobSystem
             _roles.RoleUpdateMessage(args.Mind);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoleRemovedEvent(RoleRemovedEvent args)
     {
         if (args.RoleTypeUpdate)

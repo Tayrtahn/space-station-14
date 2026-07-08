@@ -21,9 +21,9 @@ public sealed partial class SolutionSpikerSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<RefillableSolutionComponent, InteractUsingEvent>(OnInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<RefillableSolutionComponent> entity, ref InteractUsingEvent args)
     {
         if (TrySpike(args.Used, (args.Target, entity.Comp), args.User))

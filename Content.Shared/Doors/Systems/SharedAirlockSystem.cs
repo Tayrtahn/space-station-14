@@ -22,19 +22,10 @@ public abstract partial class SharedAirlockSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AirlockComponent, BeforeDoorClosedEvent>(OnBeforeDoorClosed);
-        SubscribeLocalEvent<AirlockComponent, DoorStateChangedEvent>(OnStateChanged);
-        SubscribeLocalEvent<AirlockComponent, DoorBoltsChangedEvent>(OnBoltsChanged);
-        SubscribeLocalEvent<AirlockComponent, BeforeDoorOpenedEvent>(OnBeforeDoorOpened);
-        SubscribeLocalEvent<AirlockComponent, BeforeDoorDeniedEvent>(OnBeforeDoorDenied);
-        SubscribeLocalEvent<AirlockComponent, GetPryTimeModifierEvent>(OnGetPryMod);
-        SubscribeLocalEvent<AirlockComponent, BeforePryEvent>(OnBeforePry);
-        SubscribeLocalEvent<AirlockComponent, SignalReceivedEvent>(OnSignalReceived);
-        SubscribeLocalEvent<AirlockComponent, PowerChangedEvent>(OnPowerChanged);
         SubscribeLocalEvent<AirlockComponent, ActivateInWorldEvent>(OnActivate, before: new[] { typeof(SharedDoorSystem) });
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeDoorClosed(Entity<AirlockComponent> ent, ref BeforeDoorClosedEvent args)
     {
         if (args.Cancelled)
@@ -55,6 +46,7 @@ public abstract partial class SharedAirlockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStateChanged(Entity<AirlockComponent> ent, ref DoorStateChangedEvent args)
     {
         // This is here so we don't accidentally bulldoze state values and mispredict.
@@ -77,6 +69,7 @@ public abstract partial class SharedAirlockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBoltsChanged(Entity<AirlockComponent> ent, ref DoorBoltsChangedEvent args)
     {
         // If unbolted, reset the auto close timer
@@ -84,18 +77,21 @@ public abstract partial class SharedAirlockSystem : EntitySystem
             UpdateAutoClose((ent, ent.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeDoorOpened(Entity<AirlockComponent> ent, ref BeforeDoorOpenedEvent args)
     {
         if (!CanChangeState(ent))
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeDoorDenied(Entity<AirlockComponent> ent, ref BeforeDoorDeniedEvent args)
     {
         if (!CanChangeState(ent))
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnGetPryMod(EntityUid uid, AirlockComponent component, ref GetPryTimeModifierEvent args)
     {
         if (component.Powered)
@@ -130,6 +126,7 @@ public abstract partial class SharedAirlockSystem : EntitySystem
         DoorSystem.SetNextStateChange(ent, ent.Comp1.AutoCloseDelay * ent.Comp1.AutoCloseDelayModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforePry(Entity<AirlockComponent> ent, ref BeforePryEvent args)
     {
         if (args.Cancelled)
@@ -143,6 +140,7 @@ public abstract partial class SharedAirlockSystem : EntitySystem
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<AirlockComponent> ent, ref SignalReceivedEvent args)
     {
         if (args.Port == ent.Comp.AutoClosePort && ent.Comp.AutoClose)
@@ -152,6 +150,7 @@ public abstract partial class SharedAirlockSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<AirlockComponent> ent, ref PowerChangedEvent args)
     {
         ent.Comp.Powered = args.Powered;

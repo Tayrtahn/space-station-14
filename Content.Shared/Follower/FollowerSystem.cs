@@ -40,20 +40,9 @@ public sealed partial class FollowerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GetVerbsEvent<AlternativeVerb>>(OnGetAlternativeVerbs);
-        SubscribeLocalEvent<FollowerComponent, MoveInputEvent>(OnFollowerMove);
-        SubscribeLocalEvent<FollowerComponent, PullStartedMessage>(OnPullStarted);
-        SubscribeLocalEvent<FollowerComponent, EntityTerminatingEvent>(OnFollowerTerminating);
-
-        SubscribeLocalEvent<FollowedComponent, ComponentGetStateAttemptEvent>(OnFollowedAttempt);
-        SubscribeLocalEvent<FollowerComponent, GotEquippedHandEvent>(OnGotEquippedHand);
-        SubscribeLocalEvent<FollowedComponent, EntityTerminatingEvent>(OnFollowedTerminating);
-        SubscribeLocalEvent<BeforeSerializationEvent>(OnBeforeSave);
-        SubscribeLocalEvent<FollowedComponent, PolymorphedEvent>(OnFollowedPolymorphed);
-        SubscribeLocalEvent<FollowedComponent, StationAiRemoteEntityReplacementEvent>(OnFollowedStationAiRemoteEntityReplaced);
     }
 
+    [SubscribeLocalEvent]
     private void OnFollowedAttempt(Entity<FollowedComponent> ent, ref ComponentGetStateAttemptEvent args)
     {
         if (args.Cancelled)
@@ -69,6 +58,7 @@ public sealed partial class FollowerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeSave(BeforeSerializationEvent ev)
     {
         // Some followers will not be map savable. This ensures that maps don't get saved with some entities that have
@@ -93,6 +83,7 @@ public sealed partial class FollowerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetAlternativeVerbs(GetVerbsEvent<AlternativeVerb> ev)
     {
         if (ev.User == ev.Target || IsClientSide(ev.Target))
@@ -129,22 +120,26 @@ public sealed partial class FollowerSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnFollowerMove(EntityUid uid, FollowerComponent component, ref MoveInputEvent args)
     {
         if (args.HasDirectionalMovement)
             StopFollowingEntity(uid, component.Following);
     }
 
+    [SubscribeLocalEvent]
     private void OnPullStarted(EntityUid uid, FollowerComponent component, PullStartedMessage args)
     {
         StopFollowingEntity(uid, component.Following);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquippedHand(EntityUid uid, FollowerComponent component, GotEquippedHandEvent args)
     {
         StopFollowingEntity(uid, component.Following, deparent:false);
     }
 
+    [SubscribeLocalEvent]
     private void OnFollowerTerminating(EntityUid uid, FollowerComponent component, ref EntityTerminatingEvent args)
     {
         StopFollowingEntity(uid, component.Following, deparent: false);
@@ -152,11 +147,13 @@ public sealed partial class FollowerSystem : EntitySystem
 
     // Since we parent our observer to the followed entity, we need to detach
     // before they get deleted so that we don't get recursively deleted too.
+    [SubscribeLocalEvent]
     private void OnFollowedTerminating(EntityUid uid, FollowedComponent component, ref EntityTerminatingEvent args)
     {
         StopAllFollowers(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnFollowedPolymorphed(Entity<FollowedComponent> entity, ref PolymorphedEvent args)
     {
         TransferFollowers(entity.AsNullable(), args.NewEntity);
@@ -164,6 +161,7 @@ public sealed partial class FollowerSystem : EntitySystem
 
     // TODO: Slartibarfast mentioned that ideally this should be generalized and made part of SetRelay in SharedMoverController.Relay.cs.
     // This would apply to polymorphed entities as well
+    [SubscribeLocalEvent]
     private void OnFollowedStationAiRemoteEntityReplaced(Entity<FollowedComponent> entity, ref StationAiRemoteEntityReplacementEvent args)
     {
         if (args.NewRemoteEntity == null)

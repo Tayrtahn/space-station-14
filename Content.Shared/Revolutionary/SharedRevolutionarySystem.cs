@@ -17,19 +17,13 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MindShieldComponent, MapInitEvent>(MindShieldImplanted);
-        SubscribeLocalEvent<RevolutionaryComponent, ComponentGetStateAttemptEvent>(OnRevCompGetStateAttempt);
-        SubscribeLocalEvent<HeadRevolutionaryComponent, ComponentGetStateAttemptEvent>(OnRevCompGetStateAttempt);
-        SubscribeLocalEvent<RevolutionaryComponent, ComponentStartup>(DirtyRevComps);
-        SubscribeLocalEvent<HeadRevolutionaryComponent, ComponentStartup>(DirtyRevComps);
         SubscribeLocalEvent<ShowAntagIconsComponent, ComponentStartup>(DirtyRevComps);
-        SubscribeLocalEvent<RevolutionaryComponent, AttemptConvertRevolutionaryEvent>(OnAttemptConvert);
     }
 
     /// <summary>
     /// When the mindshield is implanted in the rev it will popup saying they were deconverted. In Head Revs it will remove the mindshield component.
     /// </summary>
+    [SubscribeLocalEvent]
     private void MindShieldImplanted(EntityUid uid, MindShieldComponent comp, MapInitEvent init)
     {
         if (HasComp<HeadRevolutionaryComponent>(uid))
@@ -51,6 +45,7 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
     /// <summary>
     /// Determines if a HeadRev component should be sent to the client.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRevCompGetStateAttempt(EntityUid uid, HeadRevolutionaryComponent comp, ref ComponentGetStateAttemptEvent args)
     {
         args.Cancelled = !CanGetState(args.Player);
@@ -59,6 +54,7 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
     /// <summary>
     /// Determines if a Rev component should be sent to the client.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRevCompGetStateAttempt(EntityUid uid, RevolutionaryComponent comp, ref ComponentGetStateAttemptEvent args)
     {
         args.Cancelled = !CanGetState(args.Player);
@@ -80,6 +76,7 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
 
         return HasComp<ShowAntagIconsComponent>(uid);
     }
+
     /// <summary>
     /// Dirties all the Rev components so they are sent to clients.
     ///
@@ -87,6 +84,7 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
     /// becomes a rev then we need to send all the components to it. To my knowledge there is no way to do this on a
     /// per client basis so we are just dirtying all the components.
     /// </summary>
+    [SubscribeLocalEvent]
     private void DirtyRevComps<T>(EntityUid someUid, T someComp, ComponentStartup ev)
     {
         var revComps = AllEntityQuery<RevolutionaryComponent>();
@@ -102,6 +100,7 @@ public abstract partial class SharedRevolutionarySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptConvert(Entity<RevolutionaryComponent> ent, ref AttemptConvertRevolutionaryEvent args)
     {
         args.Cancelled = true;

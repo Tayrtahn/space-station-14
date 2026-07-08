@@ -19,16 +19,9 @@ public sealed partial class PowerChargeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PowerChargeComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<PowerChargeComponent, ComponentShutdown>(OnComponentShutdown);
-        SubscribeLocalEvent<PowerChargeComponent, ActivatableUIOpenAttemptEvent>(OnUIOpenAttempt);
-        SubscribeLocalEvent<PowerChargeComponent, AfterActivatableUIOpenEvent>(OnAfterUiOpened);
-        SubscribeLocalEvent<PowerChargeComponent, AnchorStateChangedEvent>(OnAnchorStateChange);
-
-        // This needs to be ui key agnostic
-        SubscribeLocalEvent<PowerChargeComponent, SwitchChargingMachineMessage>(OnSwitchGenerator);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorStateChange(EntityUid uid, PowerChargeComponent component, AnchorStateChangedEvent args)
     {
         if (args.Anchored || !TryComp<ApcPowerReceiverComponent>(uid, out var powerReceiverComponent))
@@ -39,6 +32,7 @@ public sealed partial class PowerChargeSystem : EntitySystem
         UpdateState(new Entity<PowerChargeComponent, ApcPowerReceiverComponent>(uid, component, powerReceiverComponent));
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterUiOpened(EntityUid uid, PowerChargeComponent component, AfterActivatableUIOpenEvent args)
     {
         if (!TryComp<ApcPowerReceiverComponent>(uid, out var apcPowerReceiver))
@@ -47,17 +41,20 @@ public sealed partial class PowerChargeSystem : EntitySystem
         UpdateUI((uid, component, apcPowerReceiver), component.ChargeRate);
     }
 
+    [SubscribeLocalEvent]
     private void OnSwitchGenerator(EntityUid uid, PowerChargeComponent component, SwitchChargingMachineMessage args)
     {
         SetSwitchedOn(uid, component, args.On, user: args.Actor);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpenAttempt(EntityUid uid, PowerChargeComponent component, ActivatableUIOpenAttemptEvent args)
     {
         if (!component.Intact)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(EntityUid uid, PowerChargeComponent component, ComponentShutdown args)
     {
         if (!component.Active)
@@ -69,6 +66,7 @@ public sealed partial class PowerChargeSystem : EntitySystem
         RaiseLocalEvent(uid, ref eventArgs);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<PowerChargeComponent> ent, ref MapInitEvent args)
     {
         ApcPowerReceiverComponent? powerReceiver = null;

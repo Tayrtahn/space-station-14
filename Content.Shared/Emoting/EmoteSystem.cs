@@ -1,12 +1,10 @@
 ﻿namespace Content.Shared.Emoting;
 
-public sealed class EmoteSystem : EntitySystem
+public sealed partial class EmoteSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmoteAttemptEvent>(OnEmoteAttempt);
     }
 
     /// <summary>
@@ -25,6 +23,7 @@ public sealed class EmoteSystem : EntitySystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmoteAttempt(EmoteAttemptEvent args)
     {
         if (!TryComp(args.Uid, out EmotingComponent? emote) || !emote.Enabled)

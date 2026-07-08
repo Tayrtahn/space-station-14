@@ -11,8 +11,6 @@ public abstract partial class SharedAmbientSoundSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<AmbientSoundComponent, ComponentGetState>(GetCompState);
-        SubscribeLocalEvent<AmbientSoundComponent, ComponentHandleState>(HandleCompState);
     }
 
     public virtual void SetAmbience(EntityUid uid, bool value, AmbientSoundComponent? ambience = null)
@@ -59,6 +57,7 @@ public abstract partial class SharedAmbientSoundSystem : EntitySystem
         Dirty(uid, ambience);
     }
 
+    [SubscribeLocalEvent]
     private void HandleCompState(EntityUid uid, AmbientSoundComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not AmbientSoundComponentState state) return;
@@ -68,6 +67,7 @@ public abstract partial class SharedAmbientSoundSystem : EntitySystem
         SetSound(uid, state.Sound, component);
     }
 
+    [SubscribeLocalEvent]
     private void GetCompState(EntityUid uid, AmbientSoundComponent component, ref ComponentGetState args)
     {
         args.State = new AmbientSoundComponentState

@@ -32,12 +32,10 @@ public sealed partial class GridPreloaderSystem : SharedGridPreloaderSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
-        SubscribeLocalEvent<PostGameMapLoad>(OnPostGameMapLoad);
-
         Subs.CVar(_cfg, CCVars.PreloadGrids, value => PreloadingEnabled = value, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestart(RoundRestartCleanupEvent ev)
     {
         var ent = GetPreloaderEntity();
@@ -47,6 +45,7 @@ public sealed partial class GridPreloaderSystem : SharedGridPreloaderSystem
         Del(ent.Value.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnPostGameMapLoad(PostGameMapLoad ev)
     {
         EnsurePreloadedGridMap();

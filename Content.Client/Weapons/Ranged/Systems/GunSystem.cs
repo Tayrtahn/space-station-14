@@ -90,11 +90,6 @@ public sealed partial class GunSystem : SharedGunSystem
     {
         base.Initialize();
         UpdatesOutsidePrediction = true;
-        SubscribeLocalEvent<AmmoCounterComponent, ItemStatusCollectMessage>(OnAmmoCounterCollect);
-        SubscribeAllEvent<MuzzleFlashEvent>(OnMuzzleFlash);
-
-        // Plays animated effects on the client.
-        SubscribeNetworkEvent<HitscanEvent>(OnHitscan);
 
         InitializeMagazineVisuals();
         InitializeSpentAmmo();
@@ -102,7 +97,7 @@ public sealed partial class GunSystem : SharedGunSystem
         _comparer = new GunTargetEntityComparer();
     }
 
-
+    [SubscribeAllEvent]
     private void OnMuzzleFlash(MuzzleFlashEvent args)
     {
         var gunUid = GetEntity(args.Uid);
@@ -110,6 +105,7 @@ public sealed partial class GunSystem : SharedGunSystem
         CreateEffect(gunUid, args, gunUid);
     }
 
+    [SubscribeNetworkEvent]
     private void OnHitscan(HitscanEvent ev)
     {
         // ALL I WANT IS AN ANIMATED EFFECT

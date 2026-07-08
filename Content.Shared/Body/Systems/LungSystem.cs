@@ -20,16 +20,15 @@ public sealed partial class LungSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<LungComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<BreathToolComponent, GotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<BreathToolComponent, GotUnequippedEvent>(OnGotUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<BreathToolComponent> ent, ref GotUnequippedEvent args)
     {
         _atmos.DisconnectInternals(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<BreathToolComponent> ent, ref GotEquippedEvent args)
     {
         if ((args.SlotFlags & ent.Comp.AllowedSlots) == 0)
@@ -44,6 +43,7 @@ public sealed partial class LungSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<LungComponent> entity, ref MapInitEvent args)
     {
         _solutionContainerSystem.EnsureSolution(entity.Owner, entity.Comp.SolutionName, out var solution);

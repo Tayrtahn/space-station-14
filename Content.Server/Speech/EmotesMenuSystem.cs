@@ -10,10 +10,9 @@ public sealed partial class EmotesMenuSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeAllEvent<PlayEmoteMessage>(OnPlayEmote);
     }
 
+    [SubscribeAllEvent]
     private void OnPlayEmote(PlayEmoteMessage msg, EntitySessionEventArgs args)
     {
         var player = args.SenderSession.AttachedEntity;

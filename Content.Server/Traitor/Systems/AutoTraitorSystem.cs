@@ -17,10 +17,9 @@ public sealed partial class AutoTraitorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AutoTraitorComponent, MindAddedMessage>(OnMindAdded);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, AutoTraitorComponent comp, MindAddedMessage args)
     {
         if (!_player.TryGetSessionById(args.Mind.Comp.UserId, out var session))

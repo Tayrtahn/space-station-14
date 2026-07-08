@@ -42,20 +42,11 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<MapGridComponent, EventHorizonAttemptConsumeEntityEvent>(PreventConsume);
-        SubscribeLocalEvent<StationDataComponent, EventHorizonAttemptConsumeEntityEvent>(PreventConsume);
-        SubscribeLocalEvent<EventHorizonComponent, MapInitEvent>(OnHorizonMapInit);
-        SubscribeLocalEvent<EventHorizonComponent, StartCollideEvent>(OnStartCollide);
-        SubscribeLocalEvent<EventHorizonComponent, EntGotInsertedIntoContainerMessage>(OnEventHorizonContained);
-        SubscribeLocalEvent<EventHorizonContainedEvent>(OnEventHorizonContained);
-        SubscribeLocalEvent<EventHorizonComponent, EventHorizonAttemptConsumeEntityEvent>(OnAnotherEventHorizonAttemptConsumeThisEventHorizon);
-        SubscribeLocalEvent<EventHorizonComponent, EventHorizonConsumedEntityEvent>(OnAnotherEventHorizonConsumedThisEventHorizon);
-        SubscribeLocalEvent<ContainerManagerComponent, EventHorizonConsumedEntityEvent>(OnContainerConsumed);
-
         var vvHandle = Vvm.GetTypeHandler<EventHorizonComponent>();
         vvHandle.AddPath(nameof(EventHorizonComponent.TargetConsumePeriod), (_, comp) => comp.TargetConsumePeriod, SetConsumePeriod);
     }
 
+    [SubscribeLocalEvent]
     private void OnHorizonMapInit(EntityUid uid, EventHorizonComponent component, MapInitEvent args)
     {
         component.NextConsumeWaveTime = _timing.CurTime;
@@ -380,6 +371,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     /// <summary>
     /// A generic event handler that prevents singularities from consuming entities with a component of a given type if registered.
     /// </summary>
+    [SubscribeLocalEvent]
     public static void PreventConsume<TComp>(EntityUid uid, TComp comp, ref EventHorizonAttemptConsumeEntityEvent args)
     {
         if (!args.Cancelled)
@@ -402,6 +394,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     /// Handles event horizons consuming any entities they bump into.
     /// The event horizon will not consume any entities if it itself has been consumed by an event horizon.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnStartCollide(EntityUid uid, EventHorizonComponent comp, ref StartCollideEvent args)
     {
         if (comp.BeingConsumedByAnotherEventHorizon)
@@ -417,6 +410,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     /// Specifically prevents event horizons from consuming themselves.
     /// Also ensures that if this event horizon has already been consumed by another event horizon it cannot be consumed again.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnotherEventHorizonAttemptConsumeThisEventHorizon(EntityUid uid, EventHorizonComponent comp, ref EventHorizonAttemptConsumeEntityEvent args)
     {
         if (!args.Cancelled && (args.EventHorizon == comp || comp.BeingConsumedByAnotherEventHorizon))
@@ -427,6 +421,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     /// Prevents two singularities from annihilating one another.
     /// Specifically ensures if this event horizon is consumed by another event horizon it knows that it has been consumed.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnotherEventHorizonConsumedThisEventHorizon(EntityUid uid, EventHorizonComponent comp, ref EventHorizonConsumedEntityEvent args)
     {
         comp.BeingConsumedByAnotherEventHorizon = true;
@@ -439,6 +434,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     ///     the inserted entity SHALL be inside of the specified container after all handles to the entity event
     ///     <see cref="EntGotInsertedIntoContainerMessage" /> are processed.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEventHorizonContained(EntityUid uid, EventHorizonComponent comp, EntGotInsertedIntoContainerMessage args)
     {
         // Delegates processing an event until all queued events have been processed.
@@ -451,6 +447,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     ///     container and drop the the next innermost contaning container.
     /// This loops until the event horizon has escaped to the map or wound up in an indestructible container.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnEventHorizonContained(EventHorizonContainedEvent args)
     {
         var uid = args.Entity;
@@ -473,6 +470,7 @@ public sealed partial class EventHorizonSystem : SharedEventHorizonSystem
     /// Recursively consumes all entities within a container that is consumed by the singularity.
     /// If an entity within a consumed container cannot be consumed itself it is removed from the container.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnContainerConsumed(EntityUid uid, ContainerManagerComponent comp, ref EventHorizonConsumedEntityEvent args)
     {
         var drop_container = args.Container;

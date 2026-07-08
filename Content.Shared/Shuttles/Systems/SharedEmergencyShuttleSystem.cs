@@ -17,11 +17,10 @@ public abstract partial class SharedEmergencyShuttleSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<EmergencyShuttleConsoleComponent, ActivatableUIOpenAttemptEvent>(OnEmergencyOpenAttempt);
-
         Subs.CVar(ConfigManager, CCVars.EmergencyEarlyLaunchAllowed, value => _emergencyEarlyLaunchAllowed = value, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmergencyOpenAttempt(Entity<EmergencyShuttleConsoleComponent> ent, ref ActivatableUIOpenAttemptEvent args)
     {
         // I'm hoping ActivatableUI checks it's open before allowing these messages.

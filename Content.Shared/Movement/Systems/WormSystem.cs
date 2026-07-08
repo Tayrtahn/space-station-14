@@ -16,12 +16,9 @@ public sealed partial class WormSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<WormComponent, StandUpAttemptEvent>(OnStandAttempt);
-        SubscribeLocalEvent<WormComponent, KnockedDownRefreshEvent>(OnKnockedDownRefresh);
-        SubscribeLocalEvent<WormComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<WormComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<WormComponent> ent, ref MapInitEvent args)
     {
         EnsureComp<KnockedDownComponent>(ent, out var knocked);
@@ -29,11 +26,13 @@ public sealed partial class WormSystem : EntitySystem
         _stun.SetAutoStand((ent, knocked));
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<WormComponent> ent, ref RejuvenateEvent args)
     {
         RemComp<WormComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnStandAttempt(Entity<WormComponent> ent, ref StandUpAttemptEvent args)
     {
         if (args.Cancelled)
@@ -44,6 +43,7 @@ public sealed partial class WormSystem : EntitySystem
         args.Autostand = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnKnockedDownRefresh(Entity<WormComponent> ent, ref KnockedDownRefreshEvent args)
     {
         args.FrictionModifier *= ent.Comp.FrictionModifier;

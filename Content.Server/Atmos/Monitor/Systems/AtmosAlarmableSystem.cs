@@ -44,11 +44,9 @@ public sealed partial class AtmosAlarmableSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AtmosAlarmableComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<AtmosAlarmableComponent, DeviceNetworkPacketEvent>(OnPacketRecv);
-        SubscribeLocalEvent<AtmosAlarmableComponent, PowerChangedEvent>(OnPowerChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, AtmosAlarmableComponent component, MapInitEvent args)
     {
         TryUpdateAlert(
@@ -58,6 +56,7 @@ public sealed partial class AtmosAlarmableSystem : EntitySystem
             false);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChange(EntityUid uid, AtmosAlarmableComponent component, ref PowerChangedEvent args)
     {
         if (!args.Powered)
@@ -78,6 +77,7 @@ public sealed partial class AtmosAlarmableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketRecv(EntityUid uid, AtmosAlarmableComponent component, DeviceNetworkPacketEvent args)
     {
         if (component.IgnoreAlarms) return;

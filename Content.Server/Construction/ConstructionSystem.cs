@@ -31,11 +31,9 @@ namespace Content.Server.Construction
             InitializeInteractions();
             InitializeInitial();
             InitializeMachines();
-
-            SubscribeLocalEvent<ConstructionComponent, ComponentInit>(OnConstructionInit);
-            SubscribeLocalEvent<ConstructionComponent, ComponentStartup>(OnConstructionStartup);
         }
 
+        [SubscribeLocalEvent]
         private void OnConstructionInit(Entity<ConstructionComponent> ent, ref ComponentInit args)
         {
             var construction = ent.Comp;
@@ -75,6 +73,7 @@ namespace Content.Server.Construction
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnConstructionStartup(EntityUid uid, ConstructionComponent construction, ComponentStartup args)
         {
             if (GetCurrentNode(uid, construction) is not {} node)

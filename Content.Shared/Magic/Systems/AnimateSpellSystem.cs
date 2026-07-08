@@ -16,9 +16,9 @@ public sealed partial class AnimateSpellSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AnimateComponent, MapInitEvent>(OnAnimate);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimate(Entity<AnimateComponent> ent, ref MapInitEvent args)
     {
         // Physics bullshittery necessary for object to behave properly

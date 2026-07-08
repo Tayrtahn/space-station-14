@@ -28,11 +28,9 @@ public sealed partial class ChangelingAbilitySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingBiodegradeAbilityComponent, ChangelingBiodegradeActionEvent>(OnBiodegradeAction);
-        SubscribeLocalEvent<ChangelingIdentityComponent, ChangelingStingDnaEvent>(OnStingDna);
     }
 
+    [SubscribeLocalEvent]
     private void OnBiodegradeAction(Entity<ChangelingBiodegradeAbilityComponent> ent, ref ChangelingBiodegradeActionEvent args)
     {
         // Nothing can be done :(
@@ -72,6 +70,7 @@ public sealed partial class ChangelingAbilitySystem : EntitySystem
             _puddle.TrySpillAt(args.Performer, ent.Comp.SpillSolution, out _, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnStingDna(Entity<ChangelingIdentityComponent> ent, ref ChangelingStingDnaEvent args)
     {
         if (args.Target == ent.Owner)

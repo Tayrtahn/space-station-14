@@ -23,11 +23,9 @@ public sealed partial class FireAlarmSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<FireAlarmComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<FireAlarmComponent, DeviceListUpdateEvent>(OnDeviceListSync);
-        SubscribeLocalEvent<FireAlarmComponent, GotEmaggedEvent>(OnEmagged);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceListSync(EntityUid uid, FireAlarmComponent component, DeviceListUpdateEvent args)
     {
         foreach (var device in args.OldDevices)
@@ -44,6 +42,7 @@ public sealed partial class FireAlarmSystem : EntitySystem
         _atmosDevNet.Sync(uid, null);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(EntityUid uid, FireAlarmComponent component, InteractHandEvent args)
     {
         if (!_interactionSystem.InRangeUnobstructed(args.User, args.Target))
@@ -70,6 +69,7 @@ public sealed partial class FireAlarmSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(EntityUid uid, FireAlarmComponent component, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction))

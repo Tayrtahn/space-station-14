@@ -15,11 +15,9 @@ public sealed partial class UIPowerStateSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<UIPowerStateComponent, BoundUIOpenedEvent>(OnUiOpened);
-        SubscribeLocalEvent<UIPowerStateComponent, BoundUIClosedEvent>(OnUiClosed);
     }
 
+    [SubscribeLocalEvent]
     private void OnUiClosed(Entity<UIPowerStateComponent> ent, ref BoundUIClosedEvent args)
     {
         if (ent.Comp.Keys is null)
@@ -36,6 +34,7 @@ public sealed partial class UIPowerStateSystem : EntitySystem
         _powerState.SetWorkingState(ent.Owner, false);
     }
 
+    [SubscribeLocalEvent]
     private void OnUiOpened(Entity<UIPowerStateComponent> ent, ref BoundUIOpenedEvent args)
     {
         if (ent.Comp.Keys is not null && !ent.Comp.Keys.Contains(args.UiKey))

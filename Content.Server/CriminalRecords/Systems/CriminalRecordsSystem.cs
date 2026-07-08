@@ -31,14 +31,9 @@ public sealed partial class CriminalRecordsSystem : SharedCriminalRecordsSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AfterGeneralRecordCreatedEvent>(OnGeneralRecordCreated);
-        SubscribeLocalEvent<WantedListCartridgeComponent, CriminalRecordChangedEvent>(OnRecordChanged);
-        SubscribeLocalEvent<WantedListCartridgeComponent, CartridgeUiReadyEvent>(OnCartridgeUiReady);
-        SubscribeLocalEvent<WantedListCartridgeComponent, CriminalHistoryAddedEvent>(OnHistoryAdded);
-        SubscribeLocalEvent<WantedListCartridgeComponent, CriminalHistoryRemovedEvent>(OnHistoryRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnGeneralRecordCreated(AfterGeneralRecordCreatedEvent ev)
     {
         _records.AddRecordEntry(ev.Key, new CriminalRecord());
@@ -140,12 +135,15 @@ public sealed partial class CriminalRecordsSystem : SharedCriminalRecordsSystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnRecordChanged(Entity<WantedListCartridgeComponent> ent, ref CriminalRecordChangedEvent args) =>
         StateChanged(ent);
 
+    [SubscribeLocalEvent]
     private void OnHistoryAdded(Entity<WantedListCartridgeComponent> ent, ref CriminalHistoryAddedEvent args) =>
         StateChanged(ent);
 
+    [SubscribeLocalEvent]
     private void OnHistoryRemoved(Entity<WantedListCartridgeComponent> ent, ref CriminalHistoryRemovedEvent args) =>
         StateChanged(ent);
 
@@ -157,6 +155,7 @@ public sealed partial class CriminalRecordsSystem : SharedCriminalRecordsSystem
         UpdateReaderUi(ent, loaderUid);
     }
 
+    [SubscribeLocalEvent]
     private void OnCartridgeUiReady(Entity<WantedListCartridgeComponent> ent, ref CartridgeUiReadyEvent args)
     {
         UpdateReaderUi(ent, args.Loader);

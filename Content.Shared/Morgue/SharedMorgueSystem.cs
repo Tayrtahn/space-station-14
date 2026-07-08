@@ -13,15 +13,12 @@ public abstract partial class SharedMorgueSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MorgueComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<MorgueComponent, StorageAfterCloseEvent>(OnClosed);
-        SubscribeLocalEvent<MorgueComponent, StorageAfterOpenEvent>(OnOpened);
     }
 
     /// <summary>
     /// Handles the examination text for looking at a morgue.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<MorgueComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -40,11 +37,13 @@ public abstract partial class SharedMorgueSystem : EntitySystem
         args.PushMarkup(Loc.GetString(text));
     }
 
+    [SubscribeLocalEvent]
     private void OnClosed(Entity<MorgueComponent> ent, ref StorageAfterCloseEvent args)
     {
         CheckContents(ent.Owner, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnOpened(Entity<MorgueComponent> ent, ref StorageAfterOpenEvent args)
     {
         CheckContents(ent.Owner, ent.Comp);

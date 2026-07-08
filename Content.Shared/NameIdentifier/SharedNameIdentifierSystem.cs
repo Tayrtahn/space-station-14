@@ -10,10 +10,9 @@ public abstract partial class SharedNameIdentifierSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NameIdentifierComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<NameIdentifierComponent> ent, ref RefreshNameModifiersEvent args)
     {
         if (ent.Comp.Group is null)

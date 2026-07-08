@@ -30,13 +30,10 @@ public sealed partial class StealConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StealConditionComponent, ObjectiveAssignedEvent>(OnAssigned);
-        SubscribeLocalEvent<StealConditionComponent, ObjectiveAfterAssignEvent>(OnAfterAssign);
-        SubscribeLocalEvent<StealConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
     /// start checks of target acceptability, and generation of start values.
+    [SubscribeLocalEvent]
     private void OnAssigned(Entity<StealConditionComponent> condition, ref ObjectiveAssignedEvent args)
     {
         List<StealTargetComponent?> targetList = new();
@@ -69,6 +66,7 @@ public sealed partial class StealConditionSystem : EntitySystem
     }
 
     //Set the visual, name, icon for the objective.
+    [SubscribeLocalEvent]
     private void OnAfterAssign(Entity<StealConditionComponent> condition, ref ObjectiveAfterAssignEvent args)
     {
         var group = ProtoMan.Index(condition.Comp.StealGroup);
@@ -86,6 +84,8 @@ public sealed partial class StealConditionSystem : EntitySystem
         _metaData.SetEntityDescription(condition.Owner, description, args.Meta);
         _objectives.SetIcon(condition.Owner, group.Sprite, args.Objective);
     }
+
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<StealConditionComponent> condition, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress((args.MindId, args.Mind), condition);

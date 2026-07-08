@@ -23,10 +23,9 @@ public sealed partial class AtmosPipeLayersSystem : SharedAtmosPipeLayersSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AtmosPipeLayersComponent, ComponentInit>(OnInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<AtmosPipeLayersComponent> ent, ref ComponentInit args)
     {
         SetPipeLayer(ent, ent.Comp.CurrentPipeLayer);

@@ -17,14 +17,12 @@ public sealed partial class AnchoredStorageFilterSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnchoredStorageFilterComponent, AnchorStateChangedEvent>(OnAnchorStateChanged);
-        SubscribeLocalEvent<AnchoredStorageFilterComponent, ContainerIsInsertingAttemptEvent>(OnInsertAttempt);
     }
 
     /// <summary>
     /// Handles the <see cref="AnchorStateChangedEvent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAnchorStateChanged(Entity<AnchoredStorageFilterComponent> ent, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)
@@ -43,6 +41,7 @@ public sealed partial class AnchoredStorageFilterSystem : EntitySystem
     /// <summary>
     /// Handles the <see cref="ContainerIsInsertingAttemptEvent"/>.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInsertAttempt(Entity<AnchoredStorageFilterComponent> ent, ref ContainerIsInsertingAttemptEvent args)
     {
         if (args.Cancelled)

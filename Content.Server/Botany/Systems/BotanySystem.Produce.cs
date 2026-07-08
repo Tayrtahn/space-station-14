@@ -34,6 +34,7 @@ public sealed partial class BotanySystem
         }
     }
 
+    [SubscribeLocalEvent]
     public void OnProduceExamined(EntityUid uid, ProduceComponent comp, ExaminedEvent args)
     {
         if (comp.Seed == null)

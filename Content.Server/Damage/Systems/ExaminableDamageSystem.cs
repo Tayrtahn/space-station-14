@@ -15,9 +15,9 @@ public sealed partial class ExaminableDamageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ExaminableDamageComponent, ExaminedEvent>(OnExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<ExaminableDamageComponent> ent, ref ExaminedEvent args)
     {
         if (!ProtoMan.Resolve(ent.Comp.Messages, out var proto) || proto.Values.Count == 0)

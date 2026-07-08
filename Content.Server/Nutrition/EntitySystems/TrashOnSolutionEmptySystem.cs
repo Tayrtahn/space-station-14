@@ -17,15 +17,15 @@ namespace Content.Server.Nutrition.EntitySystems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<TrashOnSolutionEmptyComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<TrashOnSolutionEmptyComponent, SolutionChangedEvent>(OnSolutionChange);
         }
 
+        [SubscribeLocalEvent]
         public void OnMapInit(Entity<TrashOnSolutionEmptyComponent> entity, ref MapInitEvent args)
         {
             CheckSolutions(entity);
         }
 
+        [SubscribeLocalEvent]
         public void OnSolutionChange(Entity<TrashOnSolutionEmptyComponent> entity, ref SolutionChangedEvent args)
         {
             CheckSolutions(entity);

@@ -13,9 +13,9 @@ public sealed partial class AnomalyCoreSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AnomalyCoreComponent, PriceCalculationEvent>(OnGetPrice);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetPrice(Entity<AnomalyCoreComponent> core, ref PriceCalculationEvent args)
     {
         var timeLeft = core.Comp.DecayMoment - _gameTiming.CurTime;

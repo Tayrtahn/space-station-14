@@ -29,8 +29,6 @@ public sealed partial class SurvivorRuleSystem : GameRuleSystem<SurvivorRuleComp
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SurvivorRoleComponent, GetBriefingEvent>(OnGetBriefing);
     }
 
     // TODO: Planned rework post wizard release when RandomGlobalSpawnSpell becomes a gamerule
@@ -57,6 +55,7 @@ public sealed partial class SurvivorRuleSystem : GameRuleSystem<SurvivorRuleComp
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGetBriefing(Entity<SurvivorRoleComponent> ent, ref GetBriefingEvent args)
     {
         args.Append(Loc.GetString("survivor-role-greeting"));

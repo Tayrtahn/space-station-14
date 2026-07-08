@@ -18,13 +18,11 @@ public sealed partial class GuidebookDataSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeNetworkEvent<RequestGuidebookDataEvent>(OnRequestRules);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-
         // Build initial cache
         GatherData(ref _cachedData);
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestRules(RequestGuidebookDataEvent ev, EntitySessionEventArgs args)
     {
         // Send cached data to requesting client
@@ -32,6 +30,7 @@ public sealed partial class GuidebookDataSystem : EntitySystem
         RaiseNetworkEvent(sendEv, args.SenderSession);
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
     {
         // We only care about entity prototypes

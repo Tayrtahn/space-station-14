@@ -14,10 +14,9 @@ public sealed partial class DeviceNetworkJammerSystem : SharedDeviceNetworkJamme
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TransformComponent, BeforePacketSentEvent>(BeforePacketSent);
     }
 
+    [SubscribeLocalEvent]
     private void BeforePacketSent(Entity<TransformComponent> xform, ref BeforePacketSentEvent ev)
     {
         if (ev.Cancelled)

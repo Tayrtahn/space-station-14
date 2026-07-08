@@ -13,9 +13,9 @@ public sealed partial class RoofSystem : SharedRoofSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SetRoofComponent, ComponentStartup>(OnFlagStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnFlagStartup(Entity<SetRoofComponent> ent, ref ComponentStartup args)
     {
         var xform = Transform(ent.Owner);

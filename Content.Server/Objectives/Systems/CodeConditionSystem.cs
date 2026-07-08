@@ -15,10 +15,9 @@ public sealed partial class CodeConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CodeConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<CodeConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = ent.Comp.Completed ? 1f : 0f;

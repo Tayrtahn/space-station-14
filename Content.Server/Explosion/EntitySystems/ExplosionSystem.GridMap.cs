@@ -20,6 +20,7 @@ public sealed partial class ExplosionSystem
     /// <summary>
     ///     On grid startup, prepare a map of grid edges.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGridStartup(GridStartupEvent ev)
     {
         var grid = Comp<MapGridComponent>(ev.EntityUid);
@@ -34,6 +35,7 @@ public sealed partial class ExplosionSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGridRemoved(GridRemovalEvent ev)
     {
         OnAirtightGridRemoved(ev.EntityUid);
@@ -228,6 +230,7 @@ public sealed partial class ExplosionSystem
     /// <summary>
     ///     When a tile is updated, we might need to update the grid edge maps.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnTileChanged(ref TileChangedEvent ev)
     {
         if (!TryComp(ev.Entity, out MapGridComponent? grid))

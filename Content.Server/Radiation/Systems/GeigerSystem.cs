@@ -24,16 +24,9 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GeigerComponent, ActivateInWorldEvent>(OnActivate);
-
-        SubscribeLocalEvent<GeigerComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<GeigerComponent, GotEquippedHandEvent>(OnEquippedHand);
-        SubscribeLocalEvent<GeigerComponent, GotUnequippedEvent>(OnUnequipped);
-        SubscribeLocalEvent<GeigerComponent, GotUnequippedHandEvent>(OnUnequippedHand);
-
-        SubscribeLocalEvent<RadiationSystemUpdatedEvent>(OnUpdate);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<GeigerComponent> geiger, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex || geiger.Comp.AttachedToSuit)
@@ -43,6 +36,7 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
         SetEnabled(geiger, !geiger.Comp.IsEnabled);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(Entity<GeigerComponent> geiger, ref GotEquippedEvent args)
     {
         if (geiger.Comp.AttachedToSuit)
@@ -50,6 +44,7 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
         SetUser(geiger, args.EquipTarget);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquippedHand(Entity<GeigerComponent> geiger, ref GotEquippedHandEvent args)
     {
         if (geiger.Comp.AttachedToSuit)
@@ -58,6 +53,7 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
         SetUser(geiger, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<GeigerComponent> geiger, ref GotUnequippedEvent args)
     {
         if (geiger.Comp.AttachedToSuit)
@@ -65,6 +61,7 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
         SetUser(geiger, null);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequippedHand(Entity<GeigerComponent> geiger, ref GotUnequippedHandEvent args)
     {
         if (geiger.Comp.AttachedToSuit)
@@ -73,6 +70,7 @@ public sealed partial class GeigerSystem : SharedGeigerSystem
         SetUser(geiger, null);
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdate(RadiationSystemUpdatedEvent ev)
     {
         // update only active geiger counters

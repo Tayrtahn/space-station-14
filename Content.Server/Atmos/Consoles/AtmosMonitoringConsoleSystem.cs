@@ -41,55 +41,48 @@ public sealed partial class AtmosMonitoringConsoleSystem : SharedAtmosMonitoring
     public override void Initialize()
     {
         base.Initialize();
-
-        // Console events
-        SubscribeLocalEvent<AtmosMonitoringConsoleComponent, ComponentInit>(OnConsoleInit);
-        SubscribeLocalEvent<AtmosMonitoringConsoleComponent, AnchorStateChangedEvent>(OnConsoleAnchorChanged);
-        SubscribeLocalEvent<AtmosMonitoringConsoleComponent, EntParentChangedMessage>(OnConsoleParentChanged);
-
-        // Tracked device events
-        SubscribeLocalEvent<AtmosMonitoringConsoleDeviceComponent, NodeGroupsRebuilt>(OnEntityNodeGroupsRebuilt);
-        SubscribeLocalEvent<AtmosMonitoringConsoleDeviceComponent, AtmosPipeColorChangedEvent>(OnEntityPipeColorChanged);
-        SubscribeLocalEvent<AtmosMonitoringConsoleDeviceComponent, EntityTerminatingEvent>(OnEntityShutdown);
-
-        // Grid events
-        SubscribeLocalEvent<GridSplitEvent>(OnGridSplit);
-        SubscribeLocalEvent<PipeNodeGroupRemovedEvent>(OnPipeNodeGroupRemoved);
     }
 
     #region Event handling
 
+    [SubscribeLocalEvent]
     private void OnConsoleInit(EntityUid uid, AtmosMonitoringConsoleComponent component, ComponentInit args)
     {
         InitializeAtmosMonitoringConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleAnchorChanged(EntityUid uid, AtmosMonitoringConsoleComponent component, AnchorStateChangedEvent args)
     {
         InitializeAtmosMonitoringConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConsoleParentChanged(EntityUid uid, AtmosMonitoringConsoleComponent component, EntParentChangedMessage args)
     {
         component.ForceFullUpdate = true;
         InitializeAtmosMonitoringConsole(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityNodeGroupsRebuilt(EntityUid uid, AtmosMonitoringConsoleDeviceComponent component, NodeGroupsRebuilt args)
     {
         InitializeAtmosMonitoringDevice(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityPipeColorChanged(EntityUid uid, AtmosMonitoringConsoleDeviceComponent component, AtmosPipeColorChangedEvent args)
     {
         InitializeAtmosMonitoringDevice(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityShutdown(EntityUid uid, AtmosMonitoringConsoleDeviceComponent component, EntityTerminatingEvent args)
     {
         ShutDownAtmosMonitoringEntity(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnGridSplit(ref GridSplitEvent args)
     {
         // Collect grids
@@ -297,6 +290,7 @@ public sealed partial class AtmosMonitoringConsoleSystem : SharedAtmosMonitoring
 
     #region Pipe net functions
 
+    [SubscribeLocalEvent]
     private void OnPipeNodeGroupRemoved(ref PipeNodeGroupRemovedEvent args)
     {
         // When a pipe node group is removed, we need to iterate over all of

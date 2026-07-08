@@ -28,17 +28,15 @@ public sealed partial class DeployableTurretControllerSystem : SharedDeployableT
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DeployableTurretControllerComponent, BoundUIOpenedEvent>(OnBUIOpened);
-        SubscribeLocalEvent<DeployableTurretControllerComponent, DeviceListUpdateEvent>(OnDeviceListUpdate);
-        SubscribeLocalEvent<DeployableTurretControllerComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnBUIOpened(Entity<DeployableTurretControllerComponent> ent, ref BoundUIOpenedEvent args)
     {
         UpdateUIState(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeviceListUpdate(Entity<DeployableTurretControllerComponent> ent, ref DeviceListUpdateEvent args)
     {
         if (!TryComp<DeviceNetworkComponent>(ent, out var deviceNetwork))
@@ -81,6 +79,7 @@ public sealed partial class DeployableTurretControllerSystem : SharedDeployableT
             UpdateUIState(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(Entity<DeployableTurretControllerComponent> ent, ref DeviceNetworkPacketEvent args)
     {
         if (!args.Data.TryGetValue(DeviceNetworkConstants.Command, out string? command))

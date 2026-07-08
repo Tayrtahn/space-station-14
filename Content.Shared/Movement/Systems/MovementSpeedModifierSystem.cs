@@ -19,15 +19,13 @@ namespace Content.Shared.Movement.Systems
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<MovementSpeedModifierComponent, MapInitEvent>(OnModMapInit);
-            SubscribeLocalEvent<MovementSpeedModifierComponent, DownedEvent>(OnDowned);
-            SubscribeLocalEvent<MovementSpeedModifierComponent, StoodEvent>(OnStand);
 
             Subs.CVar(_configManager, CCVars.TileFrictionModifier, value => _frictionModifier = value, true);
             Subs.CVar(_configManager, CCVars.AirFriction, value => _airDamping = value, true);
             Subs.CVar(_configManager, CCVars.OffgridFriction, value => _offGridDamping = value, true);
         }
 
+        [SubscribeLocalEvent]
         private void OnModMapInit(Entity<MovementSpeedModifierComponent> ent, ref MapInitEvent args)
         {
             // TODO: Dirty these smarter.
@@ -42,12 +40,14 @@ namespace Content.Shared.Movement.Systems
             Dirty(ent);
         }
 
+        [SubscribeLocalEvent]
         private void OnDowned(Entity<MovementSpeedModifierComponent> entity, ref DownedEvent args)
         {
             RefreshFrictionModifiers(entity);
             RefreshMovementSpeedModifiers(entity);
         }
 
+        [SubscribeLocalEvent]
         private void OnStand(Entity<MovementSpeedModifierComponent> entity, ref StoodEvent args)
         {
             RefreshFrictionModifiers(entity);

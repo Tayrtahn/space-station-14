@@ -34,16 +34,9 @@ public sealed partial class CrewManifestSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<AfterGeneralRecordCreatedEvent>(AfterGeneralRecordCreated);
-        SubscribeLocalEvent<RecordModifiedEvent>(OnRecordModified);
-        SubscribeLocalEvent<RecordRemovedEvent>(OnRecordRemoved);
-        SubscribeLocalEvent<RoundRestartCleanupEvent>(OnRoundRestart);
-        SubscribeNetworkEvent<RequestCrewManifestMessage>(OnRequestCrewManifest);
-
-        SubscribeLocalEvent<CrewManifestViewerComponent, BoundUIClosedEvent>(OnBoundUiClose);
-        SubscribeLocalEvent<CrewManifestViewerComponent, CrewManifestOpenUiMessage>(OpenEuiFromBui);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundRestart(RoundRestartCleanupEvent ev)
     {
         foreach (var (_, euis) in _openEuis)
@@ -58,6 +51,7 @@ public sealed partial class CrewManifestSystem : EntitySystem
         _cachedEntries.Clear();
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestCrewManifest(RequestCrewManifestMessage message, EntitySessionEventArgs args)
     {
         if (args.SenderSession is not { } sessionCast
@@ -72,24 +66,28 @@ public sealed partial class CrewManifestSystem : EntitySystem
     // Not a big fan of this one. Rebuilds the crew manifest every time
     // somebody spawns in, meaning that at round start, it rebuilds the crew manifest
     // wrt the amount of players readied up.
+    [SubscribeLocalEvent]
     private void AfterGeneralRecordCreated(AfterGeneralRecordCreatedEvent ev)
     {
         BuildCrewManifest(ev.Key.OriginStation);
         UpdateEuis(ev.Key.OriginStation);
     }
 
+    [SubscribeLocalEvent]
     private void OnRecordModified(RecordModifiedEvent ev)
     {
         BuildCrewManifest(ev.Key.OriginStation);
         UpdateEuis(ev.Key.OriginStation);
     }
 
+    [SubscribeLocalEvent]
     private void OnRecordRemoved(RecordRemovedEvent ev)
     {
         BuildCrewManifest(ev.Key.OriginStation);
         UpdateEuis(ev.Key.OriginStation);
     }
 
+    [SubscribeLocalEvent]
     private void OnBoundUiClose(EntityUid uid, CrewManifestViewerComponent component, BoundUIClosedEvent ev)
     {
         if (!Equals(ev.UiKey, component.OwnerKey))
@@ -126,6 +124,7 @@ public sealed partial class CrewManifestSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OpenEuiFromBui(EntityUid uid, CrewManifestViewerComponent component, CrewManifestOpenUiMessage msg)
     {
         if (!msg.UiKey.Equals(component.OwnerKey))

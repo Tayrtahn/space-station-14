@@ -28,13 +28,9 @@ public sealed partial class PAISystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PAIComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<PAIComponent, MindAddedMessage>(OnMindAdded);
-        SubscribeLocalEvent<PAIComponent, MindRemovedMessage>(OnMindRemoved);
-        SubscribeLocalEvent<PAIComponent, BeingMicrowavedEvent>(OnMicrowaved);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(EntityUid uid, PAIComponent component, UseInHandEvent args)
     {
         // Not checking for Handled because ToggleableGhostRoleSystem already marks it as such.
@@ -43,6 +39,7 @@ public sealed partial class PAISystem : EntitySystem
             component.LastUser = args.User;
     }
 
+    [SubscribeLocalEvent]
     private void OnMindAdded(EntityUid uid, PAIComponent component, MindAddedMessage args)
     {
         if (component.LastUser == null)
@@ -59,12 +56,14 @@ public sealed partial class PAISystem : EntitySystem
         _metaData.SetEntityName(uid, val);
     }
 
+    [SubscribeLocalEvent]
     private void OnMindRemoved(EntityUid uid, PAIComponent component, MindRemovedMessage args)
     {
         // Mind was removed, shutdown the PAI.
         PAITurningOff(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnMicrowaved(EntityUid uid, PAIComponent comp, BeingMicrowavedEvent args)
     {
         // name will always be scrambled whether it gets bricked or not, this is the reward

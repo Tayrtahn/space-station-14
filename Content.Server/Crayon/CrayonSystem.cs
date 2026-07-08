@@ -28,15 +28,10 @@ public sealed partial class CrayonSystem : SharedCrayonSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CrayonComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<CrayonComponent, CrayonSelectMessage>(OnCrayonBoundUI);
-        SubscribeLocalEvent<CrayonComponent, CrayonColorMessage>(OnCrayonBoundUIColor);
-        SubscribeLocalEvent<CrayonComponent, UseInHandEvent>(OnCrayonUse);
         SubscribeLocalEvent<CrayonComponent, AfterInteractEvent>(OnCrayonAfterInteract, after: [typeof(IngestionSystem)]);
-        SubscribeLocalEvent<CrayonComponent, DroppedEvent>(OnCrayonDropped);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<CrayonComponent> ent, ref MapInitEvent args)
     {
         // Get the first one from the catalog and set it as default
@@ -86,6 +81,7 @@ public sealed partial class CrayonSystem : SharedCrayonSystem
             _uiSystem.ServerSendUiMessage(uid, CrayonUiKey.Key, new CrayonUsedMessage(component.SelectedState));
     }
 
+    [SubscribeLocalEvent]
     private void OnCrayonUse(EntityUid uid, CrayonComponent component, UseInHandEvent args)
     {
         // Open crayon window if neccessary.
@@ -101,6 +97,7 @@ public sealed partial class CrayonSystem : SharedCrayonSystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnCrayonBoundUI(EntityUid uid, CrayonComponent component, CrayonSelectMessage args)
     {
         // Check if the selected state is valid
@@ -111,6 +108,7 @@ public sealed partial class CrayonSystem : SharedCrayonSystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnCrayonBoundUIColor(EntityUid uid, CrayonComponent component, CrayonColorMessage args)
     {
         // Ensure that the given color can be changed or already matches
@@ -121,6 +119,7 @@ public sealed partial class CrayonSystem : SharedCrayonSystem
         Dirty(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnCrayonDropped(EntityUid uid, CrayonComponent component, DroppedEvent args)
     {
         // TODO: Use the existing event.

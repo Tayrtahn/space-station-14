@@ -61,20 +61,6 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<CryoPodComponent, CanDropTargetEvent>(OnCryoPodCanDropOn);
-        SubscribeLocalEvent<CryoPodComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<CryoPodComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<CryoPodComponent, GetVerbsEvent<AlternativeVerb>>(AddAlternativeVerbs);
-        SubscribeLocalEvent<CryoPodComponent, GotEmaggedEvent>(OnEmagged);
-        SubscribeLocalEvent<CryoPodComponent, CryoPodDragFinished>(OnDragFinished);
-        SubscribeLocalEvent<CryoPodComponent, CryoPodPryFinished>(OnCryoPodPryFinished);
-        SubscribeLocalEvent<CryoPodComponent, DragDropTargetEvent>(HandleDragDropOn);
-        SubscribeLocalEvent<CryoPodComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<CryoPodComponent, PowerChangedEvent>(OnPowerChanged);
-        SubscribeLocalEvent<CryoPodComponent, ActivatableUIOpenAttemptEvent>(OnActivateUIAttempt);
-        SubscribeLocalEvent<CryoPodComponent, EntRemovedFromContainerMessage>(OnEjected);
-        SubscribeLocalEvent<CryoPodComponent, EntInsertedIntoContainerMessage>(OnBodyInserted);
-
         InitializeInsideCryoPod();
 
         Subs.BuiEvents<CryoPodComponent>(CryoPodUiKey.Key, subs =>
@@ -128,6 +114,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandleDragDropOn(Entity<CryoPodComponent> ent, ref DragDropTargetEvent args)
     {
         if (ent.Comp.BodyContainer.ContainedEntity != null)
@@ -143,6 +130,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDragFinished(Entity<CryoPodComponent> ent, ref CryoPodDragFinished args)
     {
         if (args.Cancelled || args.Handled || args.Args.Target == null)
@@ -156,6 +144,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateUIAttempt(Entity<CryoPodComponent> ent, ref ActivatableUIOpenAttemptEvent args)
     {
         if (args.Cancelled)
@@ -166,6 +155,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<CryoPodComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled || !ent.Comp.Locked || ent.Comp.BodyContainer.ContainedEntity == null)
@@ -174,6 +164,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         args.Handled = _tool.UseTool(args.Used, args.User, ent.Owner, ent.Comp.PryDelay, ent.Comp.UnlockToolQuality, new CryoPodPryFinished());
     }
 
+    [SubscribeLocalEvent]
     private void OnCryoPodPryFinished(EntityUid uid, CryoPodComponent cryoPodComponent, CryoPodPryFinished args)
     {
         if (args.Cancelled)
@@ -184,6 +175,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
             _adminLogger.Add(LogType.Action, LogImpact.Medium, $"{ToPrettyString(ejected.Value)} pried out of {ToPrettyString(uid)} by {ToPrettyString(args.User)}");
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<CryoPodComponent> ent, ref PowerChangedEvent args)
     {
         // Needed to avoid adding/removing components on a deleted entity
@@ -205,6 +197,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         UpdateAppearance(ent.Owner, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<CryoPodComponent> entity, ref ExaminedEvent args)
     {
         var container = _itemSlots.GetItemOrNull(entity.Owner, entity.Comp.SolutionContainerName);
@@ -221,6 +214,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCryoPodCanDropOn(EntityUid uid, CryoPodComponent component, ref CanDropTargetEvent args)
     {
         if (args.Handled)
@@ -230,6 +224,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, CryoPodComponent cryoPodComponent, ComponentInit args)
     {
         cryoPodComponent.BodyContainer = _container.EnsureContainer<ContainerSlot>(uid, CryoPodComponent.BodyContainerName);
@@ -423,6 +418,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
             .ToList();
     }
 
+    [SubscribeLocalEvent]
     protected void AddAlternativeVerbs(EntityUid uid, CryoPodComponent cryoPodComponent, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract)
@@ -441,6 +437,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     protected void OnEmagged(EntityUid uid, CryoPodComponent? cryoPodComponent, ref GotEmaggedEvent args)
     {
         if (!Resolve(uid, ref cryoPodComponent))
@@ -484,6 +481,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         UpdateUi(cryoPod);
     }
 
+    [SubscribeLocalEvent]
     private void OnEjected(Entity<CryoPodComponent> cryoPod, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID == CryoPodComponent.BodyContainerName)
@@ -494,6 +492,7 @@ public abstract partial class SharedCryoPodSystem : EntitySystem
         UpdateUi(cryoPod);
     }
 
+    [SubscribeLocalEvent]
     private void OnBodyInserted(Entity<CryoPodComponent> cryoPod, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID == CryoPodComponent.BodyContainerName)

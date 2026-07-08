@@ -50,37 +50,10 @@ public sealed partial class SleepingSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ActionsContainerComponent, SleepActionEvent>(OnBedSleepAction);
-
-        SubscribeLocalEvent<MobStateComponent, SleepStateChangedEvent>(OnSleepStateChanged);
-        SubscribeLocalEvent<MobStateComponent, WakeActionEvent>(OnWakeAction);
-        SubscribeLocalEvent<MobStateComponent, SleepActionEvent>(OnSleepAction);
-
-        SubscribeLocalEvent<SleepingComponent, DamageChangedEvent>(OnDamageChanged);
-        SubscribeLocalEvent<SleepingComponent, EntityZombifiedEvent>(OnZombified);
-        SubscribeLocalEvent<SleepingComponent, MobStateChangedEvent>(OnMobStateChanged);
-        SubscribeLocalEvent<SleepingComponent, ComponentInit>(OnCompInit);
-        SubscribeLocalEvent<SleepingComponent, ComponentRemove>(OnComponentRemoved);
-        SubscribeLocalEvent<SleepingComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<SleepingComponent, SpeakAttemptEvent>(OnSpeakAttempt);
-        SubscribeLocalEvent<SleepingComponent, CanSeeAttemptEvent>(OnSeeAttempt);
-        SubscribeLocalEvent<SleepingComponent, PointAttemptEvent>(OnPointAttempt);
-        SubscribeLocalEvent<SleepingComponent, SlipAttemptEvent>(OnSlip);
-        SubscribeLocalEvent<SleepingComponent, ConsciousAttemptEvent>(OnConsciousAttempt);
-        SubscribeLocalEvent<SleepingComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<SleepingComponent, GetVerbsEvent<AlternativeVerb>>(AddWakeVerb);
-        SubscribeLocalEvent<SleepingComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<SleepingComponent, StunEndAttemptEvent>(OnStunEndAttempt);
-        SubscribeLocalEvent<SleepingComponent, StandUpAttemptEvent>(OnStandUpAttempt);
-
-        SubscribeLocalEvent<ForcedSleepingStatusEffectComponent, StatusEffectRelayedEvent<MobStateChangedEvent>>(OnStatusMobStateChanged);
-        SubscribeLocalEvent<ForcedSleepingStatusEffectComponent, StatusEffectAppliedEvent>(OnStatusEffectApplied);
-        SubscribeLocalEvent<SleepingComponent, UnbuckleAttemptEvent>(OnUnbuckleAttempt);
-        SubscribeLocalEvent<SleepingComponent, EmoteAttemptEvent>(OnEmoteAttempt);
-
         SubscribeLocalEvent<SleepingComponent, BeforeForceSayEvent>(OnChangeForceSay, after: new []{typeof(PainNumbnessSystem)});
     }
 
+    [SubscribeLocalEvent]
     private void OnUnbuckleAttempt(Entity<SleepingComponent> ent, ref UnbuckleAttemptEvent args)
     {
         // TODO is this necessary?
@@ -89,22 +62,26 @@ public sealed partial class SleepingSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnBedSleepAction(Entity<ActionsContainerComponent> ent, ref SleepActionEvent args)
     {
         TrySleeping(args.Performer);
     }
 
+    [SubscribeLocalEvent]
     private void OnWakeAction(Entity<MobStateComponent> ent, ref WakeActionEvent args)
     {
         if (TryWakeWithCooldown(ent.Owner))
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnSleepAction(Entity<MobStateComponent> ent, ref SleepActionEvent args)
     {
         TrySleeping((ent, ent.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<SleepingComponent> ent, ref RejuvenateEvent args)
     {
         // WAKE UP!!!
@@ -114,6 +91,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// <summary>
     /// when sleeping component is added or removed, we do some stuff with other components.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSleepStateChanged(Entity<MobStateComponent> ent, ref SleepStateChangedEvent args)
     {
         if (args.FellAsleep)
@@ -144,6 +122,7 @@ public sealed partial class SleepingSystem : EntitySystem
         RemComp<SpamEmitSoundComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompInit(Entity<SleepingComponent> ent, ref ComponentInit args)
     {
         var ev = new SleepStateChangedEvent(true);
@@ -152,6 +131,7 @@ public sealed partial class SleepingSystem : EntitySystem
         _actionsSystem.AddAction(ent, ref ent.Comp.WakeAction, WakeActionId, ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemoved(Entity<SleepingComponent> ent, ref ComponentRemove args)
     {
         _actionsSystem.RemoveAction(ent.Owner, ent.Comp.WakeAction);
@@ -162,6 +142,7 @@ public sealed partial class SleepingSystem : EntitySystem
         _blindableSystem.UpdateIsBlind(ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnSpeakAttempt(Entity<SleepingComponent> ent, ref SpeakAttemptEvent args)
     {
         if (HasComp<AllowNextCritSpeechComponent>(ent))
@@ -173,38 +154,45 @@ public sealed partial class SleepingSystem : EntitySystem
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnSeeAttempt(Entity<SleepingComponent> ent, ref CanSeeAttemptEvent args)
     {
         if (ent.Comp.LifeStage <= ComponentLifeStage.Running)
             args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnPointAttempt(Entity<SleepingComponent> ent, ref PointAttemptEvent args)
     {
         args.Cancel();
     }
 
+    [SubscribeLocalEvent]
     private void OnSlip(Entity<SleepingComponent> ent, ref SlipAttemptEvent args)
     {
         args.NoSlip = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnConsciousAttempt(Entity<SleepingComponent> ent, ref ConsciousAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStunEndAttempt(Entity<SleepingComponent> ent, ref StunEndAttemptEvent args)
     {
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStandUpAttempt(Entity<SleepingComponent> ent, ref StandUpAttemptEvent args)
     {
         // Shh the Urist McHands is sleeping...
         args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<SleepingComponent> ent, ref ExaminedEvent args)
     {
         if (args.IsInDetailsRange)
@@ -213,6 +201,7 @@ public sealed partial class SleepingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void AddWakeVerb(Entity<SleepingComponent> ent, ref GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess)
@@ -235,6 +224,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// <summary>
     /// When you click on a sleeping person with an empty hand, try to wake them.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<SleepingComponent> ent, ref InteractHandEvent args)
     {
         args.Handled = true;
@@ -245,6 +235,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// <summary>
     /// Wake up on taking an instance of damage at least the value of WakeThreshold.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<SleepingComponent> ent, ref DamageChangedEvent args)
     {
         if (!args.DamageIncreased || args.DamageDelta == null)
@@ -259,6 +250,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// In some cases, zombification might theoretically occur without a mob state change or being damaged
     /// </summary>
     /// //TODO Perhaps a generic component should be introduced that guarantees that a mob will wake up immediately and can't go to sleep again
+    [SubscribeLocalEvent]
     private void OnZombified(Entity<SleepingComponent> ent, ref EntityZombifiedEvent args)
     {
         TryWaking((ent, ent.Comp), true);
@@ -268,6 +260,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// In crit, we wake up if we are not being forced to sleep.
     /// And, you can't sleep when dead...
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnMobStateChanged(Entity<SleepingComponent> ent, ref MobStateChangedEvent args)
     {
         if (TryComp<SpamEmitSoundComponent>(ent, out var spam))
@@ -277,6 +270,7 @@ public sealed partial class SleepingSystem : EntitySystem
             RemCompDeferred<SleepingComponent>(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusMobStateChanged(Entity<ForcedSleepingStatusEffectComponent> ent, ref StatusEffectRelayedEvent<MobStateChangedEvent> args)
     {
         if (args.Args.NewMobState == MobState.Dead || HasComp<SleepingComponent>(args.Args.Target))
@@ -285,6 +279,7 @@ public sealed partial class SleepingSystem : EntitySystem
         TrySleeping(args.Args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusEffectApplied(Entity<ForcedSleepingStatusEffectComponent> ent, ref StatusEffectAppliedEvent args)
     {
         // Applying state check needed so we don't add SleepingComp during
@@ -358,6 +353,7 @@ public sealed partial class SleepingSystem : EntitySystem
     /// <summary>
     /// Prevents the use of emote actions while sleeping
     /// </summary>
+    [SubscribeLocalEvent]
     public void OnEmoteAttempt(Entity<SleepingComponent> ent, ref EmoteAttemptEvent args)
     {
         args.Cancel();

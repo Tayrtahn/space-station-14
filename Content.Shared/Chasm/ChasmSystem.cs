@@ -22,10 +22,6 @@ public sealed partial class ChasmSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChasmComponent, StepTriggeredOffEvent>(OnStepTriggered);
-        SubscribeLocalEvent<ChasmComponent, StepTriggerAttemptEvent>(OnStepTriggerAttempt);
-        SubscribeLocalEvent<ChasmFallingComponent, UpdateCanMoveEvent>(OnUpdateCanMove);
     }
 
     public override void Update(float frameTime)
@@ -46,6 +42,7 @@ public sealed partial class ChasmSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStepTriggered(EntityUid uid, ChasmComponent component, ref StepTriggeredOffEvent args)
     {
         // already doomed
@@ -66,6 +63,7 @@ public sealed partial class ChasmSystem : EntitySystem
             _audio.PlayPredicted(component.FallingSound, chasm, tripper);
     }
 
+    [SubscribeLocalEvent]
     private void OnStepTriggerAttempt(EntityUid uid, ChasmComponent component, ref StepTriggerAttemptEvent args)
     {
         if (_grapple.IsEntityHooked(args.Tripper))
@@ -77,6 +75,7 @@ public sealed partial class ChasmSystem : EntitySystem
         args.Continue = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUpdateCanMove(EntityUid uid, ChasmFallingComponent component, UpdateCanMoveEvent args)
     {
         args.Cancel();

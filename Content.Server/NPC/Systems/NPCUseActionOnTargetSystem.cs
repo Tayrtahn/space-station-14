@@ -13,10 +13,9 @@ public sealed partial class NPCUseActionOnTargetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NPCUseActionOnTargetComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<NPCUseActionOnTargetComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.ActionEnt = _actions.AddAction(ent, ent.Comp.ActionId);

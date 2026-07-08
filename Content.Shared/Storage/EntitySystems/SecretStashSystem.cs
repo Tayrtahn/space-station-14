@@ -37,30 +37,28 @@ public sealed partial class SecretStashSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SecretStashComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<SecretStashComponent, DestructionEventArgs>(OnDestroyed);
-        SubscribeLocalEvent<SecretStashComponent, GotReclaimedEvent>(OnReclaimed);
         SubscribeLocalEvent<SecretStashComponent, InteractUsingEvent>(OnInteractUsing, after: new[] { typeof(ToolOpenableSystem), typeof(AnchorableSystem) });
-        SubscribeLocalEvent<SecretStashComponent, FullyEatenEvent>(OnFullyEaten);
-        SubscribeLocalEvent<SecretStashComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<SecretStashComponent, GetVerbsEvent<InteractionVerb>>(OnGetVerb);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<SecretStashComponent> entity, ref ComponentInit args)
     {
         entity.Comp.ItemContainer = _containerSystem.EnsureContainer<ContainerSlot>(entity, "stash", out _);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestroyed(Entity<SecretStashComponent> entity, ref DestructionEventArgs args)
     {
         DropContentsAndAlert(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnReclaimed(Entity<SecretStashComponent> entity, ref GotReclaimedEvent args)
     {
         DropContentsAndAlert(entity, args.ReclaimerCoordinates);
     }
 
+    [SubscribeLocalEvent]
     private void OnFullyEaten(Entity<SecretStashComponent> entity, ref FullyEatenEvent args)
     {
         // TODO: When newmed is finished should do damage to teeth (Or something like that!)
@@ -77,6 +75,7 @@ public sealed partial class SecretStashSystem : EntitySystem
         args.Handled = TryStashItem(entity, args.User, args.Used);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<SecretStashComponent> entity, ref InteractHandEvent args)
     {
         if (args.Handled || !IsStashOpen(entity))
@@ -153,6 +152,7 @@ public sealed partial class SecretStashSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerb(Entity<SecretStashComponent> entity, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || !entity.Comp.HasVerbs)

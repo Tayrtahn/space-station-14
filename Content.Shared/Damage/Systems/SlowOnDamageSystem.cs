@@ -15,20 +15,9 @@ public sealed partial class SlowOnDamageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SlowOnDamageComponent, DamageChangedEvent>(OnDamageChanged);
-        SubscribeLocalEvent<SlowOnDamageComponent, RefreshMovementSpeedModifiersEvent>(OnRefreshMovespeed);
-
-        SubscribeLocalEvent<ClothingSlowOnDamageModifierComponent, InventoryRelayedEvent<ModifySlowOnDamageSpeedEvent>>(OnModifySpeed);
-        SubscribeLocalEvent<ClothingSlowOnDamageModifierComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<ClothingSlowOnDamageModifierComponent, ClothingGotEquippedEvent>(OnGotEquipped);
-        SubscribeLocalEvent<ClothingSlowOnDamageModifierComponent, ClothingGotUnequippedEvent>(OnGotUnequipped);
-
-        SubscribeLocalEvent<IgnoreSlowOnDamageComponent, ComponentStartup>(OnIgnoreStartup);
-        SubscribeLocalEvent<IgnoreSlowOnDamageComponent, ComponentShutdown>(OnIgnoreShutdown);
-        SubscribeLocalEvent<IgnoreSlowOnDamageComponent, ModifySlowOnDamageSpeedEvent>(OnIgnoreModifySpeed);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovespeed(EntityUid uid, SlowOnDamageComponent component, RefreshMovementSpeedModifiersEvent args)
     {
         if (!TryComp<DamageableComponent>(uid, out var damage))
@@ -58,6 +47,7 @@ public sealed partial class SlowOnDamageSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(EntityUid uid, SlowOnDamageComponent component, DamageChangedEvent args)
     {
         // We -could- only refresh if it crossed a threshold but that would kind of be a lot of duplicated
@@ -66,6 +56,7 @@ public sealed partial class SlowOnDamageSystem : EntitySystem
         _movementSpeedModifierSystem.RefreshMovementSpeedModifiers(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnModifySpeed(Entity<ClothingSlowOnDamageModifierComponent> ent, ref InventoryRelayedEvent<ModifySlowOnDamageSpeedEvent> args)
     {
         var dif = 1 - args.Args.Speed;
@@ -76,32 +67,38 @@ public sealed partial class SlowOnDamageSystem : EntitySystem
         args.Args.Speed += dif * ent.Comp.Modifier;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<ClothingSlowOnDamageModifierComponent> ent, ref ExaminedEvent args)
     {
         var msg = Loc.GetString("slow-on-damage-modifier-examine", ("mod", (1 - ent.Comp.Modifier) * 100));
         args.PushMarkup(msg);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquipped(Entity<ClothingSlowOnDamageModifierComponent> ent, ref ClothingGotEquippedEvent args)
     {
         _movementSpeedModifierSystem.RefreshMovementSpeedModifiers(args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequipped(Entity<ClothingSlowOnDamageModifierComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         _movementSpeedModifierSystem.RefreshMovementSpeedModifiers(args.Wearer);
     }
 
+    [SubscribeLocalEvent]
     private void OnIgnoreStartup(Entity<IgnoreSlowOnDamageComponent> ent, ref ComponentStartup args)
     {
         _movementSpeedModifierSystem.RefreshMovementSpeedModifiers(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnIgnoreShutdown(Entity<IgnoreSlowOnDamageComponent> ent, ref ComponentShutdown args)
     {
         _movementSpeedModifierSystem.RefreshMovementSpeedModifiers(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnIgnoreModifySpeed(Entity<IgnoreSlowOnDamageComponent> ent, ref ModifySlowOnDamageSpeedEvent args)
     {
         args.Speed = 1f;

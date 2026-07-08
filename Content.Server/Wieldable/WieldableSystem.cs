@@ -15,22 +15,21 @@ public sealed partial class WieldableSystem : SharedWieldableSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CursorOffsetRequiresWieldComponent, ItemUnwieldedEvent>(OnEyeOffsetUnwielded);
-        SubscribeLocalEvent<CursorOffsetRequiresWieldComponent, ItemWieldedEvent>(OnEyeOffsetWielded);
-        SubscribeLocalEvent<CursorOffsetRequiresWieldComponent, HeldRelayedEvent<GetEyePvsScaleRelayedEvent>>(OnGetEyePvsScale);
     }
 
+    [SubscribeLocalEvent]
     private void OnEyeOffsetUnwielded(Entity<CursorOffsetRequiresWieldComponent> entity, ref ItemUnwieldedEvent args)
     {
         _eye.UpdatePvsScale(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnEyeOffsetWielded(Entity<CursorOffsetRequiresWieldComponent> entity, ref ItemWieldedEvent args)
     {
         _eye.UpdatePvsScale(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetEyePvsScale(Entity<CursorOffsetRequiresWieldComponent> entity,
         ref HeldRelayedEvent<GetEyePvsScaleRelayedEvent> args)
     {

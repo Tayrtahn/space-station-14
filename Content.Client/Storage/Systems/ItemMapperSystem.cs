@@ -14,10 +14,9 @@ public sealed partial class ItemMapperSystem : SharedItemMapperSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<ItemMapperComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ItemMapperComponent, AppearanceChangeEvent>(OnAppearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, ItemMapperComponent component, ComponentStartup args)
     {
         if (TryComp<SpriteComponent>(uid, out var sprite))
@@ -26,6 +25,7 @@ public sealed partial class ItemMapperSystem : SharedItemMapperSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearance(EntityUid uid, ItemMapperComponent component, ref AppearanceChangeEvent args)
     {
         if (TryComp<SpriteComponent>(uid, out var spriteComponent))

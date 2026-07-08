@@ -15,8 +15,6 @@ public sealed partial class FoamVisualizerSystem : VisualizerSystem<FoamVisualsC
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<FoamVisualsComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<FoamVisualsComponent, AnimationCompletedEvent>(OnAnimationComplete);
     }
 
     public override void Update(float frameTime)
@@ -45,6 +43,7 @@ public sealed partial class FoamVisualizerSystem : VisualizerSystem<FoamVisualsC
     /// <summary>
     /// Generates the animation used by foam visuals when the foam dissolves.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, FoamVisualsComponent comp, ComponentInit args)
     {
         comp.StartTime = _timing.CurTime;
@@ -65,6 +64,7 @@ public sealed partial class FoamVisualizerSystem : VisualizerSystem<FoamVisualsC
         };
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationComplete(EntityUid uid, FoamVisualsComponent component, AnimationCompletedEvent args)
     {
         if (args.Key != FoamVisualsComponent.AnimationKey)

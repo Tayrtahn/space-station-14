@@ -11,11 +11,10 @@ public sealed partial class BeamSystem : SharedBeamSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<BeamVisualizerEvent>(BeamVisualizerMessage);
     }
 
     //TODO: Sometime in the future this needs to be replaced with tiled sprites
+    [SubscribeNetworkEvent]
     private void BeamVisualizerMessage(BeamVisualizerEvent args)
     {
         var beam = GetEntity(args.Beam);

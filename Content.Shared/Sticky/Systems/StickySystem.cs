@@ -24,12 +24,9 @@ public sealed partial class StickySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StickyComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<StickyComponent, StickyDoAfterEvent>(OnStickyDoAfter);
-        SubscribeLocalEvent<StickyComponent, GetVerbsEvent<Verb>>(OnGetVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<StickyComponent> ent, ref AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not {} target)
@@ -39,6 +36,7 @@ public sealed partial class StickySystem : EntitySystem
         args.Handled = StartSticking(ent, target, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetVerbs(Entity<StickyComponent> ent, ref GetVerbsEvent<Verb> args)
     {
         var (uid, comp) = ent;
@@ -100,6 +98,7 @@ public sealed partial class StickySystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnStickyDoAfter(Entity<StickyComponent> ent, ref StickyDoAfterEvent args)
     {
         // target is the surface when sticking/unsticking, it will never be null

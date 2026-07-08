@@ -17,10 +17,9 @@ public sealed partial class CursedEntityStorageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CursedEntityStorageComponent, StorageAfterCloseEvent>(OnClose);
     }
 
+    [SubscribeLocalEvent]
     private void OnClose(EntityUid uid, CursedEntityStorageComponent component, ref StorageAfterCloseEvent args)
     {
         if (!TryComp<EntityStorageComponent>(uid, out var storage))

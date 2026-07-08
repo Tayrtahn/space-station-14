@@ -12,15 +12,15 @@ public sealed partial class GunSignalControlSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<GunSignalControlComponent, MapInitEvent>(OnInit);
-        SubscribeLocalEvent<GunSignalControlComponent, SignalReceivedEvent>(OnSignalReceived);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<GunSignalControlComponent> gunControl, ref MapInitEvent args)
     {
         _signalSystem.EnsureSinkPorts(gunControl, gunControl.Comp.TriggerPort, gunControl.Comp.TogglePort, gunControl.Comp.OnPort, gunControl.Comp.OffPort);
     }
 
+    [SubscribeLocalEvent]
     private void OnSignalReceived(Entity<GunSignalControlComponent> gunControl, ref SignalReceivedEvent args)
     {
         if (!TryComp<GunComponent>(gunControl, out var gun))

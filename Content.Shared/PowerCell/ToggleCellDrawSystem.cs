@@ -15,18 +15,15 @@ public sealed partial class ToggleCellDrawSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToggleCellDrawComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ToggleCellDrawComponent, ItemToggleActivateAttemptEvent>(OnActivateAttempt);
-        SubscribeLocalEvent<ToggleCellDrawComponent, ItemToggledEvent>(OnToggled);
-        SubscribeLocalEvent<ToggleCellDrawComponent, PowerCellSlotEmptyEvent>(OnEmpty);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ToggleCellDrawComponent> ent, ref MapInitEvent args)
     {
         _cell.SetDrawEnabled(ent.Owner, _toggle.IsActivated(ent.Owner));
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateAttempt(Entity<ToggleCellDrawComponent> ent, ref ItemToggleActivateAttemptEvent args)
     {
         if (!_cell.HasDrawCharge(ent.Owner, user: args.User, predicted: true)
@@ -34,11 +31,13 @@ public sealed partial class ToggleCellDrawSystem : EntitySystem
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<ToggleCellDrawComponent> ent, ref ItemToggledEvent args)
     {
         _cell.SetDrawEnabled(ent.Owner, args.Activated);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpty(Entity<ToggleCellDrawComponent> ent, ref PowerCellSlotEmptyEvent args)
     {
         _toggle.TryDeactivate(ent.Owner);

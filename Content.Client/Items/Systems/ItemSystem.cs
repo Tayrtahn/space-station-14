@@ -18,19 +18,15 @@ public sealed partial class ItemSystem : SharedItemSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemComponent, GetInhandVisualsEvent>(OnGetVisuals);
-
-        // TODO is this still needed? Shouldn't containers occlude them?
-        SubscribeLocalEvent<SpriteComponent, GotEquippedEvent>(OnEquipped);
-        SubscribeLocalEvent<SpriteComponent, GotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(EntityUid uid, SpriteComponent component, GotUnequippedEvent args)
     {
         _sprite.SetVisible((uid, component), true);
     }
 
+    [SubscribeLocalEvent]
     private void OnEquipped(EntityUid uid, SpriteComponent component, GotEquippedEvent args)
     {
         _sprite.SetVisible((uid, component), false);
@@ -51,6 +47,7 @@ public sealed partial class ItemSystem : SharedItemSystem
     /// <summary>
     ///     An entity holding this item is requesting visual information for in-hand sprites.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnGetVisuals(EntityUid uid, ItemComponent item, GetInhandVisualsEvent args)
     {
         var defaultKey = $"inhand-{args.Location.ToString().ToLowerInvariant()}";

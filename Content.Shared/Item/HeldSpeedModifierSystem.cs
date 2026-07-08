@@ -14,16 +14,15 @@ public sealed partial class HeldSpeedModifierSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<HeldSpeedModifierComponent, GotEquippedHandEvent>(OnGotEquippedHand);
-        SubscribeLocalEvent<HeldSpeedModifierComponent, GotUnequippedHandEvent>(OnGotUnequippedHand);
-        SubscribeLocalEvent<HeldSpeedModifierComponent, HeldRelayedEvent<RefreshMovementSpeedModifiersEvent>>(OnRefreshMovementSpeedModifiers);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotEquippedHand(Entity<HeldSpeedModifierComponent> ent, ref GotEquippedHandEvent args)
     {
         _movementSpeedModifier.RefreshMovementSpeedModifiers(args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnGotUnequippedHand(Entity<HeldSpeedModifierComponent> ent, ref GotUnequippedHandEvent args)
     {
         _movementSpeedModifier.RefreshMovementSpeedModifiers(args.User);
@@ -42,6 +41,7 @@ public sealed partial class HeldSpeedModifierSystem : EntitySystem
         return (walkMod, sprintMod);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshMovementSpeedModifiers(EntityUid uid, HeldSpeedModifierComponent component, HeldRelayedEvent<RefreshMovementSpeedModifiersEvent> args)
     {
         var (walkMod, sprintMod) = GetHeldMovementSpeedModifiers(uid, component);

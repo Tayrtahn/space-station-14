@@ -11,17 +11,16 @@ public sealed partial class XenoArtifactSystem : SharedXenoArtifactSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<XenoArtifactComponent, MapInitEvent>(OnArtifactMapInit);
-        SubscribeLocalEvent<XenoArtifactComponent, PriceCalculationEvent>(OnCalculatePrice);
     }
 
+    [SubscribeLocalEvent]
     private void OnArtifactMapInit(Entity<XenoArtifactComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.IsGenerationRequired)
             GenerateArtifactStructure(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnCalculatePrice(Entity<XenoArtifactComponent> ent, ref PriceCalculationEvent args)
     {
         foreach (var node in GetAllNodes(ent))

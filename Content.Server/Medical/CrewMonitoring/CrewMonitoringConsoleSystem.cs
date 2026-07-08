@@ -19,16 +19,15 @@ public sealed partial class CrewMonitoringConsoleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<CrewMonitoringConsoleComponent, ComponentRemove>(OnRemove);
-        SubscribeLocalEvent<CrewMonitoringConsoleComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
-        SubscribeLocalEvent<CrewMonitoringConsoleComponent, BoundUIOpenedEvent>(OnUIOpened);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemove(EntityUid uid, CrewMonitoringConsoleComponent component, ComponentRemove args)
     {
         component.ConnectedSensors.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, CrewMonitoringConsoleComponent component, DeviceNetworkPacketEvent args)
     {
         var payload = args.Data;
@@ -47,6 +46,7 @@ public sealed partial class CrewMonitoringConsoleSystem : EntitySystem
         UpdateUserInterface(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnUIOpened(EntityUid uid, CrewMonitoringConsoleComponent component, BoundUIOpenedEvent args)
     {
         if (!_cell.TryUseActivatableCharge(uid))

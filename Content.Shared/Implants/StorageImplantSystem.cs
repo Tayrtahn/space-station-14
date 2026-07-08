@@ -15,10 +15,9 @@ public sealed partial class StorageImplantSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StorageImplantComponent, ImplantRemovedEvent>(OnImplantRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantRemoved(Entity<StorageImplantComponent> ent, ref ImplantRemovedEvent args)
     {
         if (_net.IsClient)

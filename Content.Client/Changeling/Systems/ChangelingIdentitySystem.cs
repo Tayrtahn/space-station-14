@@ -12,10 +12,9 @@ public sealed partial class ChangelingIdentitySystem : SharedChangelingIdentityS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingIdentityComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<ChangelingIdentityComponent> ent, ref ComponentHandleState args)
     {
         if (args.Current is not ChangelingIdentityComponentState state)

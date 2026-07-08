@@ -20,14 +20,13 @@ public sealed partial class ScreenSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ScreenComponent, DeviceNetworkPacketEvent>(OnPacketReceived);
     }
 
     /// <summary>
     ///     Calls either a normal screen text update or shuttle timer update based on the presence of
     ///     <see cref="ShuttleTimerMasks.ShuttleMap"/> in <see cref="args.Data"/>
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnPacketReceived(EntityUid uid, ScreenComponent component, DeviceNetworkPacketEvent args)
     {
         if (args.Data.TryGetValue(ShuttleTimerMasks.ShuttleMap, out _))

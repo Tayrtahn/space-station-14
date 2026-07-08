@@ -23,12 +23,9 @@ public sealed partial class ThiefBeaconSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThiefBeaconComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
-        SubscribeLocalEvent<ThiefBeaconComponent, FoldedEvent>(OnFolded);
-        SubscribeLocalEvent<ThiefBeaconComponent, ExaminedEvent>(OnExamined);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetInteractionVerbs(Entity<ThiefBeaconComponent> beacon, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Hands is null)
@@ -53,6 +50,7 @@ public sealed partial class ThiefBeaconSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnFolded(Entity<ThiefBeaconComponent> beacon, ref FoldedEvent args)
     {
         if (args.IsFolded)
@@ -68,6 +66,7 @@ public sealed partial class ThiefBeaconSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<ThiefBeaconComponent> beacon, ref ExaminedEvent args)
     {
         if (!TryComp<StealAreaComponent>(beacon, out var area))

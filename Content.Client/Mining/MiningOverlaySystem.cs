@@ -18,24 +18,23 @@ public sealed partial class MiningOverlaySystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<MiningScannerViewerComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<MiningScannerViewerComponent, ComponentShutdown>(OnShutdown);
-        SubscribeLocalEvent<MiningScannerViewerComponent, LocalPlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<MiningScannerViewerComponent, LocalPlayerDetachedEvent>(OnPlayerDetached);
 
         _overlay = new();
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(Entity<MiningScannerViewerComponent> ent, ref LocalPlayerAttachedEvent args)
     {
         _overlayMan.AddOverlay(_overlay);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(Entity<MiningScannerViewerComponent> ent, ref LocalPlayerDetachedEvent args)
     {
         _overlayMan.RemoveOverlay(_overlay);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<MiningScannerViewerComponent> ent, ref ComponentInit args)
     {
         if (_player.LocalEntity == ent)
@@ -44,6 +43,7 @@ public sealed partial class MiningOverlaySystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(Entity<MiningScannerViewerComponent> ent, ref ComponentShutdown args)
     {
         if (_player.LocalEntity == ent)

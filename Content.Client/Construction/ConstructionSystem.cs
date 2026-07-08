@@ -44,10 +44,6 @@ namespace Content.Client.Construction
             WarmupRecipesCache();
 
             UpdatesOutsidePrediction = true;
-            SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypeReload);
-            SubscribeLocalEvent<LocalPlayerAttachedEvent>(HandlePlayerAttached);
-            SubscribeNetworkEvent<AckStructureConstructionMessage>(HandleAckStructure);
-            SubscribeNetworkEvent<ResponseConstructionGuide>(OnConstructionGuideReceived);
 
             CommandBinds.Builder
                 .Bind(ContentKeyFunctions.OpenCraftingMenu,
@@ -57,11 +53,9 @@ namespace Content.Client.Construction
                 .Bind(ContentKeyFunctions.EditorFlipObject,
                     new PointerInputCmdHandler(HandleFlip, outsidePrediction: true))
                 .Register<ConstructionSystem>();
-
-            SubscribeLocalEvent<ConstructionGhostComponent, ExaminedEvent>(HandleConstructionGhostExamined);
-            SubscribeLocalEvent<ConstructionGhostComponent, ComponentShutdown>(HandleGhostComponentShutdown);
         }
 
+        [SubscribeLocalEvent]
         private void HandleGhostComponentShutdown(EntityUid uid, ConstructionGhostComponent component, ComponentShutdown args)
         {
             ClearGhost(component.GhostId);
@@ -76,6 +70,7 @@ namespace Content.Client.Construction
             return false;
         }
 
+        [SubscribeLocalEvent]
         private void OnPrototypeReload(PrototypesReloadedEventArgs obj)
         {
             if (obj.WasModified<ConstructionPrototype>())
@@ -143,6 +138,7 @@ namespace Content.Client.Construction
             }
         }
 
+        [SubscribeNetworkEvent]
         private void OnConstructionGuideReceived(ResponseConstructionGuide ev)
         {
             _guideCache[ev.ConstructionId] = ev.Guide;
@@ -166,6 +162,7 @@ namespace Content.Client.Construction
             return null;
         }
 
+        [SubscribeLocalEvent]
         private void HandleConstructionGhostExamined(EntityUid uid, ConstructionGhostComponent component, ExaminedEvent args)
         {
             if (component.Prototype?.Name is null)
@@ -200,12 +197,14 @@ namespace Content.Client.Construction
         public event EventHandler? ToggleCraftingWindow;
         public event EventHandler? FlipConstructionPrototype;
 
+        [SubscribeNetworkEvent]
         private void HandleAckStructure(AckStructureConstructionMessage msg)
         {
             // We get sent a NetEntity but it actually corresponds to our local Entity.
             ClearGhost(msg.GhostId);
         }
 
+        [SubscribeLocalEvent]
         private void HandlePlayerAttached(LocalPlayerAttachedEvent msg)
         {
             var available = IsCraftingAvailable(msg.Entity);

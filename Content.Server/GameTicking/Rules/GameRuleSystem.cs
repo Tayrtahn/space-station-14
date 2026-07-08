@@ -22,13 +22,9 @@ public abstract partial class GameRuleSystem<T> : EntitySystem where T : ICompon
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<T, GameRuleAddedEvent>(OnGameRuleAdded);
-        SubscribeLocalEvent<T, GameRuleStartedEvent>(OnGameRuleStarted);
-        SubscribeLocalEvent<T, GameRuleEndedEvent>(OnGameRuleEnded);
-        SubscribeLocalEvent<RoundEndTextAppendEvent>(OnRoundEndTextAppend);
     }
 
+    [SubscribeLocalEvent]
     private void OnGameRuleAdded(EntityUid uid, T component, ref GameRuleAddedEvent args)
     {
         if (!GameRuleQuery.TryComp(uid, out var ruleData))
@@ -37,6 +33,7 @@ public abstract partial class GameRuleSystem<T> : EntitySystem where T : ICompon
         Added(uid, component, ruleData, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnGameRuleStarted(EntityUid uid, T component, ref GameRuleStartedEvent args)
     {
         if (!GameRuleQuery.TryComp(uid, out var ruleData))
@@ -45,6 +42,7 @@ public abstract partial class GameRuleSystem<T> : EntitySystem where T : ICompon
         Started(uid, component, ruleData, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnGameRuleEnded(EntityUid uid, T component, ref GameRuleEndedEvent args)
     {
         if (!GameRuleQuery.TryComp(uid, out var ruleData))
@@ -53,6 +51,7 @@ public abstract partial class GameRuleSystem<T> : EntitySystem where T : ICompon
         Ended(uid, component, ruleData, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnRoundEndTextAppend(RoundEndTextAppendEvent ev)
     {
         var query = QueryAllRules();

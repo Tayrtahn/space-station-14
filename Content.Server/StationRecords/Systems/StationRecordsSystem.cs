@@ -42,11 +42,9 @@ public sealed partial class StationRecordsSystem : SharedStationRecordsSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawn);
-        SubscribeLocalEvent<EntityRenamedEvent>(OnRename);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerSpawn(PlayerSpawnCompleteEvent args)
     {
         if (!TryComp<StationRecordsComponent>(args.Station, out var stationRecords))
@@ -55,6 +53,7 @@ public sealed partial class StationRecordsSystem : SharedStationRecordsSystem
         CreateGeneralRecord(args.Station, args.Mob, args.Profile, args.JobId, stationRecords);
     }
 
+    [SubscribeLocalEvent]
     private void OnRename(ref EntityRenamedEvent ev)
     {
         // When a player gets renamed their card gets changed to match.

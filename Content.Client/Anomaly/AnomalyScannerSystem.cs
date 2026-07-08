@@ -26,12 +26,9 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<AnomalyScannerScreenComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<AnomalyScannerScreenComponent, ComponentStartup>(OnComponentStartup);
-        SubscribeLocalEvent<AnomalyScannerScreenComponent, AppearanceChangeEvent>(OnScannerAppearanceChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<AnomalyScannerScreenComponent> ent, ref ComponentInit args)
     {
         if(!_sprite.TryGetLayer(ent.Owner, AnomalyScannerVisualLayers.Base, out var layer, true))
@@ -57,6 +54,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         ent.Comp.BarBuf = new Rgba32[ent.Comp.Size.X * ent.Comp.Size.Y];
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentStartup(Entity<AnomalyScannerScreenComponent> ent, ref ComponentStartup args)
     {
         if (!TryComp<SpriteComponent>(ent, out var sprite))
@@ -65,6 +63,7 @@ public sealed partial class AnomalyScannerSystem : SharedAnomalyScannerSystem
         _sprite.LayerSetTexture((ent, sprite), AnomalyScannerVisualLayers.Screen, ent.Comp.ScreenTexture);
     }
 
+    [SubscribeLocalEvent]
     private void OnScannerAppearanceChanged(Entity<AnomalyScannerScreenComponent> ent, ref AppearanceChangeEvent args)
     {
         if (args.Sprite is null || ent.Comp.ScreenTexture is null || ent.Comp.BarBuf is null)

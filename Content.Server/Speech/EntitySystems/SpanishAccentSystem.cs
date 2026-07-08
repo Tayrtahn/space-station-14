@@ -4,11 +4,10 @@ using Content.Shared.Speech;
 
 namespace Content.Server.Speech.EntitySystems
 {
-    public sealed class SpanishAccentSystem : EntitySystem
+    public sealed partial class SpanishAccentSystem : EntitySystem
     {
         public override void Initialize()
         {
-            SubscribeLocalEvent<SpanishAccentComponent, AccentGetEvent>(OnAccent);
         }
 
         public string Accentuate(string message)
@@ -66,6 +65,7 @@ namespace Content.Server.Speech.EntitySystems
             return msg.ToString();
         }
 
+        [SubscribeLocalEvent]
         private void OnAccent(EntityUid uid, SpanishAccentComponent component, AccentGetEvent args)
         {
             args.Message = Accentuate(args.Message);

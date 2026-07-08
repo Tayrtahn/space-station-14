@@ -11,6 +11,7 @@ namespace Content.Client.Replay.Spectator;
 // This partial class has methods for spawning a spectator ghost and "possessing" entitites.
 public sealed partial class ReplaySpectatorSystem
 {
+    [SubscribeLocalEvent]
     private void OnGetAlternativeVerbs(GetVerbsEvent<AlternativeVerb> ev)
     {
         if (_replayPlayback.Replay == null)

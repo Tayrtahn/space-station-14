@@ -8,21 +8,20 @@ namespace Content.Shared.Clothing.EntitySystems;
 /// <summary>
 /// Handles reducing fire damage when wearing clothing with <see cref="FireProtectionComponent"/>.
 /// </summary>
-public sealed class FireProtectionSystem : EntitySystem
+public sealed partial class FireProtectionSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FireProtectionComponent, InventoryRelayedEvent<GetFireProtectionEvent>>(OnGetProtection);
-        SubscribeLocalEvent<FireProtectionComponent, ArmorExamineEvent>(OnArmorExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProtection(Entity<FireProtectionComponent> ent, ref InventoryRelayedEvent<GetFireProtectionEvent> args)
     {
         args.Args.Reduce(ent.Comp.Reduction);
     }
 
+    [SubscribeLocalEvent]
     private void OnArmorExamine(Entity<FireProtectionComponent> ent, ref ArmorExamineEvent args)
     {
         var value = MathF.Round(ent.Comp.Reduction * 100, 1);

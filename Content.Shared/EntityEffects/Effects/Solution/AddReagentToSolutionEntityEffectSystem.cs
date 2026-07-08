@@ -17,7 +17,6 @@ public sealed partial class AddReagentToSolutionEntityEffectSystem : EntityEffec
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SolutionComponent, EntityEffectEvent<AddReagentToSolution>>(Effect);
     }
 
     [Dependency] private SharedSolutionContainerSystem _solutionContainer = default!;
@@ -33,6 +32,7 @@ public sealed partial class AddReagentToSolutionEntityEffectSystem : EntityEffec
         _solutionContainer.TryAddReagent(solutionContainer.Value, reagent, args.Scale * args.Effect.StrengthModifier);
     }
 
+    [SubscribeLocalEvent]
     private void Effect(Entity<SolutionComponent> entity, ref EntityEffectEvent<AddReagentToSolution> args)
     {
         if (entity.Comp.Id != args.Effect.Solution)

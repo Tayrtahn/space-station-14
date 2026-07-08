@@ -19,12 +19,9 @@ public sealed partial class ProjectileGrenadeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ProjectileGrenadeComponent, ComponentInit>(OnFragInit);
-        SubscribeLocalEvent<ProjectileGrenadeComponent, ComponentStartup>(OnFragStartup);
-        SubscribeLocalEvent<ProjectileGrenadeComponent, TriggerEvent>(OnFragTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnFragInit(Entity<ProjectileGrenadeComponent> entity, ref ComponentInit args)
     {
         entity.Comp.Container = _container.EnsureContainer<Container>(entity.Owner, "cluster-payload");
@@ -33,6 +30,7 @@ public sealed partial class ProjectileGrenadeSystem : EntitySystem
     /// <summary>
     /// Setting the unspawned count based on capacity so we know how many new entities to spawn
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnFragStartup(Entity<ProjectileGrenadeComponent> entity, ref ComponentStartup args)
     {
         if (entity.Comp.FillPrototype == null)
@@ -44,6 +42,7 @@ public sealed partial class ProjectileGrenadeSystem : EntitySystem
     /// <summary>
     /// Can be triggered either by damage or the use in hand timer
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnFragTrigger(Entity<ProjectileGrenadeComponent> entity, ref TriggerEvent args)
     {
         if (args.Key != entity.Comp.TriggerKey)

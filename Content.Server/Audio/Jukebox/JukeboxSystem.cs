@@ -17,17 +17,9 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<JukeboxComponent, JukeboxSelectedMessage>(OnJukeboxSelected);
-        SubscribeLocalEvent<JukeboxComponent, JukeboxPlayingMessage>(OnJukeboxPlay);
-        SubscribeLocalEvent<JukeboxComponent, JukeboxPauseMessage>(OnJukeboxPause);
-        SubscribeLocalEvent<JukeboxComponent, JukeboxStopMessage>(OnJukeboxStop);
-        SubscribeLocalEvent<JukeboxComponent, JukeboxSetTimeMessage>(OnJukeboxSetTime);
-        SubscribeLocalEvent<JukeboxComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<JukeboxComponent, ComponentShutdown>(OnComponentShutdown);
-
-        SubscribeLocalEvent<JukeboxComponent, PowerChangedEvent>(OnPowerChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(Entity<JukeboxComponent> ent, ref ComponentInit args)
     {
         if (HasComp<ApcPowerReceiverComponent>(ent))
@@ -36,16 +28,19 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxPlay(Entity<JukeboxComponent> ent, ref JukeboxPlayingMessage args)
     {
         TryPlay(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxPause(Entity<JukeboxComponent> ent, ref JukeboxPauseMessage args)
     {
         Pause(ent.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxSetTime(Entity<JukeboxComponent> ent, ref JukeboxSetTimeMessage args)
     {
         if (TryComp(args.Actor, out ActorComponent? actorComp))
@@ -55,6 +50,7 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<JukeboxComponent> entity, ref PowerChangedEvent args)
     {
         TryUpdateVisualState(entity.AsNullable());
@@ -65,11 +61,13 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxStop(Entity<JukeboxComponent> entity, ref JukeboxStopMessage args)
     {
         Stop(entity.AsNullable());
     }
 
+    [SubscribeLocalEvent]
     private void OnJukeboxSelected(EntityUid uid, JukeboxComponent component, JukeboxSelectedMessage args)
     {
         SetSelectedTrack((uid, component), args.SongId);
@@ -96,6 +94,7 @@ public sealed partial class JukeboxSystem : SharedJukeboxSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentShutdown(Entity<JukeboxComponent> ent, ref ComponentShutdown args)
     {
         ent.Comp.AudioStream = Audio.Stop(ent.Comp.AudioStream);

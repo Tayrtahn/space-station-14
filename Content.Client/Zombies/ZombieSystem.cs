@@ -13,18 +13,16 @@ public sealed partial class ZombieSystem : SharedZombieSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ZombieComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ZombieComponent, GetStatusIconsEvent>(GetZombieIcon);
-        SubscribeLocalEvent<InitialInfectedComponent, GetStatusIconsEvent>(GetInitialInfectedIcon);
     }
 
+    [SubscribeLocalEvent]
     private void GetZombieIcon(Entity<ZombieComponent> ent, ref GetStatusIconsEvent args)
     {
         var iconPrototype = ProtoMan.Index(ent.Comp.StatusIcon);
         args.StatusIcons.Add(iconPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void GetInitialInfectedIcon(Entity<InitialInfectedComponent> ent, ref GetStatusIconsEvent args)
     {
         if (HasComp<ZombieComponent>(ent))
@@ -34,6 +32,7 @@ public sealed partial class ZombieSystem : SharedZombieSystem
         args.StatusIcons.Add(iconPrototype);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, ZombieComponent component, ComponentStartup args)
     {
         if (HasComp<VisualBodyComponent>(uid))

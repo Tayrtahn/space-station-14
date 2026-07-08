@@ -13,12 +13,9 @@ public sealed partial class SpraySafetySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SpraySafetyComponent, SolutionTransferAttemptEvent>(OnTransferAttempt);
-        SubscribeLocalEvent<SpraySafetyComponent, SolutionTransferredEvent>(OnTransferred);
-        SubscribeLocalEvent<SpraySafetyComponent, SprayAttemptEvent>(OnSprayAttempt);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransferAttempt(Entity<SpraySafetyComponent> ent, ref SolutionTransferAttemptEvent args)
     {
         var (uid, comp) = ent;
@@ -26,11 +23,13 @@ public sealed partial class SpraySafetySystem : EntitySystem
             args.Cancel(Loc.GetString(comp.Popup));
     }
 
+    [SubscribeLocalEvent]
     private void OnTransferred(Entity<SpraySafetyComponent> ent, ref SolutionTransferredEvent args)
     {
         _audio.PlayPredicted(ent.Comp.RefillSound, ent, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnSprayAttempt(Entity<SpraySafetyComponent> ent, ref SprayAttemptEvent args)
     {
         if (_toggle.IsActivated(ent.Owner) || args.Cancelled)

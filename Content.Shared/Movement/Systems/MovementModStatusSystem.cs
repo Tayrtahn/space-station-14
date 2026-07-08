@@ -30,23 +30,21 @@ public sealed partial class MovementModStatusSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<MovementModStatusEffectComponent, StatusEffectRemovedEvent>(OnMovementModRemoved);
-        SubscribeLocalEvent<MovementModStatusEffectComponent, StatusEffectRelayedEvent<RefreshMovementSpeedModifiersEvent>>(OnRefreshRelay);
-        SubscribeLocalEvent<FrictionStatusEffectComponent, StatusEffectRemovedEvent>(OnFrictionStatusEffectRemoved);
-        SubscribeLocalEvent<FrictionStatusEffectComponent, StatusEffectRelayedEvent<RefreshFrictionModifiersEvent>>(OnRefreshFrictionStatus);
-        SubscribeLocalEvent<FrictionStatusEffectComponent, StatusEffectRelayedEvent<TileFrictionEvent>>(OnRefreshTileFrictionStatus);
     }
 
+    [SubscribeLocalEvent]
     private void OnMovementModRemoved(Entity<MovementModStatusEffectComponent> ent, ref StatusEffectRemovedEvent args)
     {
         TryUpdateMovementStatus(args.Target, (ent, ent), 1f);
     }
 
+    [SubscribeLocalEvent]
     private void OnFrictionStatusEffectRemoved(Entity<FrictionStatusEffectComponent> entity, ref StatusEffectRemovedEvent args)
     {
         TrySetFrictionStatus(entity!, 1f, args.Target);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshRelay(
         Entity<MovementModStatusEffectComponent> entity,
         ref StatusEffectRelayedEvent<RefreshMovementSpeedModifiersEvent> args
@@ -55,6 +53,7 @@ public sealed partial class MovementModStatusSystem : EntitySystem
         args.Args.ModifySpeed(entity.Comp.WalkSpeedModifier, entity.Comp.SprintSpeedModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshFrictionStatus(Entity<FrictionStatusEffectComponent> ent, ref StatusEffectRelayedEvent<RefreshFrictionModifiersEvent> args)
     {
         var ev = args.Args;
@@ -63,6 +62,7 @@ public sealed partial class MovementModStatusSystem : EntitySystem
         args.Args = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshTileFrictionStatus(Entity<FrictionStatusEffectComponent> ent, ref StatusEffectRelayedEvent<TileFrictionEvent> args)
     {
         var ev = args.Args;

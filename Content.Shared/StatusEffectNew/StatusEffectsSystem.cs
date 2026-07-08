@@ -29,15 +29,6 @@ public sealed partial class StatusEffectsSystem : EntitySystem
 
         InitializeRelay();
 
-        SubscribeLocalEvent<StatusEffectContainerComponent, ComponentInit>(OnStatusContainerInit);
-        SubscribeLocalEvent<StatusEffectContainerComponent, ComponentShutdown>(OnStatusContainerShutdown);
-        SubscribeLocalEvent<StatusEffectContainerComponent, EntInsertedIntoContainerMessage>(OnEntityInserted);
-        SubscribeLocalEvent<StatusEffectContainerComponent, EntRemovedFromContainerMessage>(OnEntityRemoved);
-
-        SubscribeLocalEvent<RejuvenateRemovedStatusEffectComponent, StatusEffectRelayedEvent<RejuvenateEvent>>(OnRejuvenate);
-
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-
         ReloadStatusEffectsCache();
     }
 
@@ -63,6 +54,7 @@ public sealed partial class StatusEffectsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
     {
         if (!args.WasModified<EntityPrototype>())
@@ -82,6 +74,7 @@ public sealed partial class StatusEffectsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusContainerInit(Entity<StatusEffectContainerComponent> ent, ref ComponentInit args)
     {
         ent.Comp.ActiveStatusEffects =
@@ -91,12 +84,14 @@ public sealed partial class StatusEffectsSystem : EntitySystem
         ent.Comp.ActiveStatusEffects.OccludesLight = false;
     }
 
+    [SubscribeLocalEvent]
     private void OnStatusContainerShutdown(Entity<StatusEffectContainerComponent> ent, ref ComponentShutdown args)
     {
         if (ent.Comp.ActiveStatusEffects is { } container)
             _container.ShutdownContainer(container);
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityInserted(Entity<StatusEffectContainerComponent> ent, ref EntInsertedIntoContainerMessage args)
     {
         if (args.Container.ID != StatusEffectContainerComponent.ContainerId)
@@ -113,6 +108,7 @@ public sealed partial class StatusEffectsSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEntityRemoved(Entity<StatusEffectContainerComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         if (args.Container.ID != StatusEffectContainerComponent.ContainerId)
@@ -135,6 +131,7 @@ public sealed partial class StatusEffectsSystem : EntitySystem
         Dirty(args.Entity, statusComp);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<RejuvenateRemovedStatusEffectComponent> ent,
         ref StatusEffectRelayedEvent<RejuvenateEvent> args)
     {

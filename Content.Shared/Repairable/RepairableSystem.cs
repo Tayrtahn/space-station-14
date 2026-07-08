@@ -19,10 +19,9 @@ public sealed partial class RepairableSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<RepairableComponent, InteractUsingEvent>(Repair);
-        SubscribeLocalEvent<RepairableComponent, RepairDoAfterEvent>(OnRepairDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnRepairDoAfter(Entity<RepairableComponent> ent, ref RepairDoAfterEvent args)
     {
         if (args.Cancelled)
@@ -95,6 +94,7 @@ public sealed partial class RepairableSystem : EntitySystem
         _adminLogger.Add(LogType.Healed, $"{ToPrettyString(user):user} repaired {ToPrettyString(ent.Owner):target} back to full health");
     }
 
+    [SubscribeLocalEvent]
     private void Repair(Entity<RepairableComponent> ent, ref InteractUsingEvent args)
     {
         if (args.Handled)

@@ -28,19 +28,15 @@ public abstract partial class SharedStoreSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<CurrencyComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<RemoteStoreComponent, GetStoreEvent>(OnGetStore);
         SubscribeLocalEvent<RemoteStoreComponent, ImplantRelayEvent<GetStoreEvent>>((x, ref y) =>
         {
             var ev = y.Args;
             OnGetStore(x, ref ev);
             y.Args = ev;
         });
-        SubscribeLocalEvent<RemoteStoreComponent, ImplantRelayEvent<CurrencyInsertAttemptEvent>>(OnImplantInsertAttempt);
-        SubscribeLocalEvent<StoreComponent, IntrinsicStoreActionEvent>(OnIntrinsicStoreAction);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStore(Entity<RemoteStoreComponent> entity, ref GetStoreEvent args)
     {
         if (args.Handled)
@@ -52,6 +48,7 @@ public abstract partial class SharedStoreSystem : EntitySystem
         args.Store = (entity.Comp.Store.Value, store);
     }
 
+    [SubscribeLocalEvent]
     private void OnImplantInsertAttempt(Entity<RemoteStoreComponent> implant, ref ImplantRelayEvent<CurrencyInsertAttemptEvent> args)
     {
         var ev = args.Args;
@@ -65,6 +62,7 @@ public abstract partial class SharedStoreSystem : EntitySystem
         args.Args = ev;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, CurrencyComponent component, AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || args.Target is not { } target)
@@ -218,6 +216,7 @@ public abstract partial class SharedStoreSystem : EntitySystem
         return true;
     }
 
+    [SubscribeLocalEvent]
     private void OnIntrinsicStoreAction(Entity<StoreComponent> ent, ref IntrinsicStoreActionEvent args)
     {
         ToggleUi(args.Performer, ent.Owner, ent.Comp);

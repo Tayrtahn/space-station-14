@@ -12,9 +12,9 @@ public sealed partial class DragonSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DragonRiftComponent, ComponentHandleState>(OnRiftHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnRiftHandleState(EntityUid uid, DragonRiftComponent component, ref ComponentHandleState args)
     {
         if (args.Current is not DragonRiftComponentState state)

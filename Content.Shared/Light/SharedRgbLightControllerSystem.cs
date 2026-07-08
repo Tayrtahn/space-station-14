@@ -3,15 +3,14 @@ using Robust.Shared.GameStates;
 
 namespace Content.Shared.Light;
 
-public abstract class SharedRgbLightControllerSystem : EntitySystem
+public abstract partial class SharedRgbLightControllerSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RgbLightControllerComponent, ComponentGetState>(OnGetState);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetState(EntityUid uid, RgbLightControllerComponent component, ref ComponentGetState args)
     {
         args.State = new RgbLightControllerState(component.CycleRate, component.Layers);

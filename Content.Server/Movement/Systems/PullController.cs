@@ -85,8 +85,6 @@ public sealed partial class PullController : VirtualController
             .Register<PullController>();
 
         UpdatesAfter.Add(typeof(MoverController));
-        SubscribeLocalEvent<PullMovingComponent, PullStoppedMessage>(OnPullStop);
-        SubscribeLocalEvent<ActivePullerComponent, MoveEvent>(OnPullerMove);
 
         base.Initialize();
     }
@@ -97,6 +95,7 @@ public sealed partial class PullController : VirtualController
         CommandBinds.Unregister<PullController>();
     }
 
+    [SubscribeLocalEvent]
     private void OnPullStop(Entity<PullMovingComponent> ent, ref PullStoppedMessage args)
     {
         RemCompDeferred<PullMovingComponent>(ent);
@@ -157,6 +156,7 @@ public sealed partial class PullController : VirtualController
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnPullerMove(EntityUid uid, ActivePullerComponent component, ref MoveEvent args)
     {
         if (!_pullerQuery.TryComp(uid, out var puller))

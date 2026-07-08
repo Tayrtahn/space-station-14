@@ -10,10 +10,9 @@ public sealed partial class ArmorSystem : SharedArmorSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ArmorComponent, PriceCalculationEvent>(GetArmorPrice);
     }
 
+    [SubscribeLocalEvent]
     private void GetArmorPrice(EntityUid uid, ArmorComponent component, ref PriceCalculationEvent args)
     {
         foreach (var modifier in component.Modifiers.Coefficients)

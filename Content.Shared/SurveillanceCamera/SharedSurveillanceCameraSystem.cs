@@ -9,11 +9,9 @@ public abstract partial class SharedSurveillanceCameraSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<SurveillanceCameraComponent, GetVerbsEvent<AlternativeVerb>>(AddVerbs);
-        SubscribeLocalEvent<SurveillanceCameraComponent, EmpPulseEvent>(OnEmpPulse);
-        SubscribeLocalEvent<SurveillanceCameraComponent, EmpDisabledRemovedEvent>(OnEmpDisabledRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void AddVerbs(EntityUid uid, SurveillanceCameraComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanInteract || !args.CanComplexInteract)
@@ -30,6 +28,7 @@ public abstract partial class SharedSurveillanceCameraSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpPulse(EntityUid uid, SurveillanceCameraComponent component, ref EmpPulseEvent args)
     {
         if (component.Active)
@@ -40,6 +39,7 @@ public abstract partial class SharedSurveillanceCameraSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEmpDisabledRemoved(EntityUid uid, SurveillanceCameraComponent component, ref EmpDisabledRemovedEvent args)
     {
         SetActive(uid, true);

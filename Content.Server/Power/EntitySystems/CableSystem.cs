@@ -23,13 +23,9 @@ public sealed partial class CableSystem : EntitySystem
         base.Initialize();
 
         InitializeCablePlacer();
-
-        SubscribeLocalEvent<CableComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<CableComponent, CableCuttingFinishedEvent>(OnCableCut);
-        // Shouldn't need re-anchoring.
-        SubscribeLocalEvent<CableComponent, AnchorStateChangedEvent>(OnAnchorChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(EntityUid uid, CableComponent cable, InteractUsingEvent args)
     {
         if (args.Handled)
@@ -41,6 +37,7 @@ public sealed partial class CableSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCableCut(EntityUid uid, CableComponent cable, DoAfterEvent args)
     {
         if (args.Cancelled)
@@ -59,6 +56,7 @@ public sealed partial class CableSystem : EntitySystem
         QueueDel(uid);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(EntityUid uid, CableComponent cable, ref AnchorStateChangedEvent args)
     {
         var ev = new CableAnchorStateChangedEvent(args.Transform, args.Detaching);

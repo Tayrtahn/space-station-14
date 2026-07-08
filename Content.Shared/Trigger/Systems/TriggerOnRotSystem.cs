@@ -8,10 +8,9 @@ public sealed partial class TriggerOnRotSystem : TriggerOnXSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<TriggerOnRotComponent, BeginRottingEvent>(OnRot);
     }
 
+    [SubscribeLocalEvent]
     private void OnRot(Entity<TriggerOnRotComponent> ent, ref BeginRottingEvent args)
     {
         Trigger.Trigger(ent.Owner, null, ent.Comp.KeyOut, predicted: false);

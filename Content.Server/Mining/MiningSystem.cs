@@ -19,10 +19,9 @@ public sealed partial class MiningSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<OreVeinComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<OreVeinComponent, DestructionEventArgs>(OnDestruction);
     }
 
+    [SubscribeLocalEvent]
     private void OnDestruction(EntityUid uid, OreVeinComponent component, DestructionEventArgs args)
     {
         if (component.CurrentOre == null)
@@ -41,6 +40,7 @@ public sealed partial class MiningSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, OreVeinComponent component, MapInitEvent args)
     {
         if (component.CurrentOre != null || component.OreRarityPrototypeId == null || !_random.Prob(component.OreChance))

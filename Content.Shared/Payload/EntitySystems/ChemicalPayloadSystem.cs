@@ -12,13 +12,9 @@ public sealed partial class ChemicalPayloadSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChemicalPayloadComponent, ComponentInit>(OnComponentInit);
-        SubscribeLocalEvent<ChemicalPayloadComponent, ComponentRemove>(OnComponentRemove);
-        SubscribeLocalEvent<ChemicalPayloadComponent, EntInsertedIntoContainerMessage>(OnContainerModified);
-        SubscribeLocalEvent<ChemicalPayloadComponent, EntRemovedFromContainerMessage>(OnContainerModified);
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerModified(EntityUid uid, ChemicalPayloadComponent component, ContainerModifiedMessage args)
     {
         UpdateAppearance(uid, component);
@@ -40,12 +36,14 @@ public sealed partial class ChemicalPayloadSystem : EntitySystem
         _appearance.SetData(uid, ChemicalPayloadVisuals.Slots, filled, appearance);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentInit(EntityUid uid, ChemicalPayloadComponent payload, ComponentInit args)
     {
         _itemSlotsSystem.AddItemSlot(uid, "BeakerSlotA", payload.BeakerSlotA);
         _itemSlotsSystem.AddItemSlot(uid, "BeakerSlotB", payload.BeakerSlotB);
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemove(EntityUid uid, ChemicalPayloadComponent payload, ComponentRemove args)
     {
         _itemSlotsSystem.RemoveItemSlot(uid, payload.BeakerSlotA);

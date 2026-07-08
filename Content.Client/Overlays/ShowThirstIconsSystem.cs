@@ -12,10 +12,9 @@ public sealed partial class ShowThirstIconsSystem : EquipmentHudSystem<ShowThirs
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThirstComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(EntityUid uid, ThirstComponent component, ref GetStatusIconsEvent ev)
     {
         if (!IsActive)

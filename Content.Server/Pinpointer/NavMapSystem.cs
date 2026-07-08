@@ -41,23 +41,9 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
         var categories = Enum.GetNames(typeof(NavMapChunkType)).Length - 1; // -1 due to "Invalid" entry.
         if (Categories != categories)
             throw new Exception($"{nameof(Categories)} must be equal to the number of chunk types");
-
-        // Initialization events
-        SubscribeLocalEvent<StationGridAddedEvent>(OnStationInit);
-
-        // Grid change events
-        SubscribeLocalEvent<GridSplitEvent>(OnNavMapSplit);
-        SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
-
-        SubscribeLocalEvent<AirtightChanged>(OnAirtightChange);
-
-        // Beacon events
-        SubscribeLocalEvent<NavMapBeaconComponent, MapInitEvent>(OnNavMapBeaconMapInit);
-        SubscribeLocalEvent<NavMapBeaconComponent, AnchorStateChangedEvent>(OnNavMapBeaconAnchor);
-        SubscribeLocalEvent<ConfigurableNavMapBeaconComponent, NavMapBeaconConfigureBuiMessage>(OnConfigureMessage);
-        SubscribeLocalEvent<ConfigurableNavMapBeaconComponent, MapInitEvent>(OnConfigurableMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnStationInit(StationGridAddedEvent ev)
     {
         var comp = EnsureComp<NavMapComponent>(ev.GridId);
@@ -66,6 +52,7 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
 
     #region: Grid change event handling
 
+    [SubscribeLocalEvent]
     private void OnNavMapSplit(ref GridSplitEvent args)
     {
         if (!_navQuery.TryComp(args.Grid, out var comp))
@@ -91,6 +78,7 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
         return chunk;
     }
 
+    [SubscribeLocalEvent]
     private void OnTileChanged(ref TileChangedEvent ev)
     {
         if (!_navQuery.TryComp(ev.Entity, out var navMap))
@@ -134,6 +122,7 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnAirtightChange(ref AirtightChanged args)
     {
         if (args.AirBlockedChanged)
@@ -160,6 +149,7 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
 
     #region: Beacon event handling
 
+    [SubscribeLocalEvent]
     private void OnNavMapBeaconMapInit(EntityUid uid, NavMapBeaconComponent component, MapInitEvent args)
     {
         if (component.DefaultText != null && component.Text == null)
@@ -171,12 +161,14 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
         UpdateNavMapBeaconData(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnNavMapBeaconAnchor(EntityUid uid, NavMapBeaconComponent component, ref AnchorStateChangedEvent args)
     {
         UpdateBeaconEnabledVisuals((uid, component));
         UpdateNavMapBeaconData(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnConfigureMessage(Entity<ConfigurableNavMapBeaconComponent> ent, ref NavMapBeaconConfigureBuiMessage args)
     {
         if (!TryComp<NavMapBeaconComponent>(ent, out var beacon))
@@ -204,6 +196,7 @@ public sealed partial class NavMapSystem : SharedNavMapSystem
         UpdateNavMapBeaconData(ent, beacon);
     }
 
+    [SubscribeLocalEvent]
     private void OnConfigurableMapInit(Entity<ConfigurableNavMapBeaconComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<NavMapBeaconComponent>(ent, out var navMap))

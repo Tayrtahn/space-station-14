@@ -63,16 +63,6 @@ public abstract partial class SharedPuddleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        // Shouldn't need re-anchoring.
-        SubscribeLocalEvent<PuddleComponent, AnchorStateChangedEvent>(OnAnchorChanged);
-        SubscribeLocalEvent<PuddleComponent, SolutionChangedEvent>(OnSolutionUpdate);
-        SubscribeLocalEvent<PuddleComponent, GetFootstepSoundEvent>(OnGetFootstepSound);
-        SubscribeLocalEvent<PuddleComponent, ExaminedEvent>(HandlePuddleExamined);
-        SubscribeLocalEvent<PuddleComponent, EntRemovedFromContainerMessage>(OnEntRemoved);
-
-        SubscribeLocalEvent<EvaporationComponent, MapInitEvent>(OnEvaporationMapInit);
-
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
 
         CacheStandsout();
         InitializeSpillable();
@@ -95,6 +85,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
         TickEvaporation();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs ev)
     {
         if (ev.WasModified<ReagentPrototype>())
@@ -109,6 +100,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
         _standoutReagents = [.. ProtoMan.EnumeratePrototypes<ReagentPrototype>().Where(x => x.Standsout).Select(x => x.ID)];
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionUpdate(Entity<PuddleComponent> entity, ref SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.
@@ -131,6 +123,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
         UpdateAppearance((entity, entity.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetFootstepSound(Entity<PuddleComponent> entity, ref GetFootstepSoundEvent args)
     {
         if (!_solutionContainerSystem.ResolveSolution(entity.Owner, entity.Comp.SolutionName, ref entity.Comp.Solution,
@@ -145,6 +138,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void HandlePuddleExamined(Entity<PuddleComponent> entity, ref ExaminedEvent args)
     {
         using (args.PushGroup(nameof(PuddleComponent)))
@@ -170,6 +164,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAnchorChanged(Entity<PuddleComponent> entity, ref AnchorStateChangedEvent args)
     {
         if (!args.Anchored)
@@ -177,6 +172,7 @@ public abstract partial class SharedPuddleSystem : EntitySystem
     }
 
     // Workaround for https://github.com/space-wizards/space-station-14/pull/35314
+    [SubscribeLocalEvent]
     private void OnEntRemoved(Entity<PuddleComponent> ent, ref EntRemovedFromContainerMessage args)
     {
         // Make sure the removed entity was our contained solution and clear our cached reference

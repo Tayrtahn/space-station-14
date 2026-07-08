@@ -21,10 +21,9 @@ namespace Content.Server.Verbs
         public override void Initialize()
         {
             base.Initialize();
-
-            SubscribeNetworkEvent<RequestServerVerbsEvent>(HandleVerbRequest);
         }
 
+        [SubscribeNetworkEvent]
         private void HandleVerbRequest(RequestServerVerbsEvent args, EntitySessionEventArgs eventArgs)
         {
             var player = eventArgs.SenderSession;

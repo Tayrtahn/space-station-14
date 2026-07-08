@@ -16,14 +16,12 @@ public sealed partial class NetProbeCartridgeSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NetProbeCartridgeComponent, CartridgeUiReadyEvent>(OnUiReady);
-        SubscribeLocalEvent<NetProbeCartridgeComponent, CartridgeRelayedEvent<AfterInteractEvent>>(AfterInteract);
     }
 
     /// <summary>
     /// Saves name, address... etc. of the device that was clicked into a list on the component when the device isn't already present in that list
     /// </summary>
+    [SubscribeLocalEvent]
     private void AfterInteract(EntityUid uid, NetProbeCartridgeComponent component, CartridgeRelayedEvent<AfterInteractEvent> args)
     {
         if (args.Args.Handled || !args.Args.CanReach || !args.Args.Target.HasValue)
@@ -67,6 +65,7 @@ public sealed partial class NetProbeCartridgeSystem : EntitySystem
     /// <summary>
     /// This gets called when the ui fragment needs to be updated for the first time after activating
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiReady(EntityUid uid, NetProbeCartridgeComponent component, CartridgeUiReadyEvent args)
     {
         UpdateUiState(uid, args.Loader, component);

@@ -36,12 +36,10 @@ public sealed partial class SpraySystem : SharedSpraySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SprayComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<SprayComponent, UserActivateInWorldEvent>(OnActivateInWorld);
         Subs.CVar(_cfg, CCVars.GridImpulseMultiplier, UpdateGridMassMultiplier, true);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateInWorld(Entity<SprayComponent> entity, ref UserActivateInWorldEvent args)
     {
         if (args.Handled)
@@ -59,6 +57,7 @@ public sealed partial class SpraySystem : SharedSpraySystem
         _gridImpulseMultiplier = value;
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<SprayComponent> entity, ref AfterInteractEvent args)
     {
         if (args.Handled)

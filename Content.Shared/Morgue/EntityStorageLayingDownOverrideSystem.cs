@@ -11,10 +11,9 @@ public sealed partial class EntityStorageLayingDownOverrideSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EntityStorageLayingDownOverrideComponent, StorageBeforeCloseEvent>(OnBeforeClose);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeClose(EntityUid uid, EntityStorageLayingDownOverrideComponent component, ref StorageBeforeCloseEvent args)
     {
         foreach (var ent in args.Contents)

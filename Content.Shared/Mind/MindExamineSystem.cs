@@ -17,17 +17,13 @@ public sealed partial class MindExamineSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<MindExaminableComponent, ExaminedEvent>(OnExamined);
         SubscribeLocalEvent<MindExaminableComponent, ComponentStartup>((e, ref _) => RefreshMindStatus(e.AsNullable()));
         SubscribeLocalEvent<MindExaminableComponent, MindAddedMessage>((e, ref _) => RefreshMindStatus(e.AsNullable()));
         SubscribeLocalEvent<MindExaminableComponent, MindRemovedMessage>((e, ref _) => RefreshMindStatus(e.AsNullable()));
         SubscribeLocalEvent<MindExaminableComponent, MobStateChangedEvent>((e, ref _) => RefreshMindStatus(e.AsNullable()));
-
-        SubscribeLocalEvent<PlayerAttachedEvent>(OnPlayerAttached);
-        SubscribeLocalEvent<PlayerDetachedEvent>(OnPlayerDetached);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(Entity<MindExaminableComponent> ent, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -47,6 +43,7 @@ public sealed partial class MindExamineSystem : EntitySystem
             args.PushMarkup(message);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerAttached(PlayerAttachedEvent args)
     {
         // We use the broadcasted event because we need to access the body of a ghost if it disconnects.
@@ -63,6 +60,7 @@ public sealed partial class MindExamineSystem : EntitySystem
         RefreshMindStatus(refreshEnt);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(PlayerDetachedEvent args)
     {
         // Same reason as in the subscription above.

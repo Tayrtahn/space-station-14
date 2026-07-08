@@ -13,9 +13,9 @@ public sealed partial class MailFraudObjectiveSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<DeliveryComponent, DeliveryOpenedEvent>(OnDeliveryOpened);
     }
 
+    [SubscribeLocalEvent]
     private void OnDeliveryOpened(Entity<DeliveryComponent> ent, ref DeliveryOpenedEvent args)
     {
         if (!ent.Comp.WasPenalized)

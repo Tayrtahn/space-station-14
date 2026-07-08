@@ -14,10 +14,9 @@ public sealed partial class BodyEmotesSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<BodyEmotesComponent, EmoteEvent>(OnEmote);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmote(EntityUid uid, BodyEmotesComponent component, ref EmoteEvent args)
     {
         if (args.Handled)

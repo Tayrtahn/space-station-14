@@ -20,13 +20,10 @@ public sealed partial class ReactionMixerSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ReactionMixerComponent, UseInHandEvent>(OnUseInHand);
         SubscribeLocalEvent<ReactionMixerComponent, AfterInteractEvent>(OnAfterInteract, before: [typeof(IngestionSystem)]);
-        SubscribeLocalEvent<ReactionMixerComponent, ShakeEvent>(OnShake);
-        SubscribeLocalEvent<ReactionMixerComponent, ReactionMixDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<ReactionMixerComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled)
@@ -75,6 +72,7 @@ public sealed partial class ReactionMixerSystem : EntitySystem
         args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<ReactionMixerComponent> ent, ref ReactionMixDoAfterEvent args)
     {
         ent.Comp.AudioStream = _audio.Stop(ent.Comp.AudioStream);
@@ -96,6 +94,7 @@ public sealed partial class ReactionMixerSystem : EntitySystem
             args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnShake(Entity<ReactionMixerComponent> ent, ref ShakeEvent args)
     {
         TryMix(ent.AsNullable(), ent);

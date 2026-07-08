@@ -35,9 +35,9 @@ public abstract partial class SharedCameraRecoilSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<CameraRecoilComponent, GetEyeOffsetEvent>(OnCameraRecoilGetEyeOffset);
     }
 
+    [SubscribeLocalEvent]
     private void OnCameraRecoilGetEyeOffset(Entity<CameraRecoilComponent> ent, ref GetEyeOffsetEvent args)
     {
         args.Offset += ent.Comp.BaseOffset + ent.Comp.CurrentKick;

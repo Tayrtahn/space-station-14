@@ -14,29 +14,29 @@ public sealed partial class BlindableSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<BlindableComponent, RejuvenateEvent>(OnRejuvenate);
-        SubscribeLocalEvent<BlindableComponent, EyeDamageChangedEvent>(OnDamageChanged);
-        SubscribeLocalEvent<BlindableComponent, GetEyePvsScaleAttemptEvent>(OnGetEyePvsScaleAttemptEvent);
-        SubscribeLocalEvent<BlindableComponent, GetEyeOffsetAttemptEvent>(OnGetEyeOffsetAttemptEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnRejuvenate(Entity<BlindableComponent> ent, ref RejuvenateEvent args)
     {
         AdjustEyeDamage((ent.Owner, ent.Comp), -ent.Comp.EyeDamage);
     }
 
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<BlindableComponent> ent, ref EyeDamageChangedEvent args)
     {
         _blurriness.UpdateBlurMagnitude((ent.Owner, ent.Comp));
         _eyelids.UpdateEyesClosable((ent.Owner, ent.Comp));
     }
 
+    [SubscribeLocalEvent]
     private void OnGetEyePvsScaleAttemptEvent(Entity<BlindableComponent> ent, ref GetEyePvsScaleAttemptEvent args)
     {
         if (ent.Comp.IsBlind)
             args.Cancelled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetEyeOffsetAttemptEvent(Entity<BlindableComponent> ent, ref GetEyeOffsetAttemptEvent args)
     {
         if (ent.Comp.IsBlind)

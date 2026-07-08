@@ -3,14 +3,14 @@ using Content.Shared.Ghost;
 
 namespace Content.Shared.Warps;
 
-public sealed class WarpPointSystem : EntitySystem
+public sealed partial class WarpPointSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<WarpPointComponent, ExaminedEvent>(OnWarpPointExamine);
     }
 
+    [SubscribeLocalEvent]
     private void OnWarpPointExamine(EntityUid uid, WarpPointComponent component, ExaminedEvent args)
     {
         if (!HasComp<GhostComponent>(args.Examiner))

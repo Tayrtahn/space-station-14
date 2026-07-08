@@ -3,14 +3,14 @@ using Content.Shared.Inventory;
 
 namespace Content.Shared.Chemistry;
 
-public sealed class SolutionScannerSystem : EntitySystem
+public sealed partial class SolutionScannerSystem : EntitySystem
 {
     public override void Initialize()
     {
-        SubscribeLocalEvent<SolutionScannerComponent, SolutionScanEvent>(OnSolutionScanAttempt);
         SubscribeLocalEvent<SolutionScannerComponent, InventoryRelayedEvent<SolutionScanEvent>>((e, c, ev) => OnSolutionScanAttempt(e, c, ev.Args));
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionScanAttempt(EntityUid eid, SolutionScannerComponent component, SolutionScanEvent args)
     {
         args.CanScan = true;

@@ -11,10 +11,9 @@ public sealed partial class InitialBodySystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InitialBodyComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<InitialBodyComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<ContainerManagerComponent>(ent, out var containerComp))

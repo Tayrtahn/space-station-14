@@ -29,10 +29,6 @@ public sealed partial class GlueSystem : EntitySystem
         base.Initialize();
 
         SubscribeLocalEvent<GlueComponent, AfterInteractEvent>(OnInteract, after: new[] { typeof(OpenableSystem) });
-        SubscribeLocalEvent<GluedComponent, ComponentInit>(OnGluedInit);
-        SubscribeLocalEvent<GlueComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
-        SubscribeLocalEvent<GluedComponent, GotEquippedHandEvent>(OnHandPickUp);
-        SubscribeLocalEvent<GluedComponent, RefreshNameModifiersEvent>(OnRefreshNameModifiers);
     }
 
     // When glue bottle is used on item it will apply the glued and unremoveable components.
@@ -48,6 +44,7 @@ public sealed partial class GlueSystem : EntitySystem
             args.Handled = true;
     }
 
+    [SubscribeLocalEvent]
     private void OnUtilityVerb(Entity<GlueComponent> entity, ref GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanInteract || !args.CanAccess || args.Target is not { Valid: true } target ||
@@ -114,11 +111,13 @@ public sealed partial class GlueSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnGluedInit(Entity<GluedComponent> entity, ref ComponentInit args)
     {
         _nameMod.RefreshNameModifiers(entity.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandPickUp(Entity<GluedComponent> entity, ref GotEquippedHandEvent args)
     {
         // When predicting dropping a glued item prediction will reinsert the item into the hand when rerolling the state to a previous one.
@@ -133,6 +132,7 @@ public sealed partial class GlueSystem : EntitySystem
         Dirty(entity);
     }
 
+    [SubscribeLocalEvent]
     private void OnRefreshNameModifiers(Entity<GluedComponent> entity, ref RefreshNameModifiersEvent args)
     {
         args.AddModifier("glued-name-prefix");

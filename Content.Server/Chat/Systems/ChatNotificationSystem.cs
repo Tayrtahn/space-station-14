@@ -35,8 +35,6 @@ public sealed partial class ChatNotificationSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<ActorComponent, ChatNotificationEvent>(OnChatNotification);
-
         _sawmill = LogManager.GetSawmill("chatnotification");
     }
 
@@ -45,6 +43,7 @@ public sealed partial class ChatNotificationSystem : EntitySystem
     /// </summary>
     /// <param name="ent">The player receiving the chat notification.</param>
     /// <param name="args">The chat notification event</param>
+    [SubscribeLocalEvent]
     public void OnChatNotification(Entity<ActorComponent> ent, ref ChatNotificationEvent args)
     {
         if (!ProtoMan.TryIndex(args.ChatNotification, out var chatNotification))

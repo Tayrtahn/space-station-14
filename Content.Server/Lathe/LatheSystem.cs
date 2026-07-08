@@ -61,24 +61,8 @@ namespace Content.Server.Lathe
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<LatheComponent, GetMaterialWhitelistEvent>(OnGetWhitelist);
-            SubscribeLocalEvent<LatheComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<LatheComponent, PowerChangedEvent>(OnPowerChanged);
-            SubscribeLocalEvent<LatheComponent, TechnologyDatabaseModifiedEvent>(OnDatabaseModified);
-            SubscribeLocalEvent<LatheAnnouncingComponent, TechnologyDatabaseModifiedEvent>(OnTechnologyDatabaseModified);
-            SubscribeLocalEvent<LatheComponent, ResearchRegistrationChangedEvent>(OnResearchRegistrationChanged);
-
-            SubscribeLocalEvent<LatheComponent, LatheQueueRecipeMessage>(OnLatheQueueRecipeMessage);
-            SubscribeLocalEvent<LatheComponent, LatheSyncRequestMessage>(OnLatheSyncRequestMessage);
-            SubscribeLocalEvent<LatheComponent, LatheDeleteRequestMessage>(OnLatheDeleteRequestMessage);
-            SubscribeLocalEvent<LatheComponent, LatheMoveRequestMessage>(OnLatheMoveRequestMessage);
-            SubscribeLocalEvent<LatheComponent, LatheAbortFabricationMessage>(OnLatheAbortFabricationMessage);
 
             SubscribeLocalEvent<LatheComponent, BeforeActivatableUIOpenEvent>((u, c, _) => UpdateUserInterfaceState(u, c));
-            SubscribeLocalEvent<LatheComponent, MaterialAmountChangedEvent>(OnMaterialAmountChanged);
-            SubscribeLocalEvent<TechnologyDatabaseComponent, LatheGetRecipesEvent>(OnGetRecipes);
-            SubscribeLocalEvent<EmagLatheRecipesComponent, LatheGetRecipesEvent>(GetEmagLatheRecipes);
-            SubscribeLocalEvent<LatheHeatProducingComponent, LatheStartPrintingEvent>(OnHeatStartPrinting);
         }
         public override void Update(float frameTime)
         {
@@ -125,6 +109,7 @@ namespace Content.Server.Lathe
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGetWhitelist(EntityUid uid, LatheComponent component, ref GetMaterialWhitelistEvent args)
         {
             if (args.Storage != uid)
@@ -298,12 +283,14 @@ namespace Content.Server.Lathe
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGetRecipes(EntityUid uid, TechnologyDatabaseComponent component, LatheGetRecipesEvent args)
         {
             if (uid == args.Lathe)
                 AddRecipesFromDynamicPacks(ref args, component, args.Comp.DynamicPacks);
         }
 
+        [SubscribeLocalEvent]
         private void GetEmagLatheRecipes(EntityUid uid, EmagLatheRecipesComponent component, LatheGetRecipesEvent args)
         {
             if (uid != args.Lathe)
@@ -318,11 +305,13 @@ namespace Content.Server.Lathe
                 AddRecipesFromDynamicPacks(ref args, database, component.EmagDynamicPacks);
         }
 
+        [SubscribeLocalEvent]
         private void OnHeatStartPrinting(EntityUid uid, LatheHeatProducingComponent component, LatheStartPrintingEvent args)
         {
             component.NextSecond = _timing.CurTime;
         }
 
+        [SubscribeLocalEvent]
         private void OnMaterialAmountChanged(EntityUid uid, LatheComponent component, ref MaterialAmountChangedEvent args)
         {
             UpdateUserInterfaceState(uid, component);
@@ -332,6 +321,7 @@ namespace Content.Server.Lathe
         /// Initialize the UI and appearance.
         /// Appearance requires initialization or the layers break
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, LatheComponent component, MapInitEvent args)
         {
             _appearance.SetData(uid, LatheVisuals.IsInserting, false);
@@ -349,6 +339,7 @@ namespace Content.Server.Lathe
             _appearance.SetData(uid, LatheVisuals.IsRunning, isRunning);
         }
 
+        [SubscribeLocalEvent]
         private void OnPowerChanged(EntityUid uid, LatheComponent component, ref PowerChangedEvent args)
         {
             if (!args.Powered)
@@ -361,11 +352,13 @@ namespace Content.Server.Lathe
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnDatabaseModified(EntityUid uid, LatheComponent component, ref TechnologyDatabaseModifiedEvent args)
         {
             UpdateUserInterfaceState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnTechnologyDatabaseModified(Entity<LatheAnnouncingComponent> ent, ref TechnologyDatabaseModifiedEvent args)
         {
             if (args.NewlyUnlockedRecipes is null)
@@ -408,6 +401,7 @@ namespace Content.Server.Lathe
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnResearchRegistrationChanged(EntityUid uid, LatheComponent component, ref ResearchRegistrationChangedEvent args)
         {
             UpdateUserInterfaceState(uid, component);
@@ -492,6 +486,7 @@ namespace Content.Server.Lathe
 
         #region UI Messages
 
+        [SubscribeLocalEvent]
         private void OnLatheQueueRecipeMessage(EntityUid uid, LatheComponent component, LatheQueueRecipeMessage args)
         {
             if (ProtoMan.TryIndex(args.ID, out LatheRecipePrototype? recipe))
@@ -507,6 +502,7 @@ namespace Content.Server.Lathe
             UpdateUserInterfaceState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         private void OnLatheSyncRequestMessage(EntityUid uid, LatheComponent component, LatheSyncRequestMessage args)
         {
             UpdateUserInterfaceState(uid, component);
@@ -519,6 +515,7 @@ namespace Content.Server.Lathe
         /// <param name="uid">The lathe whose queue is being altered.</param>
         /// <param name="component"></param>
         /// <param name="args"></param>
+        [SubscribeLocalEvent]
         public void OnLatheDeleteRequestMessage(EntityUid uid, LatheComponent component, ref LatheDeleteRequestMessage args)
         {
             if (args.Index < 0 || args.Index >= component.Queue.Count)
@@ -541,6 +538,7 @@ namespace Content.Server.Lathe
             UpdateUserInterfaceState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         public void OnLatheMoveRequestMessage(EntityUid uid, LatheComponent component, ref LatheMoveRequestMessage args)
         {
             if (args.Change == 0 || args.Index < 0 || args.Index >= component.Queue.Count)
@@ -586,6 +584,7 @@ namespace Content.Server.Lathe
             UpdateUserInterfaceState(uid, component);
         }
 
+        [SubscribeLocalEvent]
         public void OnLatheAbortFabricationMessage(EntityUid uid, LatheComponent component, ref LatheAbortFabricationMessage args)
         {
             if (component.CurrentRecipe == null)

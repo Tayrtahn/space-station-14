@@ -17,19 +17,15 @@ public abstract partial class SharedGasVolumePumpSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GasVolumePumpComponent, ComponentInit>(OnInit);
-        SubscribeLocalEvent<GasVolumePumpComponent, PowerChangedEvent>(OnPowerChanged);
-
-        SubscribeLocalEvent<GasVolumePumpComponent, ExaminedEvent>(OnExamined);
-        SubscribeLocalEvent<GasVolumePumpComponent, GasVolumePumpToggleStatusMessage>(OnToggleStatusMessage);
-        SubscribeLocalEvent<GasVolumePumpComponent, GasVolumePumpChangeTransferRateMessage>(OnTransferRateChangeMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnInit(Entity<GasVolumePumpComponent> ent, ref ComponentInit args)
     {
         UpdateAppearance(ent.Owner, ent.Comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnPowerChanged(Entity<GasVolumePumpComponent> ent, ref PowerChangedEvent args)
     {
         UpdateAppearance(ent.Owner, ent.Comp);
@@ -40,6 +36,7 @@ public abstract partial class SharedGasVolumePumpSystem : EntitySystem
 
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleStatusMessage(EntityUid uid, GasVolumePumpComponent pump, GasVolumePumpToggleStatusMessage args)
     {
         pump.Enabled = args.Enabled;
@@ -51,6 +48,7 @@ public abstract partial class SharedGasVolumePumpSystem : EntitySystem
         UpdateAppearance(uid, pump);
     }
 
+    [SubscribeLocalEvent]
     private void OnTransferRateChangeMessage(EntityUid uid, GasVolumePumpComponent pump, GasVolumePumpChangeTransferRateMessage args)
     {
         pump.TransferRate = Math.Clamp(args.TransferRate, 0f, pump.MaxTransferRate);
@@ -60,6 +58,7 @@ public abstract partial class SharedGasVolumePumpSystem : EntitySystem
             $"{ToPrettyString(args.Actor):player} set the transfer rate on {ToPrettyString(uid):device} to {args.TransferRate}");
     }
 
+    [SubscribeLocalEvent]
     private void OnExamined(EntityUid uid, GasVolumePumpComponent pump, ExaminedEvent args)
     {
         if (!Transform(uid).Anchored)

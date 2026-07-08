@@ -31,20 +31,15 @@ namespace Content.Shared.Throwing
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<ThrownItemComponent, MapInitEvent>(OnMapInit);
-            SubscribeLocalEvent<ThrownItemComponent, PhysicsSleepEvent>(OnSleep);
-            SubscribeLocalEvent<ThrownItemComponent, StartCollideEvent>(HandleCollision);
-            SubscribeLocalEvent<ThrownItemComponent, PreventCollideEvent>(PreventCollision);
-            SubscribeLocalEvent<ThrownItemComponent, ThrownEvent>(ThrowItem);
-
-            SubscribeLocalEvent<PullStartedMessage>(HandlePullStarted);
         }
 
+        [SubscribeLocalEvent]
         private void OnMapInit(EntityUid uid, ThrownItemComponent component, MapInitEvent args)
         {
             component.ThrownTime ??= _gameTiming.CurTime;
         }
 
+        [SubscribeLocalEvent]
         private void ThrowItem(EntityUid uid, ThrownItemComponent component, ref ThrownEvent @event)
         {
             if (!TryComp(uid, out FixturesComponent? fixturesComponent) ||
@@ -59,6 +54,7 @@ namespace Content.Shared.Throwing
             _fixtures.TryCreateFixture(uid, shape, ThrowingFixture, hard: false, collisionMask: (int) CollisionGroup.ThrownItem, manager: fixturesComponent, body: body);
         }
 
+        [SubscribeLocalEvent]
         private void HandleCollision(EntityUid uid, ThrownItemComponent component, ref StartCollideEvent args)
         {
             if (!args.OtherFixture.Hard)
@@ -70,6 +66,7 @@ namespace Content.Shared.Throwing
             ThrowCollideInteraction(component, args.OurEntity, args.OtherEntity);
         }
 
+        [SubscribeLocalEvent]
         private void PreventCollision(EntityUid uid, ThrownItemComponent component, ref PreventCollideEvent args)
         {
             if (args.OtherEntity == component.Thrower)
@@ -78,11 +75,13 @@ namespace Content.Shared.Throwing
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnSleep(EntityUid uid, ThrownItemComponent thrownItem, ref PhysicsSleepEvent @event)
         {
             StopThrow(uid, thrownItem);
         }
 
+        [SubscribeLocalEvent]
         private void HandlePullStarted(PullStartedMessage message)
         {
             // TODO: this isn't directed so things have to be done the bad way

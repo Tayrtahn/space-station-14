@@ -31,12 +31,11 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
         base.Initialize();
 
         Subs.ItemStatus<SprayPainterComponent>(ent => new StatusControl(ent));
-        SubscribeLocalEvent<SprayPainterComponent, AfterAutoHandleStateEvent>(OnStateUpdate);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
 
         CachePrototypes();
     }
 
+    [SubscribeLocalEvent]
     private void OnStateUpdate(Entity<SprayPainterComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         UpdateUi(ent);
@@ -48,6 +47,7 @@ public sealed partial class SprayPainterSystem : SharedSprayPainterSystem
             bui.Update();
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs args)
     {
         if (!args.WasModified<PaintableGroupCategoryPrototype>() || !args.WasModified<PaintableGroupPrototype>() || !args.WasModified<DecalPrototype>())

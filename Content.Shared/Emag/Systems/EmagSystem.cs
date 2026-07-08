@@ -29,11 +29,9 @@ public sealed partial class EmagSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EmagComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<EmaggedComponent, OnAccessOverriderAccessUpdatedEvent>(OnAccessOverriderAccessUpdated);
     }
 
+    [SubscribeLocalEvent]
     private void OnAccessOverriderAccessUpdated(Entity<EmaggedComponent> entity, ref OnAccessOverriderAccessUpdatedEvent args)
     {
         if (!CompareFlag(entity.Comp.EmagType, EmagType.Access))
@@ -42,6 +40,8 @@ public sealed partial class EmagSystem : EntitySystem
         entity.Comp.EmagType &= ~EmagType.Access;
         Dirty(entity);
     }
+
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, EmagComponent comp, AfterInteractEvent args)
     {
         if (!args.CanReach || args.Target is not { } target)

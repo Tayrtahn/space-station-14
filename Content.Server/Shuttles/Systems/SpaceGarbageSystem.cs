@@ -8,14 +8,14 @@ namespace Content.Server.Shuttles.Systems;
 /// <summary>
 ///     Deletes anything with <see cref="SpaceGarbageComponent"/> that has a cross-grid collision with a static body.
 /// </summary>
-public sealed class SpaceGarbageSystem : EntitySystem
+public sealed partial class SpaceGarbageSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<SpaceGarbageComponent, StartCollideEvent>(OnCollide);
     }
 
+    [SubscribeLocalEvent]
     private void OnCollide(EntityUid uid, SpaceGarbageComponent component, ref StartCollideEvent args)
     {
         if (args.OtherBody.BodyType != BodyType.Static)

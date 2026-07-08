@@ -19,7 +19,6 @@ public sealed partial class SlotBasedConnectedContainerSystem : EntitySystem
     /// <inheritdoc />
     public override void Initialize()
     {
-        SubscribeLocalEvent<SlotBasedConnectedContainerComponent, GetConnectedContainerEvent>(OnGettingConnectedContainer);
     }
 
     /// <summary>
@@ -42,6 +41,7 @@ public sealed partial class SlotBasedConnectedContainerSystem : EntitySystem
         return TryGetConnectedContainer(uid, component.TargetSlot, component.ContainerWhitelist, out slotEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnGettingConnectedContainer(Entity<SlotBasedConnectedContainerComponent> ent, ref GetConnectedContainerEvent args)
     {
         if (TryGetConnectedContainer(ent, ent.Comp.TargetSlot, ent.Comp.ContainerWhitelist, out var val))

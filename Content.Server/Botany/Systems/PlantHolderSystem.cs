@@ -59,10 +59,6 @@ public sealed partial class PlantHolderSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PlantHolderComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<PlantHolderComponent, InteractUsingEvent>(OnInteractUsing);
-        SubscribeLocalEvent<PlantHolderComponent, InteractHandEvent>(OnInteractHand);
-        SubscribeLocalEvent<PlantHolderComponent, SolutionTransferredEvent>(OnSolutionTransferred);
     }
 
     public override void Update(float frameTime)
@@ -91,6 +87,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
         return result;
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(Entity<PlantHolderComponent> entity, ref ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -171,6 +168,7 @@ public sealed partial class PlantHolderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<PlantHolderComponent> entity, ref InteractUsingEvent args)
     {
         var (uid, component) = entity;
@@ -363,10 +361,13 @@ public sealed partial class PlantHolderSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionTransferred(Entity<PlantHolderComponent> ent, ref SolutionTransferredEvent args)
     {
         _audio.PlayPvs(ent.Comp.WateringSound, ent.Owner);
     }
+
+    [SubscribeLocalEvent]
     private void OnInteractHand(Entity<PlantHolderComponent> entity, ref InteractHandEvent args)
     {
         DoHarvest(entity, args.User, entity.Comp);

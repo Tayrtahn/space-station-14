@@ -13,11 +13,9 @@ public sealed partial class ChangelingObjectiveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ChangelingUniqueIdentityConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
-        SubscribeLocalEvent<ChangelingDevouredEvent>(OnChangelingDevoured);
     }
 
+    [SubscribeLocalEvent]
     private void OnChangelingDevoured(ref ChangelingDevouredEvent args)
     {
         // We check if the devour granted us Dna.
@@ -32,6 +30,7 @@ public sealed partial class ChangelingObjectiveSystem : EntitySystem
         obj.UniqueIdentities++;
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(Entity<ChangelingUniqueIdentityConditionComponent> ent, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = GetProgress(ent.Comp, _number.GetTarget(ent));

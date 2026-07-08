@@ -14,8 +14,6 @@ public sealed partial class FloatingVisualizerSystem : SharedFloatingVisualizerS
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<FloatingVisualsComponent, AnimationCompletedEvent>(OnAnimationCompleted);
     }
 
     /// <inheritdoc/>
@@ -52,6 +50,7 @@ public sealed partial class FloatingVisualizerSystem : SharedFloatingVisualizerS
             AnimationSystem.Play(uid, animation, animationKey);
     }
 
+    [SubscribeLocalEvent]
     private void OnAnimationCompleted(EntityUid uid, FloatingVisualsComponent component, AnimationCompletedEvent args)
     {
         if (args.Key != component.AnimationKey)

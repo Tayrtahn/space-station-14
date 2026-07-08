@@ -11,9 +11,9 @@ public sealed partial class RadiationPulseSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<RadiationPulseComponent, ComponentStartup>(OnStartup);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(EntityUid uid, RadiationPulseComponent component, ComponentStartup args)
     {
         component.StartTime = _timing.RealTime;

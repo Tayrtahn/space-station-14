@@ -22,16 +22,15 @@ internal sealed partial class SmesSystem : EntitySystem
         base.Initialize();
 
         UpdatesAfter.Add(typeof(PowerNetSystem));
-
-        SubscribeLocalEvent<SmesComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<SmesComponent, ChargeChangedEvent>(OnBatteryChargeChanged);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, SmesComponent component, MapInitEvent args)
     {
         UpdateSmesState(uid, component);
     }
 
+    [SubscribeLocalEvent]
     private void OnBatteryChargeChanged(EntityUid uid, SmesComponent component, ref ChargeChangedEvent args)
     {
         UpdateSmesState(uid, component);

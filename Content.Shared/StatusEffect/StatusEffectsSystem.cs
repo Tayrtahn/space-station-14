@@ -20,10 +20,6 @@ namespace Content.Shared.StatusEffect
             base.Initialize();
 
             UpdatesOutsidePrediction = true;
-
-            SubscribeLocalEvent<StatusEffectsComponent, ComponentGetState>(OnGetState);
-            SubscribeLocalEvent<StatusEffectsComponent, ComponentHandleState>(OnHandleState);
-            SubscribeLocalEvent<StatusEffectsComponent, RejuvenateEvent>(OnRejuvenate);
         }
 
         public override void Update(float frameTime)
@@ -56,6 +52,7 @@ namespace Content.Shared.StatusEffect
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnGetState(EntityUid uid, StatusEffectsComponent component, ref ComponentGetState args)
         {
             // Using new(...) To avoid mispredictions due to MergeImplicitData. This will mean the server-side code is
@@ -63,6 +60,7 @@ namespace Content.Shared.StatusEffect
             args.State = new StatusEffectsComponentState(new(component.ActiveEffects), new(component.AllowedEffects));
         }
 
+        [SubscribeLocalEvent]
         private void OnHandleState(EntityUid uid, StatusEffectsComponent component, ref ComponentHandleState args)
         {
             if (args.Current is not StatusEffectsComponentState state)
@@ -89,6 +87,7 @@ namespace Content.Shared.StatusEffect
                 EnsureComp<ActiveStatusEffectsComponent>(uid);
         }
 
+        [SubscribeLocalEvent]
         private void OnRejuvenate(EntityUid uid, StatusEffectsComponent component, RejuvenateEvent args)
         {
             TryRemoveAllStatusEffects(uid, component);

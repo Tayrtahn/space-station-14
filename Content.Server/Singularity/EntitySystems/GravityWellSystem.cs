@@ -44,12 +44,12 @@ public sealed partial class GravityWellSystem : SharedGravityWellSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<GravityWellComponent, MapInitEvent>(OnGravityWellMapInit);
 
         var vvHandle = _vvManager.GetTypeHandler<GravityWellComponent>();
         vvHandle.AddPath(nameof(GravityWellComponent.TargetPulsePeriod), (_, comp) => comp.TargetPulsePeriod, SetPulsePeriod);
     }
 
+    [SubscribeLocalEvent]
     private void OnGravityWellMapInit(Entity<GravityWellComponent> ent, ref MapInitEvent args)
     {
         ent.Comp.NextPulseTime = _timing.CurTime + ent.Comp.TargetPulsePeriod;

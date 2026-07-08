@@ -20,10 +20,9 @@ public sealed partial class EyeCursorOffsetSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<EyeCursorOffsetComponent, GetEyeOffsetEvent>(OnGetEyeOffsetEvent);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetEyeOffsetEvent(EntityUid uid, EyeCursorOffsetComponent component, ref GetEyeOffsetEvent args)
     {
         var offset = OffsetAfterMouse(uid, component);

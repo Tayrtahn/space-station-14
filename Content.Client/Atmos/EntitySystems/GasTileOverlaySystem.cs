@@ -7,15 +7,14 @@ using Robust.Shared.GameStates;
 namespace Content.Client.Atmos.EntitySystems;
 
 [UsedImplicitly]
-public sealed class GasTileOverlaySystem : SharedGasTileOverlaySystem
+public sealed partial class GasTileOverlaySystem : SharedGasTileOverlaySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeNetworkEvent<GasOverlayUpdateEvent>(HandleGasOverlayUpdate);
-        SubscribeLocalEvent<GasTileOverlayComponent, ComponentHandleState>(OnHandleState);
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(EntityUid gridUid, GasTileOverlayComponent comp, ref ComponentHandleState args)
     {
         Dictionary<Vector2i, GasOverlayChunk> modifiedChunks;
@@ -55,6 +54,7 @@ public sealed class GasTileOverlaySystem : SharedGasTileOverlaySystem
         }
     }
 
+    [SubscribeNetworkEvent]
     private void HandleGasOverlayUpdate(GasOverlayUpdateEvent ev)
     {
         foreach (var (nent, removedIndicies) in ev.RemovedChunks)

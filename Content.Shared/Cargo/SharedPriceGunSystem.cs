@@ -8,15 +8,14 @@ namespace Content.Shared.Cargo.Systems;
 /// <summary>
 ///     The price gun system! If this component is on an entity, you can scan objects (Click or use verb) to see their price.
 /// </summary>
-public abstract class SharedPriceGunSystem : EntitySystem
+public abstract partial class SharedPriceGunSystem : EntitySystem
 {
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<PriceGunComponent, GetVerbsEvent<UtilityVerb>>(OnUtilityVerb);
-        SubscribeLocalEvent<PriceGunComponent, AfterInteractEvent>(OnAfterInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnUtilityVerb(EntityUid uid, PriceGunComponent component, GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || args.Using == null)
@@ -35,6 +34,7 @@ public abstract class SharedPriceGunSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<PriceGunComponent> entity, ref AfterInteractEvent args)
     {
         if (!args.CanReach || args.Target == null || args.Handled)

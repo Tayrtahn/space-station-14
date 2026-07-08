@@ -38,10 +38,9 @@ public sealed partial class RadioSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<IntrinsicRadioReceiverComponent, RadioReceiveEvent>(OnIntrinsicReceive);
-        SubscribeLocalEvent<IntrinsicRadioTransmitterComponent, EntitySpokeEvent>(OnIntrinsicSpeak);
     }
 
+    [SubscribeLocalEvent]
     private void OnIntrinsicSpeak(EntityUid uid, IntrinsicRadioTransmitterComponent component, EntitySpokeEvent args)
     {
         if (args.Channel != null && component.Channels.Contains(args.Channel.ID))
@@ -51,6 +50,7 @@ public sealed partial class RadioSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnIntrinsicReceive(EntityUid uid, IntrinsicRadioReceiverComponent component, ref RadioReceiveEvent args)
     {
         if (!TryComp(uid, out ActorComponent? actor))

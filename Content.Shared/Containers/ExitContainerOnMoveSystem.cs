@@ -12,10 +12,9 @@ public sealed partial class ExitContainerOnMoveSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExitContainerOnMoveComponent, ContainerRelayMovementEntityEvent>(OnContainerRelay);
     }
 
+    [SubscribeLocalEvent]
     private void OnContainerRelay(Entity<ExitContainerOnMoveComponent> ent, ref ContainerRelayMovementEntityEvent args)
     {
         var (_, comp) = ent;

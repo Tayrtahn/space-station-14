@@ -14,11 +14,9 @@ public sealed partial class SimpleToolUsageSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SimpleToolUsageComponent, AfterInteractUsingEvent>(OnAfterInteract);
-        SubscribeLocalEvent<SimpleToolUsageComponent, GetVerbsEvent<InteractionVerb>>(OnGetInteractionVerbs);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<SimpleToolUsageComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (!args.CanReach || args.Handled)
@@ -30,6 +28,7 @@ public sealed partial class SimpleToolUsageSystem : EntitySystem
         AttemptToolUsage(ent, args.User, args.Used);
     }
 
+    [SubscribeLocalEvent]
     public void OnGetInteractionVerbs(Entity<SimpleToolUsageComponent> ent, ref GetVerbsEvent<InteractionVerb> args)
     {
         if (ent.Comp.UsageVerb == null)

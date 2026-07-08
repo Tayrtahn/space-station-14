@@ -66,9 +66,6 @@ public sealed partial class AtmosphereSystem : SharedAtmosphereSystem
         InitializeGridAtmosphere();
         InitializeMap();
 
-        SubscribeLocalEvent<TileChangedEvent>(OnTileChanged);
-        SubscribeLocalEvent<PrototypesReloadedEventArgs>(OnPrototypesReloaded);
-
         CacheDecals();
         CacheGases();
     }
@@ -80,6 +77,7 @@ public sealed partial class AtmosphereSystem : SharedAtmosphereSystem
         ShutdownCommands();
     }
 
+    [SubscribeLocalEvent]
     private void OnTileChanged(ref TileChangedEvent ev)
     {
         foreach (var change in ev.Changes)
@@ -88,6 +86,7 @@ public sealed partial class AtmosphereSystem : SharedAtmosphereSystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnPrototypesReloaded(PrototypesReloadedEventArgs ev)
     {
         if (ev.WasModified<DecalPrototype>())

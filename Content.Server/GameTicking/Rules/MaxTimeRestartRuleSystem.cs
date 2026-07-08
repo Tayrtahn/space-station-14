@@ -13,8 +13,6 @@ public sealed partial class MaxTimeRestartRuleSystem : GameRuleSystem<MaxTimeRes
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GameRunLevelChangedEvent>(RunLevelChanged);
     }
 
     protected override void Started(EntityUid uid, MaxTimeRestartRuleComponent component, GameRuleComponent gameRule, GameRuleStartedEvent args)
@@ -55,6 +53,7 @@ public sealed partial class MaxTimeRestartRuleSystem : GameRuleSystem<MaxTimeRes
         Timer.Spawn(component.RoundEndDelay, () => GameTicker.RestartRound());
     }
 
+    [SubscribeLocalEvent]
     private void RunLevelChanged(GameRunLevelChangedEvent args)
     {
         var query = EntityQueryEnumerator<MaxTimeRestartRuleComponent, GameRuleComponent>();

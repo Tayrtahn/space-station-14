@@ -11,10 +11,9 @@ public sealed partial class RandomIconSmoothSystem : SharedRandomIconSmoothSyste
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RandomIconSmoothComponent, MapInitEvent>(OnMapInit);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<RandomIconSmoothComponent> ent, ref MapInitEvent args)
     {
         if (ent.Comp.RandomStates.Count == 0)

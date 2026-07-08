@@ -66,28 +66,9 @@ public sealed partial class IngestionSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<EdibleComponent, MapInitEvent>(OnEdibleInit);
-
         // Interactions
         SubscribeLocalEvent<EdibleComponent, UseInHandEvent>(OnUseEdibleInHand, after: [typeof(OpenableSystem), typeof(InventorySystem), typeof(ActivatableUISystem)]);
         SubscribeLocalEvent<EdibleComponent, AfterInteractEvent>(OnEdibleInteract, after: [typeof(ToolOpenableSystem)]);
-
-        // Generic Eating Handlers
-        SubscribeLocalEvent<EdibleComponent, BeforeIngestedEvent>(OnBeforeIngested);
-        SubscribeLocalEvent<EdibleComponent, IngestedEvent>(OnEdibleIngested);
-        SubscribeLocalEvent<EdibleComponent, FullyEatenEvent>(OnFullyEaten);
-
-        // Body Component eating handler
-        SubscribeLocalEvent<BodyComponent, AttemptIngestEvent>(OnTryIngest);
-        SubscribeLocalEvent<BodyComponent, EatingDoAfterEvent>(OnEatingDoAfter);
-
-        // Verbs
-        SubscribeLocalEvent<EdibleComponent, GetVerbsEvent<AlternativeVerb>>(AddEdibleVerbs);
-        SubscribeLocalEvent<EdibleComponent, SolutionChangedEvent>(OnSolutionContainerChanged);
-
-        // Misc
-        SubscribeLocalEvent<EdibleComponent, AttemptShakeEvent>(OnAttemptShake);
-        SubscribeLocalEvent<EdibleComponent, BeforeToolRefinedEvent>(OnBeforeToolRefined);
 
         InitializeBlockers();
         InitializeUtensils();
@@ -135,6 +116,7 @@ public sealed partial class IngestionSystem : EntitySystem
         return ingestionEv.Handled;
     }
 
+    [SubscribeLocalEvent]
     private void OnEdibleInit(Entity<EdibleComponent> entity, ref MapInitEvent args)
     {
         _solutionContainer.EnsureSolution(entity.Owner, entity.Comp.Solution, out _);
@@ -152,6 +134,7 @@ public sealed partial class IngestionSystem : EntitySystem
         _appearance.SetData(entity, FoodVisuals.Visual, drainAvailable.Float(), entity.Comp2);
     }
 
+    [SubscribeLocalEvent]
     private void OnSolutionContainerChanged(Entity<EdibleComponent> entity, ref SolutionChangedEvent args)
     {
         // The changes are already networked as part of the same game state.
@@ -236,6 +219,7 @@ public sealed partial class IngestionSystem : EntitySystem
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnTryIngest(Entity<BodyComponent> entity, ref AttemptIngestEvent args)
     {
         var food = args.Ingested;
@@ -290,6 +274,7 @@ public sealed partial class IngestionSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnEatingDoAfter(Entity<BodyComponent> entity, ref EatingDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || entity.Comp.Deleted || args.Target == null)
@@ -430,6 +415,7 @@ public sealed partial class IngestionSystem : EntitySystem
 
     #endregion
 
+    [SubscribeLocalEvent]
     private void OnBeforeIngested(Entity<EdibleComponent> food, ref BeforeIngestedEvent args)
     {
         if (args.Cancelled || args.Solution is not { } solution)
@@ -439,6 +425,7 @@ public sealed partial class IngestionSystem : EntitySystem
         args.Transfer = food.Comp.TransferAmount ?? solution.Volume;
     }
 
+    [SubscribeLocalEvent]
     private void OnEdibleIngested(Entity<EdibleComponent> entity, ref IngestedEvent args)
     {
         // This is a lot but there wasn't really a way to separate this from the EdibleComponent otherwise I would've moved it.
@@ -508,16 +495,19 @@ public sealed partial class IngestionSystem : EntitySystem
         args.Destroy = entity.Comp.DestroyOnEmpty;
     }
 
+    [SubscribeLocalEvent]
     private void OnFullyEaten(Entity<EdibleComponent> entity, ref FullyEatenEvent args)
     {
         SpawnTrash(entity, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeToolRefined(Entity<EdibleComponent> entity, ref BeforeToolRefinedEvent args)
     {
         SpawnTrash(entity, args.User);
     }
 
+    [SubscribeLocalEvent]
     private void AddEdibleVerbs(Entity<EdibleComponent> entity, ref GetVerbsEvent<AlternativeVerb> args)
     {
         var user = args.User;
@@ -531,6 +521,7 @@ public sealed partial class IngestionSystem : EntitySystem
         args.Verbs.Add(verb);
     }
 
+    [SubscribeLocalEvent]
     private void OnAttemptShake(Entity<EdibleComponent> entity, ref AttemptShakeEvent args)
     {
         if (IsEmpty(entity))

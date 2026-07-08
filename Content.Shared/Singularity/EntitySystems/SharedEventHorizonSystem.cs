@@ -24,10 +24,6 @@ public abstract partial class SharedEventHorizonSystem : EntitySystem
     {
         base.Initialize();
 
-        // Allows for predicted collisions with singularities.
-        SubscribeLocalEvent<EventHorizonComponent, ComponentStartup>(OnEventHorizonStartup);
-        SubscribeLocalEvent<EventHorizonComponent, PreventCollideEvent>(OnPreventCollide);
-
         var vvHandle = Vvm.GetTypeHandler<EventHorizonComponent>();
         vvHandle.AddPath(nameof(EventHorizonComponent.Radius), (_, comp) => comp.Radius, (uid, value, comp) => SetRadius(uid, value, eventHorizon: comp));
         vvHandle.AddPath(nameof(EventHorizonComponent.CanBreachContainment), (_, comp) => comp.CanBreachContainment, (uid, value, comp) => SetCanBreachContainment(uid, value, eventHorizon: comp));
@@ -189,6 +185,7 @@ public abstract partial class SharedEventHorizonSystem : EntitySystem
     /// <param name="uid">The entity that has just gained an event horizon component.</param>
     /// <param name="comp">The event horizon component that is starting up.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void OnEventHorizonStartup(EntityUid uid, EventHorizonComponent comp, ComponentStartup args)
     {
         UpdateEventHorizonFixture(uid, eventHorizon: comp);
@@ -202,6 +199,7 @@ public abstract partial class SharedEventHorizonSystem : EntitySystem
     /// <param name="uid">The entity that is trying to collide with another entity.</param>
     /// <param name="comp">The event horizon of the former.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void OnPreventCollide(EntityUid uid, EventHorizonComponent comp, ref PreventCollideEvent args)
     {
         if (!args.Cancelled)

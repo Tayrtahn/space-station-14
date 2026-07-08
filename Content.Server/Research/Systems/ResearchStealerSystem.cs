@@ -12,10 +12,9 @@ public sealed partial class ResearchStealerSystem : SharedResearchStealerSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ResearchStealerComponent, ResearchStealDoAfterEvent>(OnDoAfter);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(EntityUid uid, ResearchStealerComponent comp, ResearchStealDoAfterEvent args)
     {
         if (args.Cancelled || args.Handled || args.Target == null)

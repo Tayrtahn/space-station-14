@@ -10,13 +10,12 @@ public abstract partial class SharedGravityGeneratorSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<GravityGeneratorComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
     }
 
     /// <summary>
     /// Prevent unanchoring when gravity is active
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUnanchorAttempt(Entity<GravityGeneratorComponent> ent, ref UnanchorAttemptEvent args)
     {
         if (!ent.Comp.GravityActive)

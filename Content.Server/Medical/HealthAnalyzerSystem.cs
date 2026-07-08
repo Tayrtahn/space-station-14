@@ -37,11 +37,6 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<HealthAnalyzerComponent, AfterInteractEvent>(OnAfterInteract);
-        SubscribeLocalEvent<HealthAnalyzerComponent, HealthAnalyzerDoAfterEvent>(OnDoAfter);
-        SubscribeLocalEvent<HealthAnalyzerComponent, EntGotInsertedIntoContainerMessage>(OnInsertedIntoContainer);
-        SubscribeLocalEvent<HealthAnalyzerComponent, ItemToggledEvent>(OnToggled);
-        SubscribeLocalEvent<HealthAnalyzerComponent, DroppedEvent>(OnDropped);
     }
 
     public override void Update(float frameTime)
@@ -82,6 +77,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
     /// <summary>
     /// Trigger the doafter for scanning
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAfterInteract(Entity<HealthAnalyzerComponent> uid, ref AfterInteractEvent args)
     {
         if (args.Target == null || !args.CanReach || !HasComp<MobStateComponent>(args.Target) || !_cell.HasDrawCharge(uid.Owner, user: args.User))
@@ -102,6 +98,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
         _popupSystem.PopupEntity(msg, args.Target.Value, args.Target.Value, PopupType.Medium);
     }
 
+    [SubscribeLocalEvent]
     private void OnDoAfter(Entity<HealthAnalyzerComponent> uid, ref HealthAnalyzerDoAfterEvent args)
     {
         if (args.Handled || args.Cancelled || args.Target == null || !_cell.HasDrawCharge(uid.Owner, user: args.User))
@@ -118,6 +115,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
     /// <summary>
     /// Turn off when placed into a storage item or moved between slots/hands
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnInsertedIntoContainer(Entity<HealthAnalyzerComponent> uid, ref EntGotInsertedIntoContainerMessage args)
     {
         if (uid.Comp.ScannedEntity is { } patient)
@@ -127,6 +125,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
     /// <summary>
     /// Disable continuous updates once turned off
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnToggled(Entity<HealthAnalyzerComponent> ent, ref ItemToggledEvent args)
     {
         if (!args.Activated && ent.Comp.ScannedEntity is { } patient)
@@ -136,6 +135,7 @@ public sealed partial class HealthAnalyzerSystem : EntitySystem
     /// <summary>
     /// Turn off the analyser when dropped
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDropped(Entity<HealthAnalyzerComponent> uid, ref DroppedEvent args)
     {
         if (uid.Comp.ScannedEntity is { } patient)

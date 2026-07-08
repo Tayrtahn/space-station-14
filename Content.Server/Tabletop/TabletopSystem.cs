@@ -20,13 +20,6 @@ public sealed partial class TabletopSystem : SharedTabletopSystem
     {
         base.Initialize();
 
-        SubscribeNetworkEvent<TabletopStopPlayingEvent>(OnStopPlaying);
-
-        SubscribeLocalEvent<TabletopGameComponent, ActivateInWorldEvent>(OnTabletopActivate);
-        SubscribeLocalEvent<TabletopGameComponent, ComponentShutdown>(OnGameShutdown);
-        SubscribeLocalEvent<TabletopGamerComponent, PlayerDetachedEvent>(OnPlayerDetached);
-        SubscribeLocalEvent<TabletopGamerComponent, ComponentShutdown>(OnGamerShutdown);
-
         InitializeMap();
     }
 
@@ -45,6 +38,7 @@ public sealed partial class TabletopSystem : SharedTabletopSystem
         base.OnTabletopMove(msg, args);
     }
 
+    [SubscribeLocalEvent]
     private void OnTabletopActivate(Entity<TabletopGameComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !args.Complex)
@@ -57,22 +51,26 @@ public sealed partial class TabletopSystem : SharedTabletopSystem
         OpenSessionFor(actor.PlayerSession, ent.Owner);
     }
 
+    [SubscribeLocalEvent]
     private void OnGameShutdown(Entity<TabletopGameComponent> ent, ref ComponentShutdown args)
     {
         CleanupSession(ent.Owner);
     }
 
+    [SubscribeNetworkEvent]
     private void OnStopPlaying(TabletopStopPlayingEvent msg, EntitySessionEventArgs args)
     {
         CloseSessionFor(args.SenderSession, GetEntity(msg.TableUid));
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(Entity<TabletopGamerComponent> ent, ref PlayerDetachedEvent args)
     {
         if (ent.Comp.Tabletop.IsValid())
             CloseSessionFor(args.Player, ent.Comp.Tabletop);
     }
 
+    [SubscribeLocalEvent]
     private void OnGamerShutdown(Entity<TabletopGamerComponent> ent, ref ComponentShutdown args)
     {
         if (!TryComp(ent.Owner, out ActorComponent? actor))

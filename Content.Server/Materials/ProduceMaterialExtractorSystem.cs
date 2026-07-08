@@ -19,9 +19,9 @@ public sealed partial class ProduceMaterialExtractorSystem : EntitySystem
     /// <inheritdoc/>
     public override void Initialize()
     {
-        SubscribeLocalEvent<ProduceMaterialExtractorComponent, AfterInteractUsingEvent>(OnInteractUsing);
     }
 
+    [SubscribeLocalEvent]
     private void OnInteractUsing(Entity<ProduceMaterialExtractorComponent> ent, ref AfterInteractUsingEvent args)
     {
         if (args.Handled)

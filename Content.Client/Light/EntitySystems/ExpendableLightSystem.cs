@@ -14,10 +14,9 @@ public sealed partial class ExpendableLightSystem : VisualizerSystem<ExpendableL
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ExpendableLightComponent, ComponentShutdown>(OnLightShutdown);
     }
 
+    [SubscribeLocalEvent]
     private void OnLightShutdown(EntityUid uid, ExpendableLightComponent component, ComponentShutdown args)
     {
         component.PlayingStream = _audioSystem.Stop(component.PlayingStream);

@@ -42,35 +42,9 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NetworkConfiguratorComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, ComponentShutdown>(OnShutdown);
-
-        //Interaction
-        SubscribeLocalEvent<NetworkConfiguratorComponent, AfterInteractEvent>(AfterInteract); //TODO: Replace with utility verb?
-        SubscribeLocalEvent<NetworkConfiguratorComponent, ExaminedEvent>(DoExamine);
-
-        //Verbs
-        SubscribeLocalEvent<NetworkConfiguratorComponent, GetVerbsEvent<UtilityVerb>>(OnAddInteractVerb);
-        SubscribeLocalEvent<DeviceNetworkComponent, GetVerbsEvent<AlternativeVerb>>(OnAddAlternativeSaveDeviceVerb);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, GetVerbsEvent<AlternativeVerb>>(OnAddSwitchModeVerb);
-
-        //UI
-        SubscribeLocalEvent<NetworkConfiguratorComponent, BoundUIClosedEvent>(OnUiClosed);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorRemoveDeviceMessage>(OnRemoveDevice);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorClearDevicesMessage>(OnClearDevice);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorLinksSaveMessage>(OnSaveLinks);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorClearLinksMessage>(OnClearLinks);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorToggleLinkMessage>(OnToggleLinks);
-        SubscribeLocalEvent<NetworkConfiguratorComponent, NetworkConfiguratorButtonPressedMessage>(OnConfigButtonPressed);
-
-        SubscribeLocalEvent<NetworkConfiguratorComponent, BoundUserInterfaceCheckRangeEvent>(OnUiRangeCheck);
-
-        SubscribeLocalEvent<DeviceListComponent, ComponentRemove>(OnComponentRemoved);
-
-        SubscribeLocalEvent<BeforeSerializationEvent>(OnMapSave);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapSave(BeforeSerializationEvent ev)
     {
         var enumerator = AllEntityQuery<NetworkConfiguratorComponent>();
@@ -109,6 +83,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnUiRangeCheck(Entity<NetworkConfiguratorComponent> ent, ref BoundUserInterfaceCheckRangeEvent args)
     {
         if (ent.Comp.ActiveDeviceList == null || args.Result == BoundUserInterfaceRangeResult.Fail)
@@ -119,6 +94,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
             args.Result = BoundUserInterfaceRangeResult.Fail;
     }
 
+    [SubscribeLocalEvent]
     private void OnShutdown(EntityUid uid, NetworkConfiguratorComponent component, ComponentShutdown args)
     {
         ClearDevices(uid, component);
@@ -128,6 +104,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         component.ActiveDeviceList = null;
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(EntityUid uid, NetworkConfiguratorComponent component, MapInitEvent args)
     {
         UpdateListUiState(uid, component);
@@ -255,6 +232,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         return false;
     }
 
+    [SubscribeLocalEvent]
     private void OnComponentRemoved(EntityUid uid, DeviceListComponent component, ComponentRemove args)
     {
         _uiSystem.CloseUi(uid, NetworkConfiguratorUiKey.Configure);
@@ -319,12 +297,14 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
 
     #region Interactions
 
+    [SubscribeLocalEvent]
     private void DoExamine(EntityUid uid, NetworkConfiguratorComponent component, ExaminedEvent args)
     {
         var mode = component.LinkModeActive ? "network-configurator-examine-mode-link" : "network-configurator-examine-mode-list";
         args.PushMarkup(Loc.GetString("network-configurator-examine-current-mode", ("mode", Loc.GetString(mode))));
     }
 
+    [SubscribeLocalEvent]
     private void AfterInteract(EntityUid uid, NetworkConfiguratorComponent component, AfterInteractEvent args)
     {
         OnUsed(uid, component, args.Target, args.User, args.CanReach);
@@ -376,6 +356,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// <summary>
     /// Adds the interaction verb which is either configuring device lists or saving a device onto the configurator
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAddInteractVerb(EntityUid uid, NetworkConfiguratorComponent configurator, GetVerbsEvent<UtilityVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.Using.HasValue)
@@ -411,6 +392,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// Allows alt clicking entities with a network configurator that would otherwise trigger a different action like entities
     /// with a <see cref="DeviceListComponent"/>
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnAddAlternativeSaveDeviceVerb(EntityUid uid, DeviceNetworkComponent component, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.Using.HasValue
@@ -444,6 +426,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAddSwitchModeVerb(EntityUid uid, NetworkConfiguratorComponent configurator, GetVerbsEvent<AlternativeVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !args.Using.HasValue || !HasComp<NetworkConfiguratorComponent>(args.Target))
@@ -571,6 +554,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// <summary>
     /// Clears the active device list when the ui is closed
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnUiClosed(EntityUid uid, NetworkConfiguratorComponent component, BoundUIClosedEvent args)
     {
         if (!args.UiKey.Equals(NetworkConfiguratorUiKey.Configure)
@@ -604,6 +588,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// <summary>
     /// Removes a device from the saved devices list
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnRemoveDevice(EntityUid uid, NetworkConfiguratorComponent component, NetworkConfiguratorRemoveDeviceMessage args)
     {
         if (component.Devices.TryGetValue(args.Address, out var removedDevice))
@@ -622,6 +607,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// <summary>
     /// Clears the saved devices
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnClearDevice(EntityUid uid, NetworkConfiguratorComponent component, NetworkConfiguratorClearDevicesMessage args)
     {
         _adminLogger.Add(LogType.DeviceLinking, LogImpact.Low,
@@ -642,6 +628,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         component.Devices.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnClearLinks(EntityUid uid, NetworkConfiguratorComponent configurator, NetworkConfiguratorClearLinksMessage args)
     {
         if (!configurator.ActiveDeviceLink.HasValue || !configurator.DeviceLinkTarget.HasValue)
@@ -678,6 +665,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleLinks(EntityUid uid, NetworkConfiguratorComponent configurator, NetworkConfiguratorToggleLinkMessage args)
     {
         if (!configurator.ActiveDeviceLink.HasValue || !configurator.DeviceLinkTarget.HasValue)
@@ -716,6 +704,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// <summary>
     /// Saves links set by the device link UI
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnSaveLinks(EntityUid uid, NetworkConfiguratorComponent configurator, NetworkConfiguratorLinksSaveMessage args)
     {
         if (!configurator.ActiveDeviceLink.HasValue || !configurator.DeviceLinkTarget.HasValue)
@@ -763,6 +752,7 @@ public sealed partial class NetworkConfiguratorSystem : SharedNetworkConfigurato
     /// Handles all the button presses from the config ui.
     /// Modifies, copies or visualizes the targets device list
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnConfigButtonPressed(EntityUid uid, NetworkConfiguratorComponent component, NetworkConfiguratorButtonPressedMessage args)
     {
         if (!component.ActiveDeviceList.HasValue)

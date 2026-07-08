@@ -19,9 +19,6 @@ public sealed partial class ShowHealthIconsSystem : EquipmentHudSystem<ShowHealt
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<InjurableComponent, GetStatusIconsEvent>(OnGetStatusIconsEvent);
-        SubscribeLocalEvent<ShowHealthIconsComponent, AfterAutoHandleStateEvent>(OnHandleState);
     }
 
     protected override void UpdateInternal(RefreshEquipmentHudEvent<ShowHealthIconsComponent> component)
@@ -45,11 +42,13 @@ public sealed partial class ShowHealthIconsSystem : EquipmentHudSystem<ShowHealt
         DamageContainers.Clear();
     }
 
+    [SubscribeLocalEvent]
     private void OnHandleState(Entity<ShowHealthIconsComponent> ent, ref AfterAutoHandleStateEvent args)
     {
         RefreshOverlay();
     }
 
+    [SubscribeLocalEvent]
     private void OnGetStatusIconsEvent(Entity<InjurableComponent> entity, ref GetStatusIconsEvent args)
     {
         if (!IsActive)

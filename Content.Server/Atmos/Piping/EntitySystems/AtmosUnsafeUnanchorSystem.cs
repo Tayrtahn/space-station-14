@@ -22,11 +22,9 @@ namespace Content.Server.Atmos.Piping.EntitySystems
 
         public override void Initialize()
         {
-            SubscribeLocalEvent<AtmosUnsafeUnanchorComponent, UserUnanchoredEvent>(OnUserUnanchored);
-            SubscribeLocalEvent<AtmosUnsafeUnanchorComponent, UnanchorAttemptEvent>(OnUnanchorAttempt);
-            SubscribeLocalEvent<AtmosUnsafeUnanchorComponent, BreakageEventArgs>(OnBreak);
         }
 
+        [SubscribeLocalEvent]
         private void OnUnanchorAttempt(EntityUid uid, AtmosUnsafeUnanchorComponent component, UnanchorAttemptEvent args)
         {
             if (!component.Enabled || !TryComp(uid, out NodeContainerComponent? nodes))
@@ -54,6 +52,7 @@ namespace Content.Server.Atmos.Piping.EntitySystems
         // At this point the pipe has been scheduled to be removed from the group, but that won't happen until the next Update() call in NodeGroupSystem,
         // so we have to force an update.
         // This way the gas inside other connected pipes stays unchanged, while the removed pipe is completely emptied.
+        [SubscribeLocalEvent]
         private void OnUserUnanchored(EntityUid uid, AtmosUnsafeUnanchorComponent component, UserUnanchoredEvent args)
         {
             if (component.Enabled)
@@ -63,6 +62,7 @@ namespace Content.Server.Atmos.Piping.EntitySystems
             }
         }
 
+        [SubscribeLocalEvent]
         private void OnBreak(EntityUid uid, AtmosUnsafeUnanchorComponent component, BreakageEventArgs args)
         {
             LeakGas(uid, false);

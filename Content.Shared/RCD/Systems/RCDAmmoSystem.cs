@@ -17,11 +17,9 @@ public sealed partial class RCDAmmoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RCDAmmoComponent, ExaminedEvent>(OnExamine);
-        SubscribeLocalEvent<RCDAmmoComponent, AfterInteractEvent>(OnAfterInteract);
     }
 
+    [SubscribeLocalEvent]
     private void OnExamine(EntityUid uid, RCDAmmoComponent comp, ExaminedEvent args)
     {
         if (!args.IsInDetailsRange)
@@ -31,6 +29,7 @@ public sealed partial class RCDAmmoSystem : EntitySystem
         args.PushText(examineMessage);
     }
 
+    [SubscribeLocalEvent]
     private void OnAfterInteract(EntityUid uid, RCDAmmoComponent comp, AfterInteractEvent args)
     {
         if (args.Handled || !args.CanReach || !_timing.IsFirstTimePredicted)

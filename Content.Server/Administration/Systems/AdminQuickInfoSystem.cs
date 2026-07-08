@@ -21,10 +21,9 @@ public sealed partial class AdminQuickInfoSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeNetworkEvent<QuickInfoShared.Request>(HandleRequest);
     }
 
+    [SubscribeNetworkEvent]
     private void HandleRequest(QuickInfoShared.Request ev, EntitySessionEventArgs args)
     {
         if (!_adminManager.HasAdminFlag(args.SenderSession, QuickInfoShared.RequiredFlag))

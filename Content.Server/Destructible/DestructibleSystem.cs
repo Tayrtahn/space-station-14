@@ -55,8 +55,6 @@ public sealed partial class DestructibleSystem : SharedDestructibleSystem
     public override void Initialize()
     {
         base.Initialize();
-        SubscribeLocalEvent<DestructibleComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<DestructibleComponent, DamageChangedEvent>(OnDamageChanged);
     }
 
     /// <summary>
@@ -64,6 +62,7 @@ public sealed partial class DestructibleSystem : SharedDestructibleSystem
     /// </summary>
     /// <param name="entity">The uid, component tuple.</param>
     /// <param name="args">The event arguments.</param>
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<DestructibleComponent> entity, ref MapInitEvent args)
     {
         AddOverkillThreshold(entity);
@@ -72,6 +71,7 @@ public sealed partial class DestructibleSystem : SharedDestructibleSystem
     /// <summary>
     /// Check if any thresholds were reached. if they were, execute them.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnDamageChanged(Entity<DestructibleComponent> entity, ref DamageChangedEvent args)
     {
         var (uid, comp) = entity;

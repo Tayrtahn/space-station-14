@@ -18,13 +18,9 @@ public sealed partial class ToggleClothingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ToggleClothingComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ToggleClothingComponent, GetItemActionsEvent>(OnGetActions);
-        SubscribeLocalEvent<ToggleClothingComponent, ToggleActionEvent>(OnToggleAction);
-        SubscribeLocalEvent<ToggleClothingComponent, ClothingGotUnequippedEvent>(OnUnequipped);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ToggleClothingComponent> ent, ref MapInitEvent args)
     {
         var (uid, comp) = ent;
@@ -37,6 +33,7 @@ public sealed partial class ToggleClothingSystem : EntitySystem
         Dirty(uid, comp);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetActions(Entity<ToggleClothingComponent> ent, ref GetItemActionsEvent args)
     {
         if (args.InHands && ent.Comp.MustEquip)
@@ -49,11 +46,13 @@ public sealed partial class ToggleClothingSystem : EntitySystem
             args.AddAction(ent.Comp.ActionEntity);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleAction(Entity<ToggleClothingComponent> ent, ref ToggleActionEvent args)
     {
         args.Handled = _toggle.Toggle(ent.Owner, args.Performer);
     }
 
+    [SubscribeLocalEvent]
     private void OnUnequipped(Entity<ToggleClothingComponent> ent, ref ClothingGotUnequippedEvent args)
     {
         if (ent.Comp.DisableOnUnequip)

@@ -12,15 +12,11 @@ public sealed partial class ThievingSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ThievingComponent, BeforeStripEvent>(OnBeforeStrip);
         SubscribeLocalEvent<ThievingComponent, InventoryRelayedEvent<BeforeStripEvent>>((e, c, ev) =>
             OnBeforeStrip(e, c, ev.Args));
-        SubscribeLocalEvent<ThievingComponent, ToggleThievingEvent>(OnToggleStealthy);
-        SubscribeLocalEvent<ThievingComponent, ComponentInit>(OnCompInit);
-        SubscribeLocalEvent<ThievingComponent, ComponentRemove>(OnCompRemoved);
     }
 
+    [SubscribeLocalEvent]
     private void OnBeforeStrip(EntityUid uid, ThievingComponent component, BeforeStripEvent args)
     {
         args.Stealth |= component.Stealthy;
@@ -30,16 +26,19 @@ public sealed partial class ThievingSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnCompInit(Entity<ThievingComponent> entity, ref ComponentInit args)
     {
         _alertsSystem.ShowAlert(entity.Owner, entity.Comp.StealthyAlertProtoId, 1);
     }
 
+    [SubscribeLocalEvent]
     private void OnCompRemoved(Entity<ThievingComponent> entity, ref ComponentRemove args)
     {
         _alertsSystem.ClearAlert(entity.Owner, entity.Comp.StealthyAlertProtoId);
     }
 
+    [SubscribeLocalEvent]
     private void OnToggleStealthy(Entity<ThievingComponent> ent, ref ToggleThievingEvent args)
     {
         if (args.Handled)

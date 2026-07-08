@@ -16,8 +16,6 @@ public sealed partial class ConfirmableActionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ConfirmableActionComponent, ActionAttemptEvent>(OnAttempt);
     }
 
     public override void Update(float frameTime)
@@ -37,6 +35,7 @@ public sealed partial class ConfirmableActionSystem : EntitySystem
         }
     }
 
+    [SubscribeLocalEvent]
     private void OnAttempt(Entity<ConfirmableActionComponent> ent, ref ActionAttemptEvent args)
     {
         if (args.Cancelled)

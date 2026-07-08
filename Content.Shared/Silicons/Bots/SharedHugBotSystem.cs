@@ -12,9 +12,9 @@ public abstract partial class SharedHugBotSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<HugBotComponent, GotEmaggedEvent>(OnEmagged);
     }
 
+    [SubscribeLocalEvent]
     private void OnEmagged(Entity<HugBotComponent> entity, ref GotEmaggedEvent args)
     {
         if (!_emag.CompareFlag(args.Type, EmagType.Interaction) ||

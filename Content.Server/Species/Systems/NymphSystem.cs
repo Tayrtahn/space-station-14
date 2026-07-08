@@ -15,10 +15,9 @@ public sealed partial class NymphSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<NymphComponent, OrganGotRemovedEvent>(OnRemovedFromPart);
     }
 
+    [SubscribeLocalEvent]
     private void OnRemovedFromPart(EntityUid uid, NymphComponent comp, ref OrganGotRemovedEvent args)
     {
         if (TerminatingOrDeleted(uid) || TerminatingOrDeleted(args.Target))

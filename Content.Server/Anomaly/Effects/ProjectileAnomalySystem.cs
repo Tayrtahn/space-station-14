@@ -27,15 +27,15 @@ public sealed partial class ProjectileAnomalySystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<ProjectileAnomalyComponent, AnomalyPulseEvent>(OnPulse);
-        SubscribeLocalEvent<ProjectileAnomalyComponent, AnomalySupercriticalEvent>(OnSupercritical);
     }
 
+    [SubscribeLocalEvent]
     private void OnPulse(EntityUid uid, ProjectileAnomalyComponent component, ref AnomalyPulseEvent args)
     {
         ShootProjectilesAtEntities(uid, component, args.Severity * args.PowerModifier);
     }
 
+    [SubscribeLocalEvent]
     private void OnSupercritical(EntityUid uid, ProjectileAnomalyComponent component, ref AnomalySupercriticalEvent args)
     {
         ShootProjectilesAtEntities(uid, component, args.PowerModifier);

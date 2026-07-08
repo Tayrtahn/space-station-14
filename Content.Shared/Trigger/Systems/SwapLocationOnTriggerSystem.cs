@@ -10,9 +10,9 @@ public sealed partial class SwapLocationOnTriggerSystem : EntitySystem
 
     public override void Initialize()
     {
-        SubscribeLocalEvent<SwapLocationOnTriggerComponent, TriggerEvent>(OnTrigger);
     }
 
+    [SubscribeLocalEvent]
     private void OnTrigger(Entity<SwapLocationOnTriggerComponent> ent, ref TriggerEvent args)
     {
         if (args.Key != null && !ent.Comp.KeysIn.Contains(args.Key))

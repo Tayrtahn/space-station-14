@@ -31,25 +31,15 @@ public sealed partial class ItemToggleSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<ItemToggleComponent, ComponentStartup>(OnStartup);
-        SubscribeLocalEvent<ItemToggleComponent, MapInitEvent>(OnMapInit);
-        SubscribeLocalEvent<ItemToggleComponent, ItemUnwieldedEvent>(TurnOffOnUnwielded);
-        SubscribeLocalEvent<ItemToggleComponent, ItemWieldedEvent>(TurnOnOnWielded);
-        SubscribeLocalEvent<ItemToggleComponent, UseInHandEvent>(OnUseInHand);
-        SubscribeLocalEvent<ItemToggleComponent, GetVerbsEvent<ActivationVerb>>(OnActivateVerb);
-        SubscribeLocalEvent<ItemToggleComponent, ActivateInWorldEvent>(OnActivate);
-
-        SubscribeLocalEvent<ItemToggleHotComponent, IsHotEvent>(OnIsHotEvent);
-
-        SubscribeLocalEvent<ItemToggleActiveSoundComponent, ItemToggledEvent>(UpdateActiveSound);
     }
 
+    [SubscribeLocalEvent]
     private void OnStartup(Entity<ItemToggleComponent> ent, ref ComponentStartup args)
     {
         UpdateVisuals(ent);
     }
 
+    [SubscribeLocalEvent]
     private void OnMapInit(Entity<ItemToggleComponent> ent, ref MapInitEvent args)
     {
         if (!ent.Comp.Activated)
@@ -59,6 +49,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
         RaiseLocalEvent(ent, ref ev);
     }
 
+    [SubscribeLocalEvent]
     private void OnUseInHand(Entity<ItemToggleComponent> ent, ref UseInHandEvent args)
     {
         if (args.Handled || !ent.Comp.OnUse)
@@ -69,6 +60,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
         Toggle((ent, ent.Comp), args.User, predicted: ent.Comp.Predictable);
     }
 
+    [SubscribeLocalEvent]
     private void OnActivateVerb(Entity<ItemToggleComponent> ent, ref GetVerbsEvent<ActivationVerb> args)
     {
         if (!args.CanAccess || !args.CanInteract || !ent.Comp.OnActivate)
@@ -103,6 +95,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
         });
     }
 
+    [SubscribeLocalEvent]
     private void OnActivate(Entity<ItemToggleComponent> ent, ref ActivateInWorldEvent args)
     {
         if (args.Handled || !ent.Comp.OnActivate)
@@ -305,6 +298,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
     /// <summary>
     /// Used for items that require to be wielded in both hands to activate. For instance the dual energy sword will turn off if not wielded.
     /// </summary>
+    [SubscribeLocalEvent]
     private void TurnOffOnUnwielded(Entity<ItemToggleComponent> ent, ref ItemUnwieldedEvent args)
     {
         TryDeactivate((ent, ent.Comp), args.User);
@@ -313,6 +307,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
     /// <summary>
     /// Wieldable items will automatically turn on when wielded.
     /// </summary>
+    [SubscribeLocalEvent]
     private void TurnOnOnWielded(Entity<ItemToggleComponent> ent, ref ItemWieldedEvent args)
     {
         TryActivate((ent, ent.Comp), args.User);
@@ -329,6 +324,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
     /// <summary>
     /// Used to make the item hot when activated.
     /// </summary>
+    [SubscribeLocalEvent]
     private void OnIsHotEvent(Entity<ItemToggleHotComponent> ent, ref IsHotEvent args)
     {
         args.IsHot |= IsActivated(ent.Owner);
@@ -337,6 +333,7 @@ public sealed partial class ItemToggleSystem : EntitySystem
     /// <summary>
     /// Used to update the looping active sound linked to the entity.
     /// </summary>
+    [SubscribeLocalEvent]
     private void UpdateActiveSound(Entity<ItemToggleActiveSoundComponent> ent, ref ItemToggledEvent args)
     {
         if (!_gameTiming.IsFirstTimePredicted)

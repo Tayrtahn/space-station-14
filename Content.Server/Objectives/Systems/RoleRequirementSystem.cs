@@ -13,10 +13,9 @@ public sealed partial class RoleRequirementSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<RoleRequirementComponent, RequirementCheckEvent>(OnCheck);
     }
 
+    [SubscribeLocalEvent]
     private void OnCheck(EntityUid uid, RoleRequirementComponent comp, ref RequirementCheckEvent args)
     {
         if (args.Cancelled)

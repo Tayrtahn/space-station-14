@@ -11,10 +11,9 @@ public sealed partial class DieConditionSystem : EntitySystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<DieConditionComponent, ObjectiveGetProgressEvent>(OnGetProgress);
     }
 
+    [SubscribeLocalEvent]
     private void OnGetProgress(EntityUid uid, DieConditionComponent comp, ref ObjectiveGetProgressEvent args)
     {
         args.Progress = _mind.IsCharacterDeadIc(args.Mind) ? 1f : 0f;

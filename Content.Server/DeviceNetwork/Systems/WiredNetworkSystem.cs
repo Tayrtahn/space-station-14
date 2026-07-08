@@ -5,17 +5,17 @@ using JetBrains.Annotations;
 namespace Content.Server.DeviceNetwork.Systems
 {
     [UsedImplicitly]
-    public sealed class WiredNetworkSystem : EntitySystem
+    public sealed partial class WiredNetworkSystem : EntitySystem
     {
         public override void Initialize()
         {
             base.Initialize();
-            SubscribeLocalEvent<WiredNetworkComponent, BeforePacketSentEvent>(OnBeforePacketSent);
         }
 
         /// <summary>
         /// Checks if both devices are on the same grid
         /// </summary>
+        [SubscribeLocalEvent]
         private void OnBeforePacketSent(EntityUid uid, WiredNetworkComponent component, BeforePacketSentEvent args)
         {
             if (Transform(uid).GridUid != args.SenderTransform.GridUid)

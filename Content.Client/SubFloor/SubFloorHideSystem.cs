@@ -35,24 +35,23 @@ public sealed partial class SubFloorHideSystem : SharedSubFloorHideSystem
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<SubFloorHideComponent, AppearanceChangeEvent>(OnAppearanceChanged);
-        SubscribeNetworkEvent<ShowSubfloorRequestEvent>(OnRequestReceived);
-        SubscribeLocalEvent<LocalPlayerDetachedEvent>(OnPlayerDetached);
     }
 
+    [SubscribeLocalEvent]
     private void OnPlayerDetached(LocalPlayerDetachedEvent ev)
     {
         // Vismask resets so need to reset this.
         ShowAll = false;
     }
 
+    [SubscribeNetworkEvent]
     private void OnRequestReceived(ShowSubfloorRequestEvent ev)
     {
         // When client receives request Queue an update on all vis.
         UpdateAll();
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChanged(EntityUid uid, SubFloorHideComponent component, ref AppearanceChangeEvent args)
     {
         if (args.Sprite == null)

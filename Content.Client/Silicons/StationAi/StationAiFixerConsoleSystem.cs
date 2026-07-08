@@ -10,10 +10,9 @@ public sealed partial class StationAiFixerConsoleSystem : SharedStationAiFixerCo
     public override void Initialize()
     {
         base.Initialize();
-
-        SubscribeLocalEvent<StationAiFixerConsoleComponent, AppearanceChangeEvent>(OnAppearanceChange);
     }
 
+    [SubscribeLocalEvent]
     private void OnAppearanceChange(Entity<StationAiFixerConsoleComponent> ent, ref AppearanceChangeEvent args)
     {
         if (_userInterface.TryGetOpenUi(ent.Owner, StationAiFixerConsoleUiKey.Key, out var bui))
