@@ -23,7 +23,7 @@ public sealed class FixtureTest : GameTest
                         Assert.That(
                             fixture.Density,
                             Is.Zero,
-                            $"Entity ${proto.ID} has a non-Hard fixture '${fixtureId}' with non-zero density");
+                            $"Entity {proto.ID} has a non-Hard fixture '{fixtureId}' with non-zero density");
                     }
                 }
             }
