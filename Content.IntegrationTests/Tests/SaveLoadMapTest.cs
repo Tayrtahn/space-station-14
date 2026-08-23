@@ -51,30 +51,25 @@ public sealed class SaveLoadMapTest : GameTest
         mapId = map!.Value.Comp.MapId;
 
         // Try to find our first grid
-        if (!_sMap.TryFindGridAt(mapId, grid1Position, out var gridUid, out var mapGridComp) ||
-            !SEntMan.TryGetComponent<TransformComponent>(gridUid, out var gridXform))
-        {
-            Assert.Fail($"Could not get the transform of the grid at ({grid1Position.X}, {grid1Position.Y})");
-            return;
-        }
+        TransformComponent? gridXform = null;
+        Assert.That(_sMap.TryFindGridAt(mapId, grid1Position, out var gridUid, out var mapGridComp) &&
+                SEntMan.TryGetComponent(gridUid, out gridXform),
+            $"Could not get the transform of the grid at ({grid1Position.X}, {grid1Position.Y})");
 
         Assert.Multiple(() =>
         {
-            Assert.That(_sTransform.GetWorldPosition(gridXform), Is.EqualTo(new Vector2(10, 10)));
-            Assert.That(_sMap.GetTileRef(gridUid, mapGridComp, new Vector2i(0, 0)).Tile, Is.EqualTo(new Tile(typeId: 1, flags: 1, variant: 255)));
+            Assert.That(_sTransform.GetWorldPosition(gridXform!), Is.EqualTo(new Vector2(10, 10)));
+            Assert.That(_sMap.GetTileRef(gridUid, mapGridComp!, Vector2i.Zero).Tile, Is.EqualTo(new Tile(typeId: 1, flags: 1, variant: 255)));
         });
 
-        if (!_sMap.TryFindGridAt(mapId, grid2Position, out gridUid, out mapGridComp) ||
-            !SEntMan.TryGetComponent<TransformComponent>(gridUid, out gridXform))
-        {
-            Assert.Fail($"Could not get the transform of the grid at ({grid2Position.X}, {grid2Position.Y})");
-            return;
-        }
+        Assert.That(_sMap.TryFindGridAt(mapId, grid2Position, out gridUid, out mapGridComp) &&
+                SEntMan.TryGetComponent(gridUid, out gridXform),
+            $"Could not get the transform of the grid at ({grid2Position.X}, {grid2Position.Y})");
 
         Assert.Multiple(() =>
         {
-            Assert.That(_sTransform.GetWorldPosition(gridXform), Is.EqualTo(new Vector2(-8, -8)));
-            Assert.That(_sMap.GetTileRef(gridUid, mapGridComp, new Vector2i(0, 0)).Tile, Is.EqualTo(new Tile(typeId: 2, flags: 1, variant: 254)));
+            Assert.That(_sTransform.GetWorldPosition(gridXform!), Is.EqualTo(new Vector2(-8, -8)));
+            Assert.That(_sMap.GetTileRef(gridUid, mapGridComp!, Vector2i.Zero).Tile, Is.EqualTo(new Tile(typeId: 2, flags: 1, variant: 254)));
         });
 
         _sMap.DeleteMap(mapId);

@@ -1,6 +1,8 @@
 #nullable enable
 using System.Numerics;
 using Content.IntegrationTests.Fixtures;
+using Content.IntegrationTests.Fixtures.Attributes;
+using Content.IntegrationTests.NUnit.Constraints;
 using Content.Server.Shuttles.Components;
 using Robust.Shared.GameObjects;
 using Robust.Shared.Physics;
@@ -11,12 +13,12 @@ namespace Content.IntegrationTests.Tests;
 
 public sealed class ShuttleTest : GameTest
 {
+    [SidedDependency(Side.Server)] private SharedPhysicsSystem _sPhysics = default!;
+
     [Test]
     [Description("Tests that grids have the ShuttleComponent and move when pushed.")]
     public async Task Test()
     {
-        var physicsSystem = Server.System<SharedPhysicsSystem>();
-
         await Pair.CreateTestMap();
 
         Assume.That(TestMap, Is.Not.Null);
@@ -29,7 +31,7 @@ public sealed class ShuttleTest : GameTest
 
             Assert.Multiple(() =>
             {
-                Assert.That(SEntMan.HasComponent<ShuttleComponent>(grid));
+                Assert.That(grid, Has.Comp<ShuttleComponent>(Server));
                 Assert.That(SEntMan.TryGetComponent(grid, out gridPhys));
             });
             Assert.Multiple(() =>
@@ -37,7 +39,7 @@ public sealed class ShuttleTest : GameTest
                 Assert.That(gridPhys!.BodyType, Is.EqualTo(BodyType.Dynamic));
                 Assert.That(SEntMan.GetComponent<TransformComponent>(grid).LocalPosition, Is.EqualTo(Vector2.Zero));
             });
-            physicsSystem.ApplyLinearImpulse(grid, Vector2.One, body: gridPhys);
+            _sPhysics.ApplyLinearImpulse(grid, Vector2.One, body: gridPhys);
 
             Server.RunTicks(1);
         });
