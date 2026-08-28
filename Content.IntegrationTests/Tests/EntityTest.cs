@@ -1,3 +1,4 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -16,7 +17,6 @@ using Robust.Shared.Spawners;
 
 namespace Content.IntegrationTests.Tests;
 
-[TestFixture]
 [TestOf(typeof(EntityUid))]
 public sealed class EntityTest : GameTest
 {
@@ -35,6 +35,7 @@ public sealed class EntityTest : GameTest
 
     [Test]
     [PairConfig(nameof(Disconnected))]
+    [Description("Spawns each EntityPrototype in isolation on its own map.")]
     public async Task SpawnAndDeleteAllEntitiesOnDifferentMaps()
     {
         // This test dirties the pair as it simply deletes ALL entities when done. Overhead of restarting the round
@@ -73,18 +74,7 @@ public sealed class EntityTest : GameTest
 
         await Server.WaitPost(() =>
         {
-            List<(EntityUid, MetaDataComponent)> list = new(SEntMan.Count<MetaDataComponent>());
-            var query = SEntMan.AllEntityQueryEnumerator<MetaDataComponent>();
-            while (query.MoveNext(out var uid, out var meta))
-            {
-                list.Add((uid, meta));
-            }
-
-            foreach (var (uid, meta) in list)
-            {
-                if (!meta.EntityDeleted)
-                    SEntMan.DeleteEntity(uid);
-            }
+            DeleteAllEntities(SEntMan);
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
@@ -92,6 +82,7 @@ public sealed class EntityTest : GameTest
 
     [Test]
     [PairConfig(nameof(Disconnected))]
+    [Description("Spawns each EntityPrototype on top of each other, tests interactions between entities for strange behavior.")]
     public async Task SpawnAndDeleteAllEntitiesInTheSameSpot()
     {
         Assume.That(Client.Session, Is.Null);
@@ -123,28 +114,18 @@ public sealed class EntityTest : GameTest
         });
         await Server.WaitPost(() =>
         {
-            List<(EntityUid, MetaDataComponent)> list = new(SEntMan.Count<MetaDataComponent>());
-            var query = SEntMan.AllEntityQueryEnumerator<MetaDataComponent>();
-            while (query.MoveNext(out var uid, out var meta))
-            {
-                list.Add((uid, meta));
-            }
-
-            foreach (var (uid, meta) in list)
-            {
-                if (!meta.EntityDeleted)
-                    SEntMan.DeleteEntity(uid);
-            }
+            DeleteAllEntities(SEntMan);
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
     }
 
     /// <summary>
-    ///     Variant of <see cref="SpawnAndDeleteAllEntitiesOnDifferentMaps"/> that also launches a client and dirties
-    ///     all components on every entity.
+    /// Variant of <see cref="SpawnAndDeleteAllEntitiesOnDifferentMaps"/> that also launches a client and dirties
+    /// all components on every entity.
     /// </summary>
     [Test]
+    [Description("Spawns each entity on individual maps, dirties each component, and checks that the the client .")]
     public async Task SpawnAndDirtyAllEntities()
     {
         var sMapSys = Server.System<SharedMapSystem>();
@@ -184,18 +165,7 @@ public sealed class EntityTest : GameTest
 
         await Server.WaitPost(() =>
         {
-            List<(EntityUid, MetaDataComponent)> list = new(SEntMan.Count<MetaDataComponent>());
-            var query = SEntMan.AllEntityQueryEnumerator<MetaDataComponent>();
-            while (query.MoveNext(out var uid, out var meta))
-            {
-                list.Add((uid, meta));
-            }
-
-            foreach (var (uid, meta) in list)
-            {
-                if (!meta.EntityDeleted)
-                    SEntMan.DeleteEntity(uid);
-            }
+            DeleteAllEntities(SEntMan);
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
@@ -218,7 +188,9 @@ public sealed class EntityTest : GameTest
     [Test]
     public async Task SpawnAndDeleteEntityCountTest()
     {
-        var mapSys = Server.System<SharedMapSystem>();
+        var sMapSys = Server.System<SharedMapSystem>();
+        var sAudioQuery = SEntMan.GetEntityQuery<AudioComponent>();
+        var cAudioQuery = CEntMan.GetEntityQuery<AudioComponent>();
 
         var excluded = new[]
         {
@@ -232,21 +204,48 @@ public sealed class EntityTest : GameTest
 
         Assert.That(Server.CfgMan.GetCVar(CVars.NetPVS), Is.False);
 
-        var protoIds = SProtoMan
-            .EnumeratePrototypes<EntityPrototype>()
-            .Where(p => !p.Abstract)
-            .Where(p => !Pair.IsTestPrototype(p))
-            .Where(p => !excluded.Any(p.Components.ContainsKey))
-            .Where(p => p.Categories.All(x => !IgnoredCategories.Contains(x.ID)))
-            .Select(p => p.ID)
-            .ToList();
+        List<EntProtoId> protoIds = new(SProtoMan.Count<EntityPrototype>());
+        foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
+        {
+            // Preconditions
+            if (proto.Abstract)
+                continue;
+
+            if (Pair.IsTestPrototype(proto))
+                continue;
+
+            var skip = false;
+            foreach (var exclude in excluded)
+            {
+                if (proto.Components.ContainsKey(exclude))
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+
+            foreach (var category in proto.Categories)
+            {
+                if (IgnoredCategories.Contains(category.ID))
+                {
+                    skip = true;
+                    break;
+                }
+            }
+            if (skip)
+                continue;
+
+            protoIds.Add(proto.ID);
+        }
 
         protoIds.Sort();
         var mapId = MapId.Nullspace;
 
         await Server.WaitPost(() =>
         {
-            mapSys.CreateMap(out mapId);
+            sMapSys.CreateMap(out mapId);
         });
 
         var coords = new MapCoordinates(Vector2.Zero, mapId);
@@ -255,7 +254,6 @@ public sealed class EntityTest : GameTest
 
         // We consider only non-audio entities, as some entities will just play sounds when they spawn.
         int Count(IEntityManager ent) => ent.EntityCount - ent.Count<AudioComponent>();
-        IEnumerable<EntityUid> Entities(IEntityManager entMan) => entMan.GetEntities().Where(e => !entMan.HasComponent<AudioComponent>(e));
 
         await Assert.MultipleAsync(async () =>
         {
@@ -263,8 +261,8 @@ public sealed class EntityTest : GameTest
             {
                 var count = Count(SEntMan);
                 var clientCount = Count(CEntMan);
-                var serverEntities = new HashSet<EntityUid>(Entities(SEntMan));
-                var clientEntities = new HashSet<EntityUid>(Entities(CEntMan));
+                var serverEntities = GetEntitySet(SEntMan, sAudioQuery);
+                var clientEntities = GetEntitySet(CEntMan, cAudioQuery);
                 EntityUid uid = default;
                 await Server.WaitPost(() => uid = SEntMan.SpawnEntity(protoId, coords));
                 await Pair.RunTicksSync(3);
@@ -275,21 +273,21 @@ public sealed class EntityTest : GameTest
                     await CleanupTransientEntities(Pair, serverEntities);
 
                     Assert.That(Count(SEntMan), Is.EqualTo(count), $"Server prototype {protoId} failed on deleting itself\n" +
-                        BuildDiffString(serverEntities, Entities(SEntMan), SEntMan));
+                        BuildDiffString(serverEntities, GetEntitySet(SEntMan, sAudioQuery), SEntMan));
                     Assert.That(Count(CEntMan), Is.EqualTo(clientCount), $"Client prototype {protoId} failed on deleting itself\n" +
                         $"Expected {clientCount} and found {CEntMan.EntityCount}.\n" +
                         $"Server count was {count}.\n" +
-                        BuildDiffString(clientEntities, Entities(CEntMan), CEntMan));
+                        BuildDiffString(clientEntities, GetEntitySet(CEntMan, cAudioQuery), CEntMan));
                     continue;
                 }
 
                 // Check that the number of entities has increased.
                 Assert.That(Count(SEntMan), Is.GreaterThan(count), $"Server prototype {protoId} failed on spawning as entity count didn't increase\n" +
-                    BuildDiffString(serverEntities, Entities(SEntMan), SEntMan));
+                    BuildDiffString(serverEntities, GetEntitySet(SEntMan, sAudioQuery), SEntMan));
                 Assert.That(Count(CEntMan), Is.GreaterThan(clientCount), $"Client prototype {protoId} failed on spawning as entity count didn't increase\n" +
                     $"Expected at least {clientCount} and found {CEntMan.EntityCount}. " +
                     $"Server count was {count}.\n" +
-                    BuildDiffString(clientEntities, Entities(CEntMan), CEntMan));
+                    BuildDiffString(clientEntities, GetEntitySet(CEntMan, cAudioQuery), CEntMan));
 
                 await Server.WaitPost(() => SEntMan.DeleteEntity(uid));
                 await Pair.RunTicksSync(3);
@@ -297,13 +295,47 @@ public sealed class EntityTest : GameTest
 
                 // Check that the number of entities has gone back to the original value.
                 Assert.That(Count(SEntMan), Is.EqualTo(count), $"Server prototype {protoId} failed on deletion: count didn't reset properly\n" +
-                    BuildDiffString(serverEntities, Entities(SEntMan), SEntMan));
+                    BuildDiffString(serverEntities, GetEntitySet(SEntMan, sAudioQuery), SEntMan));
                 Assert.That(Count(CEntMan), Is.EqualTo(clientCount), $"Client prototype {protoId} failed on deletion: count didn't reset properly:\n" +
                     $"Expected {clientCount} and found {Count(CEntMan)}.\n" +
                     $"Server count was {count}.\n" +
-                    BuildDiffString(clientEntities, Entities(CEntMan), CEntMan));
+                    BuildDiffString(clientEntities, GetEntitySet(CEntMan, cAudioQuery), CEntMan));
             }
         });
+    }
+
+    /// <summary>
+    /// Returns a <see cref="HashSet{EntityUid}"/> of all entities a given entity manager tracks that don't have the AudioComponent.
+    /// </summary>
+    private static HashSet<EntityUid> GetEntitySet(IEntityManager entMan, EntityQuery<AudioComponent> query)
+    {
+        HashSet<EntityUid> entities = new(entMan.EntityCount);
+
+        foreach (var ent in entMan.GetEntities())
+        {
+            if (!query.HasComp(ent))
+                entities.Add(ent);
+        }
+        return entities;
+    }
+
+    /// <summary>
+    /// Deletes all existing entities with the MetaDataComponent.
+    /// </summary>
+    private static void DeleteAllEntities(IEntityManager entMan)
+    {
+        List<(EntityUid, MetaDataComponent)> list = new(entMan.Count<MetaDataComponent>());
+        var query = entMan.AllEntityQueryEnumerator<MetaDataComponent>();
+        while (query.MoveNext(out var uid, out var meta))
+        {
+            list.Add((uid, meta));
+        }
+
+        foreach (var (uid, meta) in list)
+        {
+            if (!meta.EntityDeleted)
+                entMan.DeleteEntity(uid);
+        }
     }
 
     /// <summary>
@@ -333,7 +365,7 @@ public sealed class EntityTest : GameTest
         await pair.RunTicksSync(3);
     }
 
-    private static string BuildDiffString(IEnumerable<EntityUid> oldEnts, IEnumerable<EntityUid> newEnts, IEntityManager entMan)
+    private static string BuildDiffString(HashSet<EntityUid> oldEnts, HashSet<EntityUid> newEnts, IEntityManager entMan)
     {
         var sb = new StringBuilder();
         var addedEnts = newEnts.Except(oldEnts);
@@ -406,7 +438,7 @@ public sealed class EntityTest : GameTest
 
         await Pair.CreateTestMap();
         await Server.WaitRunTicks(5);
-        var testLocation = TestMap.GridCoords;
+        var testLocation = TestMap!.GridCoords;
 
         await Server.WaitAssertion(() =>
         {
