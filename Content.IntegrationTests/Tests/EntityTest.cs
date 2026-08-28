@@ -413,6 +413,7 @@ public sealed class EntityTest : GameTest
     }
 
     [Test]
+    [Description("Tests removing and restoring components to a null entity.")]
     public async Task AllComponentsOneToOneDeleteTest()
     {
         var skipComponents = new[]
