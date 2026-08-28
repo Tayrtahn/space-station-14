@@ -33,6 +33,8 @@ public sealed class EntityTest : GameTest
         Dirty = true,
     };
 
+    [SidedDependency(Side.Server)] private SharedMapSystem _sMap = default!;
+
     [Test]
     [PairConfig(nameof(Disconnected))]
     [Description("Spawns each EntityPrototype in isolation on its own map.")]
@@ -40,8 +42,6 @@ public sealed class EntityTest : GameTest
     {
         // This test dirties the pair as it simply deletes ALL entities when done. Overhead of restarting the round
         // is minimal relative to the rest of the test.
-        var mapSystem = Server.System<SharedMapSystem>();
-
         await Server.WaitPost(() =>
         {
             foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
@@ -61,20 +61,20 @@ public sealed class EntityTest : GameTest
                 if (proto.Components.ContainsKey("RoomFill"))
                     continue;
 
-                mapSystem.CreateMap(out var mapId);
-                var grid = mapSystem.CreateGridEntity(mapId);
+                _sMap.CreateMap(out var mapId);
+                var grid = _sMap.CreateGridEntity(mapId);
                 // TODO: Fix this better in engine.
-                mapSystem.SetTile(grid.Owner, grid.Comp, Vector2i.Zero, new Tile(1));
+                _sMap.SetTile(grid.Owner, grid.Comp, Vector2i.Zero, new Tile(1));
                 var coord = new EntityCoordinates(grid.Owner, 0, 0);
-                SEntMan.SpawnEntity(proto.ID, coord);
+                SSpawnAtPosition(proto.ID, coord);
             }
         });
 
         await Server.WaitRunTicks(450); // 15 seconds, enough to trigger most update loops
 
-        await Server.WaitPost(() =>
+        await Server.WaitAssertion(() =>
         {
-            DeleteAllEntities(SEntMan);
+            DeleteAllEntities();
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
@@ -107,14 +107,14 @@ public sealed class EntityTest : GameTest
                 if (proto.Components.ContainsKey("RoomFill"))
                     continue;
 
-                SEntMan.SpawnEntity(proto.ID, map.GridCoords);
+                SSpawnAtPosition(proto.ID, map.GridCoords);
             }
 
             Server.RunTicks(450); // 15 seconds, enough to trigger most update loops
         });
-        await Server.WaitPost(() =>
+        await Server.WaitAssertion(() =>
         {
-            DeleteAllEntities(SEntMan);
+            DeleteAllEntities();
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
@@ -128,8 +128,6 @@ public sealed class EntityTest : GameTest
     [Description("Spawns each entity on individual maps, dirties each component, and checks that the the client .")]
     public async Task SpawnAndDirtyAllEntities()
     {
-        var sMapSys = Server.System<SharedMapSystem>();
-
         Assert.That(Server.CfgMan.GetCVar(CVars.NetPVS), Is.False);
 
         await Server.WaitPost(() =>
@@ -147,9 +145,9 @@ public sealed class EntityTest : GameTest
                 if (proto.Components.ContainsKey("MapGrid"))
                     continue;
 
-                sMapSys.CreateMap(out var mapId);
-                var grid = sMapSys.CreateGridEntity(mapId);
-                var ent = SEntMan.SpawnEntity(proto.ID, new EntityCoordinates(grid.Owner, 0.5f, 0.5f));
+                _sMap.CreateMap(out var mapId);
+                var grid = _sMap.CreateGridEntity(mapId);
+                var ent = SSpawnAtPosition(proto.ID, new EntityCoordinates(grid.Owner, 0.5f, 0.5f));
                 foreach (var (_, component) in SEntMan.GetNetComponents(ent))
                 {
                     SEntMan.Dirty(ent, component);
@@ -157,15 +155,15 @@ public sealed class EntityTest : GameTest
             }
         });
 
-        await Pair.RunUntilSynced();
+        await RunUntilSynced();
 
         // Make sure the client actually received the entities
         // 500 is completely arbitrary. Note that the client & sever entity counts aren't expected to match.
         Assert.That(CEntMan.EntityCount, Is.GreaterThan(500));
 
-        await Server.WaitPost(() =>
+        await Server.WaitAssertion(() =>
         {
-            DeleteAllEntities(SEntMan);
+            DeleteAllEntities();
 
             Assert.That(SEntMan.EntityCount, Is.Zero);
         });
@@ -188,7 +186,6 @@ public sealed class EntityTest : GameTest
     [Test]
     public async Task SpawnAndDeleteEntityCountTest()
     {
-        var sMapSys = Server.System<SharedMapSystem>();
         var sAudioQuery = SEntMan.GetEntityQuery<AudioComponent>();
         var cAudioQuery = CEntMan.GetEntityQuery<AudioComponent>();
 
@@ -242,20 +239,19 @@ public sealed class EntityTest : GameTest
 
         protoIds.Sort();
         var mapId = MapId.Nullspace;
+        var mapUid = EntityUid.Invalid;
 
         await Server.WaitPost(() =>
         {
-            sMapSys.CreateMap(out mapId);
+            mapUid = _sMap.CreateMap(out mapId);
         });
 
-        var coords = new MapCoordinates(Vector2.Zero, mapId);
-
-        await Pair.RunTicksSync(3);
+        await RunTicksSync(3);
 
         // We consider only non-audio entities, as some entities will just play sounds when they spawn.
         int Count(IEntityManager ent) => ent.EntityCount - ent.Count<AudioComponent>();
 
-        await Assert.MultipleAsync(async () =>
+        using (Assert.EnterMultipleScope())
         {
             foreach (var protoId in protoIds)
             {
@@ -264,8 +260,8 @@ public sealed class EntityTest : GameTest
                 var serverEntities = GetEntitySet(SEntMan, sAudioQuery);
                 var clientEntities = GetEntitySet(CEntMan, cAudioQuery);
                 EntityUid uid = default;
-                await Server.WaitPost(() => uid = SEntMan.SpawnEntity(protoId, coords));
-                await Pair.RunTicksSync(3);
+                await Server.WaitPost(() => uid = SSpawnAtPosition(protoId, new(mapUid, Vector2.Zero)));
+                await RunTicksSync(3);
 
                 // If the entity deleted itself, check that it didn't spawn other entities
                 if (!SEntMan.EntityExists(uid))
@@ -289,8 +285,8 @@ public sealed class EntityTest : GameTest
                     $"Server count was {count}.\n" +
                     BuildDiffString(clientEntities, GetEntitySet(CEntMan, cAudioQuery), CEntMan));
 
-                await Server.WaitPost(() => SEntMan.DeleteEntity(uid));
-                await Pair.RunTicksSync(3);
+                await Server.WaitPost(() => SDeleteNow(uid));
+                await RunTicksSync(3);
                 await CleanupTransientEntities(Pair, serverEntities);
 
                 // Check that the number of entities has gone back to the original value.
@@ -301,7 +297,7 @@ public sealed class EntityTest : GameTest
                     $"Server count was {count}.\n" +
                     BuildDiffString(clientEntities, GetEntitySet(CEntMan, cAudioQuery), CEntMan));
             }
-        });
+        }
     }
 
     /// <summary>
@@ -320,12 +316,12 @@ public sealed class EntityTest : GameTest
     }
 
     /// <summary>
-    /// Deletes all existing entities with the MetaDataComponent.
+    /// Deletes all existing server-side entities with the MetaDataComponent.
     /// </summary>
-    private static void DeleteAllEntities(IEntityManager entMan)
+    private void DeleteAllEntities()
     {
-        List<(EntityUid, MetaDataComponent)> list = new(entMan.Count<MetaDataComponent>());
-        var query = entMan.AllEntityQueryEnumerator<MetaDataComponent>();
+        List<(EntityUid, MetaDataComponent)> list = new(SEntMan.Count<MetaDataComponent>());
+        var query = SEntMan.AllEntityQueryEnumerator<MetaDataComponent>();
         while (query.MoveNext(out var uid, out var meta))
         {
             list.Add((uid, meta));
@@ -334,7 +330,7 @@ public sealed class EntityTest : GameTest
         foreach (var (uid, meta) in list)
         {
             if (!meta.EntityDeleted)
-                entMan.DeleteEntity(uid);
+                SDeleteNow(uid);
         }
     }
 
@@ -434,7 +430,7 @@ public sealed class EntityTest : GameTest
             "ActivatableUI", // Requires enum key
         };
 
-        var componentFactory = Server.ResolveDependency<IComponentFactory>();
+        var componentFactory = SEntMan.ComponentFactory;
         var logmill = Server.ResolveDependency<ILogManager>().GetSawmill("EntityTest");
 
         await Pair.CreateTestMap();
@@ -443,7 +439,7 @@ public sealed class EntityTest : GameTest
 
         await Server.WaitAssertion(() =>
         {
-            Assert.Multiple(() =>
+            using (Assert.EnterMultipleScope())
             {
                 foreach (var type in componentFactory.AllRegisteredTypes)
                 {
@@ -459,7 +455,7 @@ public sealed class EntityTest : GameTest
                         continue;
                     }
 
-                    var entity = SEntMan.SpawnEntity(null, testLocation);
+                    var entity = SSpawnAtPosition(null, testLocation);
 
                     Assert.That(SComp<MetaDataComponent>(entity).EntityInitialized);
 
@@ -467,7 +463,7 @@ public sealed class EntityTest : GameTest
                     // such as MetaData or Transform
                     if (SEntMan.HasComponent(entity, type))
                     {
-                        SEntMan.DeleteEntity(entity);
+                        SDeleteNow(entity);
                         continue;
                     }
 
@@ -479,9 +475,9 @@ public sealed class EntityTest : GameTest
                         }, "Component '{0}' threw an exception.",
                         name);
 
-                    SEntMan.DeleteEntity(entity);
+                    SDeleteNow(entity);
                 }
-            });
+            }
         });
     }
 }
