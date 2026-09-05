@@ -1,32 +1,29 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Linq;
 using Content.IntegrationTests.Fixtures;
 using Content.IntegrationTests.Fixtures.Attributes;
 using Content.Shared.Body;
-using Robust.Shared.GameObjects;
 using Robust.Shared.Prototypes;
 
 namespace Content.IntegrationTests.Tests.Body;
 
-[TestFixture]
 [TestOf(typeof(InitialBodySystem))]
 public sealed class InitialBodyValidationTest : GameTest
 {
-    [SidedDependency(Side.Server)] private IComponentFactory _componentFactory = default!;
-    [SidedDependency(Side.Server)] private IPrototypeManager _prototype = default!;
-
     [Test]
     [RunOnSide(Side.Server)]
+    [Description("Tests the relationship between organs in all entities with an InitialBodyComponent.")]
     public void RelatedOrgansCanBeRelated()
     {
         using var scope = Assert.EnterMultipleScope();
 
-        foreach (var proto in _prototype.EnumeratePrototypes<EntityPrototype>())
+        foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
         {
             if (proto.Abstract || Pair.IsTestEntityPrototype(proto.ID))
                 continue;
 
-            if (!proto.TryComp<InitialBodyComponent>(out var initial, _componentFactory))
+            if (!proto.TryComp<InitialBodyComponent>(out var initial, SEntMan.ComponentFactory))
                 continue;
 
             if (initial.Relationships is not { } relationships)
@@ -38,8 +35,8 @@ public sealed class InitialBodyValidationTest : GameTest
                 if (!organs.TryGetValue(parent, out var parentProtoId))
                     continue;
 
-                var parentProto = _prototype.Index(parentProtoId);
-                if (!parentProto.HasComp<ParentOrganComponent>(_componentFactory))
+                var parentProto = SProtoMan.Index(parentProtoId);
+                if (!parentProto.HasComp<ParentOrganComponent>(SEntMan.ComponentFactory))
                 {
                     Assert.Fail($"{proto.ID}'s parent organ {parent} {parentProtoId} is missing {nameof(ParentOrganComponent)}");
                 }
@@ -49,8 +46,8 @@ public sealed class InitialBodyValidationTest : GameTest
                     if (!organs.TryGetValue(child, out var childProtoId))
                         continue;
 
-                    var childProto = _prototype.Index(childProtoId);
-                    if (!childProto.HasComp<ChildOrganComponent>(_componentFactory))
+                    var childProto = SProtoMan.Index(childProtoId);
+                    if (!childProto.HasComp<ChildOrganComponent>(SEntMan.ComponentFactory))
                     {
                         Assert.Fail($"{proto.ID}'s child organ {child} {childProtoId} (child of {parent} {parentProtoId}) is missing {nameof(ChildOrganComponent)}");
                     }
@@ -65,12 +62,12 @@ public sealed class InitialBodyValidationTest : GameTest
     {
         using var scope = Assert.EnterMultipleScope();
 
-        foreach (var proto in _prototype.EnumeratePrototypes<EntityPrototype>())
+        foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
         {
             if (proto.Abstract || Pair.IsTestEntityPrototype(proto.ID))
                 continue;
 
-            if (!proto.TryComp<InitialBodyComponent>(out var initial, _componentFactory))
+            if (!proto.TryComp<InitialBodyComponent>(out var initial, SEntMan.ComponentFactory))
                 continue;
 
             if (initial.Relationships is not { } relationships)
@@ -98,15 +95,15 @@ public sealed class InitialBodyValidationTest : GameTest
     {
         using var scope = Assert.EnterMultipleScope();
 
-        foreach (var proto in _prototype.EnumeratePrototypes<EntityPrototype>())
+        foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
         {
             if (proto.Abstract || Pair.IsTestEntityPrototype(proto.ID))
                 continue;
 
-            if (!proto.HasComp<InternalChildOrganComponent>(_componentFactory))
+            if (!proto.HasComp<InternalChildOrganComponent>(SEntMan.ComponentFactory))
                 continue;
 
-            if (proto.HasComp<DetachableOrganComponent>(_componentFactory))
+            if (proto.HasComp<DetachableOrganComponent>(SEntMan.ComponentFactory))
             {
                 Assert.Fail($"{proto.ID} has both {nameof(InternalChildOrganComponent)} and {nameof(DetachableOrganComponent)}. Pick a lane, make your organs internal or detachable, but not both.");
             }
@@ -119,12 +116,12 @@ public sealed class InitialBodyValidationTest : GameTest
     {
         using var scope = Assert.EnterMultipleScope();
 
-        foreach (var proto in _prototype.EnumeratePrototypes<EntityPrototype>())
+        foreach (var proto in SProtoMan.EnumeratePrototypes<EntityPrototype>())
         {
             if (proto.Abstract || Pair.IsTestEntityPrototype(proto.ID))
                 continue;
 
-            if (!proto.TryComp<InitialBodyComponent>(out var initial, _componentFactory))
+            if (!proto.TryComp<InitialBodyComponent>(out var initial, SEntMan.ComponentFactory))
                 continue;
 
             if (initial.Relationships is not { } relationships)
@@ -137,7 +134,7 @@ public sealed class InitialBodyValidationTest : GameTest
             {
                 if (TryFindCycle(parent, relationships, visited, stack, out var cycle))
                 {
-                    Assert.Fail($"{proto.ID} has a cycle in its InitialBodyComponent relationships: {string.Join(" -> ", cycle)}");
+                    Assert.Fail($"{proto.ID} has a cycle in its {nameof(InitialBodyComponent)} relationships: {string.Join(" -> ", cycle)}");
                 }
             }
         }
